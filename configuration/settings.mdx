@@ -1,0 +1,331 @@
+---
+title: "Configuration"
+description: "Configure Cortex CLI settings and preferences"
+---
+
+# Configuration
+
+Cortex can be configured through config files, environment variables, and command-line flags.
+
+## Configuration File
+
+The main configuration file is located at:
+
+```
+~/.config/cortex/config.toml
+```
+
+### Basic Configuration
+
+```toml
+# Model settings
+[model]
+default = "claude-sonnet-4-20250514"
+provider = "anthropic"
+
+# Context window configuration
+model_context_window = 128000
+model_auto_compact_token_limit = 100000
+
+# Sandbox settings
+[sandbox]
+mode = "workspace-write"
+
+# Approval settings
+[approval]
+mode = "on-request"
+
+# Update settings
+[update]
+check_on_startup = true
+channel = "stable"
+```
+
+### Edit Configuration
+
+```bash
+# Open in editor
+cortex config --edit
+
+# Show current config
+cortex config
+
+# Show as JSON
+cortex config --json
+```
+
+## Configuration Sections
+
+### Model Configuration
+
+```toml
+[model]
+# Default model to use
+default = "claude-sonnet-4-20250514"
+
+# Provider (anthropic, openai, google, etc.)
+provider = "anthropic"
+
+# Context window size (tokens)
+model_context_window = 128000
+
+# Auto-compact when reaching this limit
+model_auto_compact_token_limit = 100000
+
+# Default temperature (0.0-2.0)
+temperature = 0.7
+```
+
+### Sandbox Configuration
+
+```toml
+[sandbox]
+# Sandbox mode for command execution
+# Options: read-only, workspace-write, danger-full-access
+mode = "workspace-write"
+
+# Additional writable directories
+writable_dirs = [
+  "/tmp",
+  "~/.cache"
+]
+```
+
+### Approval Configuration
+
+```toml
+[approval]
+# When to ask for approval
+# Options: always, on-request, on-failure, never
+mode = "on-request"
+```
+
+### MCP Server Configuration
+
+```toml
+[mcp_servers.sqlite]
+enabled = true
+
+[mcp_servers.sqlite.transport]
+type = "stdio"
+command = "npx"
+args = ["@modelcontextprotocol/server-sqlite", "~/data/mydb.sqlite"]
+
+[mcp_servers.api]
+enabled = true
+
+[mcp_servers.api.transport]
+type = "http"
+url = "https://api.example.com/mcp"
+bearer_token_env_var = "API_TOKEN"
+```
+
+### Profiles
+
+Create multiple configuration profiles:
+
+```toml
+[profiles.work]
+model.default = "gpt-4o"
+model.provider = "openai"
+
+[profiles.personal]
+model.default = "claude-sonnet-4"
+model.provider = "anthropic"
+```
+
+Use profiles with:
+```bash
+cortex --profile work "task"
+```
+
+## Environment Variables
+
+Environment variables override config file settings:
+
+| Variable | Description |
+|----------|-------------|
+| `CORTEX_HOME` | Override config directory |
+| `CORTEX_API_KEY` | API key for default provider |
+| `CORTEX_MODEL` | Default model |
+| `CORTEX_LOG_LEVEL` | Log verbosity (error, warn, info, debug, trace) |
+| `NO_COLOR` | Disable colored output |
+| `VISUAL` | Editor for /edit command |
+| `EDITOR` | Fallback editor |
+
+### Provider API Keys
+
+| Variable | Provider |
+|----------|----------|
+| `ANTHROPIC_API_KEY` | Anthropic (Claude) |
+| `OPENAI_API_KEY` | OpenAI (GPT) |
+| `GOOGLE_API_KEY` | Google (Gemini) |
+| `GROQ_API_KEY` | Groq |
+| `MISTRAL_API_KEY` | Mistral |
+| `XAI_API_KEY` | xAI (Grok) |
+| `DEEPSEEK_API_KEY` | DeepSeek |
+
+## Command-Line Flags
+
+Flags override both config file and environment variables:
+
+```bash
+# Model
+cortex --model gpt-4o "task"
+
+# Profile
+cortex --profile work "task"
+
+# Sandbox mode
+cortex --sandbox read-only "task"
+
+# Approval policy
+cortex --ask-for-approval medium "task"
+
+# Working directory
+cortex --cd /path/to/project "task"
+
+# Log level
+cortex --log-level debug "task"
+```
+
+## Precedence Order
+
+Configuration is applied in this order (later overrides earlier):
+
+1. **Defaults** - Built-in defaults
+2. **Config file** - `~/.config/cortex/config.toml`
+3. **Environment variables** - `CORTEX_*`
+4. **Profile** - `--profile` flag
+5. **Command-line flags** - `--model`, etc.
+
+## File Locations
+
+| Path | Description |
+|------|-------------|
+| `~/.config/cortex/config.toml` | Main configuration |
+| `~/.config/cortex/auth.json` | Authentication (legacy) |
+| `~/.config/cortex/auth.enc` | Encrypted authentication |
+| `~/.local/share/cortex/sessions/` | Session storage |
+| `~/.cache/cortex/logs/` | Log files |
+| `~/.cortex/agents/` | Personal agents |
+| `.cortex/agents/` | Project agents |
+
+## Agent Configuration
+
+Create custom agents in `~/.cortex/agents/` or `.cortex/agents/`:
+
+```markdown
+---
+name: my-agent
+description: "My custom agent"
+mode: primary
+model: claude-sonnet-4
+temperature: 0.5
+allowed_tools:
+  - Read
+  - Grep
+  - Edit
+---
+
+Your system prompt here...
+```
+
+See [Agents](/cli/agents) for detailed configuration.
+
+## Custom Commands
+
+Define custom commands in config:
+
+```toml
+[commands.test]
+template = "Run tests with coverage and report failures"
+description = "Run test suite"
+agent = "build"
+
+[commands.review]
+template = "Review $ARGUMENTS for bugs and best practices"
+description = "Code review"
+```
+
+Or as markdown files in `.cortex/commands/`:
+
+```markdown
+---
+description: "Run tests with coverage"
+agent: build
+---
+
+Run the full test suite with coverage report.
+Focus on failing tests and suggest fixes.
+```
+
+## Security Settings
+
+### Sandbox Modes
+
+| Mode | Description |
+|------|-------------|
+| `read-only` | No file modifications |
+| `workspace-write` | Only modify project files |
+| `danger-full-access` | Full system access (dangerous) |
+
+### Approval Policies
+
+| Policy | Description |
+|--------|-------------|
+| `always` | Always ask before executing |
+| `on-request` | Ask for risky operations |
+| `on-failure` | Ask only when something fails |
+| `never` | Never ask (dangerous) |
+
+## Example: Complete Config
+
+```toml
+# ~/.config/cortex/config.toml
+
+[model]
+default = "claude-sonnet-4-20250514"
+provider = "anthropic"
+model_context_window = 128000
+model_auto_compact_token_limit = 100000
+temperature = 0.7
+
+[sandbox]
+mode = "workspace-write"
+writable_dirs = ["/tmp"]
+
+[approval]
+mode = "on-request"
+
+[update]
+check_on_startup = true
+channel = "stable"
+
+# MCP Servers
+[mcp_servers.sqlite]
+enabled = true
+[mcp_servers.sqlite.transport]
+type = "stdio"
+command = "npx"
+args = ["@modelcontextprotocol/server-sqlite", "~/data.db"]
+
+# Profiles
+[profiles.fast]
+model.default = "claude-3-5-haiku"
+
+[profiles.powerful]
+model.default = "claude-opus-4"
+
+# Custom Commands
+[commands.test]
+template = "Run tests and fix failures"
+description = "Run test suite"
+```
+
+## See Also
+
+- [CLI Overview](/cli/overview) - Command-line options
+- [Models](/cli/models) - Available models
+- [MCP](/cli/mcp) - MCP server configuration
+- [Agents](/cli/agents) - Agent configuration

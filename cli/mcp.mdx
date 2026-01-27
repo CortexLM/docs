@@ -1,0 +1,310 @@
+---
+title: "mcp"
+description: "Manage Model Context Protocol (MCP) servers"
+---
+
+# cortex mcp
+
+Manage Model Context Protocol (MCP) servers. MCP allows Cortex to connect to external tools, databases, APIs, and services through a standardized protocol.
+
+## Overview
+
+MCP servers extend Cortex's capabilities by providing:
+- **Tools**: Actions the agent can execute
+- **Resources**: Data sources the agent can access
+- **Prompts**: Predefined prompt templates
+
+## Usage
+
+```bash
+cortex mcp <SUBCOMMAND>
+```
+
+## Subcommands
+
+| Command | Description |
+|---------|-------------|
+| `list` / `ls` | List configured MCP servers |
+| `get` | Show details for a specific server |
+| `add` | Add a new MCP server |
+| `remove` / `rm` | Remove an MCP server |
+| `auth` | Authenticate with OAuth-enabled servers |
+| `logout` | Remove OAuth credentials |
+| `debug` | Test and debug server connection |
+
+## Adding Servers
+
+### Stdio Transport (Local)
+
+Run a local MCP server via command:
+
+```bash
+# Basic syntax
+cortex mcp add <NAME> -- <COMMAND>
+
+# Examples
+cortex mcp add sqlite -- npx @modelcontextprotocol/server-sqlite
+cortex mcp add github -- npx @modelcontextprotocol/server-github
+cortex mcp add filesystem -- npx @modelcontextprotocol/server-filesystem /path/to/dir
+
+# With environment variables
+cortex mcp add myserver --env API_KEY=secret123 -- python -m myserver
+```
+
+### HTTP Transport (Remote)
+
+Connect to a remote MCP server:
+
+```bash
+# Basic syntax
+cortex mcp add <NAME> --url <URL>
+
+# With bearer token from environment variable
+cortex mcp add api --url https://api.example.com/mcp --bearer-token-env-var API_TOKEN
+
+# Examples
+cortex mcp add cloud-db --url https://mcp.example.com/database
+```
+
+### Options for `add`
+
+| Flag | Description |
+|------|-------------|
+| `--force` / `-f` | Overwrite existing server configuration |
+| `--env KEY=VALUE` | Environment variables (stdio only) |
+| `--url URL` | Server URL (HTTP transport) |
+| `--bearer-token-env-var` | Env var containing bearer token (HTTP only) |
+
+## Listing Servers
+
+```bash
+# List all servers
+cortex mcp list
+
+# JSON output
+cortex mcp list --json
+```
+
+Output:
+```
+Name                 Status       Tools    Auth               Transport
+------------------------------------------------------------------------------------------
+sqlite               enabled      5        N/A                stdio: npx @modelcontext...
+github               enabled      12       Authenticated      http: https://api.github...
+```
+
+## Server Details
+
+```bash
+# Show server configuration
+cortex mcp get sqlite
+
+# JSON output
+cortex mcp get sqlite --json
+```
+
+Output:
+```
+MCP Server: sqlite
+========================================
+Enabled: true
+
+Transport: stdio
+  Command: npx
+  Args: @modelcontextprotocol/server-sqlite
+
+OAuth Status:
+  N/A (stdio transport)
+```
+
+## Removing Servers
+
+```bash
+# Interactive confirmation
+cortex mcp remove sqlite
+
+# Force removal
+cortex mcp remove sqlite --force
+```
+
+## OAuth Authentication
+
+For HTTP servers that require OAuth:
+
+```bash
+# Authenticate with a server
+cortex mcp auth myserver
+
+# List OAuth status for all servers
+cortex mcp auth list
+
+# Logout from a server
+cortex mcp logout myserver
+
+# Logout from all servers
+cortex mcp logout --all
+```
+
+### Custom OAuth Credentials
+
+```bash
+cortex mcp auth myserver \
+  --client-id your-client-id \
+  --client-secret your-client-secret
+```
+
+## Debugging Servers
+
+Test server connectivity and inspect capabilities:
+
+```bash
+# Debug a server
+cortex mcp debug sqlite
+
+# With timeout
+cortex mcp debug sqlite --timeout 60
+
+# Test OAuth
+cortex mcp debug myserver --test-auth
+
+# JSON output
+cortex mcp debug sqlite --json
+```
+
+Output:
+```
+Debugging MCP Server: sqlite
+==================================================
+
+Configuration:
+  Enabled: true
+  Transport: stdio
+  Command: npx
+  Args: @modelcontextprotocol/server-sqlite
+
+Command Check:
+  ✓ Command 'npx' found in PATH
+
+Connection Test:
+  ✓ Connected successfully
+
+Server Capabilities:
+  • tools: true
+  • resources: true
+  • prompts: false
+
+Available Tools: 5
+  • query: Execute SQL query on the database
+  • list_tables: List all tables in the database
+  • describe_table: Get schema for a table
+  • insert: Insert a row into a table
+  • update: Update rows in a table
+
+Available Resources: 2
+Available Prompts: 0
+```
+
+## Configuration File
+
+MCP servers are stored in `~/.config/cortex/config.toml`:
+
+```toml
+[mcp_servers.sqlite]
+enabled = true
+
+[mcp_servers.sqlite.transport]
+type = "stdio"
+command = "npx"
+args = ["@modelcontextprotocol/server-sqlite", "/path/to/db.sqlite"]
+
+[mcp_servers.api]
+enabled = true
+
+[mcp_servers.api.transport]
+type = "http"
+url = "https://api.example.com/mcp"
+bearer_token_env_var = "API_TOKEN"
+```
+
+## Popular MCP Servers
+
+### Official Servers
+
+| Server | Package | Description |
+|--------|---------|-------------|
+| SQLite | `@modelcontextprotocol/server-sqlite` | SQLite database operations |
+| Filesystem | `@modelcontextprotocol/server-filesystem` | File system access |
+| GitHub | `@modelcontextprotocol/server-github` | GitHub API integration |
+| Google Drive | `@modelcontextprotocol/server-gdrive` | Google Drive access |
+| Slack | `@modelcontextprotocol/server-slack` | Slack messaging |
+| Postgres | `@modelcontextprotocol/server-postgres` | PostgreSQL database |
+
+### Example Setup
+
+```bash
+# SQLite database
+cortex mcp add sqlite -- npx @modelcontextprotocol/server-sqlite ~/data/mydb.sqlite
+
+# GitHub (requires GITHUB_TOKEN)
+export GITHUB_TOKEN=your-token
+cortex mcp add github --env GITHUB_TOKEN=$GITHUB_TOKEN -- npx @modelcontextprotocol/server-github
+
+# Local filesystem
+cortex mcp add files -- npx @modelcontextprotocol/server-filesystem ~/projects
+```
+
+## Security Considerations
+
+<Warning>
+MCP servers have significant access to your system. Only install servers from trusted sources.
+</Warning>
+
+### Best Practices
+
+1. **Review Server Code**: Before installing, review what the server does
+2. **Limit Permissions**: Use environment variables for sensitive data
+3. **Sandbox**: Consider running servers in containers
+4. **Audit**: Regularly review installed servers with `cortex mcp list`
+
+### URL Restrictions
+
+For HTTP transport, Cortex blocks potentially dangerous URLs:
+- `localhost` / `127.0.0.1` (unless explicitly allowed)
+- Private network ranges (10.x, 192.168.x, etc.)
+- Non-HTTP protocols
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Server Not Connecting">
+    Use debug mode to diagnose:
+    ```bash
+    cortex mcp debug myserver
+    ```
+    Check:
+    - Is the command available in PATH?
+    - Are environment variables set correctly?
+    - Is the network accessible?
+  </Accordion>
+  
+  <Accordion title="OAuth Token Expired">
+    Re-authenticate:
+    ```bash
+    cortex mcp logout myserver
+    cortex mcp auth myserver
+    ```
+  </Accordion>
+  
+  <Accordion title="Tools Not Appearing">
+    Verify server capabilities:
+    ```bash
+    cortex mcp debug myserver --json | jq '.tools'
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## See Also
+
+- [MCP Specification](https://modelcontextprotocol.io)
+- [Configuration](/configuration/settings)
+- [Agents](/guides/agents) - Use MCP tools in custom agents

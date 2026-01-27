@@ -1,0 +1,406 @@
+---
+title: "exec"
+description: "Headless execution mode for CI/CD and automation"
+---
+
+# cortex exec
+
+Execute Cortex in headless mode, designed for CI/CD pipelines, shell scripts, and automation. Unlike `run`, `exec` provides fine-grained control over autonomy levels, output formats, and tool permissions.
+
+## Usage
+
+```bash
+cortex exec [OPTIONS] [PROMPT...]
+```
+
+## Examples
+
+```bash
+# Basic headless execution
+cortex exec "run tests and fix any failures"
+
+# Read-only mode (safest)
+cortex exec --auto read-only "analyze this codebase"
+
+# Medium autonomy (typical CI/CD)
+cortex exec --auto medium "fix linting errors"
+
+# Full autonomy (use with caution)
+cortex exec --auto high "deploy to staging"
+
+# JSON output for parsing
+cortex exec --output-format json "list all TODO comments"
+
+# Streaming output for real-time monitoring
+cortex exec --output-format stream-json "run full test suite"
+
+# With timeout
+cortex exec --timeout 300 "run integration tests"
+
+# With tool restrictions
+cortex exec --enabled-tools "Read,Grep,Glob" "find security issues"
+```
+
+## Autonomy Levels
+
+The `--auto` flag controls what operations the agent can perform:
+
+| Level | Description | Use Case |
+|-------|-------------|----------|
+| `read-only` | No modifications (default, safest) | Code analysis, reviews |
+| `low` | Basic file operations only | Documentation, formatting |
+| `medium` | Package install, builds, local git | Development, testing |
+| `high` | Full access including git push | CI/CD, deployments |
+
+### Read-Only Mode
+
+```bash
+cortex exec --auto read-only "analyze code quality"
+```
+
+Allowed:
+- Reading files
+- Searching (grep, glob)
+- Git status, log, diff
+
+Blocked:
+- File creation/modification
+- Command execution
+- Git commits/push
+
+### Low Autonomy
+
+```bash
+cortex exec --auto low "format all code files"
+```
+
+Allowed:
+- All read operations
+- Basic file modifications
+- Code formatting
+
+Blocked:
+- Package installation
+- Network operations
+- Git push
+
+### Medium Autonomy
+
+```bash
+cortex exec --auto medium "install dependencies and run tests"
+```
+
+Allowed:
+- File operations
+- Package installation
+- Building/compiling
+- Local git operations
+- Network for package managers
+
+Blocked:
+- Git push
+- Deployment operations
+- Sensitive system changes
+
+### High Autonomy
+
+```bash
+cortex exec --auto high "deploy to production"
+```
+
+Allowed:
+- All operations
+- Git push
+- Deployments
+- System modifications
+
+<Warning>
+High autonomy mode allows potentially destructive operations. Use only in isolated environments.
+</Warning>
+
+## Options
+
+### Input
+
+| Flag | Short | Description |
+|------|-------|-------------|
+| `PROMPT...` | | The task prompt |
+| `--file` | `-f` | Read prompt from file |
+| `--input-format` | | Input format: text, stream-jsonrpc |
+
+### Output
+
+| Flag | Short | Description | Default |
+|------|-------|-------------|---------|
+| `--output-format` | `-o` | Output format | `text` |
+| `--verbose` | `-v` | Show tool calls, reasoning | `false` |
+
+Output formats:
+- `text` - Human-readable output
+- `json` - Final result as JSON
+- `stream-json` - Streaming JSON Lines
+- `stream-jsonrpc` - JSON-RPC for multi-turn
+
+### Autonomy & Security
+
+| Flag | Description |
+|------|-------------|
+| `--auto` | Autonomy level: read-only, low, medium, high |
+| `--skip-permissions-unsafe` | Skip ALL permission checks (DANGEROUS) |
+
+### Model Configuration
+
+| Flag | Short | Description |
+|------|-------|-------------|
+| `--model` | `-m` | Model ID to use |
+| `--spec-model` | | Model for spec mode |
+| `--use-spec` | | Start in specification mode |
+| `--reasoning-effort` | `-r` | Reasoning effort level |
+
+### Tool Control
+
+| Flag | Description |
+|------|-------------|
+| `--enabled-tools` | Comma-separated list of enabled tools |
+| `--disabled-tools` | Comma-separated list of disabled tools |
+| `--list-tools` | List available tools and exit |
+
+### Execution Control
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--max-turns` | Maximum agent turns | 100 |
+| `--timeout` | Timeout in seconds (0 = no timeout) | 600 |
+| `--cwd` | Working directory | Current |
+
+### Session
+
+| Flag | Short | Description |
+|------|-------|-------------|
+| `--session-id` | `-s` | Continue a specific session |
+
+### Images
+
+| Flag | Short | Description |
+|------|-------|-------------|
+| `--image` | `-i` | Attach image files (can be repeated) |
+
+## Output Formats
+
+### Text Output
+
+Default human-readable output:
+
+```bash
+cortex exec "explain main.rs"
+```
+
+```
+The main.rs file contains the entry point...
+```
+
+### JSON Output
+
+Structured result for parsing:
+
+```bash
+cortex exec --output-format json "list functions"
+```
+
+```json
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "result": "Found 5 functions: main, init, process, validate, cleanup",
+  "duration_ms": 3245,
+  "num_turns": 2,
+  "session_id": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+### Stream JSON
+
+Real-time event streaming:
+
+```bash
+cortex exec --output-format stream-json "run tests"
+```
+
+Each line is a JSON event:
+```json
+{"type": "system", "subtype": "init", "session_id": "...", "timestamp": 1234567890}
+{"type": "tool_call", "toolName": "Execute", "parameters": {"command": "npm test"}}
+{"type": "tool_result", "exitCode": 0, "durationMs": 5000}
+{"type": "message", "role": "assistant", "text": "All tests passed!"}
+{"type": "completion", "finalText": "...", "numTurns": 3, "durationMs": 8000}
+```
+
+### Stream JSON-RPC
+
+For multi-turn conversations:
+
+```bash
+# Start multi-turn session
+echo '{"method": "message", "params": {"text": "analyze code"}}' | \
+  cortex exec --input-format stream-jsonrpc --output-format stream-jsonrpc
+```
+
+## Tool Control
+
+### List Available Tools
+
+```bash
+cortex exec --list-tools
+```
+
+Output:
+```
+Available tools (15):
+------------------------------------------------------------
+  Read                 - Read file contents
+  Create               - Create new files
+  Edit                 - Edit existing files
+  Execute              - Run shell commands
+  Grep                 - Search file contents
+  Glob                 - Find files by pattern
+  LS                   - List directory contents
+  ...
+```
+
+### Enable Specific Tools
+
+```bash
+# Only allow read operations
+cortex exec --enabled-tools "Read,Grep,Glob,LS" "find security issues"
+```
+
+### Disable Specific Tools
+
+```bash
+# Block dangerous operations
+cortex exec --disabled-tools "Execute,Create,Edit" "review the code"
+```
+
+## CI/CD Integration
+
+### GitHub Actions
+
+```yaml
+name: Cortex Code Review
+on: [pull_request]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Cortex
+        run: curl -fsSL https://cortex.foundation/install | bash
+      
+      - name: Review Changes
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          cortex exec --auto read-only \
+            --output-format json \
+            "Review the changes in this PR for bugs and security issues" \
+            > review.json
+      
+      - name: Post Review
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const review = require('./review.json');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: review.result
+            });
+```
+
+### GitLab CI
+
+```yaml
+code-review:
+  image: ubuntu:latest
+  script:
+    - curl -fsSL https://cortex.foundation/install | bash
+    - cortex exec --auto read-only "review the merge request" > review.txt
+  artifacts:
+    paths:
+      - review.txt
+```
+
+### Shell Scripting
+
+```bash
+#!/bin/bash
+
+# Run Cortex and check result
+result=$(cortex exec --output-format json --auto medium "run tests")
+
+# Parse JSON result
+success=$(echo "$result" | jq -r '.is_error')
+
+if [ "$success" = "false" ]; then
+  echo "Tests passed!"
+  exit 0
+else
+  echo "Tests failed!"
+  echo "$result" | jq -r '.result'
+  exit 1
+fi
+```
+
+## Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success |
+| 1 | Error (task failed, timeout, permission denied) |
+| 130 | Interrupted |
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use Appropriate Autonomy">
+    Start with `read-only` and increase only as needed:
+    ```bash
+    # Analysis: read-only
+    cortex exec --auto read-only "find bugs"
+    
+    # Fixes: medium
+    cortex exec --auto medium "fix the bugs you found"
+    ```
+  </Accordion>
+  
+  <Accordion title="Set Timeouts">
+    Always set timeouts in CI to prevent hanging:
+    ```bash
+    cortex exec --timeout 300 "run integration tests"
+    ```
+  </Accordion>
+  
+  <Accordion title="Limit Tools">
+    Restrict tools to what's needed:
+    ```bash
+    cortex exec --enabled-tools "Read,Grep" "security audit"
+    ```
+  </Accordion>
+  
+  <Accordion title="Use JSON Output">
+    Parse results programmatically:
+    ```bash
+    cortex exec --output-format json "task" | jq '.result'
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## See Also
+
+- [run](/cli/run) - Non-interactive single request
+- [GitHub Integration](/cli/github) - GitHub Actions setup
+- [Configuration](/configuration/settings) - Configure defaults

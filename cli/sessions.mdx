@@ -1,0 +1,313 @@
+---
+title: "Session Management"
+description: "Manage Cortex conversation sessions"
+---
+
+# Session Management
+
+Cortex automatically saves your conversations as sessions. You can list, resume, export, and import sessions.
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `resume` | Resume a previous session |
+| `sessions` | List saved sessions |
+| `export` | Export a session to JSON |
+| `import` | Import a session from file/URL |
+
+---
+
+## cortex resume
+
+Resume a previous interactive session.
+
+### Usage
+
+```bash
+cortex resume [OPTIONS] [SESSION_ID]
+```
+
+### Examples
+
+```bash
+# Resume most recent session
+cortex resume --last
+
+# Resume specific session by ID
+cortex resume abc12345
+
+# Resume with full UUID
+cortex resume 550e8400-e29b-41d4-a716-446655440000
+
+# Show all sessions (not filtered by directory)
+cortex resume --all
+```
+
+### Options
+
+| Flag | Description |
+|------|-------------|
+| `SESSION_ID` | Session ID to resume (full UUID or 8-char prefix) |
+| `--last` | Continue the most recent session |
+| `--all` | Show all sessions (disable cwd filtering) |
+
+---
+
+## cortex sessions
+
+List previous sessions.
+
+### Usage
+
+```bash
+cortex sessions [OPTIONS]
+```
+
+### Examples
+
+```bash
+# List recent sessions in current directory
+cortex sessions
+
+# Show all sessions from any directory
+cortex sessions --all
+
+# Filter by date
+cortex sessions --days 7
+cortex sessions --since 2024-01-01
+cortex sessions --until 2024-01-31
+
+# Search sessions
+cortex sessions --search "refactor"
+
+# Limit results
+cortex sessions --limit 5
+
+# JSON output
+cortex sessions --json
+```
+
+### Options
+
+| Flag | Description |
+|------|-------------|
+| `--all` | Show sessions from all directories |
+| `--days N` | Show sessions from the last N days |
+| `--since DATE` | Show sessions since date (YYYY-MM-DD) |
+| `--until DATE` | Show sessions until date (YYYY-MM-DD) |
+| `--favorites` | Show only favorite sessions |
+| `--search QUERY` | Search sessions by title or ID |
+| `--limit N` | Maximum number of sessions to show |
+| `--json` | Output in JSON format |
+
+### Output
+
+```
+Recent Sessions:
+--------------------------------------------------------------------------------
+abc12345 | 2024-01-15 10:30:00 UTC | 15 msgs | claude-sonnet-4 [main]
+  /home/user/projects/myapp
+def67890 | 2024-01-14 16:45:00 UTC | 8 msgs  | gpt-4o [feature/auth]
+  /home/user/projects/myapp
+
+... and 10 more sessions
+
+To resume: cortex resume <session-id>
+          cortex resume --last
+          cortex sessions --all  (show all directories)
+```
+
+---
+
+## cortex export
+
+Export a session to JSON format for backup or sharing.
+
+### Usage
+
+```bash
+cortex export [OPTIONS] [SESSION_ID]
+```
+
+### Examples
+
+```bash
+# Export specific session
+cortex export abc12345 > session.json
+
+# Export with output file
+cortex export abc12345 --output backup.json
+
+# Export most recent session
+cortex export --last
+```
+
+### Options
+
+| Flag | Description |
+|------|-------------|
+| `SESSION_ID` | Session ID to export |
+| `--last` | Export the most recent session |
+| `--output FILE` | Write to file instead of stdout |
+
+### Output Format
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "model": "claude-sonnet-4",
+  "cwd": "/home/user/projects/myapp",
+  "git_branch": "main",
+  "messages": [
+    {
+      "role": "user",
+      "content": "explain this codebase"
+    },
+    {
+      "role": "assistant",
+      "content": "This project is..."
+    }
+  ],
+  "usage": {
+    "input_tokens": 1500,
+    "output_tokens": 3000
+  }
+}
+```
+
+---
+
+## cortex import
+
+Import a session from a JSON file or URL.
+
+### Usage
+
+```bash
+cortex import <SOURCE>
+```
+
+### Examples
+
+```bash
+# Import from local file
+cortex import session.json
+
+# Import from URL
+cortex import https://example.com/session.json
+
+# Import from Cortex share URL
+cortex import https://cortex.foundation/s/abc123
+```
+
+### Options
+
+| Argument | Description |
+|----------|-------------|
+| `SOURCE` | Path to JSON file or URL |
+
+---
+
+## Session Storage
+
+Sessions are stored in:
+```
+~/.local/share/cortex/sessions/
+```
+
+Each session is a JSON file named by its conversation ID.
+
+### Session Metadata
+
+Each session includes:
+- **ID**: Unique conversation identifier
+- **Timestamp**: Creation time
+- **Model**: AI model used
+- **CWD**: Working directory
+- **Git Branch**: Active git branch (if applicable)
+- **Messages**: Full conversation history
+- **Usage**: Token counts and statistics
+
+## Session Filtering
+
+By default, `cortex sessions` and `cortex resume` filter to show only sessions from the current directory. This helps when working on multiple projects.
+
+Use `--all` to see sessions from any directory:
+
+```bash
+cortex sessions --all
+cortex resume --all
+```
+
+## Continuing Sessions
+
+### In TUI
+
+Use the `/resume` command or start with `--continue`:
+
+```bash
+cortex --continue
+cortex -c
+```
+
+### In Run Mode
+
+```bash
+# Continue last session
+cortex run --continue "now fix the tests"
+
+# Continue specific session
+cortex run --session abc12345 "add error handling"
+```
+
+### In Exec Mode
+
+```bash
+cortex exec --session-id abc12345 "continue the refactoring"
+```
+
+## Session Sharing
+
+Export and share sessions with your team:
+
+```bash
+# Export session
+cortex export abc12345 > session.json
+
+# Share via URL (if cortex share is configured)
+cortex run --share "review this code"
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Name Sessions for Easy Reference">
+    Use `--title` when starting sessions:
+    ```bash
+    cortex run --title "auth-refactor" "refactor the auth system"
+    ```
+  </Accordion>
+  
+  <Accordion title="Regular Backups">
+    Export important sessions:
+    ```bash
+    cortex sessions --json > sessions-backup.json
+    ```
+  </Accordion>
+  
+  <Accordion title="Clean Up Old Sessions">
+    Periodically review and remove old sessions:
+    ```bash
+    # List old sessions
+    cortex sessions --days 90
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## See Also
+
+- [run](/cli/run) - Non-interactive execution with sessions
+- [exec](/cli/exec) - Headless execution
+- [Configuration](/configuration/settings) - Configure session storage
