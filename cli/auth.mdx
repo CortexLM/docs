@@ -1,0 +1,270 @@
+---
+title: "Authentication"
+description: "Authenticate with Cortex and AI providers"
+---
+
+# Authentication
+
+Manage authentication for Cortex and AI providers.
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `login` | Authenticate with Cortex API |
+| `logout` | Remove stored credentials |
+
+---
+
+## cortex login
+
+Authenticate with Cortex to access AI providers.
+
+### Usage
+
+```bash
+cortex login [OPTIONS]
+```
+
+### Authentication Methods
+
+#### API Key (Recommended)
+
+Pipe your API key from stdin:
+
+```bash
+# From environment variable
+echo $ANTHROPIC_API_KEY | cortex login --with-api-key
+
+# From file
+cat ~/.secrets/api-key | cortex login --with-api-key
+
+# Interactive (NOT recommended - use env vars)
+cortex login --with-api-key
+# Then paste your key
+```
+
+#### Device Code Flow (OAuth)
+
+For OAuth-based authentication:
+
+```bash
+cortex login --device-auth
+```
+
+This will:
+1. Display a URL and code
+2. Open your browser
+3. Wait for authentication
+4. Store the tokens securely
+
+### Options
+
+| Flag | Description |
+|------|-------------|
+| `--with-api-key` | Read API key from stdin |
+| `--device-auth` | Use device code authentication |
+
+### Check Status
+
+View current authentication status:
+
+```bash
+cortex login status
+```
+
+Output:
+```
+✓ Logged in using an API key: sk-ant-...****
+```
+
+### Credential Storage
+
+Cortex stores credentials securely using:
+1. **System Keyring** (preferred): macOS Keychain, Windows Credential Manager, Linux Secret Service
+2. **Encrypted File** (fallback): `~/.config/cortex/auth.enc`
+3. **Plain File** (legacy): `~/.config/cortex/auth.json`
+
+---
+
+## cortex logout
+
+Remove stored authentication credentials.
+
+### Usage
+
+```bash
+cortex logout [OPTIONS]
+```
+
+### Examples
+
+```bash
+# Interactive confirmation
+cortex logout
+
+# Skip confirmation
+cortex logout --yes
+```
+
+### Options
+
+| Flag | Short | Description |
+|------|-------|-------------|
+| `--yes` | `-y` | Skip confirmation prompt |
+
+---
+
+## Environment Variables
+
+Instead of using `cortex login`, you can set API keys as environment variables:
+
+| Variable | Provider |
+|----------|----------|
+| `ANTHROPIC_API_KEY` | Anthropic (Claude) |
+| `OPENAI_API_KEY` | OpenAI (GPT) |
+| `GOOGLE_API_KEY` | Google (Gemini) |
+| `GROQ_API_KEY` | Groq |
+| `MISTRAL_API_KEY` | Mistral |
+| `XAI_API_KEY` | xAI (Grok) |
+| `DEEPSEEK_API_KEY` | DeepSeek |
+| `CORTEX_API_KEY` | Generic (used as fallback) |
+
+### Setting Environment Variables
+
+<Tabs>
+  <Tab title="Bash/Zsh">
+    ```bash
+    # Add to ~/.bashrc or ~/.zshrc
+    export ANTHROPIC_API_KEY="sk-ant-your-key-here"
+    ```
+  </Tab>
+  <Tab title="Fish">
+    ```fish
+    # Add to ~/.config/fish/config.fish
+    set -gx ANTHROPIC_API_KEY "sk-ant-your-key-here"
+    ```
+  </Tab>
+  <Tab title="Windows PowerShell">
+    ```powershell
+    # Add to $PROFILE
+    $env:ANTHROPIC_API_KEY = "sk-ant-your-key-here"
+    ```
+  </Tab>
+</Tabs>
+
+### Using .env Files
+
+Create a `.env` file in your project root:
+
+```bash
+# .env
+ANTHROPIC_API_KEY=sk-ant-your-key-here
+OPENAI_API_KEY=sk-your-key-here
+```
+
+<Warning>
+Never commit `.env` files to version control. Add `.env` to your `.gitignore`.
+</Warning>
+
+---
+
+## Multiple Providers
+
+You can configure multiple providers simultaneously:
+
+```bash
+# Set multiple API keys
+export ANTHROPIC_API_KEY="sk-ant-..."
+export OPENAI_API_KEY="sk-..."
+export GOOGLE_API_KEY="..."
+
+# Then use any model
+cortex --model claude-sonnet-4 "task for Claude"
+cortex --model gpt-4o "task for GPT"
+cortex --model gemini-2.0-flash "task for Gemini"
+```
+
+---
+
+## Security Best Practices
+
+<AccordionGroup>
+  <Accordion title="Never Hardcode API Keys">
+    Always use environment variables or secure storage:
+    ```bash
+    # Good
+    export ANTHROPIC_API_KEY="..."
+    
+    # Bad - never do this
+    cortex --api-key "sk-ant-..." "task"
+    ```
+  </Accordion>
+  
+  <Accordion title="Use Separate Keys for Development">
+    Create separate API keys for:
+    - Development
+    - Testing/CI
+    - Production
+    
+    This limits blast radius if a key is compromised.
+  </Accordion>
+  
+  <Accordion title="Rotate Keys Regularly">
+    Periodically rotate your API keys:
+    1. Create new key in provider dashboard
+    2. Update environment variables
+    3. Verify new key works
+    4. Delete old key
+  </Accordion>
+  
+  <Accordion title="Monitor Usage">
+    Check your API usage regularly:
+    ```bash
+    cortex stats --days 30
+    ```
+    Look for unexpected spikes that might indicate compromised keys.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="API Key Not Working">
+    1. Verify the key is correct:
+       ```bash
+       echo $ANTHROPIC_API_KEY
+       ```
+    2. Check if the key has the right permissions
+    3. Ensure the key hasn't expired
+    4. Try logging in again:
+       ```bash
+       cortex logout
+       echo $ANTHROPIC_API_KEY | cortex login --with-api-key
+       ```
+  </Accordion>
+  
+  <Accordion title="Keyring Not Available">
+    If system keyring is unavailable, Cortex falls back to encrypted file storage:
+    ```
+    ✓ Logged in successfully. Credentials stored in encrypted file.
+    System keyring unavailable, using encrypted file storage.
+    ```
+    This is normal on headless systems or containers.
+  </Accordion>
+  
+  <Accordion title="OAuth Flow Fails">
+    If device code auth fails:
+    1. Ensure you have network access
+    2. Check if popup blockers are interfering
+    3. Try using API key auth instead
+  </Accordion>
+</AccordionGroup>
+
+## See Also
+
+- [Configuration](/configuration/settings)
+- [Models](/cli/models) - Available AI models
+- [stats](/cli/stats) - Usage statistics

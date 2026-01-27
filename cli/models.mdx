@@ -1,0 +1,258 @@
+---
+title: "models"
+description: "List and manage available AI models"
+---
+
+# cortex models
+
+List all available AI models from configured providers.
+
+## Usage
+
+```bash
+cortex models [OPTIONS] [PROVIDER]
+```
+
+## Examples
+
+```bash
+# List all models
+cortex models
+
+# Filter by provider
+cortex models anthropic
+cortex models openai
+cortex models google
+
+# JSON output
+cortex models --json
+```
+
+## Options
+
+| Flag | Description |
+|------|-------------|
+| `PROVIDER` | Filter by provider name |
+| `--json` | Output in JSON format |
+
+## Output
+
+```
+Available Models:
+================================================================================
+
+anthropic (4 models)
+----------------------------------------
+Model ID                             Vision  Tools   Stream   JSON
+----------------------------------------------------------------------
+claude-sonnet-4-20250514               ✓       ✓        ✓       ✓
+claude-opus-4-20250514                 ✓       ✓        ✓       ✓
+claude-3-5-sonnet-20241022             ✓       ✓        ✓       ✓
+claude-3-5-haiku-20241022              ✓       ✓        ✓       ✓
+
+openai (5 models)
+----------------------------------------
+Model ID                             Vision  Tools   Stream   JSON
+----------------------------------------------------------------------
+gpt-4o                                 ✓       ✓        ✓       ✓
+gpt-4o-mini                            ✓       ✓        ✓       ✓
+o1                                     ✓       ✓        ✓       ✓
+o1-mini                                -       ✓        ✓       ✓
+o3-mini                                -       ✓        ✓       ✓
+
+Use `cortex --model <model-id>` to use a specific model.
+```
+
+## Available Providers
+
+### Anthropic
+
+| Model | ID | Vision | Pricing (per 1M tokens) |
+|-------|-----|--------|-------------------------|
+| Claude Sonnet 4 | `claude-sonnet-4-20250514` | ✓ | $3 / $15 |
+| Claude Opus 4 | `claude-opus-4-20250514` | ✓ | $15 / $75 |
+| Claude 3.5 Sonnet | `claude-3-5-sonnet-20241022` | ✓ | $3 / $15 |
+| Claude 3.5 Haiku | `claude-3-5-haiku-20241022` | ✓ | $0.80 / $4 |
+
+### OpenAI
+
+| Model | ID | Vision | Pricing (per 1M tokens) |
+|-------|-----|--------|-------------------------|
+| GPT-4o | `gpt-4o` | ✓ | $2.50 / $10 |
+| GPT-4o Mini | `gpt-4o-mini` | ✓ | $0.15 / $0.60 |
+| O1 | `o1` | ✓ | $15 / $60 |
+| O1 Mini | `o1-mini` | - | $3 / $12 |
+| O3 Mini | `o3-mini` | - | $1.10 / $4.40 |
+
+### Google
+
+| Model | ID | Vision | Pricing (per 1M tokens) |
+|-------|-----|--------|-------------------------|
+| Gemini 2.0 Flash | `gemini-2.0-flash` | ✓ | $0.075 / $0.30 |
+| Gemini 2.0 Flash Thinking | `gemini-2.0-flash-thinking` | ✓ | $0.075 / $0.30 |
+| Gemini 1.5 Pro | `gemini-1.5-pro` | ✓ | $1.25 / $5 |
+
+### Groq
+
+| Model | ID | Vision | Pricing (per 1M tokens) |
+|-------|-----|--------|-------------------------|
+| Llama 3.3 70B | `llama-3.3-70b-versatile` | - | $0.59 / $0.79 |
+| Llama 3.1 8B | `llama-3.1-8b-instant` | - | $0.05 / $0.08 |
+
+### Mistral
+
+| Model | ID | Vision | Pricing (per 1M tokens) |
+|-------|-----|--------|-------------------------|
+| Mistral Large | `mistral-large-latest` | - | $2 / $6 |
+| Codestral | `codestral-latest` | - | $0.20 / $0.60 |
+
+### xAI
+
+| Model | ID | Vision | Pricing (per 1M tokens) |
+|-------|-----|--------|-------------------------|
+| Grok 2 | `grok-2` | ✓ | $2 / $10 |
+
+### DeepSeek
+
+| Model | ID | Vision | Pricing (per 1M tokens) |
+|-------|-----|--------|-------------------------|
+| DeepSeek Chat | `deepseek-chat` | - | $0.14 / $0.28 |
+| DeepSeek Reasoner | `deepseek-reasoner` | - | $0.55 / $2.19 |
+
+### Local (Ollama)
+
+| Model | ID | Vision | Pricing |
+|-------|-----|--------|---------|
+| Qwen 2.5 Coder 32B | `qwen2.5-coder:32b` | - | Free (local) |
+| Llama 3.3 70B | `llama3.3:70b` | - | Free (local) |
+
+## Model Capabilities
+
+| Capability | Description |
+|------------|-------------|
+| **Vision** | Can process and analyze images |
+| **Tools** | Supports function calling/tool use |
+| **Stream** | Supports streaming responses |
+| **JSON** | Supports structured JSON output |
+
+## Using Models
+
+### Command Line
+
+```bash
+# Use specific model
+cortex --model gpt-4o "explain this code"
+
+# With run command
+cortex run --model claude-sonnet-4 "review for bugs"
+
+# With exec command
+cortex exec --model gemini-2.0-flash "analyze codebase"
+```
+
+### Model Aliases
+
+For convenience, Cortex supports short aliases:
+
+| Alias | Full Model ID |
+|-------|---------------|
+| `sonnet` | `claude-sonnet-4-20250514` |
+| `opus` | `claude-opus-4-20250514` |
+| `haiku` | `claude-3-5-haiku-20241022` |
+
+```bash
+cortex --model sonnet "quick task"
+```
+
+### In Configuration
+
+Set default model in `~/.config/cortex/config.toml`:
+
+```toml
+[model]
+default = "claude-sonnet-4-20250514"
+provider = "anthropic"
+```
+
+### In Agents
+
+Override model per agent:
+
+```yaml
+---
+name: my-agent
+model: gpt-4o
+---
+```
+
+## Local Models
+
+### Ollama
+
+Run models locally with Ollama:
+
+```bash
+# Install Ollama (https://ollama.ai)
+# Then pull a model
+ollama pull qwen2.5-coder:32b
+
+# Use with Cortex
+cortex --oss --model qwen2.5-coder:32b "task"
+```
+
+### LM Studio
+
+Connect to LM Studio:
+
+```bash
+# Start LM Studio and load a model
+# Then use with Cortex
+cortex --oss --model lmstudio/my-model "task"
+```
+
+## Cost Tracking
+
+Track model usage and costs:
+
+```bash
+# View usage statistics
+cortex stats --days 30
+
+# By model
+cortex stats --verbose
+```
+
+## Choosing a Model
+
+<AccordionGroup>
+  <Accordion title="For Speed">
+    - `claude-3-5-haiku` - Fast, good quality
+    - `gpt-4o-mini` - Very fast, cost-effective
+    - `gemini-2.0-flash` - Extremely fast
+  </Accordion>
+  
+  <Accordion title="For Quality">
+    - `claude-opus-4` - Best for complex tasks
+    - `o1` - Strong reasoning
+    - `claude-sonnet-4` - Great balance
+  </Accordion>
+  
+  <Accordion title="For Cost">
+    - Local models (Ollama) - Free
+    - `deepseek-chat` - Very affordable
+    - `gpt-4o-mini` - Low cost
+    - `gemini-2.0-flash` - Very low cost
+  </Accordion>
+  
+  <Accordion title="For Vision">
+    - `claude-sonnet-4` - Best vision quality
+    - `gpt-4o` - Good vision
+    - `gemini-2.0-flash` - Fast vision
+  </Accordion>
+</AccordionGroup>
+
+## See Also
+
+- [Configuration](/configuration/settings) - Set default model
+- [stats](/cli/stats) - Usage statistics
+- [Authentication](/cli/auth) - Configure API keys

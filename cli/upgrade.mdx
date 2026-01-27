@@ -1,0 +1,227 @@
+---
+title: "upgrade"
+description: "Update Cortex to the latest version"
+---
+
+# cortex upgrade
+
+Check for and install updates to Cortex CLI.
+
+## Usage
+
+```bash
+cortex upgrade [OPTIONS] [VERSION]
+```
+
+## Examples
+
+```bash
+# Upgrade to latest version
+cortex upgrade
+
+# Check for updates without installing
+cortex upgrade --check
+
+# Upgrade to specific version
+cortex upgrade 1.2.0
+
+# Force upgrade even if on same version
+cortex upgrade --force
+
+# View changelog
+cortex upgrade --changelog
+
+# Skip confirmation
+cortex upgrade --yes
+
+# Use beta channel
+cortex upgrade --channel beta
+```
+
+## Options
+
+| Flag | Short | Description | Default |
+|------|-------|-------------|---------|
+| `VERSION` | | Target version (e.g., "1.2.0") | Latest |
+| `--check` | `-c` | Only check, don't install | `false` |
+| `--changelog` | | Show changelog for target | `false` |
+| `--force` | `-f` | Force upgrade | `false` |
+| `--yes` | `-y` | Skip confirmation | `false` |
+| `--channel` | | Release channel | `stable` |
+
+## Release Channels
+
+| Channel | Description |
+|---------|-------------|
+| `stable` | Production-ready releases (default) |
+| `beta` | Preview features, some bugs |
+| `nightly` | Latest development, unstable |
+
+```bash
+# Use beta channel
+cortex upgrade --channel beta
+
+# Use nightly
+cortex upgrade --channel nightly
+```
+
+## Output
+
+```
+Cortex CLI Upgrade
+========================================
+Current version: v1.1.0
+Update server: https://software.cortex.foundation
+
+Checking for updates (stable channel)...
+
+→ Update available: v1.1.0 → v1.2.0
+
+Release notes: Bug fixes and performance improvements
+
+Proceed with upgrade? [y/N] y
+
+Downloading v1.2.0...
+  Size: 15234567 bytes
+  Downloading... 100% (15234567/15234567)
+  Downloaded successfully
+Verifying checksum... ✓
+Installing... ✓
+
+✓ Successfully upgraded from v1.1.0 to v1.2.0!
+  Run `cortex --version` to verify.
+```
+
+## Check Only Mode
+
+```bash
+cortex upgrade --check
+```
+
+Output:
+```
+Cortex CLI Upgrade
+========================================
+Current version: v1.1.0
+Update server: https://software.cortex.foundation
+
+Checking for updates (stable channel)...
+
+→ Update available: v1.1.0 → v1.2.0
+
+Run `cortex upgrade` to install this version.
+```
+
+## Changelog
+
+View changes in the target version:
+
+```bash
+cortex upgrade --changelog
+```
+
+Output:
+```
+================================================================================
+CHANGELOG
+================================================================================
+
+## v1.2.0
+
+### Features
+- Added web search capability
+- Improved MCP server management
+- New `cortex stats` command
+
+### Bug Fixes
+- Fixed session resume on Windows
+- Improved error messages
+
+### Performance
+- 30% faster startup time
+- Reduced memory usage
+
+================================================================================
+```
+
+## Downgrade
+
+To downgrade to a previous version:
+
+```bash
+cortex upgrade 1.0.0 --force
+```
+
+<Warning>
+Downgrading may cause compatibility issues with saved sessions or configurations.
+</Warning>
+
+## Update Process
+
+1. **Check**: Verify current version and available updates
+2. **Download**: Fetch the new binary with progress indication
+3. **Verify**: Check SHA-256 checksum
+4. **Install**: Replace the existing binary
+5. **Verify**: Confirm installation
+
+## Automatic Updates
+
+Cortex checks for updates automatically on startup (for non-TUI commands). 
+
+To disable:
+```bash
+export CORTEX_DISABLE_UPDATE_CHECK=1
+```
+
+Or in config:
+```toml
+[update]
+check_on_startup = false
+```
+
+## Installation Methods
+
+The upgrade command detects your installation method:
+
+| Method | Upgrade Command |
+|--------|-----------------|
+| curl/script | `cortex upgrade` |
+| Homebrew | `brew upgrade cortex` |
+| Cargo | `cargo install cortex-cli` |
+| Source | `git pull && cargo install --path .` |
+
+For package manager installations, `cortex upgrade` will suggest the appropriate command.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Permission Denied">
+    If you get permission errors:
+    ```bash
+    # Check binary location
+    which cortex
+    
+    # If in /usr/local/bin, use sudo
+    sudo cortex upgrade
+    ```
+  </Accordion>
+  
+  <Accordion title="Network Issues">
+    If download fails:
+    - Check internet connection
+    - Try again later
+    - Download manually from GitHub releases
+  </Accordion>
+  
+  <Accordion title="Checksum Mismatch">
+    If verification fails:
+    - Try upgrading again
+    - Check for network interference
+    - Report issue if persistent
+  </Accordion>
+</AccordionGroup>
+
+## See Also
+
+- [uninstall](/cli/uninstall) - Remove Cortex
+- [GitHub Releases](https://github.com/cortexlm/cortex-cli/releases)

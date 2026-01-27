@@ -1,0 +1,358 @@
+---
+title: "agent"
+description: "Manage Cortex agents"
+---
+
+# cortex agent
+
+Manage Cortex agents. Agents are specialized AI assistants with custom prompts, tool restrictions, and capabilities.
+
+## Overview
+
+Agents allow you to:
+- Create specialized assistants for specific tasks
+- Restrict tools for safety (e.g., read-only agents)
+- Define custom system prompts
+- Configure model preferences
+
+## Usage
+
+```bash
+cortex agent <SUBCOMMAND>
+```
+
+## Subcommands
+
+| Command | Description |
+|---------|-------------|
+| `list` | List all available agents |
+| `show` | Show details for a specific agent |
+| `create` | Create a new agent interactively |
+| `remove` | Remove a user-defined agent |
+
+## Listing Agents
+
+```bash
+# List all agents
+cortex agent list
+
+# Show only primary agents
+cortex agent list --primary
+
+# Show only subagents
+cortex agent list --subagents
+
+# Include hidden agents
+cortex agent list --all
+
+# JSON output
+cortex agent list --json
+```
+
+Output:
+```
+Name                 Mode       Source     Description
+----------------------------------------------------------------------------------
+build                primary    builtin    Full access agent for development work
+plan                 primary    builtin    Read-only agent for analysis
+explore              subagent   builtin    Fast agent for exploring codebases
+code-reviewer        subagent   builtin    Review code for quality and bugs
+my-agent             primary    personal   My custom agent
+```
+
+## Showing Agent Details
+
+```bash
+# View agent configuration
+cortex agent show build
+
+# JSON output
+cortex agent show build --json
+```
+
+Output:
+```
+Agent: build
+========================================
+Display Name: Build
+Description: Full access agent for development work
+Mode: primary
+Source: builtin
+Native: yes (built-in agent bundled with Cortex)
+Hidden: false
+Can Delegate: Yes (can spawn sub-agents for parallel tasks)
+Color: #22c55e ██
+
+System Prompt:
+----------------------------------------
+(No custom prompt - uses default)
+```
+
+## Creating Agents
+
+### Interactive Mode
+
+```bash
+cortex agent create
+```
+
+This launches an interactive wizard that prompts for:
+- Agent name
+- Description
+- Mode (primary/subagent/all)
+- Allowed/denied tools
+- System prompt
+- Optional settings (temperature, model, color)
+
+### With Options
+
+```bash
+# Create with name and description
+cortex agent create --name my-agent --description "My custom agent"
+
+# Non-interactive with defaults
+cortex agent create --name helper --non-interactive
+```
+
+### AI-Generated Agents
+
+Generate an agent configuration using AI:
+
+```bash
+# Generate from description
+cortex agent create --generate "A Rust expert that helps with memory safety and performance"
+
+# Use a specific model for generation
+cortex agent create --generate "Security auditor for web applications" --model gpt-4o
+```
+
+## Removing Agents
+
+```bash
+# Interactive confirmation
+cortex agent remove my-agent
+
+# Force removal
+cortex agent remove my-agent --force
+```
+
+<Note>
+Built-in agents cannot be removed. Create custom agents to override their behavior.
+</Note>
+
+## Built-in Agents
+
+### Primary Agents
+
+| Agent | Description |
+|-------|-------------|
+| `build` | Full access agent for development work. Can use all tools. |
+| `plan` | Read-only agent for analysis. Cannot modify files or run commands. |
+
+### Subagents
+
+| Agent | Description |
+|-------|-------------|
+| `explore` | Fast agent for exploring codebases. Limited tools for speed. |
+| `code-explorer` | Deep code analysis. Understands project structure. |
+| `code-reviewer` | Reviews code for quality, bugs, and best practices. |
+| `architect` | Designs software architecture and makes technical decisions. |
+| `general` | General-purpose agent for complex tasks. |
+
+## Agent Modes
+
+| Mode | Description |
+|------|-------------|
+| `primary` | User-facing agent. Shown in agent picker. |
+| `subagent` | Invoked by other agents for specific tasks. |
+| `all` | Available as both primary and subagent. |
+
+## Agent Configuration File
+
+Agents are stored as Markdown files with YAML frontmatter:
+
+```markdown
+---
+name: my-agent
+description: "My custom coding assistant"
+mode: primary
+model: claude-sonnet-4
+temperature: 0.7
+color: "#FF5733"
+allowed_tools:
+  - Read
+  - Grep
+  - Glob
+  - Edit
+denied_tools:
+  - Execute
+can_delegate: true
+tags:
+  - custom
+  - development
+---
+
+You are a helpful coding assistant specialized in...
+
+## Guidelines
+- Always write clean, well-documented code
+- Follow best practices for the language being used
+- Ask clarifying questions when requirements are unclear
+```
+
+### Frontmatter Options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `name` | string | Unique identifier (required) |
+| `description` | string | Brief description |
+| `mode` | string | `primary`, `subagent`, or `all` |
+| `model` | string | Model override |
+| `temperature` | float | Temperature (0.0-2.0) |
+| `top_p` | float | Top-p sampling (0.0-1.0) |
+| `max_tokens` | int | Maximum response tokens |
+| `allowed_tools` | list | Tools this agent can use |
+| `denied_tools` | list | Tools this agent cannot use |
+| `can_delegate` | bool | Can spawn sub-agents |
+| `max_turns` | int | Maximum conversation turns |
+| `display_name` | string | Name shown in UI |
+| `color` | string | Hex color for UI |
+| `hidden` | bool | Hide from default listings |
+| `tags` | list | Categories for organization |
+
+## Agent Locations
+
+| Location | Priority | Scope |
+|----------|----------|-------|
+| `.agents/` | 1 | Project (agent.md compatible) |
+| `.agent/` | 2 | Project (agent.md compatible) |
+| `.cortex/agents/` | 3 | Project |
+| `~/.cortex/agents/` | 4 | Personal |
+
+Project agents override personal agents with the same name.
+
+## Using Agents
+
+### In TUI
+
+Use the `/agent` command or press `Tab` to switch agents:
+
+```
+/agent plan
+```
+
+### With CLI
+
+```bash
+# Run with specific agent
+cortex run --agent plan "analyze this code"
+
+# Exec with agent
+cortex exec --agent code-reviewer "review the changes"
+```
+
+## Example Agents
+
+### Security Auditor
+
+```markdown
+---
+name: security-auditor
+description: "Security-focused code reviewer"
+mode: subagent
+temperature: 0.2
+allowed_tools:
+  - Read
+  - Grep
+  - Glob
+denied_tools:
+  - Execute
+  - Create
+  - Edit
+tags:
+  - security
+  - review
+---
+
+You are a security expert reviewing code for vulnerabilities.
+
+## Focus Areas
+- SQL injection
+- XSS vulnerabilities
+- Authentication issues
+- Data exposure
+- Insecure dependencies
+
+## Output Format
+For each issue found:
+1. Severity (Critical/High/Medium/Low)
+2. Location (file and line)
+3. Description
+4. Recommended fix
+```
+
+### Documentation Writer
+
+```markdown
+---
+name: docs-writer
+description: "Technical documentation specialist"
+mode: primary
+temperature: 0.5
+model: gpt-4o
+allowed_tools:
+  - Read
+  - Grep
+  - Glob
+  - Create
+  - Edit
+denied_tools:
+  - Execute
+---
+
+You are a technical writer creating clear, comprehensive documentation.
+
+## Guidelines
+- Use clear, concise language
+- Include code examples
+- Add cross-references
+- Follow the project's documentation style
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use Read-Only for Analysis">
+    For code review and analysis, restrict tools:
+    ```yaml
+    allowed_tools:
+      - Read
+      - Grep
+      - Glob
+    denied_tools:
+      - Execute
+      - Create
+      - Edit
+    ```
+  </Accordion>
+  
+  <Accordion title="Set Temperature Appropriately">
+    - **Low (0.0-0.3)**: Code review, analysis, debugging
+    - **Medium (0.3-0.7)**: General coding, documentation
+    - **High (0.7-1.0)**: Creative tasks, brainstorming
+  </Accordion>
+  
+  <Accordion title="Use Subagents for Delegation">
+    Create specialized subagents for tasks the main agent can delegate:
+    ```yaml
+    mode: subagent
+    description: "Use when exploring unfamiliar codebases"
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## See Also
+
+- [Guides: Creating Agents](/guides/agents)
+- [Configuration](/configuration/settings)
+- [MCP Servers](/cli/mcp) - Extend agent capabilities
