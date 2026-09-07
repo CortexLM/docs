@@ -28,8 +28,8 @@
   },
   "favicon": "/logo/light.svg",
   "logo": {
-    "light": "/logo/wordmark-light.svg",
-    "dark": "/logo/wordmark-dark.svg",
+    "light": "/logo/banner-light.png",
+    "dark": "/logo/banner-dark.png",
     "href": "https://docs.cortex.foundation"
   },
   "navbar": {
@@ -50,7 +50,50 @@
     },
     "links": [
       {
+        "header": "Products",
         "items": [
+          {
+            "label": "Chat",
+            "href": "/chat"
+          },
+          {
+            "label": "Code",
+            "href": "/code"
+          },
+          {
+            "label": "Bot",
+            "href": "/bot"
+          },
+          {
+            "label": "Design",
+            "href": "/design"
+          }
+        ]
+      },
+      {
+        "header": "Resources",
+        "items": [
+          {
+            "label": "Get started",
+            "href": "/getting-started/quickstart"
+          },
+          {
+            "label": "Downloads",
+            "href": "/getting-started/desktop"
+          },
+          {
+            "label": "Changelog",
+            "href": "/changelog"
+          }
+        ]
+      },
+      {
+        "header": "Cortex",
+        "items": [
+          {
+            "label": "Website",
+            "href": "https://cortex.foundation"
+          },
           {
             "label": "Privacy",
             "href": "https://cortex.foundation/privacy"
@@ -139,7 +182,8 @@
               "chat/index",
               "chat/overview",
               "chat/quickstart"
-            ]
+            ],
+            "icon": "rocket"
           },
           {
             "group": "Core guides",
@@ -149,7 +193,8 @@
               "chat/models",
               "chat/tools",
               "chat/sharing"
-            ]
+            ],
+            "icon": "book-open"
           },
           {
             "group": "Advanced guides",
@@ -162,7 +207,8 @@
               "chat/voice",
               "chat/how-it-works",
               "chat/streaming"
-            ]
+            ],
+            "icon": "sliders-horizontal"
           }
         ]
       },
@@ -175,7 +221,8 @@
               "code/index",
               "code/overview",
               "code/github"
-            ]
+            ],
+            "icon": "rocket"
           },
           {
             "group": "Core guides",
@@ -183,7 +230,8 @@
               "code/sessions",
               "code/cloud",
               "code/interactions"
-            ]
+            ],
+            "icon": "book-open"
           },
           {
             "group": "Advanced guides",
@@ -192,7 +240,8 @@
               "code/security",
               "code/cli",
               "code/desktop"
-            ]
+            ],
+            "icon": "sliders-horizontal"
           }
         ]
       },
@@ -204,7 +253,8 @@
             "pages": [
               "bot/index",
               "bot/overview"
-            ]
+            ],
+            "icon": "rocket"
           },
           {
             "group": "Core guides",
@@ -212,7 +262,8 @@
               "bot/computer",
               "bot/tools",
               "bot/approvals"
-            ]
+            ],
+            "icon": "book-open"
           },
           {
             "group": "Advanced guides",
@@ -220,7 +271,8 @@
               "bot/routines",
               "bot/skills",
               "bot/how-it-works"
-            ]
+            ],
+            "icon": "sliders-horizontal"
           }
         ]
       },
@@ -233,14 +285,16 @@
               "design/index",
               "design/overview",
               "design/desktop"
-            ]
+            ],
+            "icon": "rocket"
           },
           {
             "group": "Core guides",
             "pages": [
               "design/canvases",
               "design/library"
-            ]
+            ],
+            "icon": "book-open"
           }
         ]
       },
@@ -254,20 +308,23 @@
               "getting-started/what-is-cortex",
               "getting-started/accounts",
               "getting-started/plans"
-            ]
+            ],
+            "icon": "rocket"
           },
           {
             "group": "Downloads",
             "pages": [
               "getting-started/cli",
               "getting-started/desktop"
-            ]
+            ],
+            "icon": "download"
           },
           {
             "group": "Security",
             "pages": [
               "security/overview"
-            ]
+            ],
+            "icon": "shield-check"
           }
         ]
       },
@@ -279,7 +336,8 @@
             "pages": [
               "api/overview",
               "api/errors"
-            ]
+            ],
+            "icon": "braces"
           },
           {
             "group": "Problems",
@@ -309,7 +367,8 @@
               "problems/upstream_timeout",
               "problems/service_unavailable",
               "problems/no_capacity"
-            ]
+            ],
+            "icon": "circle-alert"
           }
         ]
       },
@@ -320,13 +379,15 @@
             "group": "Release notes",
             "pages": [
               "changelog"
-            ]
+            ],
+            "icon": "history"
           },
           {
             "group": "Coming soon",
             "pages": [
               "platform"
-            ]
+            ],
+            "icon": "clock"
           }
         ]
       }
@@ -339,5 +400,8 @@
       "chatgpt",
       "claude"
     ]
+  },
+  "icons": {
+    "library": "lucide"
   }
 }

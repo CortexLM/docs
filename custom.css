@@ -1,15 +1,16 @@
 /* Docs CTAs are ink on cream — not brand-green Install / primary buttons.
    Brand green (#1F4945) stays on doodle accents and problem-type copy, not hero CTAs.
-   Mathis Paper lock pending; this is the structural rule. */
+   Native components follow the approved Paper docs layout. */
 
 :root {
-  --docs-ink: #1c1917;
+  --docs-ink: #1f1d1a;
   --docs-cream: #faf8f4;
   --docs-bg: #faf8f4;
   --docs-rail: #f3f0ea;
   --docs-text: #1f1d1a;
   --docs-muted: #6e6a62;
-  --docs-line: #e5e1d8;
+  --docs-line: #e3dfd7;
+  --docs-input-line: #d7d1c7;
   --docs-hover: #eae6de;
   --docs-selected: #e1e5de;
   --docs-accent: #1f4945;
@@ -21,6 +22,7 @@
   --docs-text: #edeae3;
   --docs-muted: #b0aaa0;
   --docs-line: #3a362f;
+  --docs-input-line: #575148;
   --docs-hover: #302d28;
   --docs-selected: #293832;
   --docs-accent: #8ac5b9;
@@ -82,12 +84,52 @@ body, #background-color { background: var(--docs-bg); color: var(--docs-text); }
 #pagination { border-top: 1px solid var(--docs-line); padding-top: 24px; }
 #pagination a { color: var(--docs-muted); font-size: 13px; }
 #footer a { color: var(--docs-muted); }
+#footer.advanced-footer { background: var(--docs-rail); color: var(--docs-text); font: 14px/18px Inter, sans-serif; }
+#footer.advanced-footer > div { padding: 32px; gap: 32px; }
+#footer.advanced-footer > div > div:first-child { gap: 32px; flex-wrap: wrap; }
+#footer.advanced-footer > div > div:first-child > div { min-width: 0; }
+#footer.advanced-footer > div > div:first-child > div:nth-child(2) { gap: 32px; }
+#footer.advanced-footer > div > div:first-child > div:nth-child(2) p { color: var(--docs-text); font: 600 14px/18px Inter, sans-serif; }
+#footer.advanced-footer a { display: flex; align-items: center; min-height: 44px; font: 14px/18px Inter, sans-serif; text-decoration: none; white-space: normal; }
+#footer.advanced-footer > div > div:first-child > div:nth-child(2) > div > div { gap: 4px; }
+#footer.advanced-footer a:hover { color: var(--docs-text); text-decoration: underline; text-underline-offset: 4px; }
+#footer.advanced-footer button { min-width: 44px; min-height: 44px; color: var(--docs-muted); }
+
+/* ponytail: observed Mintlify data-assistant-bar hook; recheck on theme upgrades.
+   Position only the native bar; dashboard availability and visibility stay native. */
+[data-assistant-bar] { position: fixed; inset: auto 24px 24px auto; width: 360px; max-width: calc(100vw - 48px); overflow: visible; }
+body:has([data-assistant-bar]:not([aria-hidden="true"])) #footer { padding-bottom: calc(112px + env(safe-area-inset-bottom)); }
+.chat-assistant-floating-input::before { content: none; }
+.chat-assistant-floating-input > div { padding-bottom: 0; }
+.chat-assistant-floating-input > div > div {
+  background: var(--docs-bg);
+  border: 1px solid var(--docs-input-line);
+  border-radius: 14px;
+}
+.chat-assistant-input {
+  background: transparent;
+  color: var(--docs-text);
+  min-height: 60px;
+  padding-right: 56px;
+  font: 14px/20px Inter, sans-serif;
+}
+.chat-assistant-input::placeholder { color: var(--docs-muted); }
+.chat-assistant-send-button { min-width: 44px; min-height: 44px; border-radius: 10px; }
+.chat-assistant-send-button:not(:disabled) { background: var(--docs-text); color: var(--docs-bg); }
+.chat-assistant-send-button svg { color: inherit; }
+#chat-assistant-sheet { background: var(--docs-bg); color: var(--docs-text); border-color: var(--docs-line); font-family: Inter, sans-serif; }
+#chat-assistant-sheet .chat-assistant-sheet-header { border-color: var(--docs-line); color: var(--docs-text); }
+#chat-assistant-sheet .chat-assistant-sheet-content { color: var(--docs-text); }
+#chat-assistant-sheet .chat-assistant-input { background: var(--docs-bg); border-color: var(--docs-line); }
+:is(#sidebar, #mobile-nav) .sidebar-group-header svg { transition: transform 160ms ease, color 160ms ease; }
+:is(#sidebar, #mobile-nav) .sidebar-group-header:is(:hover, :focus-within) svg { transform: translateY(-1px); color: var(--docs-accent); }
 #mobile-nav { background: var(--docs-rail); }
 #mobile-nav :is(a, button, .sidebar-group-header) { font-family: Inter, sans-serif; text-transform: none; letter-spacing: normal; }
 #mobile-nav .sidebar-group-header { color: var(--docs-muted); }
 #mobile-nav .sidebar-group a { min-height: 44px; align-items: center; color: var(--docs-muted); border-radius: 7px; }
 #mobile-nav a[aria-current="page"] { background: var(--docs-selected); color: var(--docs-accent); text-shadow: none; font-weight: 600; }
 :is(a, button, input, textarea):focus-visible { outline: 2px solid var(--docs-accent) !important; outline-offset: 3px; }
+.chat-assistant-floating-input:focus-within { outline: 2px solid var(--docs-accent); outline-offset: 3px; border-radius: 14px; }
 
 @media (min-width: 1024px) {
   #sidebar { width: 248px; padding-top: 76px; }
@@ -100,9 +142,14 @@ body, #background-color { background: var(--docs-bg); color: var(--docs-text); }
   #content-area > div:has(> #header) { padding-inline: 0; }
   #header #page-title { font-size: 30px; }
   #content th, #content td { padding: 10px 12px; }
+  [data-assistant-bar] { inset: auto 16px calc(16px + env(safe-area-inset-bottom)) 16px; width: auto; max-width: none; }
+}
+@media (max-width: 767px) {
+  #footer.advanced-footer > div > div:first-child > div:nth-child(2) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 24px; }
 }
 @media (prefers-reduced-motion: reduce) {
   #sidebar .sidebar-group a { transition: none; }
+  :is(#sidebar, #mobile-nav) .sidebar-group-header svg { transition: none; transform: none !important; }
 }
 
 .ink-cta-row {
