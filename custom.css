@@ -134,6 +134,7 @@ body:has([data-assistant-bar]:not([aria-hidden="true"])) #footer { padding-botto
 @media (min-width: 1024px) {
   #sidebar { width: 248px; padding-top: 76px; }
   #content-area { padding-left: 248px; }
+  #footer.advanced-footer { margin-left: 248px; }
   #content-area > div:has(> #header) { max-width: 720px; padding-inline: 32px; }
 }
 @media (max-width: 1023px) {
