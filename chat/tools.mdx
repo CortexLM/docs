@@ -1,10 +1,37 @@
 ---
 title: "Tools and connectors"
-description: "Chat tools, plugins, and MCP. Code Cloud is not a plugin surface."
+description: "Use built-in Chat tools, connect apps, and understand where MCP and Code's GitHub connection fit."
 ---
 
-Chat can search the web, run Python snippets, generate images, check origin, keep memory, and draft canvases. Plugins you enable for **Chat**, plus MCP servers, are available in that conversation.
+Chat combines built-in tools with connected apps and MCP servers. Use Chat for research, writing, and working with documents; use Code for a repository workspace and Bot for computer tasks.
 
-A connected app is available to Cortex Chat, Cortex Bot, or both. You choose in **Customize**. You must be signed in to connect anything.
+## Built-in tools
 
-Connect GitHub for **Code repositories** with the **Connect GitHub** control in Code — that is not the plugin catalogue. See [Connect GitHub](/code/github).
+| Task | Chat capability | Guide |
+| --- | --- | --- |
+| Find information | Search the web and extract web content | [Deep Research](/chat/deep-research) |
+| Work through calculations | Run Python snippets | [How Chat works](/chat/how-it-works) |
+| Create pictures | Generate images with Cortex-Image-1 | [Image generation](/chat/images) |
+| Check attached media | Check origin; if unavailable, Chat says so rather than guessing | [Origin check](/chat/origin-check) |
+| Keep context | Use memory across conversations | [Memory](/chat/memory) |
+| Draft documents | Create markdown canvases | [Canvases](/chat/canvases) |
+
+Chat's Python tool is not Code's workspace shell or Bot's computer. See [Chat overview](/chat/overview) to choose the right product.
+
+## Connect apps
+
+You must be signed in to connect an app. In **Customize**, choose whether a connected app is available to **Cortex Chat**, **Cortex Bot**, or both.
+
+Plugins enabled for **Chat** are available in the conversation. A connection enabled only for Bot is not a Chat connection.
+
+## MCP servers
+
+MCP servers provide another source of tools for Chat conversations, alongside built-in tools and Chat-enabled plugins. You must be signed in to connect an MCP server; guests cannot connect one.
+
+For how tool calls and results fit into a conversation, see [How Chat works](/chat/how-it-works).
+
+## GitHub repositories belong in Code
+
+To connect GitHub for **Code repositories**, use **Connect GitHub** in Code Home, the repository picker, or **Settings → Integrations**. This is separate from Chat's plugin catalogue; Code Cloud is not a plugin surface.
+
+There is no personal-access-token field. If the connection has lapsed, the product shows **Reconnect**. If GitHub is unavailable on your deployment, the Connect control is not shown. See [Connect GitHub](/code/github).
