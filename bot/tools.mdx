@@ -1,0 +1,18 @@
+---
+title: "Bot tools"
+description: "Exhaustive against tool_declarations(false)."
+---
+
+Parent catalog (not a subset): box `read`, `write`, `edit`, `shell`;
+computer-use `screenshot`, `grounded_click`, `type`, `hotkey`, `scroll`,
+`drag`, `wait`, `open_app`, `switch_app`, `save_note`, `code_agent`;
+`browser`; `web_search`, `web_fetch`; `update_memory`; `skill`; `routine`;
+user-visible `send_to_user`, `ask_user`, `notify`, `secret_request`; nested
+`task`; `send_to_agent`, `create_agent`, `create_channel`;
+`read_artifact`, `grep_artifact`; plus plugins enabled for Bot.
+
+The planner describes a control; a second inference call returns framebuffer
+`(x, y)`. Do not let the planner guess raw pixels.
+
+Background `task` returns `{ ok, id, status: "queued" }` immediately. Children
+emit `task_started` / `task_progress` / `task_completed` / `task_failed`.

@@ -1,0 +1,27 @@
+---
+title: "safety_intervention"
+description: "We want to make sure you are safe. HTTP 403."
+---
+
+# `safety_intervention`
+
+| | |
+| --- | --- |
+| HTTP | `403` |
+| `code` | `safety_intervention` |
+| `type` | `https://docs.cortex.foundation/problems/safety_intervention` |
+| Retryable | no |
+
+Blocked by the crisis-intervention protocol. Always accompanied by referral resources in the extensions. Render `referral` prominently. This is the one error where the surrounding UI matters more than the status code.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/safety_intervention",
+  "title": "We want to make sure you are safe",
+  "status": 403,
+  "code": "safety_intervention",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

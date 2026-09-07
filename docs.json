@@ -1,123 +1,312 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Cortex CLI Documentation",
+  "name": "Cortex Docs",
+  "theme": "willow",
+  "description": "Product docs for Cortex Chat, Code, Bot, and Design. Platform API lives elsewhere.",
   "colors": {
-    "primary": "#22C55E",
-    "light": "#4ADE80",
-    "dark": "#16A34A"
+    "primary": "#1F4945",
+    "light": "#2D6A64",
+    "dark": "#163834"
   },
-  "favicon": "/favicon.svg",
+  "fonts": {
+    "heading": {
+      "family": "Inter"
+    },
+    "body": {
+      "family": "Inter"
+    }
+  },
+  "appearance": {
+    "default": "system"
+  },
+  "background": {
+    "color": {
+      "light": "#FAF8F4",
+      "dark": "#0F1A19"
+    }
+  },
+  "favicon": "/logo/light.svg",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "https://docs.cortex.foundation"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Home",
+        "href": "/"
+      },
+      {
+        "label": "Documentation",
+        "href": "/getting-started/quickstart"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "website": "https://cortex.foundation"
+    },
+    "links": [
+      {
+        "items": [
+          {
+            "label": "Privacy",
+            "href": "https://cortex.foundation/privacy"
+          },
+          {
+            "label": "Terms",
+            "href": "https://cortex.foundation/terms"
+          }
+        ]
+      }
+    ]
+  },
+  "search": {
+    "prompt": "Search docs..."
+  },
+  "errors": {
+    "404": {
+      "redirect": false,
+      "title": "Page not found",
+      "description": "That path is not in Cortex Docs. Try [Chat guides](/chat), [Code](/code), [Bot](/bot), or [Design](/design). The inference Platform API is not documented here."
+    }
+  },
+  "seo": {
+    "metatags": {
+      "og:site_name": "Cortex Docs"
+    },
+    "organization": {
+      "name": "Cortex",
+      "url": "https://cortex.foundation"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/chat/conversations",
+      "destination": "/chat/projects"
+    },
+    {
+      "source": "/chat/plugins",
+      "destination": "/chat/tools"
+    },
+    {
+      "source": "/api/authentication",
+      "destination": "/getting-started/accounts"
+    },
+    {
+      "source": "/api/oauth",
+      "destination": "/getting-started/accounts"
+    },
+    {
+      "source": "/api/chat",
+      "destination": "/chat"
+    },
+    {
+      "source": "/api/code",
+      "destination": "/code"
+    },
+    {
+      "source": "/api/bot",
+      "destination": "/bot"
+    },
+    {
+      "source": "/api/design",
+      "destination": "/design"
+    },
+    {
+      "source": "/api/plugins",
+      "destination": "/chat/tools"
+    },
+    {
+      "source": "/api/streaming",
+      "destination": "/chat/streaming"
+    },
+    {
+      "source": "/api/webhooks",
+      "destination": "/code/security"
+    }
+  ],
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "Chat",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Chat",
             "pages": [
-              "index",
-              "quickstart"
+              "chat/index",
+              "chat/quickstart",
+              "chat/overview",
+              "chat/projects",
+              "chat/tools",
+              "chat/models",
+              "chat/sharing"
             ]
           },
           {
-            "group": "CLI Reference",
+            "group": "Also in Chat",
             "pages": [
-              "cli/overview",
-              "cli/run",
-              "cli/exec",
-              "cli/sessions",
-              "cli/agents",
-              "cli/mcp",
-              "cli/auth",
-              "cli/models",
-              "cli/stats",
-              "cli/github",
-              "cli/serve",
-              "cli/upgrade"
-            ]
-          },
-          {
-            "group": "Configuration",
-            "pages": [
-              "configuration/settings"
-            ]
-          },
-          {
-            "group": "Guides",
-            "pages": [
-              "guides/agents",
-              "guides/commands"
+              "chat/how-it-works",
+              "chat/streaming",
+              "chat/deep-research",
+              "chat/images",
+              "chat/origin-check",
+              "chat/memory",
+              "chat/canvases",
+              "chat/library",
+              "chat/voice"
             ]
           }
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "Code",
         "groups": [
           {
-            "group": "API Documentation",
+            "group": "Code",
             "pages": [
-              "api-reference/introduction"
+              "code/index",
+              "code/overview",
+              "code/how-it-works",
+              "code/sessions",
+              "code/cloud",
+              "code/interactions",
+              "code/github",
+              "code/security",
+              "code/cli",
+              "code/desktop"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Bot",
+        "groups": [
+          {
+            "group": "Bot",
+            "pages": [
+              "bot/index",
+              "bot/overview",
+              "bot/how-it-works",
+              "bot/computer",
+              "bot/tools",
+              "bot/approvals",
+              "bot/routines",
+              "bot/skills"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Design",
+        "groups": [
+          {
+            "group": "Design",
+            "pages": [
+              "design/index",
+              "design/overview",
+              "design/canvases",
+              "design/library",
+              "design/desktop"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Get started",
+        "groups": [
+          {
+            "group": "Start here",
+            "pages": [
+              "getting-started/quickstart",
+              "getting-started/what-is-cortex",
+              "getting-started/accounts",
+              "getting-started/plans"
             ]
           },
           {
-            "group": "Endpoint Examples",
+            "group": "Downloads",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "getting-started/cli",
+              "getting-started/desktop"
+            ]
+          },
+          {
+            "group": "Security",
+            "pages": [
+              "security/overview"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API",
+        "groups": [
+          {
+            "group": "Public",
+            "pages": [
+              "api/overview",
+              "api/errors"
+            ]
+          },
+          {
+            "group": "Problems",
+            "pages": [
+              "problems/index",
+              "problems/validation_failed",
+              "problems/bad_request",
+              "problems/idempotency_key_reuse",
+              "problems/payload_too_large",
+              "problems/unsupported_media_type",
+              "problems/unauthenticated",
+              "problems/invalid_credential",
+              "problems/forbidden",
+              "problems/entitlement_required",
+              "problems/not_found",
+              "problems/conflict",
+              "problems/gone",
+              "problems/invalid_state",
+              "problems/quota_exceeded",
+              "problems/rate_limited",
+              "problems/concurrency_limit_reached",
+              "problems/safety_intervention",
+              "problems/content_policy",
+              "problems/jurisdiction_restricted",
+              "problems/internal",
+              "problems/upstream_failure",
+              "problems/upstream_timeout",
+              "problems/service_unavailable",
+              "problems/no_capacity"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Changelog",
+        "groups": [
+          {
+            "group": "Release notes",
+            "pages": [
+              "changelog"
+            ]
+          },
+          {
+            "group": "Coming soon",
+            "pages": [
+              "platform"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "GitHub",
-          "href": "https://github.com/cortexlm/cortex-cli",
-          "icon": "github"
-        },
-        {
-          "anchor": "Discord",
-          "href": "https://discord.gg/cortex",
-          "icon": "discord"
-        }
-      ]
-    }
+    ]
   },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "https://github.com/cortexlm/cortex-cli/issues"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Install",
-      "href": "/quickstart"
-    }
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/cortexlm",
-      "github": "https://github.com/cortexlm",
-      "discord": "https://discord.gg/cortex"
-    }
-  },
-  "seo": {
-    "indexHiddenPages": false
-  },
-  "analytics": {
-    "ga4": {
-      "measurementId": ""
-    }
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
   }
 }

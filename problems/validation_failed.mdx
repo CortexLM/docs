@@ -1,0 +1,27 @@
+---
+title: "validation_failed"
+description: "Validation failed. HTTP 422."
+---
+
+# `validation_failed`
+
+| | |
+| --- | --- |
+| HTTP | `422` |
+| `code` | `validation_failed` |
+| `type` | `https://docs.cortex.foundation/problems/validation_failed` |
+| Retryable | no |
+
+Request body or parameters failed structural or semantic validation. Field failures travel in `errors[]` with a JSON Pointer and a stable per-field code (`too_long`, `required`, `not_one_of`).
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/validation_failed",
+  "title": "Validation failed",
+  "status": 422,
+  "code": "validation_failed",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

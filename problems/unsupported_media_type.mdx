@@ -1,0 +1,27 @@
+---
+title: "unsupported_media_type"
+description: "Unsupported media type. HTTP 415."
+---
+
+# `unsupported_media_type`
+
+| | |
+| --- | --- |
+| HTTP | `415` |
+| `code` | `unsupported_media_type` |
+| `type` | `https://docs.cortex.foundation/problems/unsupported_media_type` |
+| Retryable | no |
+
+`Content-Type` is not one this endpoint can process.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/unsupported_media_type",
+  "title": "Unsupported media type",
+  "status": 415,
+  "code": "unsupported_media_type",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

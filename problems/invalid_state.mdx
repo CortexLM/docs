@@ -1,0 +1,27 @@
+---
+title: "invalid_state"
+description: "Not allowed in the current state. HTTP 422."
+---
+
+# `invalid_state`
+
+| | |
+| --- | --- |
+| HTTP | `422` |
+| `code` | `invalid_state` |
+| `type` | `https://docs.cortex.foundation/problems/invalid_state` |
+| Retryable | no |
+
+The request is well-formed but the resource forbids it — for example cancelling a Code turn that already finished, or restoring a runtime that is `stopping`.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/invalid_state",
+  "title": "Not allowed in the current state",
+  "status": 422,
+  "code": "invalid_state",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

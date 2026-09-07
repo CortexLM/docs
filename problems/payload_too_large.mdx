@@ -1,0 +1,27 @@
+---
+title: "payload_too_large"
+description: "Payload too large. HTTP 413."
+---
+
+# `payload_too_large`
+
+| | |
+| --- | --- |
+| HTTP | `413` |
+| `code` | `payload_too_large` |
+| `type` | `https://docs.cortex.foundation/problems/payload_too_large` |
+| Retryable | no |
+
+An upload exceeded the configured per-file or per-request ceiling. Chat and Library ingest cap at 10 MiB; bug-report screenshots at 4 MiB; transcribe at 25 MiB.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/payload_too_large",
+  "title": "Payload too large",
+  "status": 413,
+  "code": "payload_too_large",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

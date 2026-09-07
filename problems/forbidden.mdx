@@ -1,0 +1,27 @@
+---
+title: "forbidden"
+description: "Not permitted. HTTP 403."
+---
+
+# `forbidden`
+
+| | |
+| --- | --- |
+| HTTP | `403` |
+| `code` | `forbidden` |
+| `type` | `https://docs.cortex.foundation/problems/forbidden` |
+| Retryable | no |
+
+Authenticated, but this principal may not perform this action. Distinct from a missing plan capability (`entitlement_required`).
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/forbidden",
+  "title": "Not permitted",
+  "status": 403,
+  "code": "forbidden",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

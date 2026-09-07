@@ -1,0 +1,27 @@
+---
+title: "entitlement_required"
+description: "Your plan does not include this. HTTP 403."
+---
+
+# `entitlement_required`
+
+| | |
+| --- | --- |
+| HTTP | `403` |
+| `code` | `entitlement_required` |
+| `type` | `https://docs.cortex.foundation/problems/entitlement_required` |
+| Retryable | no |
+
+Authenticated, but the plan does not include this capability at all — as opposed to having exhausted a quota. Guests receive this for Code, Bot, plugins, MCP, and Design. May carry `entitlement` and `required_plan`.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/entitlement_required",
+  "title": "Your plan does not include this",
+  "status": 403,
+  "code": "entitlement_required",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

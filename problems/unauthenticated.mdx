@@ -1,0 +1,27 @@
+---
+title: "unauthenticated"
+description: "Authentication required. HTTP 401."
+---
+
+# `unauthenticated`
+
+| | |
+| --- | --- |
+| HTTP | `401` |
+| `code` | `unauthenticated` |
+| `type` | `https://docs.cortex.foundation/problems/unauthenticated` |
+| Retryable | no |
+
+No sign-in was presented, or it was malformed. Using Chat without an account is still allowed; member-only product (Code, Bot, plugins) answers `entitlement_required`, not this.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/unauthenticated",
+  "title": "Authentication required",
+  "status": 401,
+  "code": "unauthenticated",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

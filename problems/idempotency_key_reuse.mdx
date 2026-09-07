@@ -1,0 +1,27 @@
+---
+title: "idempotency_key_reuse"
+description: "Idempotency key reused with a different body. HTTP 400."
+---
+
+# `idempotency_key_reuse`
+
+| | |
+| --- | --- |
+| HTTP | `400` |
+| `code` | `idempotency_key_reuse` |
+| `type` | `https://docs.cortex.foundation/problems/idempotency_key_reuse` |
+| Retryable | no |
+
+The `Idempotency-Key` header was reused with a different request body. Replay the original body, or mint a new key.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/idempotency_key_reuse",
+  "title": "Idempotency key reused with a different body",
+  "status": 400,
+  "code": "idempotency_key_reuse",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

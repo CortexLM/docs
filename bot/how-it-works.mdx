@@ -1,0 +1,18 @@
+---
+title: "How Bot works"
+description: "No round counter. User-visible bubbles only."
+---
+
+What the user sees is several short bubbles, not the inner tool loop.
+`send_to_user`, `ask_user`, `notify`, and `secret_request` each persist as
+their own row. `GET` returns only user-visible kinds.
+
+The Bot loop continues until the model stops calling tools, the process is
+draining, a 15-minute turn deadline, or six consecutive identical tool calls.
+It MUST NOT grow a round counter and MUST NOT inherit Chat's eight-round abort.
+
+Plain assistant text is dropped, not rewritten as a canned blob. Subagents
+cannot `send_to_user` or nest `task`.
+
+An active Bot turn resumes a hibernated Cloud guest before the model is
+prompted. The prompt never tells the model to apologise that it has no bash.

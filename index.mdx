@@ -1,165 +1,42 @@
 ---
-title: "Cortex CLI"
-description: "Cortex - The AI-Powered Coding Agent for your terminal"
+title: "Guides for Chat, Code, Bot and Design"
+description: "Product docs for the Cortex app — how to chat, ship code, run bots, and design with your team. Platform API lives elsewhere."
 ---
 
-<img
-  className="block dark:hidden"
-  src="/images/hero-light.svg"
-  alt="Cortex CLI Banner"
-/>
-<img
-  className="hidden dark:block"
-  src="/images/hero-dark.svg"
-  alt="Cortex CLI Banner"
-/>
+<code>docs.cortex.foundation</code>
 
-## What is Cortex?
+Product docs for the Cortex app — how to chat, ship code, run bots, and design with your team. **Platform API lives elsewhere.**
 
-Cortex is an open-source AI coding agent that runs directly in your terminal. It provides intelligent assistance for coding tasks with full access to your file system, terminal, and development tools.
+<p className="ink-cta-row">
+  <a className="ink-btn" href="/getting-started/quickstart">Quickstart</a>
+  <a className="ink-btn ink-btn-quiet" href="/getting-started/desktop">Download Cortex</a>
+</p>
 
-<CardGroup cols={2}>
-  <Card
-    title="Quick Start"
-    icon="rocket"
-    href="/quickstart"
-  >
-    Get up and running in under 5 minutes
+<CardGroup cols={3}>
+  <Card title="Getting started" img="/images/doodle-getting-started.svg" href="/getting-started/quickstart">
+    Sign in and take your first chat, code, bot, or design session. [Start here →](/getting-started/quickstart)
   </Card>
-  <Card
-    title="CLI Reference"
-    icon="terminal"
-    href="/cli/overview"
-  >
-    Complete command reference
+  <Card title="Chat" img="/images/doodle-chat.svg" href="/chat">
+    Projects, documents, tools, and long-running conversations in Cortex Chat. [Chat guides →](/chat)
   </Card>
-  <Card
-    title="Configuration"
-    icon="gear"
-    href="/configuration/settings"
-  >
-    Customize Cortex to your workflow
+  <Card title="Code" img="/images/doodle-code.svg" href="/code">
+    Agentic coding in a Cloud guest — sessions, diffs, terminals, and review flows. [Code guides →](/code)
   </Card>
-  <Card
-    title="MCP Servers"
-    icon="plug"
-    href="/cli/mcp"
-  >
-    Extend with Model Context Protocol
+  <Card title="Bot" img="/images/doodle-bot.svg" href="/bot">
+    Always-on agents, computer use, schedules, and Bot Cloud workflows. [Bot guides →](/bot)
+  </Card>
+  <Card title="Design" img="/images/doodle-design.svg" href="/design">
+    Artboards, components, and Design desktop — persistable canvases from Chat or Code. [Design guides →](/design)
+  </Card>
+  <Card title="Security" img="/images/doodle-security.svg" href="/security/overview">
+    Privacy, permissions, sandboxes, and how Cortex handles your data. [Security →](/security/overview)
   </Card>
 </CardGroup>
 
-## Key Features
+<Card title="Changelog" img="/images/doodle-changelog.svg" href="/changelog">
+  What shipped in Chat, Code, Bot, and Design — releases, fixes, and notable behavior changes. [View changelog →](/changelog)
+</Card>
 
-<AccordionGroup>
-  <Accordion title="🎯 Multi-Model Support" icon="brain">
-    Use any AI provider: Anthropic Claude, OpenAI GPT-4, Google Gemini, Groq, Mistral, xAI Grok, DeepSeek, or local models via Ollama and LM Studio.
-  </Accordion>
-  
-  <Accordion title="🔒 Security First" icon="shield">
-    Built-in sandboxing with Seatbelt (macOS), Landlock (Linux), and Windows restricted tokens. Configurable approval policies for tool execution.
-  </Accordion>
-  
-  <Accordion title="🤖 Agent System" icon="robot">
-    Create custom agents with specific prompts, tool restrictions, and capabilities. Built-in agents for building, planning, and code exploration.
-  </Accordion>
-  
-  <Accordion title="🔌 MCP Integration" icon="plug">
-    Full support for Model Context Protocol (MCP) servers. Connect to databases, APIs, and external tools through a standardized protocol.
-  </Accordion>
-  
-  <Accordion title="⚡ CI/CD Ready" icon="code-branch">
-    Headless execution mode for automation. GitHub Actions integration. JSON output for scripting.
-  </Accordion>
-  
-  <Accordion title="📊 Session Management" icon="history">
-    Resume previous conversations. Export and import sessions. Track usage statistics.
-  </Accordion>
-</AccordionGroup>
-
-## Installation
-
-<Tabs>
-  <Tab title="Quick Install (Linux/macOS)">
-    ```bash
-    curl -fsSL https://cortex.foundation/install | bash
-    ```
-  </Tab>
-  <Tab title="Homebrew (macOS)">
-    ```bash
-    brew install cortexlm/tap/cortex
-    ```
-  </Tab>
-  <Tab title="Cargo (Rust)">
-    ```bash
-    cargo install cortex-cli
-    ```
-  </Tab>
-  <Tab title="From Source">
-    ```bash
-    git clone https://github.com/cortexlm/cortex-cli
-    cd cortex-cli
-    cargo install --path .
-    ```
-  </Tab>
-</Tabs>
-
-## Quick Example
-
-```bash
-# Start interactive TUI
-cortex
-
-# Start with an initial prompt
-cortex "explain this codebase"
-
-# Non-interactive execution
-cortex run "fix the bug in main.rs"
-
-# Headless mode for CI/CD
-cortex exec --auto medium "run tests and fix failures"
-```
-
-## Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `CORTEX_HOME` | Override config directory (default: `~/.config/cortex`) |
-| `CORTEX_API_KEY` | API key for the default provider |
-| `CORTEX_MODEL` | Default model to use |
-| `CORTEX_LOG_LEVEL` | Log verbosity (error, warn, info, debug, trace) |
-| `NO_COLOR` | Disable colored output |
-| `VISUAL` / `EDITOR` | Editor for `/edit` command |
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card
-    title="Learn the CLI"
-    icon="book"
-    href="/cli/overview"
-  >
-    Master all commands and options
-  </Card>
-  <Card
-    title="Create Custom Agents"
-    icon="wand-magic-sparkles"
-    href="/guides/agents"
-  >
-    Build specialized AI assistants
-  </Card>
-  <Card
-    title="GitHub Integration"
-    icon="github"
-    href="/guides/github"
-  >
-    Automate PR reviews and issues
-  </Card>
-  <Card
-    title="MCP Servers"
-    icon="server"
-    href="/cli/mcp"
-  >
-    Extend with external tools
-  </Card>
-</CardGroup>
+<Note>
+The inference **Platform API** (a public model-inference API) is not documented on this site and is not implemented in this repository. See [Coming soon](/platform).
+</Note>

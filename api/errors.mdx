@@ -1,0 +1,29 @@
+---
+title: "Errors"
+description: "RFC 9457 problem+json. Branch on code. type URIs live on this site."
+---
+
+Every failure is `application/problem+json`:
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/not_found",
+  "title": "Not found",
+  "status": 404,
+  "code": "not_found",
+  "detail": "No conversation with id cnv_x.",
+  "request_id": "req_…"
+}
+```
+
+- **`code`** is the contract. Mirror: `@cortex/api-types` `ErrorCode`.
+- **`title` / `detail`** are English, for logs and humans reading raw JSON.
+  The web app renders catalog copy. Three codes may show `detail` as a
+  secondary line: `validation_failed`, `bad_request`, `invalid_state`.
+- **`type`** is dereferenceable: [Problem catalog](/problems).
+- **`request_id`** is always present and safe to show.
+
+User-facing `detail` names a product surface, never a vendor ("The audio
+service is temporarily unavailable.", not a subprocessor's name).
+
+Full catalog: [Problems](/problems).

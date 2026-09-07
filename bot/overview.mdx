@@ -1,0 +1,22 @@
+---
+title: "Cortex Bot"
+description: "One list of bots in the sidebar. Zero bots is a setup."
+---
+
+<img src="/images/card-bot.svg" alt="" />
+
+The account's bots are listed once, in the shell sidebar. The pane is the
+*open* bot — conversation in the centre, Computer rail on the right.
+
+An account with no bots gets the setup form, not an empty list. Sprite, Finch
+and Pebble are not defaults.
+
+Guests cannot create or drive a bot. Exact `/bot` is the public product page
+for a guest.
+
+<CardGroup cols={2}>
+  <Card title="Computer" href="/bot/computer">Cloud guest, noVNC, Open desktop / Sleep</Card>
+  <Card title="Tools" href="/bot/tools">shell, grounded_click, send_to_user</Card>
+  <Card title="Approvals" href="/bot/approvals">Allow / Deny / Always executes the tool</Card>
+  <Card title="Routines" href="/bot/routines">Owner's local weekday hours</Card>
+</CardGroup>

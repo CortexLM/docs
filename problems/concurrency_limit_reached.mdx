@@ -1,0 +1,27 @@
+---
+title: "concurrency_limit_reached"
+description: "Too many runs at once. HTTP 429."
+---
+
+# `concurrency_limit_reached`
+
+| | |
+| --- | --- |
+| HTTP | `429` |
+| `code` | `concurrency_limit_reached` |
+| `type` | `https://docs.cortex.foundation/problems/concurrency_limit_reached` |
+| Retryable | no |
+
+Too many concurrent agent runs for this plan.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/concurrency_limit_reached",
+  "title": "Too many runs at once",
+  "status": 429,
+  "code": "concurrency_limit_reached",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

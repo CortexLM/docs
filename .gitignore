@@ -1,0 +1,3 @@
+# Mintlify local preview
+.mintlify/
+node_modules/
