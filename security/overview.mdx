@@ -1,0 +1,30 @@
+---
+title: "Security"
+description: "Privacy, permissions, sandboxes, and how Cortex handles your data."
+---
+
+<img src="/images/doodle-security.svg" alt="" />
+
+This page is **how Cortex handles your data and where code runs**. It is not a status page.
+
+## Privacy and permissions
+
+Necessary cookies always; optional analytics default deny. Global Privacy Control refuses optional cookies. Export your data or delete your account from **Settings → Data & privacy**. Signed-in members confirm two-factor first.
+
+A guest cannot connect a plugin, hold a GitHub grant, create a bot, or open Code working UI. That is fail-closed, not a missing button.
+
+## Where code runs
+
+| Surface | Where code runs |
+| --- | --- |
+| Chat Python | A small untrusted snippet sandbox, no workspace |
+| Code Cloud | An isolated Cloud guest, headless |
+| Bot computer | An isolated Cloud guest with a desktop and a shell |
+
+Do not mix them up. Chat Python cannot see a Code repository.
+
+## Cortex Security (pull requests)
+
+GitHub App review of pull requests lives at `/code/security` in the app and [Cortex Security](/code/security) here. The public sitelink `/security` on `cortex.foundation` is a product page, not this docs article.
+
+Do not claim SOC 2, GDPR certification, or HIPAA in product copy.

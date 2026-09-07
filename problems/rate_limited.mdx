@@ -1,0 +1,27 @@
+---
+title: "rate_limited"
+description: "Too many requests. HTTP 429."
+---
+
+# `rate_limited`
+
+| | |
+| --- | --- |
+| HTTP | `429` |
+| `code` | `rate_limited` |
+| `type` | `https://docs.cortex.foundation/problems/rate_limited` |
+| Retryable | yes |
+
+Transport-level throttling, unrelated to plan entitlements. Honour `retry_after_seconds` / `Retry-After`. Device-token polls that are too fast return this with `status: slow_down`.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/rate_limited",
+  "title": "Too many requests",
+  "status": 429,
+  "code": "rate_limited",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

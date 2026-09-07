@@ -1,0 +1,27 @@
+---
+title: "conflict"
+description: "Conflict. HTTP 409."
+---
+
+# `conflict`
+
+| | |
+| --- | --- |
+| HTTP | `409` |
+| `code` | `conflict` |
+| `type` | `https://docs.cortex.foundation/problems/conflict` |
+| Retryable | yes |
+
+Optimistic concurrency or a uniqueness constraint lost a race. Retrying the identical request can succeed.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/conflict",
+  "title": "Conflict",
+  "status": 409,
+  "code": "conflict",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

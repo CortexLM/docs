@@ -1,0 +1,16 @@
+---
+title: "Deep Research"
+description: "A Chat turn action, not a Code tool and not a Bot skill."
+---
+
+The conversation stays in `chat` mode. The turn body carries
+`research: { action: "plan" | "run", plan? }`. Code mode refuses that field.
+
+The harness orchestrates Chat tools plus parallel per-question background
+children. Caps: 32 questions, 80 sources, 8 in parallel, 4 fetches per
+question, 180s child timeout. It does **not** copy Chat's eight-round abort
+onto that loop, and it does **not** emit `tool_start` / `tool_end`.
+
+Plan and report persist as `research_plan` and `research_report` blocks. A
+plan that has not been run still offers **Start** after a remount; Start hides
+once `action: "run"` has begun.

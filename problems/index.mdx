@@ -1,0 +1,39 @@
+---
+title: "Problem catalog"
+description: "Dereferenceable type URIs for RFC 9457 documents from api.cortex.foundation."
+---
+
+`PROBLEM_TYPE_BASE` is `https://docs.cortex.foundation/problems`. Each
+`ErrorCode` on the wire has a page at `/problems/{code}` whose path is the
+snake_case `code` (not kebab-case).
+
+These pages are the `type` member of a problem document. They are generated
+from `crates/cortex-core/src/error.rs` and must stay in lockstep — CI fails
+if a code is missing.
+
+| Code | HTTP | Retryable |
+| --- | --- | --- |
+| [`validation_failed`](/problems/validation_failed) | 422 | no |
+| [`bad_request`](/problems/bad_request) | 400 | no |
+| [`idempotency_key_reuse`](/problems/idempotency_key_reuse) | 400 | no |
+| [`payload_too_large`](/problems/payload_too_large) | 413 | no |
+| [`unsupported_media_type`](/problems/unsupported_media_type) | 415 | no |
+| [`unauthenticated`](/problems/unauthenticated) | 401 | no |
+| [`invalid_credential`](/problems/invalid_credential) | 401 | no |
+| [`forbidden`](/problems/forbidden) | 403 | no |
+| [`entitlement_required`](/problems/entitlement_required) | 403 | no |
+| [`not_found`](/problems/not_found) | 404 | no |
+| [`conflict`](/problems/conflict) | 409 | yes |
+| [`gone`](/problems/gone) | 410 | no |
+| [`invalid_state`](/problems/invalid_state) | 422 | no |
+| [`quota_exceeded`](/problems/quota_exceeded) | 429 | no |
+| [`rate_limited`](/problems/rate_limited) | 429 | yes |
+| [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | 429 | no |
+| [`safety_intervention`](/problems/safety_intervention) | 403 | no |
+| [`content_policy`](/problems/content_policy) | 403 | no |
+| [`jurisdiction_restricted`](/problems/jurisdiction_restricted) | 403 | no |
+| [`internal`](/problems/internal) | 500 | yes |
+| [`upstream_failure`](/problems/upstream_failure) | 502 | yes |
+| [`upstream_timeout`](/problems/upstream_timeout) | 504 | yes |
+| [`service_unavailable`](/problems/service_unavailable) | 503 | yes |
+| [`no_capacity`](/problems/no_capacity) | 503 | yes |

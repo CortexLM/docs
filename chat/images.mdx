@@ -1,0 +1,15 @@
+---
+title: "Image generation"
+description: "Cortex-Image-1. Quota, not a paywall, on Free and Guest."
+---
+
+`generate_image` is a Chat tool. A picture ask loads the `image-generation`
+skill, then calls the tool with a complete English scene, a `size`, and
+optional `seed`, `negative_prompt`, `steps` (1–50), and `guidance` (0–20).
+
+SSE `image_generation` drives the card: `queued` (Improving prompt…),
+`generating` (skeleton), `done` (Library file), `error`. A Library fetch that
+fails is the error square, never a spinner. Empty image-cluster URL fails
+closed before any quota is spent.
+
+Product name Cortex-Image-1; attribution "Built on NVIDIA Cosmos".

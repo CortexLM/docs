@@ -1,0 +1,27 @@
+---
+title: "service_unavailable"
+description: "Temporarily unavailable. HTTP 503."
+---
+
+# `service_unavailable`
+
+| | |
+| --- | --- |
+| HTTP | `503` |
+| `code` | `service_unavailable` |
+| `type` | `https://docs.cortex.foundation/problems/service_unavailable` |
+| Retryable | yes |
+
+Deliberately shedding load, draining for deploy, or a required dependency is not configured. Chat compaction that cannot summarise fails closed with this code rather than dropping turns.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/service_unavailable",
+  "title": "Temporarily unavailable",
+  "status": 503,
+  "code": "service_unavailable",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

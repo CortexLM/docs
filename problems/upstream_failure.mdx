@@ -1,0 +1,27 @@
+---
+title: "upstream_failure"
+description: "An upstream service failed. HTTP 502."
+---
+
+# `upstream_failure`
+
+| | |
+| --- | --- |
+| HTTP | `502` |
+| `code` | `upstream_failure` |
+| `type` | `https://docs.cortex.foundation/problems/upstream_failure` |
+| Retryable | yes |
+
+A dependency Cortex does not control failed. The `detail` names a product surface (the assistant, sign-in, audio), never a vendor.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/upstream_failure",
+  "title": "An upstream service failed",
+  "status": 502,
+  "code": "upstream_failure",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

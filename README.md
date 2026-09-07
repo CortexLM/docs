@@ -1,43 +1,69 @@
-# Mintlify Starter Kit
+# Cortex docs (`docs.cortex.foundation`)
 
-Use the starter kit to get your docs deployed and ready to customize.
+Public product documentation for **Cortex Chat**, **Cortex Code**, **Cortex Bot**,
+and **Cortex Design**. This site is **end-user visible**. It does **not** document
+login, sessions, refresh tokens, OAuth wire protocol, or other non-public APIs.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+This repository is a [Mintlify](https://mintlify.com) site, migrated from
+`CortexLM/backend` at `782b054` (the former `apps/docs` directory).
+Engineering / operator documentation stays in
+[`CortexLM/backend/docs`](https://github.com/CortexLM/backend/tree/main/docs)
+(runbooks, SOC 2 notes, farm internals). Do not merge the two trees.
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+## Preview
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
-
-## Development
-
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
-
-```
-npm i -g mint
+```bash
+git clone https://github.com/CortexLM/docs.git
+cd docs
+npx mint dev --no-open
 ```
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+Requires Node 20.17+. The site is intended to publish at
+`https://docs.cortex.foundation`. Connecting the custom domain is an operator
+step in the Mintlify dashboard. Connect `CortexLM/docs`, branch `main`, with
+the content directory set to the repository root (not `apps/docs`).
 
+## Checks
+
+```bash
+node scripts/check-docs-site.mjs
+bash scripts/tests/check-docs-site.test.sh
+npm exec --yes --package=mint@4.2.876 -- mint validate
 ```
-mint dev
+
+The **Docs site** CI job checks navigation, problem-page URLs and the public
+content rules without needing access to the backend.
+
+To also validate against the real API, pass a backend checkout:
+
+```bash
+node scripts/check-docs-site.mjs ../backend
 ```
 
-View your local preview at `http://localhost:3000`.
+The backend's **Docs site** job runs this additional check against a pinned
+revision of this repository. New error codes need a coordinated docs change:
+merge the docs page first, then update the backend's checkout pin in the PR
+that adds the code. The full check fails when:
 
-## Publishing changes
+- `PROBLEM_TYPE_BASE` is not `https://docs.cortex.foundation/problems`
+- an `ErrorCode` is missing its `/problems/{code}` page
+- a `docs.json` navigation slug or internal href has no matching MDX page
+- a documented `/v1/…` path is not registered in `crates/cortex-api/src/router.rs`
+- this tree names a problem-docs host other than `docs.cortex.foundation`
+- the top navbar is not Home + Documentation, or it carries Chat | Code | Bot chrome / `navbar.primary`
+- the home page uses Mintlify Cards as brand-green Install CTAs instead of `.ink-btn`
+- public MDX documents `/auth/`, `/oauth/`, `refresh_token`, WorkOS, or `cortex_rt`
+- `api/authentication.mdx` or `api/oauth.mdx` exist, or the API tab lists them
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+Do not invent endpoints. There is no inference Platform API section here — see
+`platform.mdx`. Sign in via the app; this tree has no auth stack.
 
-## Need help?
+## Visuals
 
-### Troubleshooting
+Brand green `#1F4945` is for doodle accents, not hero CTAs. Home and card
+actions use **ink on cream** (`.ink-btn` in `custom.css`) — filled ink, quiet
+outline; dark mode inverts to cream ink. Do not add a brand-green Install /
+`navbar.primary` button.
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
-
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+Top navbar is Mintlify **Home + Documentation**, not the Chat | Code | Bot
+product switcher. Chat / Code / Bot / Design stay as documentation tabs.

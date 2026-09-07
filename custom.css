@@ -1,0 +1,72 @@
+/* Docs CTAs are ink on cream — not brand-green Install / primary buttons.
+   Brand green (#1F4945) stays on doodle accents and problem-type copy, not hero CTAs.
+   Mathis Paper lock pending; this is the structural rule. */
+
+:root {
+  --docs-ink: #1c1917;
+  --docs-cream: #faf8f4;
+}
+
+.ink-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.25rem 0 2rem;
+}
+
+.ink-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.5rem 1.1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--docs-ink);
+  background: var(--docs-ink);
+  color: var(--docs-cream) !important;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1.2;
+  text-decoration: none !important;
+}
+
+.ink-btn:hover {
+  background: #111110;
+  border-color: #111110;
+  color: var(--docs-cream) !important;
+}
+
+.ink-btn-quiet {
+  background: var(--docs-cream);
+  color: var(--docs-ink) !important;
+}
+
+.ink-btn-quiet:hover {
+  background: #f0ece4;
+  border-color: var(--docs-ink);
+  color: var(--docs-ink) !important;
+}
+
+.dark .ink-btn {
+  background: #ece7de;
+  border-color: #ece7de;
+  color: var(--docs-ink) !important;
+}
+
+.dark .ink-btn:hover {
+  background: var(--docs-cream);
+  border-color: var(--docs-cream);
+  color: var(--docs-ink) !important;
+}
+
+.dark .ink-btn-quiet {
+  background: transparent;
+  border-color: #ece7de;
+  color: #ece7de !important;
+}
+
+.dark .ink-btn-quiet:hover {
+  background: #1a1a18;
+  border-color: var(--docs-cream);
+  color: var(--docs-cream) !important;
+}

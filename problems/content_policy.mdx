@@ -1,0 +1,27 @@
+---
+title: "content_policy"
+description: "Blocked by content policy. HTTP 403."
+---
+
+# `content_policy`
+
+| | |
+| --- | --- |
+| HTTP | `403` |
+| `code` | `content_policy` |
+| `type` | `https://docs.cortex.foundation/problems/content_policy` |
+| Retryable | no |
+
+Blocked by content policy. The request is outside what Cortex will help with.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/content_policy",
+  "title": "Blocked by content policy",
+  "status": 403,
+  "code": "content_policy",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

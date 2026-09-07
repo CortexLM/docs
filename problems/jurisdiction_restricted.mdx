@@ -1,0 +1,27 @@
+---
+title: "jurisdiction_restricted"
+description: "Not available in your region. HTTP 403."
+---
+
+# `jurisdiction_restricted`
+
+| | |
+| --- | --- |
+| HTTP | `403` |
+| `code` | `jurisdiction_restricted` |
+| `type` | `https://docs.cortex.foundation/problems/jurisdiction_restricted` |
+| Retryable | no |
+
+The region is not served, or an age gate has not been satisfied.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/jurisdiction_restricted",
+  "title": "Not available in your region",
+  "status": 403,
+  "code": "jurisdiction_restricted",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

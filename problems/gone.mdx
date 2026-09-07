@@ -1,0 +1,27 @@
+---
+title: "gone"
+description: "No longer available. HTTP 410."
+---
+
+# `gone`
+
+| | |
+| --- | --- |
+| HTTP | `410` |
+| `code` | `gone` |
+| `type` | `https://docs.cortex.foundation/problems/gone` |
+| Retryable | no |
+
+The resource existed and was deliberately destroyed. Distinct from `not_found` so clients can stop retrying and clear local caches.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/gone",
+  "title": "No longer available",
+  "status": 410,
+  "code": "gone",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

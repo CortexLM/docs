@@ -1,0 +1,12 @@
+---
+title: "Models"
+description: "Pick a model per conversation. Mini stays the default for new threads."
+---
+
+New conversations default to **Cortex-Mini-1-Preview**. Existing rows keep the slug they were created with. The composer model chip is Chat-only — web Code has no model picker.
+
+**Cortex Teutonic-1** (`cortex-teutonic-1`) is a second public Preview beside Mini. Completions for Teutonic use a dedicated upstream. Empty configuration fails closed before quota, and never falls through to Mini.
+
+After assembly, Chat clamps `max_tokens` so prompt plus generation still fit that model's `context_tokens`. Thinking, when the model supports it, is a catalog capability — not a second product.
+
+Pass `model_slug` on the turn body. There is no inference Platform API on this site: [Coming soon](/platform).

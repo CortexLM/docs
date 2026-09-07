@@ -1,0 +1,27 @@
+---
+title: "not_found"
+description: "Not found. HTTP 404."
+---
+
+# `not_found`
+
+| | |
+| --- | --- |
+| HTTP | `404` |
+| `code` | `not_found` |
+| `type` | `https://docs.cortex.foundation/problems/not_found` |
+| Retryable | no |
+
+No resource with that id is visible to this caller. Cross-account reads are 404 rather than 403, so existence is not leaked.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/not_found",
+  "title": "Not found",
+  "status": 404,
+  "code": "not_found",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

@@ -1,0 +1,27 @@
+---
+title: "upstream_timeout"
+description: "An upstream service timed out. HTTP 504."
+---
+
+# `upstream_timeout`
+
+| | |
+| --- | --- |
+| HTTP | `504` |
+| `code` | `upstream_timeout` |
+| `type` | `https://docs.cortex.foundation/problems/upstream_timeout` |
+| Retryable | yes |
+
+A dependency did not answer within its budget. Same product-language rule as `upstream_failure`.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/upstream_timeout",
+  "title": "An upstream service timed out",
+  "status": 504,
+  "code": "upstream_timeout",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

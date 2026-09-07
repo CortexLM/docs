@@ -1,0 +1,27 @@
+---
+title: "internal"
+description: "Something went wrong on our side. HTTP 500."
+---
+
+# `internal`
+
+| | |
+| --- | --- |
+| HTTP | `500` |
+| `code` | `internal` |
+| `type` | `https://docs.cortex.foundation/problems/internal` |
+| Retryable | yes |
+
+Catch-all for our own bugs. Never carries `detail`. Quote `request_id` in a support form. Retrying can succeed.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/internal",
+  "title": "Something went wrong on our side",
+  "status": 500,
+  "code": "internal",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

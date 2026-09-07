@@ -1,0 +1,27 @@
+---
+title: "no_capacity"
+description: "No capacity for this model right now. HTTP 503."
+---
+
+# `no_capacity`
+
+| | |
+| --- | --- |
+| HTTP | `503` |
+| `code` | `no_capacity` |
+| `type` | `https://docs.cortex.foundation/problems/no_capacity` |
+| Retryable | yes |
+
+Every inference backend for the requested model is unhealthy or circuit-broken. Operational, not a code defect.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/no_capacity",
+  "title": "No capacity for this model right now",
+  "status": 503,
+  "code": "no_capacity",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.

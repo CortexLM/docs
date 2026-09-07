@@ -1,0 +1,27 @@
+---
+title: "bad_request"
+description: "Bad request. HTTP 400."
+---
+
+# `bad_request`
+
+| | |
+| --- | --- |
+| HTTP | `400` |
+| `code` | `bad_request` |
+| `type` | `https://docs.cortex.foundation/problems/bad_request` |
+| Retryable | no |
+
+Syntactically valid but semantically impossible — for example a cursor that decodes but points at a different conversation.
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/bad_request",
+  "title": "Bad request",
+  "status": 400,
+  "code": "bad_request",
+  "request_id": "req_…"
+}
+```
+
+See [Errors](/api/errors) for how to branch, and what not to render from `detail`.
