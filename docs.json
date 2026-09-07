@@ -5,10 +5,11 @@
   "description": "Product docs for Cortex Chat, Code, Bot, and Design. Platform API lives elsewhere.",
   "colors": {
     "primary": "#1F4945",
-    "light": "#2D6A64",
+    "light": "#8AC5B9",
     "dark": "#163834"
   },
   "fonts": {
+    "family": "Inter",
     "heading": {
       "family": "Inter"
     },
@@ -22,13 +23,13 @@
   "background": {
     "color": {
       "light": "#FAF8F4",
-      "dark": "#0F1A19"
+      "dark": "#211F1C"
     }
   },
   "favicon": "/logo/light.svg",
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg",
+    "light": "/logo/wordmark-light.svg",
+    "dark": "/logo/wordmark-dark.svg",
     "href": "https://docs.cortex.foundation"
   },
   "navbar": {
@@ -133,29 +134,34 @@
         "tab": "Chat",
         "groups": [
           {
-            "group": "Chat",
+            "group": "Getting started",
             "pages": [
               "chat/index",
-              "chat/quickstart",
               "chat/overview",
+              "chat/quickstart"
+            ]
+          },
+          {
+            "group": "Core guides",
+            "pages": [
               "chat/projects",
-              "chat/tools",
+              "chat/library",
               "chat/models",
+              "chat/tools",
               "chat/sharing"
             ]
           },
           {
-            "group": "Also in Chat",
+            "group": "Advanced guides",
             "pages": [
-              "chat/how-it-works",
-              "chat/streaming",
               "chat/deep-research",
               "chat/images",
               "chat/origin-check",
               "chat/memory",
               "chat/canvases",
-              "chat/library",
-              "chat/voice"
+              "chat/voice",
+              "chat/how-it-works",
+              "chat/streaming"
             ]
           }
         ]
@@ -164,15 +170,25 @@
         "tab": "Code",
         "groups": [
           {
-            "group": "Code",
+            "group": "Getting started",
             "pages": [
               "code/index",
               "code/overview",
-              "code/how-it-works",
+              "code/github"
+            ]
+          },
+          {
+            "group": "Core guides",
+            "pages": [
               "code/sessions",
               "code/cloud",
-              "code/interactions",
-              "code/github",
+              "code/interactions"
+            ]
+          },
+          {
+            "group": "Advanced guides",
+            "pages": [
+              "code/how-it-works",
               "code/security",
               "code/cli",
               "code/desktop"
@@ -184,16 +200,26 @@
         "tab": "Bot",
         "groups": [
           {
-            "group": "Bot",
+            "group": "Getting started",
             "pages": [
               "bot/index",
-              "bot/overview",
-              "bot/how-it-works",
+              "bot/overview"
+            ]
+          },
+          {
+            "group": "Core guides",
+            "pages": [
               "bot/computer",
               "bot/tools",
-              "bot/approvals",
+              "bot/approvals"
+            ]
+          },
+          {
+            "group": "Advanced guides",
+            "pages": [
               "bot/routines",
-              "bot/skills"
+              "bot/skills",
+              "bot/how-it-works"
             ]
           }
         ]
@@ -202,13 +228,18 @@
         "tab": "Design",
         "groups": [
           {
-            "group": "Design",
+            "group": "Getting started",
             "pages": [
               "design/index",
               "design/overview",
-              "design/canvases",
-              "design/library",
               "design/desktop"
+            ]
+          },
+          {
+            "group": "Core guides",
+            "pages": [
+              "design/canvases",
+              "design/library"
             ]
           }
         ]
