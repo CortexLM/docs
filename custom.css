@@ -86,6 +86,19 @@ body, #background-color { background: var(--docs-bg); color: var(--docs-text); }
 #content :is(hr, .card, .callout) { border-color: var(--docs-line); }
 #content .card { border-radius: 12px; box-shadow: none; }
 #content .card:hover { background: var(--docs-rail); }
+/* Banner cards live inside CardGroup grids (2–3 columns). A Card outside a
+   CardGroup spans the whole content column, so hub pages never place one
+   alone. Inside the grid, keep every banner the same shape so rows align. */
+#content .card > img,
+#content .card img[src*="/images/banners/"] {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 0;
+  margin: 0;
+}
 #content pre { border: 1px solid var(--docs-line); border-radius: 10px; }
 #table-of-contents { align-items: flex-start; text-align: left; }
 #table-of-contents :is(a, button) { text-align: left; font-size: 13px; line-height: 1.6; color: var(--docs-muted); }
