@@ -1,28 +1,58 @@
 ---
-title: "Code Cloud runtimes"
-description: "Isolated Cloud guest. Not the Chat Python sandbox."
+title: "Cloud runtimes"
+description: "Every web Code session runs in its own isolated Cloud guest, prepared by the agent for that repository. Not the Chat Python sandbox, not the API process."
 ---
 
-Web Code runs in an isolated Cloud guest on the same farm as Bot computers, without a desktop. Chat's small Python sandbox is a different machine and cannot see your repository.
-
-<Frame>
-  <img src="/images/product/code-home.png" alt="Cortex Code guest gate — this space is reserved for signed-in accounts" />
-</Frame>
+Web Code runs your repository in an **isolated Cloud guest** — a headless virtual machine on the same farm as Bot computers. The guest is started for the session, attached, and prepared by the agent. Workspace tools execute inside it and nowhere else.
 
 ## How a guest starts
 
-1. Name a repository on the session.
-2. Cortex starts, attaches, and prepares that guest.
-3. Workspace tools run **inside** the guest — not in the API process, not in Chat Python.
+<Steps>
+  <Step title="You name a repository on the session">
+    From Code Home or the repository picker.
+  </Step>
+  <Step title="Cortex starts and attaches a guest">
+    One repository per runtime. The guest is isolated from other sessions and other accounts.
+  </Step>
+  <Step title="The agent prepares the environment">
+    It installs what the repository needs, based on what it finds — not a script guessed from a filename.
+  </Step>
+  <Step title="Tools run inside the guest">
+    Reads, edits, shell commands, tests. Never in the API process, never in Chat's Python sandbox.
+  </Step>
+</Steps>
 
-Without Cloud compute on this deployment, Code says so rather than running on the API.
+If the deployment has no Cloud compute available, Code says so. It does not run your repository on the API instead.
 
-## What the guest is not
+## Three different machines
 
-| Surface | Machine |
+| Surface | Machine | Desktop | Workspace |
+| --- | --- | --- | --- |
+| **Code Cloud** | Isolated Cloud guest | No — headless | Your repository |
+| **Chat Python** | A small snippet sandbox | No | None — the snippet only |
+| **Bot computer** | Isolated Cloud guest | **Yes** — screen, browser, shell | The bot's own files |
+
+Do not mix them up. Chat Python cannot see a Code repository; a Code guest cannot reach a Bot's desktop. See [Security](/security/overview).
+
+## Environment and secrets
+
+Environment for a guest belongs to that guest. Set what a session needs inside the session — the agent can create the files or export the variables the repository expects. **There is no Secrets page**; `/code/secrets` sends you home. For unattended runs, pass credentials through the environment of the machine running the CLI, never on the command line. See [Headless runs](/cli/headless).
+
+## Lifecycle
+
+| Event | What happens |
 | --- | --- |
-| Code Cloud | Isolated Firecracker guest, headless |
-| Chat Python | 256 MiB snippet sandbox, no workspace |
-| Bot computer | Isolated guest **with** a desktop |
+| Session starts | Guest starts, attaches, prepares |
+| You stop a turn | The turn cancels; the guest and its files stay |
+| The session idles | The guest may hibernate; the next turn wakes it before the model is prompted |
+| You return later | The session resumes on its guest with the repository as you left it |
 
-There is no Secrets page. Environment for a guest belongs to that guest. See [How Code works](/code/how-it-works).
+## Hosts beyond the Cloud
+
+The Cloud is the only host in the browser. **This PC** and **SSH** exist on the desktop app and the CLI — see [Code on desktop](/code/desktop). Those hosts require an already connected Code session; Cortex never silently substitutes the Cloud for a host you chose.
+
+## Related
+
+- [How Code works](/code/how-it-works) — the tool catalog that runs in the guest.
+- [Sessions](/code/sessions)
+- [Bot computer](/bot/computer) — the guest that does have a desktop.

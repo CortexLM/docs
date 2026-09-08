@@ -1,0 +1,62 @@
+---
+title: "Code troubleshooting"
+description: "Gates, Reconnect, Cloud availability, modes that will not edit, and what a failed Cortex Security review means."
+---
+
+Code tells you what is wrong in plain words. This page maps those words to causes and fixes. For the terminal, see [CLI troubleshooting](/cli/troubleshooting); for the rest of the app, [Troubleshooting](/getting-started/troubleshooting).
+
+## Access
+
+| What you see | Cause | Fix |
+| --- | --- | --- |
+| **This space is reserved** | You are not signed in | **Sign in**, or **Continue in Chat** |
+| The public product page at `/code` | Same — guests see the product page | Sign in, then choose **Code** |
+| `/code/secrets` sends you home | There is no Secrets page | Set environment inside the session; see [Cloud runtimes](/code/cloud) |
+
+## GitHub
+
+| What you see | Cause | Fix |
+| --- | --- | --- |
+| No **Connect GitHub** control | GitHub is not available on this deployment, or you are a guest | Sign in; if still missing, the surface is not offered here |
+| **Reconnect** | The grant lapsed or was revoked | Choose **Reconnect** and approve on GitHub |
+| A repository is missing from the picker | The grant does not cover it | Reconnect and include it |
+| You are looking for a token field | There is none | Connect GitHub is the only route; see [Connect GitHub](/code/github) |
+
+## Runtime
+
+| What you see | Cause | Fix |
+| --- | --- | --- |
+| Code says Cloud compute is unavailable | No Cloud runtime on this deployment right now | Try again later, or use **This PC** on the desktop app or CLI |
+| A session is slow to start | The guest is being prepared — the agent is installing what the repository needs | Wait; the timeline shows progress |
+| A follow-up wakes the session before working | The guest hibernated while idle | Expected — the turn resumes it first |
+| This PC or SSH is refused in the CLI | Those hosts need an already connected Code session | Resume a session that has the host, or unset `CORTEX_COMPUTER`. See [Code on desktop](/code/desktop) |
+
+## The agent will not change anything
+
+Check, in order:
+
+1. **Mode.** Ask and Plan withhold the mutating tools. Switch the turn to **Agent**.
+2. **In the CLI, the sandbox.** `--sandbox read-only` blocks all writes; `workspace-write` confines them to the project. See [Modes and permissions](/cli/modes-and-permissions).
+3. **In the CLI, Spec mode.** Mutating tools stay locked until you accept the plan.
+4. **In the CLI, the `permission` table** in `config.toml` can deny `edit` or specific commands outright. `cortex debug config --diff` shows what differs from the defaults.
+
+## Cortex Security
+
+| What you see | Cause | Fix |
+| --- | --- | --- |
+| A check run marked **failed** | The review found issues, or could not run — a review that could not run is stored as failed, never as approved | Read the check run; fix and push |
+| No check run on a pull request | The GitHub App is not installed on that repository | Install it from `/code/security` |
+| You expected `/security` to show reviews | `cortex.foundation/security` is the public product page | Open `/code/security` in the app |
+
+## Errors
+
+Every failure is a problem document with a stable `code` and a `request_id`. Common ones in Code:
+
+| Code | Meaning |
+| --- | --- |
+| [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | Too many sessions or turns at once on the account |
+| [`no_capacity`](/problems/no_capacity) | The farm is full; try again shortly |
+| [`invalid_state`](/problems/invalid_state) | The session is not in a state that allows the action — for example a turn is already running |
+| [`upstream_timeout`](/problems/upstream_timeout) | The runtime did not answer in time; retry |
+
+Full list: [Problem catalog](/problems).

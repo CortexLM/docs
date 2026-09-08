@@ -1,27 +1,67 @@
 ---
 title: "Sessions"
-description: "A session is a turn timeline, not a chat transcript."
+description: "A Code session is a timeline of the task you asked for and the work that followed — files read, edits, commands, plans — not a chat transcript."
 ---
 
-A Code session is a timeline of the task you asked and the work that followed — files read, edits, commands, a plan. It is not a Chat transcript.
+A session is where Code does its work on one repository. It records every turn as a timeline: what you asked, which files the agent read, what it edited, which commands it ran, and the plan it wrote when you asked for one. You can stop a turn at any point and follow up with another.
 
-<Frame>
-  <img src="/images/product/code-home.png" alt="Cortex Code guest gate — this space is reserved for signed-in accounts" />
-</Frame>
+## Anatomy of a session
 
-## What the header shows
+| Part | What it shows |
+| --- | --- |
+| **Header** | Repository, host (Cloud in the web app), run state, and **Stop** |
+| **Turns** | Your request, then the work: reads, edits with diffs, commands with output, plan blocks |
+| **Mode** | Ask, Plan, or Agent on each turn; the session row holds the default. See [Ask, Plan, Agent](/code/interactions) |
+| **Composer** | Where the next turn starts |
 
-The header shows run state. **Stop** cancels the live turn.
-
-## Ask, Plan, Agent
-
-Ask / Plan / Agent choose how much the agent may change. A later follow-up can pick a different mode. Details: [Ask, Plan, Agent](/code/interactions).
+In the CLI the same session appears as a terminal timeline with tool rows — the tool name, a short argument summary, and the result indented beneath it. See [The TUI](/cli/tui).
 
 ## Start a session
 
-1. Sign in and open Code. Exact `/code` is the public page if you are not signed in.
-2. [Connect GitHub](/code/github) if the work needs a repository.
-3. Describe the change. Watch the timeline — not a Chat bubble dump.
-4. Stop if the turn is going the wrong way.
+<Steps>
+  <Step title="Sign in and open Code">
+    Exact `/code` is the public product page for a guest; the working UI is for members.
+  </Step>
+  <Step title="Connect GitHub if the work needs a repository">
+    [Connect GitHub](/code/github) from Code Home, the repository picker, or **Settings → Integrations**.
+  </Step>
+  <Step title="Pick the repository">
+    Cortex starts and attaches a Cloud guest for it, then prepares the environment. If no runtime is attached when the first command would run, the harness starts one — an unattached runtime is never the first step you see.
+  </Step>
+  <Step title="Describe the change and watch the timeline">
+    Reads, edits, and commands appear as they happen. **Stop** cancels the live turn if it is heading the wrong way.
+  </Step>
+</Steps>
 
-Web Code is Cloud only. This PC and SSH are [desktop](/code/desktop) and [CLI](/code/cli) surfaces.
+## Follow-ups
+
+A session is a conversation with a repository, so follow-ups carry context: *now add the test*, *undo the last change*, *explain why you chose that library*. Each follow-up can pick a different mode.
+
+## Stop and cancel
+
+**Stop** in the header cancels the live turn. The timeline records that the turn stopped; the work already written to the repository stays, so read the diff before your next turn. In the CLI, **Esc** interrupts and the timeline shows `× Stopped`.
+
+## What is in the session and what is not
+
+| In the session | Not in the session |
+| --- | --- |
+| The repository, checked out in the guest | Your other repositories |
+| Environment the agent installed for this repository | A shared Secrets page — there is none; environment belongs to the guest |
+| Files, diffs, command output, plans | A Chat transcript or Chat's Python sandbox |
+| The mode you chose per turn | A model picker — web Code has none |
+
+## Web, desktop, CLI
+
+| Surface | Host options | Session storage |
+| --- | --- | --- |
+| Web app | Cloud | On your account |
+| Desktop app | Cloud, This PC, SSH | On your account |
+| CLI | Cloud by default, This PC / SSH by opt-in | On your account, plus a local transcript you can resume, export, and share. See [CLI sessions](/cli/sessions) |
+
+The CLI reuses the same Code session id for a workspace, so turns from the terminal continue the same coding session.
+
+## Related
+
+- [Ask, Plan, Agent](/code/interactions) — what each mode may do.
+- [Cloud runtimes](/code/cloud) — the guest behind the session.
+- [How Code works](/code/how-it-works) — the workspace tool catalog.

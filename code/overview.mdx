@@ -1,30 +1,51 @@
 ---
 title: "Cortex Code"
-description: "A coding agent in a Cloud guest, not a chat clone."
+description: "A coding agent that works inside the repository — sessions, isolated runtimes, and pull-request reviews. Web Code is Cloud-only; This PC and SSH live on desktop and the CLI."
 ---
 
-Cortex Code is a cloud coding product. Web Code is Cloud only. This PC and SSH exist on the desktop app and the CLI.
+Cortex Code changes repositories. You describe the work, the agent carries it out inside a runtime prepared for that repository, and every step lands on a timeline you can read and stop. It is available in the web app, the desktop app, and the CLI, with one account across all three.
 
-<Frame>
-  <img src="/images/product/code-home.png" alt="Cortex Code guest gate — this space is reserved for signed-in accounts" />
+<Frame caption="The four commitments on the public Code page: one repository per runtime, reviews that stay failed when they fail, no pasted diff, the same account as Chat.">
+  <img src="/images/product/code-public-features.png" alt="Cortex Code feature grid — One repository per runtime, Reviews that stay failed when they fail, No pasted diff, The same account as Chat" />
 </Frame>
 
-A guest on exact `/code` sees the public product page; deep links stay reserved for members.
+## What Code is
 
-<CardGroup cols={2}>
-  <Card title="Sessions" href="/code/sessions">Turn timeline, Ask / Plan / Agent</Card>
-  <Card title="Cloud runtimes" href="/code/cloud">Isolated guest, not Chat Python</Card>
-  <Card title="GitHub" href="/code/github">Connect GitHub in the product</Card>
-  <Card title="Cortex Security" href="/code/security">GitHub App pull-request review</Card>
-</CardGroup>
+| Commitment | What it means for you |
+| --- | --- |
+| **One repository per runtime** | Each session gets an isolated guest on the same farm as Cortex Bot, without a desktop. The environment is installed by the agent, not guessed from a filename. |
+| **Reviews stay failed when they fail** | A Cortex Security review is one pass over a diff. A failed review is stored as failed — never rewritten as an approval. |
+| **No pasted diff** | Code writes the change in the repository; Cortex Security reads the pull request in place. Neither asks you to paste a patch into a box. |
+| **The same account as Chat** | Sign in on cortex.foundation. No second identity. |
 
-There is **no Secrets page**. Environment for a guest belongs to that guest. `/code/secrets` sends you home.
+## Who can open it
+
+Code is a member surface. A guest visiting `/code` sees the public product page, and deep links show **This space is reserved** with **Continue in Chat** or **Sign in**. Once signed in, `/code` opens Code Home: connect GitHub, pick a repository, start a session. See [Accounts](/getting-started/accounts).
+
+## Where it runs
+
+| Surface | Host | Notes |
+| --- | --- | --- |
+| Web app | **Cloud** | Web Code is Cloud-only |
+| Desktop app | Cloud, **This PC**, **SSH** | [Code on desktop](/code/desktop) |
+| CLI | Cloud by default; This PC and SSH by opt-in | [Code in the terminal](/code/cli) |
 
 ## What Code is not
 
 | Not this | Use instead |
 | --- | --- |
-| A Chat transcript | [Sessions](/code/sessions) — a turn timeline |
-| Chat's Python sandbox | [Cloud runtimes](/code/cloud) |
-| A Chat plugin | [Connect GitHub](/code/github) |
-| The public `/security` sitelink | [Cortex Security](/code/security) |
+| A Chat transcript | A [session](/code/sessions) is a turn timeline — files read, edits, commands, plans |
+| Chat's Python sandbox | [Cloud runtimes](/code/cloud) — an isolated guest with your repository |
+| A Chat plugin | [Connect GitHub](/code/github) — the repository connection lives in Code |
+| The public `/security` page | [Cortex Security](/code/security) — the signed-in review inbox at `/code/security` |
+| A place to store secrets | There is no Secrets page. Environment for a guest belongs to that guest; `/code/secrets` sends you home. |
+
+## Modes in one line
+
+**Ask** reads and explains. **Plan** proposes without changing anything. **Agent** edits files and runs commands. Pick per turn; the session row holds the default. See [Ask, Plan, Agent](/code/interactions).
+
+## Next
+
+- [Code quickstart](/code/quickstart) — first session in the web app.
+- [Sessions](/code/sessions) — reading the timeline.
+- [CLI](/cli) — the terminal front-end to the same sessions.

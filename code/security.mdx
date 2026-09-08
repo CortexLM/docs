@@ -1,24 +1,58 @@
 ---
 title: "Cortex Security"
-description: "GitHub App pull-request review. /security is the sitelink; /code/security is the inbox."
+description: "GitHub pull-request review without pasting a diff. The change stays in the repository; Cortex reads it there and posts a check run that stays failed when it fails."
 ---
 
-`/code/security` is the signed-in inbox. `/security` on cortex.foundation is the public product page. They are different routes.
+Cortex Security reviews GitHub pull requests in place. Install its GitHub App from the product, and each pull request gets one review pass posted as a check run named **Cortex Security**. A review that could not run is stored as failed — never rewritten as an approval so a dashboard can look green.
 
-<Frame>
-  <img src="/images/product/code-home.png" alt="Cortex Code guest gate — this space is reserved for signed-in accounts" />
+<Frame caption="cortex.foundation/security — the public product page. The signed-in inbox is /code/security in the app.">
+  <img src="/images/product/security-public.png" alt="Cortex Security public page — GitHub pull-request review without pasting a diff" />
 </Frame>
+
+## Two routes, two things
+
+| Route | What it is |
+| --- | --- |
+| `cortex.foundation/security` | The public **product page** for Cortex Security |
+| `/code/security` in the app | The signed-in **review inbox** |
+| [Security and privacy](/security/overview) on this site | How Cortex handles your data — a different subject |
 
 ## Install and review
 
-1. Sign in and open `/code/security` in the app.
-2. Install the **Cortex Security** GitHub App from the product.
-3. It reviews pull requests and posts a check run named Cortex Security.
+<Steps>
+  <Step title="Sign in and open /code/security">
+    Choose **Code** in the product switcher, then **Security**.
+  </Step>
+  <Step title="Install the Cortex Security GitHub App">
+    From the inbox, install the app on the repositories you want reviewed. This is a separate install from [Connect GitHub](/code/github), which is for Code sessions.
+  </Step>
+  <Step title="Open a pull request">
+    Cortex reads the diff in place and posts a check run named **Cortex Security** with its findings.
+  </Step>
+  <Step title="Read the inbox">
+    Every review lands in `/code/security` with the status the pass earned.
+  </Step>
+</Steps>
 
-A review that could not run is failed, never an approval.
+<Frame caption="The product's four commitments: the pull request is the input, a failed review stays failed, same account and domain, built for the review rather than the paste.">
+  <img src="/images/product/security-public-features.png" alt="Cortex Security feature grid — The pull request is the input, A failed review stays failed, Same account same domain, Built for the review not the paste" />
+</Frame>
 
-## What it is not
+## How a review behaves
 
-This is not the [Connect GitHub](/code/github) control used to clone repositories for Code. Policy lives at `/code/security/policy` in the app. A pull request cannot reduce the scrutiny it receives.
+| Behaviour | Why |
+| --- | --- |
+| One pass over the diff | A review is a pass, not a conversation |
+| Failed stays failed | A review that could not run is stored as failed, never as approved |
+| Nothing is pasted | Pasting a patch into an assistant is how secrets and context leak. This surface has no such box. |
+| Policy is fixed by the repository owner | Policy lives at `/code/security/policy` in the app. A pull request cannot reduce the scrutiny it receives. |
 
-The docs article [Security](/security/overview) is how Cortex handles data and sandboxes — not this inbox.
+## Cortex Security and the CLI
+
+The CLI can run a review in CI from the working tree — `cortex exec --auto read-only --git-diff "review this diff"` — and `cortex github install` scaffolds the workflow. That is a headless Code run, not the Cortex Security GitHub App; use whichever fits your pipeline, or both. See [Headless runs](/cli/headless).
+
+## Related
+
+- [Connect GitHub](/code/github) — the other GitHub install.
+- [Security and privacy](/security/overview) — data handling and sandboxes.
+- [Troubleshooting](/code/troubleshooting) — what a failed check run means.
