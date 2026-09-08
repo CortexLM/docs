@@ -1,6 +1,15 @@
 /* Docs CTAs are ink on cream — not brand-green Install / primary buttons.
-   Brand green (#1F4945) stays on doodle accents and problem-type copy, not hero CTAs.
+   Brand green (#1F4945) stays on doodle accents, problem-type copy, and
+   illustration focus rings / window frames — not filled meadow CTAs.
    Native components follow the approved Paper docs layout. */
+
+#content img[src*="/images/product/"],
+#content img[src*="/images/cli/"],
+#content img[src*="/images/frames/"] {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
 
 :root {
   --docs-ink: #1f1d1a;

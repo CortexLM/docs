@@ -3,13 +3,22 @@ title: "Cortex Security"
 description: "GitHub App pull-request review. /security is the sitelink; /code/security is the inbox."
 ---
 
-`/code/security` is the signed-in inbox. `/security` on cortex.foundation is
-the public product page. They are different routes.
+`/code/security` is the signed-in inbox. `/security` on cortex.foundation is the public product page. They are different routes.
 
-Install the **Cortex Security** GitHub App from the product. It reviews pull
-requests and posts a check run named Cortex Security. A review that could not
-run is failed, never an approval.
+<Frame>
+  <img src="/images/product/code-home.png" alt="Cortex Code guest gate — this space is reserved for signed-in accounts" />
+</Frame>
 
-This is not the Connect GitHub control used to clone repositories for Code.
-Policy lives at `/code/security/policy` in the app. A pull request cannot
-reduce the scrutiny it receives.
+## Install and review
+
+1. Sign in and open `/code/security` in the app.
+2. Install the **Cortex Security** GitHub App from the product.
+3. It reviews pull requests and posts a check run named Cortex Security.
+
+A review that could not run is failed, never an approval.
+
+## What it is not
+
+This is not the [Connect GitHub](/code/github) control used to clone repositories for Code. Policy lives at `/code/security/policy` in the app. A pull request cannot reduce the scrutiny it receives.
+
+The docs article [Security](/security/overview) is how Cortex handles data and sandboxes — not this inbox.

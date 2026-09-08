@@ -1,14 +1,40 @@
 ---
 title: "Desktop app"
-description: "Download Cortex. Sign in from the app."
+description: "Download Cortex for This PC, SSH, and Design's working UI. The browser stays Cloud-only."
 ---
 
-<img src="/images/icon-desktop.svg" alt="" width="160" height="120" />
+Download the Cortex desktop app from [releases.cortex.foundation](https://releases.cortex.foundation). Sign in from the app when it asks — the same account as the web app.
 
-Download the Cortex desktop app from `https://releases.cortex.foundation`.
-Sign in from the app when it asks — the same account as the web app.
+<Frame>
+  <img src="/images/product/code-home.png" alt="Cortex Code guest gate — this space is reserved for signed-in accounts" />
+</Frame>
 
-This PC and SSH for Code and Bot exist on the desktop app (and the CLI),
-not in the browser. Cortex Design's working UI is a separate desktop app.
+## 1. Download and sign in
 
-Web Cortex Code and Cortex Bot stay Cloud-only.
+1. Open `https://releases.cortex.foundation`.
+2. Install the desktop app for your platform.
+3. Sign in when the app asks.
+
+This site does not document the sign-in protocol.
+
+## 2. What desktop adds
+
+| Surface | In the browser | On desktop / CLI |
+| --- | --- | --- |
+| Code Cloud | Yes | Yes |
+| Bot Cloud | Yes | Yes |
+| This PC | No | Yes |
+| SSH | No | Shell only, no desktop |
+| Design working UI | No | Design desktop app |
+
+Web Cortex Code and Cortex Bot stay Cloud-only. That is host placement, not a missing catalog.
+
+## 3. Design is a separate app
+
+Cortex Design's working UI is a separate desktop app. There is no `/design` mode in the web shell. Chat and Code can still host a canvas; you open the board on desktop. See [Design desktop](/design/desktop).
+
+## Next
+
+- [Code on desktop](/code/desktop) — This PC and SSH for sessions.
+- [Bot computer](/bot/computer) — Cloud desktop in the browser; This PC on desktop.
+- [CLI](/getting-started/cli) — the same account, from a terminal.

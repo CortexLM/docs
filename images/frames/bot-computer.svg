@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" fill="none" role="img" aria-label="Bot conversation and Computer rail in a macOS window">
+
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D7E4DC"/>
+      <stop offset="0.55" stop-color="#EFE8DC"/>
+      <stop offset="1" stop-color="#C4D0C4"/>
+    </linearGradient>
+    <radialGradient id="mist" cx="50%" cy="70%" r="60%">
+      <stop offset="0" stop-color="#FAF8F4" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#1F4945" stop-opacity="0.12"/>
+    </radialGradient>
+  </defs>
+  <rect width="960" height="560" fill="url(#sky)"/>
+  <rect width="960" height="560" fill="url(#mist)"/>
+  <path d="M0 360 C120 320 220 390 360 350 C500 310 620 390 960 330 L960 560 L0 560 Z" fill="#1F4945" opacity="0.22"/>
+  <path d="M0 400 C160 360 280 430 480 390 C680 350 780 430 960 380 L960 560 L0 560 Z" fill="#211F1C" opacity="0.16"/>
+  <ellipse cx="80" cy="430" rx="90" ry="64" fill="#1F4945" opacity="0.18"/><ellipse cx="180" cy="410" rx="70" ry="50" fill="#1F4945" opacity="0.22"/><ellipse cx="300" cy="440" rx="110" ry="79" fill="#1F4945" opacity="0.26"/><ellipse cx="720" cy="420" rx="95" ry="68" fill="#1F4945" opacity="0.18"/><ellipse cx="860" cy="400" rx="80" ry="57" fill="#1F4945" opacity="0.22"/>
+
+
+  <rect x="57" y="49" width="846" height="462" rx="16" fill="none" stroke="#1F4945" stroke-width="2"/>
+  <rect x="60" y="52" width="840" height="456" rx="13" fill="#FAF8F4"/>
+  <rect x="60" y="52" width="840" height="456" rx="13" fill="none" stroke="#211F1C" stroke-width="1.5"/>
+  <rect x="62" y="54" width="836" height="452" rx="11" fill="none" stroke="#E3DFD7" stroke-width="1"/>
+  <rect x="60" y="52" width="840" height="36" rx="13" fill="#F3F0EA"/>
+  <rect x="60" y="76" width="840" height="12" fill="#F3F0EA"/>
+  <path d="M60 88 H900" stroke="#211F1C" stroke-width="1"/>
+  <path d="M60 89 H900" stroke="#E3DFD7" stroke-width="1"/>
+  
+    <circle cx="78" cy="70" r="5" fill="#C4B8A8"/>
+    <circle cx="94" cy="70" r="5" fill="#C4B8A8"/>
+    <circle cx="110" cy="70" r="5" fill="#1F4945"/>
+
+  <text x="480.0" y="75" text-anchor="middle" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="600" fill="#211F1C">Cortex Bot · Computer</text>
+
+  <rect x="72" y="100" width="473.28" height="396" fill="#F3F0EA"/>
+  <text x="92" y="132" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="16" font-weight="600" fill="#211F1C">Finch</text>
+  <text x="92" y="156" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="500" fill="#6E6A62">Conversation</text>
+  <rect x="88" y="176" width="441.28" height="56" rx="10" fill="#FAF8F4"/>
+  <text x="104" y="210" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="500" fill="#211F1C">Open the weekly report and summarise it.</text>
+  <rect x="88" y="248" width="441.28" height="56" rx="10" fill="#FAF8F4" stroke="#E3DFD7"/>
+  <text x="104" y="282" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="500" fill="#211F1C">Opening desktop… then I will take a screenshot.</text>
+  <rect x="553.28" y="100" width="334.71999999999997" height="396" fill="#161412"/>
+  <text x="569.28" y="132" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="600" fill="#FAF8F4">Computer</text>
+  <text x="569.28" y="156" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="11" font-weight="500" fill="#B0AAA0">Cloud  ·  live desktop</text>
+  <rect x="565.28" y="176" width="302.71999999999997" height="200" rx="8" fill="#111110" stroke="#1F4945" stroke-width="2"/>
+  <rect x="581.28" y="196" width="120" height="16" rx="3" fill="#3A3A3A"/>
+  <rect x="581.28" y="224" width="80" height="48" rx="6" fill="#1F4945" opacity="0.45"/>
+  <rect x="673.28" y="224" width="80" height="48" rx="6" fill="#3A3A3A"/>
+  <text x="569.28" y="408" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="600" fill="#FAF8F4">Open desktop</text>
+  <text x="569.28" y="432" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="500" fill="#B0AAA0">Sleep</text>
+  <text x="569.28" y="464" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="11" font-weight="500" fill="#B0AAA0">Connecting only while starting.</text>
+
+</svg>

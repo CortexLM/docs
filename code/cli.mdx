@@ -3,9 +3,33 @@ title: "CLI"
 description: "Same account as the web app. Sign in from the CLI when it asks."
 ---
 
-The Cortex CLI uses the same account as the web app. It drives Code sessions;
-it does not run the model on your laptop.
+The Cortex CLI uses the same account as the web app. It drives Code sessions; it does not run the model on your laptop.
 
-Install from [software.cortex.foundation](https://software.cortex.foundation).
-Sign in from the CLI when it asks — this site does not document the sign-in
-protocol.
+<Frame>
+  <img src="/images/cli/working.png" alt="Cortex CLI working in macOS Terminal on a forest desktop" />
+</Frame>
+
+## Install and first session
+
+Install from [software.cortex.foundation](https://software.cortex.foundation). The full install steps live on [Cortex Code CLI](/getting-started/cli).
+
+```bash
+cd ~/code/my-project
+cortex
+```
+
+Sign in from the CLI when it asks — this site does not document the sign-in protocol.
+
+<Frame>
+  <img src="/images/cli/composer.png" alt="Cortex CLI composer in macOS Terminal on a forest desktop" />
+</Frame>
+
+## What you get here
+
+| In the CLI | Not in the CLI |
+| --- | --- |
+| Code session timeline | Chat's conversation product |
+| This PC and SSH | Those hosts in the browser |
+| Ask / Plan / Agent | A web model picker |
+
+Web Code stays Cloud-only. See [Sessions](/code/sessions) and [Code on desktop](/code/desktop).

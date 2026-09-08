@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" fill="none" role="img" aria-label="Deep Research plan in a macOS window">
+
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D7E4DC"/>
+      <stop offset="0.55" stop-color="#EFE8DC"/>
+      <stop offset="1" stop-color="#C4D0C4"/>
+    </linearGradient>
+    <radialGradient id="mist" cx="50%" cy="70%" r="60%">
+      <stop offset="0" stop-color="#FAF8F4" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#1F4945" stop-opacity="0.12"/>
+    </radialGradient>
+  </defs>
+  <rect width="960" height="560" fill="url(#sky)"/>
+  <rect width="960" height="560" fill="url(#mist)"/>
+  <path d="M0 360 C120 320 220 390 360 350 C500 310 620 390 960 330 L960 560 L0 560 Z" fill="#1F4945" opacity="0.22"/>
+  <path d="M0 400 C160 360 280 430 480 390 C680 350 780 430 960 380 L960 560 L0 560 Z" fill="#211F1C" opacity="0.16"/>
+  <ellipse cx="80" cy="430" rx="90" ry="64" fill="#1F4945" opacity="0.18"/><ellipse cx="180" cy="410" rx="70" ry="50" fill="#1F4945" opacity="0.22"/><ellipse cx="300" cy="440" rx="110" ry="79" fill="#1F4945" opacity="0.26"/><ellipse cx="720" cy="420" rx="95" ry="68" fill="#1F4945" opacity="0.18"/><ellipse cx="860" cy="400" rx="80" ry="57" fill="#1F4945" opacity="0.22"/>
+
+
+  <rect x="77" y="53" width="806" height="454" rx="16" fill="none" stroke="#1F4945" stroke-width="2"/>
+  <rect x="80" y="56" width="800" height="448" rx="13" fill="#FAF8F4"/>
+  <rect x="80" y="56" width="800" height="448" rx="13" fill="none" stroke="#211F1C" stroke-width="1.5"/>
+  <rect x="82" y="58" width="796" height="444" rx="11" fill="none" stroke="#E3DFD7" stroke-width="1"/>
+  <rect x="80" y="56" width="800" height="36" rx="13" fill="#F3F0EA"/>
+  <rect x="80" y="80" width="800" height="12" fill="#F3F0EA"/>
+  <path d="M80 92 H880" stroke="#211F1C" stroke-width="1"/>
+  <path d="M80 93 H880" stroke="#E3DFD7" stroke-width="1"/>
+  
+    <circle cx="98" cy="74" r="5" fill="#C4B8A8"/>
+    <circle cx="114" cy="74" r="5" fill="#C4B8A8"/>
+    <circle cx="130" cy="74" r="5" fill="#1F4945"/>
+
+  <text x="480.0" y="79" text-anchor="middle" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="600" fill="#211F1C">Chat · Deep Research</text>
+
+  <text x="100" y="124" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="600" fill="#6E6A62">Stay in Chat  ·  plan, then run</text>
+  <rect x="92" y="140" width="776" height="120" rx="10" fill="#F3F0EA"/>
+  <text x="112" y="172" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="600" fill="#211F1C">Research plan</text>
+  <text x="112" y="198" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="500" fill="#211F1C">1. What shipped in Cortex Chat this month?</text>
+  <text x="112" y="222" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="500" fill="#211F1C">2. Which sources should we trust?</text>
+  <rect x="748" y="160" width="96" height="32" rx="8" fill="#211F1C"/>
+  <text x="796" y="181" text-anchor="middle" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="600" fill="#FAF8F4">Start</text>
+  <rect x="92" y="276" width="240" height="180" rx="10" fill="#FAF8F4" stroke="#E3DFD7"/>
+  <text x="108" y="304" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="600" fill="#6E6A62">Questions</text>
+  <text x="108" y="332" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="18" font-weight="600" fill="#211F1C">Up to 32</text>
+  <text x="108" y="360" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="500" fill="#6E6A62">8 in parallel</text>
+  <rect x="348" y="276" width="240" height="180" rx="10" fill="#FAF8F4" stroke="#E3DFD7"/>
+  <text x="364" y="304" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="600" fill="#6E6A62">Sources</text>
+  <text x="364" y="332" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="18" font-weight="600" fill="#211F1C">Up to 80</text>
+  <text x="364" y="360" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="500" fill="#6E6A62">4 fetches each</text>
+  <rect x="604" y="276" width="264" height="180" rx="10" fill="#FAF8F4" stroke="#E3DFD7"/>
+  <text x="620" y="304" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="600" fill="#6E6A62">Not a Code tool</text>
+  <text x="620" y="332" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="18" font-weight="600" fill="#211F1C">Chat turn only</text>
+  <text x="620" y="360" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="500" fill="#6E6A62">Code refuses research.</text>
+
+</svg>

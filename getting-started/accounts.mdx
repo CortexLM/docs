@@ -1,12 +1,34 @@
 ---
 title: "Accounts and sign-in"
-description: "Sign in via the Cortex app."
+description: "Sign in via the Cortex app. Chat works as a guest; everything else needs a member."
 ---
 
-Sign in at [cortex.foundation](https://cortex.foundation).
+Sign in at [cortex.foundation](https://cortex.foundation). This site does not document the sign-in protocol.
 
-Chat works before you sign in. Projects, plugins, Code, Bot, and Design need a signed-in account.
+<Frame>
+  <img src="/images/product/chat-home.png" alt="Cortex Chat home — Chat, Code, and Bot in the sidebar, composer ready" />
+</Frame>
 
-The CLI and desktop app use the same account. Sign in from those apps when they ask — this site does not document the sign-in protocol.
+## Guest and member
 
-Export your data or delete your account from **Settings → Data & privacy**.
+| | Guest | Member |
+| --- | --- | --- |
+| Chat | Yes | Yes |
+| Projects, Library, memory | No | Yes |
+| Plugins and MCP servers | No | Yes |
+| Code or Bot working UI | No — public product pages only | Yes |
+| Design canvases | No | Yes |
+
+A guest cannot connect a plugin or MCP server, cannot open Code or Bot working UI, and cannot create a grant they could never revoke.
+
+## Same account everywhere
+
+The CLI and desktop app use the same Cortex account as the web app. Sign in from those apps when they ask.
+
+## Your data
+
+Export your data or delete your account from **Settings → Data & privacy**. Signed-in members confirm two-factor first. See [Security](/security/overview).
+
+<Note>
+There is no teammate-invite on a Chat thread. Cortex Chat is per account, not a shared workspace. See [Sharing and teams](/chat/sharing).
+</Note>

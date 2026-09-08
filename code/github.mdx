@@ -3,9 +3,24 @@ title: "Connect GitHub"
 description: "Connect GitHub in Cortex Code. No personal-access-token field."
 ---
 
-Cortex Code reaches repositories through **Connect GitHub** — on Code Home,
-the repository picker, and Settings → Integrations.
+Cortex Code reaches repositories through **Connect GitHub** — on Code Home, the repository picker, and Settings → Integrations.
 
-There is no personal-access-token field. If GitHub is not available on this
-deployment, the product draws no Connect control. If the connection lapsed,
-the product says Reconnect.
+<Frame>
+  <img src="/images/product/code-home.png" alt="Cortex Code guest gate — this space is reserved for signed-in accounts" />
+</Frame>
+
+## 1. Connect
+
+1. Sign in. A guest cannot hold a GitHub grant.
+2. Open Code Home, the repository picker, or **Settings → Integrations**.
+3. Choose **Connect GitHub**. There is no personal-access-token field.
+
+## 2. If something is missing
+
+| What you see | What it means |
+| --- | --- |
+| No Connect control | GitHub is not available on this deployment |
+| **Reconnect** | The connection lapsed — reconnect in the product |
+| Public `/code` page | You are not signed in |
+
+This is separate from Chat's plugin catalogue. Code Cloud is not a plugin surface. Cortex Security's GitHub App is a different install — see [Cortex Security](/code/security).

@@ -354,6 +354,11 @@ for (const file of docsFiles) {
   if (text.includes('docs.cortex.sh')) {
     fail(`${rel} names docs.cortex.sh (problem URIs belong on docs.cortex.foundation)`);
   }
+  if (rel.endsWith('.mdx') && text.includes('/images/frames/')) {
+    fail(
+      `${rel} uses a retired fake-app SVG plate under /images/frames/; use images/product/*.png or images/cli/`,
+    );
+  }
   assertNoAuthInternals(rel, text);
   if (BACKEND === null) continue;
   for (const path of documentedV1Paths(text)) {

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" fill="none" role="img" aria-label="Cortex CLI terminal frame">
+
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D7E4DC"/>
+      <stop offset="0.55" stop-color="#EFE8DC"/>
+      <stop offset="1" stop-color="#C4D0C4"/>
+    </linearGradient>
+    <radialGradient id="mist" cx="50%" cy="70%" r="60%">
+      <stop offset="0" stop-color="#FAF8F4" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#1F4945" stop-opacity="0.12"/>
+    </radialGradient>
+  </defs>
+  <rect width="960" height="560" fill="url(#sky)"/>
+  <rect width="960" height="560" fill="url(#mist)"/>
+  <path d="M0 360 C120 320 220 390 360 350 C500 310 620 390 960 330 L960 560 L0 560 Z" fill="#1F4945" opacity="0.22"/>
+  <path d="M0 400 C160 360 280 430 480 390 C680 350 780 430 960 380 L960 560 L0 560 Z" fill="#211F1C" opacity="0.16"/>
+  <ellipse cx="80" cy="430" rx="90" ry="64" fill="#1F4945" opacity="0.18"/><ellipse cx="180" cy="410" rx="70" ry="50" fill="#1F4945" opacity="0.22"/><ellipse cx="300" cy="440" rx="110" ry="79" fill="#1F4945" opacity="0.26"/><ellipse cx="720" cy="420" rx="95" ry="68" fill="#1F4945" opacity="0.18"/><ellipse cx="860" cy="400" rx="80" ry="57" fill="#1F4945" opacity="0.22"/>
+
+
+  <rect x="77" y="53" width="806" height="454" rx="16" fill="none" stroke="#1F4945" stroke-width="2"/>
+  <rect x="80" y="56" width="800" height="448" rx="13" fill="#161412"/>
+  <rect x="80" y="56" width="800" height="448" rx="13" fill="none" stroke="#211F1C" stroke-width="1.5"/>
+  <rect x="82" y="58" width="796" height="444" rx="11" fill="none" stroke="#3A3A3A" stroke-width="1"/>
+  <rect x="80" y="56" width="800" height="36" rx="13" fill="#1A1815"/>
+  <rect x="80" y="80" width="800" height="12" fill="#1A1815"/>
+  <path d="M80 92 H880" stroke="#3A3A3A" stroke-width="1"/>
+  <path d="M80 93 H880" stroke="#2A2824" stroke-width="1"/>
+  
+    <circle cx="98" cy="74" r="5" fill="#C4B8A8"/>
+    <circle cx="114" cy="74" r="5" fill="#C4B8A8"/>
+    <circle cx="130" cy="74" r="5" fill="#1F4945"/>
+
+  <text x="480.0" y="79" text-anchor="middle" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="600" fill="#FAF8F4">cortex — Cortex CLI — 120×40</text>
+
+  <text x="100" y="132" text-anchor="start" font-family="IBM Plex Mono, ui-monospace, monospace" font-size="14" font-weight="500" fill="#FAF8F4">Welcome to Cortex, the coding agent CLI</text>
+  <text x="100" y="160" text-anchor="start" font-family="IBM Plex Mono, ui-monospace, monospace" font-size="12" font-weight="500" fill="#B0AAA0">v0.1  ·  / commands  ·  Enter to send</text>
+  <path d="M92 400 H868" stroke="#3A3A3A"/>
+  <path d="M92 402 H868" stroke="#2A2824"/>
+  <text x="100" y="434" text-anchor="start" font-family="IBM Plex Mono, ui-monospace, monospace" font-size="13" font-weight="500" fill="#FAF8F4">> add a /healthz endpoint and cover it with a test</text>
+  <rect x="100" y="422" width="8" height="16" fill="#1F4945"/>
+  <path d="M92 456 H868" stroke="#3A3A3A"/>
+  <path d="M92 458 H868" stroke="#2A2824"/>
+  <text x="100" y="480" text-anchor="start" font-family="IBM Plex Mono, ui-monospace, monospace" font-size="11" font-weight="500" fill="#B0AAA0">Cortex Mini 1</text>
+  <text x="860" y="480" text-anchor="end" font-family="IBM Plex Mono, ui-monospace, monospace" font-size="11" fill="#B0AAA0">? help</text>
+
+</svg>

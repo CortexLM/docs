@@ -1,15 +1,29 @@
 ---
 title: "Plans and quotas"
-description: "Free, Pro, Enterprise. Quotas fail closed."
+description: "Free, Pro, Enterprise. Quotas fail closed — they are not a paywall in front of a missing entitlement."
 ---
 
-Your plan and remaining quotas live on **Settings → Plan & billing** and in
-the product when a limit is reached. Exhausting a window is `quota_exceeded`;
-a capability the plan does not include at all is `entitlement_required`.
+Your plan and remaining quotas live on **Settings → Plan & billing** and in the product when a limit is reached.
 
-Do not invent a paywall in front of a quota. Cortex-Image-1 on Free is
-`images_per_day`.
+## How limits fail
 
-Until **2026-09-07T23:59:59Z** (inclusive), a signed-in member may claim one
-month of Cortex Pro from the product. Claiming twice does not stack. Paying
-Pro is left alone.
+| What happened | Code | Meaning |
+| --- | --- | --- |
+| You used the window | `quota_exceeded` | Try again when the window resets |
+| The plan does not include it | `entitlement_required` | That capability is not on this plan |
+
+Do not invent a paywall in front of a quota. Cortex-Image-1 on Free is `images_per_day`. See [Image generation](/chat/images) and [Errors](/api/errors).
+
+## Plans
+
+| Plan | Where you see it |
+| --- | --- |
+| Free | Default for a signed-in account |
+| Pro | Settings → Plan & billing |
+| Enterprise | Settings → Plan & billing |
+
+Exact numbers live in the product. This page does not invent a price list.
+
+## Closed Pro claim
+
+Through **7 September 2026** (inclusive), a signed-in member could claim one month of Cortex Pro from the product. That window has closed. Claiming twice did not stack. Paying Pro is left alone.

@@ -1,13 +1,16 @@
-# Icon and card slots
+# Icon, card, and product media
 
-Paper lock boards (Designeur, Mathis lock pending) use **doodle** card art:
-cream paper, ink line, brand green `#1F4945`, a small leaf on several marks.
+Paper lock boards use **doodle** card art: cream paper, ink line, brand green
+`#1F4945`, a small leaf on several marks. Doodles are icons, not product UI.
 
-Replace in place without renaming so Mintlify `img` paths stay stable.
-Until the locked Quiver exports land, these SVGs are structural stand-ins
-in the same slot names.
+Guide heroes that depict the product are **real Cortex screenshots**:
 
-| File | Slot (Paper icon sheet) |
+- `product/*.png` — live Chat / Code / Bot / Connectors captures
+- `cli/` — vendored from CortexLM/cli `docs/media/` (GIF, wallpaper, terminal stills)
+
+Do not add abstract product-window SVGs. `frames/*.svg` is retired.
+
+| File | Slot |
 | --- | --- |
 | `doodle-getting-started.svg` | Open book, compass, leaf |
 | `doodle-chat.svg` | Overlapping speech bubbles, leaf |
@@ -18,6 +21,14 @@ in the same slot names.
 | `doodle-changelog.svg` | Notebook, up arrows |
 | `icon-*.svg` | Same art, kept for older `icon-*` references |
 | `card-chat.svg` … `card-design.svg` | How-it-works illustrations (same doodles) |
-| `icon-api.svg` `icon-cli.svg` `icon-desktop.svg` | Secondary slots, not on the home grid |
+| `product/chat-home.png` | Chat home |
+| `product/chat-session.png` | Chat session |
+| `product/code-home.png` | Code guest gate |
+| `product/bot-home.png` | Bot guest gate |
+| `product/design-home.png` | Connectors / Customize |
+| `cli/intro.gif` | CLI desktop demo (vendored from CortexLM/cli) |
+| `cli/macos-wallpaper-green.jpg` | Forest wallpaper used in CLI frames |
+| `cli/splash.png` `cli/working.png` `cli/composer.png` | Intro-preview stills (vendored) |
 
 Home, Chat hub, and Get started cards use the `doodle-*` paths.
+Green is focus and frame only — never a filled meadow CTA. No violet.
