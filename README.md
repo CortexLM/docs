@@ -65,13 +65,12 @@ window frames — not hero CTAs. Home and card actions use **ink on cream**
 (`.ink-btn` in `custom.css`) — filled ink, quiet outline; dark mode inverts
 to cream ink. Do not add a brand-green Install / `navbar.primary` button.
 
-Guide heroes that depict the product use **real Cortex media**:
-`images/cli/` (vendored from CortexLM/cli `docs/media/` — GIF, wallpaper,
-terminal stills) and `images/product/*.png` hooks (`chat-home.png`,
-`chat-session.png`, `code-home.png`, `bot-home.png`) for upcoming staging
-screenshots. Do not add abstract product-window SVGs. `images/frames/` is
-retired. Doodle card art stays for Home / Get started cards. Cream, ink,
-`#1F4945` focus — no violet.
+Guide heroes that depict the product are **live Cortex screenshots** in
+`images/product/` (`chat-home.png`, `chat-session.png`, `code-home.png`,
+`bot-home.png`, `design-home.png`) plus CLI canon in `images/cli/`
+(vendored from CortexLM/cli `docs/media/`). Do not add abstract
+product-window SVGs. `images/frames/` is retired. Doodle card art stays
+for Home / Get started cards. Cream, ink, `#1F4945` focus — no violet.
 
 Top navbar is Mintlify **Home + Documentation**, not the Chat | Code | Bot
 product switcher. Chat / Code / Bot / Design stay as documentation tabs.

@@ -3,11 +3,10 @@
 Paper lock boards use **doodle** card art: cream paper, ink line, brand green
 `#1F4945`, a small leaf on several marks. Doodles are icons, not product UI.
 
-Guide heroes that depict the product must be a **real Cortex surface**:
+Guide heroes that depict the product are **real Cortex screenshots**:
 
-- `product/*.png` — staging screenshot hooks (`chat-home.png`,
-  `chat-session.png`, `code-home.png`, `bot-home.png`). Overwrite in place.
-- `cli/` — vendored from CortexLM/cli `docs/media/` (GIF, wallpaper, terminal stills).
+- `product/*.png` — live Chat / Code / Bot / Connectors captures
+- `cli/` — vendored from CortexLM/cli `docs/media/` (GIF, wallpaper, terminal stills)
 
 Do not add abstract product-window SVGs. `frames/*.svg` is retired.
 
@@ -22,15 +21,14 @@ Do not add abstract product-window SVGs. `frames/*.svg` is retired.
 | `doodle-changelog.svg` | Notebook, up arrows |
 | `icon-*.svg` | Same art, kept for older `icon-*` references |
 | `card-chat.svg` … `card-design.svg` | How-it-works illustrations (same doodles) |
-| `icon-api.svg` `icon-cli.svg` `icon-desktop.svg` | Secondary slots, not on the home grid |
-| `product/chat-home.png` | Chat home hook (staging PNG pending) |
-| `product/chat-session.png` | Chat session hook (staging PNG pending) |
-| `product/code-home.png` | Code home hook (staging PNG pending) |
-| `product/bot-home.png` | Bot home hook (staging PNG pending) |
+| `product/chat-home.png` | Chat home |
+| `product/chat-session.png` | Chat session |
+| `product/code-home.png` | Code guest gate |
+| `product/bot-home.png` | Bot guest gate |
+| `product/design-home.png` | Connectors / Customize |
 | `cli/intro.gif` | CLI desktop demo (vendored from CortexLM/cli) |
 | `cli/macos-wallpaper-green.jpg` | Forest wallpaper used in CLI frames |
 | `cli/splash.png` `cli/working.png` `cli/composer.png` | Intro-preview stills (vendored) |
-| `cli/model.png` `cli/palette.png` `cli/shell.png` | Extra CLI stills (vendored) |
 
 Home, Chat hub, and Get started cards use the `doodle-*` paths.
 Green is focus and frame only — never a filled meadow CTA. No violet.
