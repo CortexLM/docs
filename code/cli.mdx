@@ -1,35 +1,72 @@
 ---
-title: "CLI"
-description: "Same account as the web app. Sign in from the CLI when it asks."
+title: "Code in the terminal"
+description: "The Cortex CLI drives the same Code sessions from a terminal — interactive, one-shot, or headless in CI. Same account, Cloud by default, This PC and SSH by opt-in."
 ---
 
-The Cortex CLI uses the same account as the web app. It drives Code sessions; it does not run the model on your laptop.
+The Cortex CLI is Cortex Code for the terminal. One binary, `cortex`, gives you an interactive session view, one-shot runs from your shell, and a headless mode for scripts and CI. It talks to the same Code sessions as the web and desktop apps and signs in with the same account. The full documentation lives in the [CLI tab](/cli); this page is the map from Code concepts to CLI commands.
 
-<Frame>
-  <img src="/images/cli/working.png" alt="Cortex CLI working in macOS Terminal on a forest desktop" />
-</Frame>
+## Code concepts, CLI names
+
+| In Code | In the CLI |
+| --- | --- |
+| A session on a repository | `cd` into the project and run `cortex`; the CLI reuses the workspace's Code session id so turns continue the same session |
+| Ask / Plan / Agent | `/mode`, or **Shift+Tab** to cycle Agent → Plan → Ask. `/plan` drafts a plan before writing code. |
+| Stop | **Esc** — the timeline shows `× Stopped` |
+| Cloud host | The default for the TUI and `cortex exec` |
+| This PC / SSH | `CORTEX_COMPUTER=this_pc` or `CORTEX_COMPUTER=ssh`, with an already connected session |
+| Approvals | Numbered prompts before consequential commands; `/permissions` sets Read-only, Smart, or Full access |
+| Model | `/model` — Cortex Mini 1, Cortex 1, Cortex Max 1, with Low / Medium / High effort |
+| Timeline | Tool rows — `● Shell`, `● Read`, `● Grep` — with results indented beneath |
 
 ## Install and first session
 
-Install from [software.cortex.foundation](https://software.cortex.foundation). The full install steps live on [Cortex Code CLI](/getting-started/cli).
+<CodeGroup>
+```bash macOS and Linux
+curl -fsSL https://software.cortex.foundation/install.sh | sh
+```
+
+```powershell Windows
+irm https://software.cortex.foundation/install.ps1 | iex
+```
+</CodeGroup>
 
 ```bash
+cortex login
 cd ~/code/my-project
 cortex
 ```
 
-Sign in from the CLI when it asks — this site does not document the sign-in protocol.
+Type what you want changed and press **Enter**:
 
-<Frame>
-  <img src="/images/cli/composer.png" alt="Cortex CLI composer in macOS Terminal on a forest desktop" />
+```text
+> add a /healthz endpoint and cover it with a test
+```
+
+<Frame caption="A prompt typed into the CLI composer. The footer switches to Enter:send · Alt+Enter:newline while you type.">
+  <img src="/images/cli/runtime/40x12/composer-typing.png" alt="Cortex CLI composer with a prompt being typed, rendered in a 40 by 12 terminal" />
 </Frame>
 
-## What you get here
+Details: [Install](/cli/install), [Sign in](/cli/sign-in), [CLI quickstart](/cli/quickstart).
 
-| In the CLI | Not in the CLI |
+## One-shot and headless
+
+```bash
+cortex run "explain the release process"
+cortex exec --auto read-only --git-diff "review my uncommitted changes"
+```
+
+`cortex run` streams a formatted answer into your shell and understands sessions. `cortex exec` is for CI: autonomy levels, JSON output, turn and time limits. See [Headless runs](/cli/headless).
+
+## What the CLI is — and is not
+
+| The CLI does | The CLI does not |
 | --- | --- |
-| Code session timeline | Chat's conversation product |
-| This PC and SSH | Those hosts in the browser |
-| Ask / Plan / Agent | A web model picker |
+| Drive Code sessions from a terminal | Run the model on your laptop |
+| Work in a project directory | Replace Cortex Chat |
+| Offer This PC and SSH | Put those hosts in the browser |
+| Extend with MCP servers, skills, agents, hooks, plugins | Manage Bot or Design |
 
-Web Code stays Cloud-only. See [Sessions](/code/sessions) and [Code on desktop](/code/desktop).
+## Next
+
+- [CLI overview](/cli) — the full tab.
+- [Code on desktop](/code/desktop) — the same hosts in the desktop app.

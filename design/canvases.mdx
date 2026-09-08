@@ -1,27 +1,46 @@
 ---
-title: "Design canvases"
-description: "Boards you open from Chat or Code. Default title Untitled canvas."
+title: "Canvases"
+description: "Boards you host from Chat or Code — frames, notes, options, and the host binding. Default title Untitled canvas; deleting hides it from the list."
 ---
 
-A Design canvas starts as **Untitled canvas**. You can host one from Chat or from Code. Deleting it hides it from the list.
-
-<Frame>
-  <img src="/images/product/design-home.png" alt="Cortex Connectors under Customize — search, discover, and connect apps" />
-</Frame>
+A Design canvas starts life as **Untitled canvas**, created the moment Chat or Code writes to it. It belongs to your account, remembers which conversation or session hosted it, and is edited in the [Design desktop app](/design/desktop).
 
 ## What lives on the board
 
 | On the canvas | Not this object |
 | --- | --- |
-| Frames | A Chat project |
-| Notes | A Chat markdown sidecar |
-| Host binding to Chat or Code | A Code workspace file |
+| **Frames** — screens, diagrams, layouts | A Chat project |
+| **Notes** — annotations beside the frames | A Chat canvas (a document beside a conversation) |
+| **Options** — alternatives laid out side by side | A Code workspace file |
+| **Host binding** — the Chat conversation or Code session that created it | A Bot's computer — Bot does not receive design tools |
+| **Library drawer** — components, pages, tokens | Chat's file [Library](/chat/library) |
 
 ## Create and open
 
-1. Sign in. Another account's canvases are not visible.
-2. Host a canvas from Chat or Code. The default title is Untitled canvas.
-3. Open the working UI in the [Design desktop](/design/desktop) app.
-4. Delete hides it from the list.
+<Steps>
+  <Step title="Sign in">
+    Another account's canvases are not visible; a guest cannot create one.
+  </Step>
+  <Step title="Host a canvas from Chat or Code">
+    The design tools create the board and write the first frames. The title is **Untitled canvas** until you rename it.
+  </Step>
+  <Step title="Open the working UI on desktop">
+    Edit frames, notes, and options in the [Design desktop app](/design/desktop).
+  </Step>
+  <Step title="Delete when done">
+    Deleting a canvas hides it from the list.
+  </Step>
+</Steps>
 
-Chat canvases stay markdown sidecars. See [Chat canvases](/chat/canvases).
+## Renaming
+
+Rename the board from the desktop app. The host binding stays, so the Chat conversation or Code session that created it still points at the same canvas.
+
+## Chat canvases are a different thing
+
+A Chat canvas is a document beside a conversation — see [Chat canvases](/chat/canvases). A Design canvas is a board of frames. Chat can host both; only the Design canvas opens in the desktop app.
+
+## Related
+
+- [Library](/design/library) — reusable components, pages, and tokens.
+- [Design desktop](/design/desktop)

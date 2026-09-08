@@ -1,0 +1,118 @@
+---
+title: "Sessions"
+description: "Every interactive run is a session written to disk as you go — list, resume, rewind, fork, export, import, share, lock, and clean up."
+---
+
+Every interactive run is a session: the transcript, the tool calls, and the context Cortex built up along the way. Sessions are written to disk as you go, so you can close the terminal and pick the work back up later. The CLI also remembers the server-side Code session id for each workspace, so terminal turns continue the same coding session you see in the web app.
+
+## Listing
+
+```bash
+cortex sessions
+```
+
+By default this shows sessions started in the current directory.
+
+| Flag | Effect |
+| --- | --- |
+| `--all` | Include sessions from other directories |
+| `--days <N>` · `--since <date>` · `--until <date>` | Filter by date |
+| `--favorites` | Only favourites |
+| `-s`, `--search <TEXT>` | Match on title or id |
+| `-l`, `--limit <N>` | Cap the list |
+| `--json` | Machine-readable |
+
+## Resuming
+
+```bash
+cortex resume                 # pick from recent sessions
+cortex resume --last          # straight back into the most recent one
+cortex resume --pick          # force the picker
+cortex resume <SESSION_ID>    # a specific session
+cortex resume --all           # do not filter the picker by directory
+```
+
+Inside the TUI, `/resume [session-id]` does the same, and **Ctrl+S** or **Ctrl+O** opens the sessions panel:
+
+<Frame caption="/resume: type to search; each row shows the title, age, message count, and branch. Enter resumes, f favourites, d deletes.">
+  <img src="/images/cli/runtime/120x40/resume-picker.png" alt="Cortex CLI resume picker listing recent sessions" />
+</Frame>
+
+`cortex run --continue` continues the most recent session non-interactively; `cortex run --session <ID>` continues a specific one. A persisted [goal](/cli/goal) comes back with the session.
+
+## Starting fresh
+
+`/new` starts a new session without leaving the TUI. `/clear` empties the conversation but keeps the session — it asks first, and says exactly what is dropped and what is kept.
+
+<Frame caption="/clear: the transcript is dropped; git, files, and config stay as they are.">
+  <img src="/images/cli/runtime/120x40/clear-confirm.png" alt="Cortex CLI clear-conversation confirmation with Yes, clear and No, keep it" />
+</Frame>
+
+## Rewinding and forking
+
+Press **Esc** twice quickly to open the rewind overlay. Use **←** / **→** to pick an earlier point, then **Enter** to roll back to it, **f** to fork a new session from it, or **Esc** to cancel. `/rewind [steps]`, `/undo`, and `/redo` cover the same ground from the composer; `/fork [name]` forks the current session.
+
+## Exporting
+
+```bash
+cortex export                          # most recent session
+cortex export <SESSION_ID> -o out.json
+cortex export <SESSION_ID> -f yaml     # json (default), yaml, or csv
+cortex export <SESSION_ID> --pretty
+```
+
+From the TUI, `/export` offers Markdown, JSON, or plain text and writes `cortex_<title>_<date>.<ext>` to your documents or home directory. Markdown exports keep the model's reasoning in a collapsed details block when present.
+
+## Importing
+
+```bash
+cortex import session.json
+cortex import https://example.com/session.json
+cortex import -                         # from stdin
+cortex import session.json --force      # overwrite an existing session
+cortex import session.json --resume     # import and open it
+```
+
+## Sharing
+
+`cortex run --share` shares the session on completion and prints the URL. In the TUI, `/share [duration]` creates a link; durations read `30d`, `24h`, `60m`, or `never`.
+
+## Protecting sessions from cleanup
+
+```bash
+cortex lock add <SESSION_ID> -r "reference for the migration"
+cortex lock list
+cortex lock check <SESSION_ID>
+cortex lock remove <SESSION_ID>
+```
+
+Locked sessions survive `cortex compact` and `cortex delete`.
+
+## Deleting and cleaning up
+
+```bash
+cortex delete <SESSION_ID>          # asks first
+cortex delete <SESSION_ID> --yes
+
+cortex compact status               # what cleanup would reclaim
+cortex compact run --dry-run
+cortex compact run                  # compact logs, sessions, history
+cortex compact vacuum --session-days 30
+cortex compact logs --keep-days 7
+```
+
+`cortex cache` manages the model, response, and update caches separately; `cortex logs` reads and prunes log files.
+
+## Titles and favourites
+
+`/rename <name>`, `/favorite`, `/unfavorite`. `/session` prints the current session's details; `/timeline` shows its timeline.
+
+## Where sessions live
+
+`~/.cortex/sessions/` by default, with `goal.json` beside a session that has a goal, and `~/.cortex/code-sessions.json` mapping each workspace to its Code session id. `cortex debug paths` prints the real locations on your machine. See [Configuration → Data locations](/cli/configuration#data-locations).
+
+## Related
+
+- [Goals](/cli/goal)
+- [Headless runs](/cli/headless) — continuing a session across `cortex exec` invocations.
+- [Code sessions](/code/sessions) — the same sessions in the web app.

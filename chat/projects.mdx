@@ -1,35 +1,63 @@
 ---
-title: "Projects and docs"
-description: "Organize threads, pin Library files, and keep context across sessions."
+title: "Projects"
+description: "A project keeps its own instructions, its chats, and its files together. Everything you say in a project's chats is read with those instructions in front of it."
 ---
 
-A **project** groups conversations. An open project in the Chat sidebar is a folder plus that project's chats — not a second selected pill.
+A **project** is a folder with standing instructions. Create one for a piece of work you keep coming back to, give it instructions once, and every chat inside it starts from them. Projects belong to a signed-in account.
 
-<Frame>
-  <img src="/images/product/chat-home.png" alt="Cortex Chat home — Chat, Code, and Bot in the sidebar, composer ready" />
+<Frame caption="Projects, before you have created one.">
+  <img src="/images/product/chat-projects.png" alt="Projects — No projects yet. Create one for a piece of work you keep coming back to." />
 </Frame>
 
 ## What a project holds
 
 | In the project | Not a project |
 | --- | --- |
-| Threads you start inside it | [Memory](/chat/memory) — account-scoped |
-| [Library](/chat/library) files you pin | [Chat canvases](/chat/canvases) — markdown sidecars on a conversation |
-| The grouping on later turns | [Design canvases](/design/canvases) — a different object |
+| **Instructions** — read before every chat in the project | [Memory](/chat/memory) — account-wide, follows you into every chat |
+| **Chats** you start inside it, or move into it | [Canvases](/chat/canvases) — a document beside one conversation |
+| **Files** you add to it, from [Library](/chat/library) | [Design canvases](/design/canvases) — boards edited in the Design desktop app |
+| A place in **Pinned** if you pin it | A shared workspace — projects are yours alone, see [Sharing](/chat/sharing) |
 
-## Create and open a project
+## Create a project
 
-1. Sign in. Guests cannot create a project.
-2. Open **Projects** in the Chat nav.
-3. Create a project and start the conversation inside it.
-4. Attach or pin Library files from the composer.
+<Steps>
+  <Step title="Sign in">
+    Guests cannot create a project; the chat would have nowhere to live once the tab closes.
+  </Step>
+  <Step title="Open Projects and choose New project">
+    Give it a **Name**. Instructions are optional and can be changed at any time.
+  </Step>
+  <Step title="Write instructions worth reading before every chat">
+    Who the audience is, house style, units, what to avoid. For example: *We sell to mid-market SaaS teams. Prices are in euros. Prefer British spelling.*
+  </Step>
+  <Step title="Start chatting inside it">
+    Open the project and start a new chat there, or move an existing thread in with **Move to project** from the thread header.
+  </Step>
+</Steps>
 
-A later chat in the same project still sees that grouping.
+<Frame caption="New project: a name, and optional instructions that are read before every chat in the project.">
+  <img src="/images/product/chat-new-project.png" alt="New project dialog with Name and optional Instructions fields" />
+</Frame>
 
-## Docs in a project
+## Move a chat into a project
 
-Library files are the documents you attach. Chat turns take those files from Library — never a URL you paste. See [Library](/chat/library).
+Open the thread and choose **Move to project** in the header. The popover lists your projects — and **Remove from project** if the thread already belongs to one. A thread belongs to at most one project.
+
+<Frame caption="Move to project from the thread header.">
+  <img src="/images/product/chat-move-to-project.png" alt="The Move to project popover listing projects and a Remove from project action" />
+</Frame>
+
+## Files in a project
+
+Add documents to a project so every chat in it can use them. Files come from your Library — attach from the composer or upload from the project — and a chat receives them as attachments, never as a URL you typed. Generated pictures land in Library too. See [Library](/chat/library).
+
+## Tips
+
+- Keep instructions short and factual. They are read on every turn, so they cost context on every turn.
+- One project per ongoing piece of work beats one project per topic. The point is continuity.
+- Pin the two or three projects you use daily; the rest stay one click away under **Projects**.
+- Plans started from a project's chats stay linked to those chats. See [Plans](/chat/plans).
 
 <Note>
-Cortex Chat is per account. Another account cannot see your projects. There is no teammate-invite on a thread. See [Sharing](/chat/sharing).
+Cortex Chat is per account. Another account cannot see your projects, and there is no teammate invite on a thread. Plus and Pro plans list **Projects and saved work** among their features — check [Plans](/getting-started/plans) for what your plan includes.
 </Note>

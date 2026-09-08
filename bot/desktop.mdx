@@ -1,0 +1,63 @@
+---
+title: "Bot desktop"
+description: "The Cortex Bot desktop app — a home for your agents, routines, and channels, with This PC as a host for a bot's computer. It has no Chat or Code sidebar."
+---
+
+Cortex ships two desktop apps because the two jobs are different. The [Cortex desktop app](/getting-started/desktop) carries **Chat and Code**. The **Cortex Bot desktop app** is built around bots: its sidebar is **agents, routines, and channels**, and it adds **This PC** as a host for a bot's computer. It does not carry Chat or Code.
+
+## What it is for
+
+| You want to… | Bot desktop |
+| --- | --- |
+| Run a bot's computer on your own machine | **This PC** — the bot works on your desktop, with your apps and files |
+| Keep an eye on several agents at once | The agents list is the sidebar; the pane is the open bot |
+| Manage schedules | Routines, the same ones you see in the web app |
+| Organise how bots talk to you and to each other | Channels |
+
+## Install and sign in
+
+<Steps>
+  <Step title="Download">
+    Desktop builds are published at [releases.cortex.foundation](https://releases.cortex.foundation). Pick the Bot desktop app for your platform.
+  </Step>
+  <Step title="Sign in">
+    Same account as the web app. Bots are member objects, so the app expects a signed-in account.
+  </Step>
+  <Step title="Open a bot">
+    Your bots, routines, and channels follow your account — what you set up in the browser is already here.
+  </Step>
+</Steps>
+
+## Hosts
+
+| Host | Web app | Bot desktop |
+| --- | --- | --- |
+| **Cloud** | Yes | Yes |
+| **This PC** | No | Yes |
+| **SSH** | No | Shell only, no desktop |
+
+The browser is Cloud-only for the same reason web Code is: a browser tab cannot drive your desktop. See [Computer](/bot/computer).
+
+## Sidebar: agents, routines, channels
+
+| Section | What is there |
+| --- | --- |
+| **Agents** | Your bots, listed once. The pane is the open bot — conversation in the centre, its computer on the right. |
+| **Routines** | Scheduled work across your bots, on your local weekday hours. See [Routines](/bot/routines). |
+| **Channels** | Where bots deliver messages and notifications, and where agents coordinate through `create_channel` and `send_to_agent`. See [Tools](/bot/tools). |
+
+There is no Chat or Code entry in this sidebar. For those, use the web app or the Cortex desktop app.
+
+## Which desktop app do I want?
+
+| Need | App |
+| --- | --- |
+| Chat, plus Code on This PC or SSH | [Cortex desktop](/getting-started/desktop) |
+| Bots on This PC; agents, routines, channels in one window | **Cortex Bot desktop** |
+| Edit Design canvases | [Design desktop](/design/desktop) |
+| Code from a terminal or CI | [CLI](/cli) |
+
+## Related
+
+- [Bot overview](/bot/overview)
+- [Downloads](/getting-started/downloads) — every way to run Cortex.

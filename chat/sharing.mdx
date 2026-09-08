@@ -1,20 +1,37 @@
 ---
 title: "Sharing and teams"
-description: "A Chat account is one principal. There is no teammate-invite on a thread."
+description: "Cortex Chat is per account. What that means for threads, projects, plans, and files — and where team features live."
 ---
 
-Cortex Chat is **per account**, not a shared workspace product.
+Cortex Chat is a **per-account** product. Your threads, projects, Library, memory, and plans belong to your signed-in account and follow you across devices. Another account cannot see them, and there is no “invite a teammate to this thread” control.
 
-<Frame>
-  <img src="/images/product/chat-home.png" alt="Cortex Chat home — Chat, Code, and Bot in the sidebar, composer ready" />
-</Frame>
+## What each kind of user has
 
-## What each kind of user can do
+| | Guest | Member |
+| --- | --- | --- |
+| Threads | This browser session only | Kept on the account, on every device |
+| Projects, Library, memory, plans | No | Yes, private to the account |
+| Connected apps and MCP servers | No | Yes, private to the account |
+| Bots and Code sessions | No | Yes, private to the account |
 
-- Chat works before you sign in. A guest cannot connect a plugin or MCP server, cannot open Code or Bot working UI, and cannot create a grant they could never revoke.
-- A **member** is a signed-in account. Projects, Library, memory, bots, and Code sessions belong to that account. Another account's threads are not visible.
-- There is **no** “invite a teammate to this thread” control. Do not expect a sharing feature — there isn't one.
+The reasoning: a guest cannot create anything it could not come back to revoke, and a member's work is never visible to another member.
+
+## What does not exist today
+
+- No teammate invite on a thread or a project.
+- No public link for a Chat conversation.
+- No shared Library between accounts.
+
+Do not expect a sharing control to appear in the thread header — the two actions there are **Start a plan** and **Move to project**.
+
+## Where team features live
+
+| Need | Where |
+| --- | --- |
+| A team workspace with admin controls, SSO, and audit export | The **Pro** plan lists these — see [Plans](/getting-started/plans) |
+| Sharing a coding session transcript | The CLI can share a session with `/share` or `cortex run --share` — see [CLI sessions](/cli/sessions) |
+| Reviewing a pull request with colleagues | [Cortex Security](/code/security) posts its review as a GitHub check run on the pull request |
 
 ## Export and deletion
 
-Export and deletion are under **Settings → Data & privacy**. See [Security](/security/overview) and [Accounts](/getting-started/accounts).
+Your data is yours to take or remove. **Settings → Data & privacy** offers **Export my data** and **Delete all data**; a signed-in account confirms with an authenticator app. See [Security](/security/overview) and [Accounts](/getting-started/accounts).

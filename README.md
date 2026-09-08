@@ -1,6 +1,6 @@
 # Cortex docs (`docs.cortex.foundation`)
 
-Public product documentation for **Cortex Chat**, **Cortex Code**, **Cortex Bot**,
+Public product documentation for **Cortex Chat**, **Cortex Code**, **Cortex Bot**, the **Cortex CLI**,
 and **Cortex Design**. This site is **end-user visible**. It does **not** document
 login, sessions, refresh tokens, OAuth wire protocol, or other non-public APIs.
 
@@ -66,11 +66,16 @@ window frames — not hero CTAs. Home and card actions use **ink on cream**
 to cream ink. Do not add a brand-green Install / `navbar.primary` button.
 
 Guide heroes that depict the product are **live Cortex screenshots** in
-`images/product/` (`chat-home.png`, `chat-session.png`, `code-home.png`,
-`bot-home.png`, `design-home.png`) plus CLI canon in `images/cli/`
-(vendored from CortexLM/cli `docs/media/`). Do not add abstract
-product-window SVGs. `images/frames/` is retired. Doodle card art stays
-for Home / Get started cards. Cream, ink, `#1F4945` focus — no violet.
+`images/product/` plus CLI canon in `images/cli/` (vendored from
+CortexLM/cli `docs/media/`). **Every page shows a distinct capture** — no
+product frame is reused on two pages; `images/product/README.md` maps each
+file to the page that uses it, and lists member-only surfaces still to be
+captured. Do not add abstract product-window SVGs. `images/frames/` is
+retired. Banner card art (`images/banners/`) belongs inside `CardGroup`
+grids on Home and the hubs — never as a lone full-width `Card`. Cream, ink,
+`#1F4945` focus — no violet.
 
 Top navbar is Mintlify **Home + Documentation**, not the Chat | Code | Bot
-product switcher. Chat / Code / Bot / Design stay as documentation tabs.
+product switcher. Get started / Chat / Code / Bot / CLI / Design stay as
+documentation tabs. Competitor product names never appear in copy,
+titles, or `docs.json`.

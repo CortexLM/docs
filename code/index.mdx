@@ -1,36 +1,59 @@
 ---
 title: "Code guides"
-description: "Agentic coding in a Cloud guest — sessions, diffs, terminals, and review."
+description: "Cortex Code — a coding agent that works inside your repository on an isolated runtime. Sessions, Ask / Plan / Agent, GitHub, Cloud guests, desktop hosts, the CLI, and pull-request review."
 image: "/images/banners/code.png"
 ---
 
-<Card title="Code" img="/images/banners/code.png" href="/code/overview">
-  Agentic coding in a Cloud guest — sessions, diffs, terminals, and review.
-</Card>
+Cortex Code is a coding agent, not a chat with a different icon. You point it at a repository, describe the change, and it works through the task inside an isolated runtime — reading, editing, running your build and tests — while you watch a timeline of what it did and decide how much it may do on its own.
 
-Cortex Code is a coding agent in a Firecracker guest, not a Chat clone. Web Code is Cloud only.
-
-<Frame>
-  <img src="/images/product/code-home.png" alt="Cortex Code guest gate — this space is reserved for signed-in accounts" />
+<Frame caption="cortex.foundation/code — the public product page a guest sees. Sign in to open the working UI.">
+  <img src="/images/product/code-public.png" alt="Cortex Code public page — a coding agent that works inside the repository" />
 </Frame>
 
-<CardGroup cols={2}>
-  <Card title="Overview" href="/code/overview">
-    What Code is, who can open it, and what it is not.
+## Start here
+
+<CardGroup cols={3}>
+  <Card title="Quickstart" img="/images/banners/code.png" href="/code/quickstart">
+    Sign in, connect GitHub, start a Cloud session, review the timeline.
   </Card>
-  <Card title="Sessions" href="/code/sessions">
-    Turn timeline, Ask / Plan / Agent, Stop.
+  <Card title="Overview" icon="compass" href="/code/overview">
+    What Code is, who can open it, and what it deliberately is not.
   </Card>
-  <Card title="Cloud runtimes" href="/code/cloud">
-    Farm guest, prepare, snapshot. Not the Chat Python sandbox.
-  </Card>
-  <Card title="GitHub" href="/code/github">
-    Connect GitHub in the product. No pasted tokens.
-  </Card>
-  <Card title="Cortex Security" href="/code/security">
-    GitHub App pull-request review. Different from `/security`.
-  </Card>
-  <Card title="CLI" href="/code/cli">
-    Same account as the web app. Sign in from the CLI when it asks.
+  <Card title="CLI" icon="terminal" href="/cli">
+    The same Code sessions from your terminal, scripts, and CI.
   </Card>
 </CardGroup>
+
+## Core guides
+
+<CardGroup cols={2}>
+  <Card title="Sessions" icon="list" href="/code/sessions">
+    A session is a timeline of the work — files read, edits, commands, plans — with Stop always one click away.
+  </Card>
+  <Card title="Ask, Plan, Agent" icon="sliders-horizontal" href="/code/interactions">
+    Choose how much a turn may change. Ask reads, Plan proposes, Agent edits and runs.
+  </Card>
+  <Card title="Connect GitHub" icon="github" href="/code/github">
+    Reach repositories through Connect GitHub. No pasted tokens; Reconnect when a grant lapses.
+  </Card>
+  <Card title="Cloud runtimes" icon="cloud" href="/code/cloud">
+    One isolated guest per session on the same farm as Bot, prepared by the agent.
+  </Card>
+</CardGroup>
+
+## Desktop and terminal
+
+<CardGroup cols={2}>
+  <Card title="Code on desktop" icon="monitor" href="/code/desktop">
+    This PC and SSH hosts exist on the desktop app and the CLI. The browser stays Cloud-only.
+  </Card>
+  <Card title="Code in the terminal" icon="square-terminal" href="/code/cli">
+    How the CLI maps onto Code sessions, and where the full CLI documentation lives.
+  </Card>
+</CardGroup>
+
+## Advanced
+
+- [Cortex Security](/code/security) — GitHub App pull-request review that stays failed when it fails.
+- [How Code works](/code/how-it-works) — workspace tools execute inside the attached guest; modes withhold mutating tools.
+- [Troubleshooting](/code/troubleshooting) — gates, Reconnect, Cloud availability, and what a failed review means.

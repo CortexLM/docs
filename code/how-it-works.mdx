@@ -1,24 +1,62 @@
 ---
 title: "How Code works"
-description: "Workspace tools execute inside the attached guest — not in Chat Python."
+description: "Workspace tools execute inside the attached Cloud guest — never in the API process, never in Chat's Python sandbox. Modes withhold mutating tools; compaction fails closed."
 ---
 
-A Code Cloud session turn executes workspace tools **inside the attached Firecracker guest**. Not in the API process. Not in the 256 MiB Chat Python sandbox.
-
-<Frame>
-  <img src="/images/product/code-home.png" alt="Cortex Code guest gate — this space is reserved for signed-in accounts" />
-</Frame>
+A Code turn is a tool loop like Chat's, with two differences that define the product: the tools operate on a real repository inside an isolated guest, and the mode you choose decides which tools the model is offered at all.
 
 ## The workspace catalog
 
-`read_file`, `write_file`, `edit_file`, `glob`, `grep`, `bash`, `todo_read`, `todo_write` run in the guest. `python` is Chat-only; a Code turn runs the guest's own Python through `bash`.
+| Tool | What it does |
+| --- | --- |
+| `read_file` | Read a file from the repository |
+| `write_file` | Create or replace a file |
+| `edit_file` | Make a targeted edit |
+| `glob` | Find files by pattern |
+| `grep` | Search file contents |
+| `bash` | Run a shell command in the guest — builds, tests, git |
+| `todo_read`, `todo_write` | Keep a task list for the turn |
+| plan tool | Write a plan — with a mermaid diagram — in Plan mode |
+
+All of these run **inside the attached guest**. `python` is a Chat tool; a Code turn runs the guest's own Python through `bash`.
 
 ## Attach before the first command
 
-If the session names a repository and no runtime is attached, the harness auto-starts, attaches, and prepares that guest. Leaving the runtime unattached as the first command is a bug.
+If the session names a repository and no runtime is attached, the harness starts one, attaches it, and prepares the environment before the first tool runs. An unattached runtime is never the first thing a turn does. See [Cloud runtimes](/code/cloud).
 
-## Modes and compaction
+## Modes decide the tools
 
-Ask and Plan withhold mutate tools. Plan writes mermaid via `write_plan`. Compaction is Code's own keep-set and fails closed.
+| Mode | Tools offered |
+| --- | --- |
+| **Ask** | Read-only: `read_file`, `glob`, `grep` |
+| **Plan** | Read-only plus the plan tool |
+| **Agent** | The full catalog, including `write_file`, `edit_file`, `bash` |
 
-Do not copy Chat's eight-round abort onto Code. See [How Chat works](/chat/how-it-works) and [How Bot works](/bot/how-it-works).
+Ask and Plan withhold the mutating tools in the harness. The model cannot edit or run anything in those modes because it is never offered the tools. See [Ask, Plan, Agent](/code/interactions).
+
+## Stopping
+
+A turn ends when the model stops calling tools or you press **Stop** (Esc in the CLI). Code does not copy Chat's eight-round budget; a coding task legitimately takes many tool rounds. Cancel aborts the stream and tells the runtime to stop the turn.
+
+## Compaction
+
+Long sessions are compacted with Code's own keep-set — the current task, open files, recent diffs — so the model keeps fitting in context. Compaction **fails closed**: an unavailable summariser is an error, not a silent loss of history.
+
+## The CLI on top
+
+The CLI drives the same session API with streaming tokens and first-class tool rows. It adds harness-side locks — Plan and Spec keep mutating tools blocked until you switch back or accept the plan — plus approvals, a sandbox policy, and a persisted long-horizon `/goal`. See [Modes and permissions](/cli/modes-and-permissions) and [Goals](/cli/goal).
+
+<Frame caption="A CLI session with an active goal: the composer border reads Agent — Goal · 2/8, and the agent keeps working toward it across turns.">
+  <img src="/images/cli/runtime/40x12/goal-chip-active.png" alt="Cortex CLI composer with the Goal chip, rendered in a 40 by 12 terminal" />
+</Frame>
+
+## Compared with Chat and Bot
+
+| | Chat | Code | Bot |
+| --- | --- | --- | --- |
+| Where tools run | Snippet sandbox | The session's guest | The bot's computer |
+| Mutations gated by | — | Mode (Ask / Plan / Agent) | Approvals (Allow / Deny / Always) |
+| Stops on | 8 tool rounds | Model stops or Stop | 15-minute deadline or six identical calls |
+| Transcript | Streamed reply | Turn timeline | User-visible bubbles |
+
+See [How Chat works](/chat/how-it-works) and [How Bot works](/bot/how-it-works).

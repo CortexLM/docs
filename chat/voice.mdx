@@ -1,21 +1,28 @@
 ---
 title: "Voice"
-description: "Mic and Listen appear only when voice is available."
+description: "Dictate with the mic and hear an answer with Listen. Both controls appear only when the deployment can transcribe or speak."
 ---
 
-The mic in the composer and Listen under an answer appear only when this deployment can transcribe or speak.
+Chat has two voice controls: a **mic** in the composer for dictation, and **Listen** under each answer to hear it read aloud. Each appears only when the deployment behind it can actually do the work.
 
-<Frame>
-  <img src="/images/product/chat-session.png" alt="A Cortex Chat thread with a reply in the conversation pane" />
+<Frame caption="Under every reply: Copy, Listen, and feedback. Listen is present because this deployment can speak.">
+  <img src="/images/product/chat-reply-code.png" alt="A Chat reply with a syntax-highlighted Python code block and the Copy and Listen controls beneath it" />
 </Frame>
 
-## What you will see
+## The controls
 
-| Control | Where | When it appears |
-| --- | --- | --- |
-| Mic | Composer | This deployment can transcribe |
-| Listen | Under an answer | This deployment can speak |
+| Control | Where | Appears when | What it does |
+| --- | --- | --- | --- |
+| **Mic** | In the composer | The deployment can transcribe | Turns speech into text in the composer; you still press **Enter** to send |
+| **Listen** | Under an answer | The deployment can speak | Reads the answer aloud |
 
-If either control is missing, that capability is off — not a broken button, and not a configuration hint for you to chase.
+If a control is missing, that capability is switched off for this deployment. There is nothing to configure on your side, and it is not a broken button.
 
-English is the source of truth for spoken and written copy.
+## Language
+
+English is the source of truth for spoken and written copy. The interface can be localized under **Settings → General → Language**; model prompts stay in English. See [Settings](/getting-started/settings).
+
+## Related
+
+- [Streaming](/chat/streaming) — answers arrive as text before you can listen to them.
+- [Troubleshooting](/getting-started/troubleshooting) — what missing controls mean.

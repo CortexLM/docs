@@ -1,0 +1,202 @@
+---
+title: "Extend the CLI"
+description: "MCP servers, skills, agents and subagents, hooks, plugins, custom commands, and themes — every extension point in the Cortex CLI."
+---
+
+The CLI ships with the tools a coding agent needs. You extend it in six ways: connect **MCP servers** for more tools, write **skills** for how a job is done, define **agents** for who is working, run **hooks** on lifecycle events, install **plugins**, and add **custom commands**.
+
+## MCP servers
+
+Cortex is a Model Context Protocol client. Connecting a server adds its tools to the set the agent can call.
+
+```bash
+# a local process (stdio) — everything after -- is the command Cortex launches
+cortex mcp add myserver -- npx @example/mcp-server
+cortex mcp add myserver --env API_HOST=example.com -- node server.js -v
+
+# a remote server over streamable HTTP
+cortex mcp add myapi --url https://mcp.example.com/mcp --bearer-token-env-var MY_API_TOKEN
+
+# a remote server over SSE
+cortex mcp add myevents --sse https://mcp.example.com/sse
+```
+
+The `--` matters: without it, flags meant for the server are parsed as Cortex flags. `--bearer-token-env-var` takes the **name** of an environment variable, so the token never lands in a config file. URLs on `localhost` or private ranges are rejected unless you pass `--allow-local`.
+
+```bash
+cortex mcp list --all          # include disabled servers
+cortex mcp get <name>
+cortex mcp enable <name> / disable <name> / rename <old> <new> / remove <name>
+cortex mcp debug <name>        # try the connection
+cortex mcp debug <name> --test-auth --no-cache
+```
+
+In the TUI, `/mcp` (or **Ctrl+E**) opens the manager, `/mcp-tools` lists each server's tools, `/mcp-auth` handles servers that need sign-in, and `/mcp-reload` re-reads the configuration.
+
+<Frame caption="/mcp: each server with its tool count and state — connected, authenticating, or failed with r to reconnect.">
+  <img src="/images/cli/runtime/120x40/mcp-servers.png" alt="Cortex CLI MCP server manager listing four servers and their connection state" />
+</Frame>
+
+A tool `search` from server `myserver` is presented to the agent as `mcp__myserver__search` — that is the name to use with `--enabled-tools`, `--disabled-tools`, and the `permission.mcp` table. Configuration lives under `mcp_servers` in `config.toml`:
+
+```toml
+[mcp_servers.myapi]
+enabled = true
+
+[mcp_servers.myapi.transport]
+type = "http"                       # stdio, http, sse, or web_socket
+url = "https://mcp.example.com/mcp"
+bearer_token_env_var = "MY_API_TOKEN"
+```
+
+Chat has its own HTTP-only MCP attachment under **Settings → Integrations** — see [Tools and connectors](/chat/tools).
+
+## Skills
+
+A skill is a bundle of instructions the agent loads on demand through its `UseSkill` tool — your deployment checklist, your migration procedure, the way your team writes commit messages. Built-in skills: `git`, `code-quality`, `file-operations`, `debugging`, `security`, `planning`.
+
+A skill is a directory with a `SKILL.md`:
+
+```markdown
+---
+name: release-checklist
+description: Cut a release of this service, from version bump to announcement
+args:
+  - name: version
+    description: The semantic version being released
+    required: true
+tools:
+  - Read
+  - Grep
+  - Execute
+---
+
+# Release checklist
+
+1. Confirm `main` is green.
+2. Bump the version in `Cargo.toml` and `VERSION`.
+```
+
+`description` decides whether a skill ever gets used — write it as the situation it applies to. Skills are found, in order, in built-ins, `./SKILL.md`, `<project>/.agents/<name>/`, `<project>/.agent/<name>/`, `<project>/.cortex/skills/<name>/`, and `~/.cortex/skills/<name>/`.
+
+`/skills` lists them, `/skill <name> [args]` forces one, `/skill-reload` re-reads after editing, and `cortex debug skill <name>` shows how one resolves. Gate them with `[permission.skill]`.
+
+<Frame caption="/skills: searchable, each with its description and whether it comes from the project or your user directory.">
+  <img src="/images/cli/runtime/120x40/skills.png" alt="Cortex CLI skills picker listing project and user skills" />
+</Frame>
+
+Bot has its own first-party skills — see [Bot skills](/bot/skills).
+
+## Agents and subagents
+
+An agent is a named configuration: which model, how much reasoning, which tools.
+
+| Built-in | Kind | Behaviour |
+| --- | --- | --- |
+| `build` | Primary | Full access. The default. |
+| `plan` | Primary | Read-only. Investigates and proposes. |
+| `explore` | Subagent | Read-only investigation, capped at 15 steps |
+| `general` | Subagent | General-purpose worker; cannot delegate further |
+| `research` | Subagent | Read-only research |
+
+```bash
+cortex agent list --primary / --subagents
+cortex agent show <name>
+cortex agent create --generate "reviews Rust for concurrency bugs"
+cortex agent edit <name>
+cortex run --agent reviewer "review the last commit"
+```
+
+An agent file is markdown with frontmatter; the body is its system prompt:
+
+```markdown
+---
+name: reviewer
+description: Reviews changes for correctness and missing tests
+model: inherit
+reasoning_effort: high
+tools: read-only        # read-only | edit | execute | web | mcp | all, or an explicit list
+max_steps: 25
+---
+
+You review code changes. Read the diff and the surrounding files, then report
+what is wrong, what is missing and what you would change. Do not edit anything.
+```
+
+Agent files are found in `<project>/.agents/`, `<project>/.agent/`, `<project>/.cortex/agents/`, then `~/.cortex/agents/`; project agents override personal ones. Mention one in a prompt with `@reviewer …`, or set `current_agent` in config.
+
+**Subagents** are what the main agent delegates to through its `Task` tool, in one of three roles — `explore`, `plan`, or `worker`. A child task cannot spawn children, ask you questions, or message you; everything reports back through the parent. `/jobs` shows what is running.
+
+## Hooks
+
+Hooks run your own commands when something happens — a file was edited, a tool is about to run, the session ended. They wire Cortex into a formatter, a linter, a notifier, or an audit log.
+
+| Event | Fires |
+| --- | --- |
+| `SessionStart` · `SessionEnd` · `SessionCompleted` | Session lifecycle |
+| `UserPromptSubmit` | You submit a prompt |
+| `PreToolUse` · `PostToolUse` · `PostToolUseFailure` | Around a tool |
+| `PermissionRequest` | An approval is requested |
+| `FileCreated` · `FileEdited` · `FileDeleted` | The agent changed a file |
+| `SubagentStart` · `SubagentStop` | Delegation |
+| `PreCompact` · `Notification` · `Stop` | Housekeeping |
+
+```json
+{
+  "file_edited": {
+    "*.rs": [{ "command": ["rustfmt", "{file}"], "timeout": 15 }]
+  },
+  "pre_tool_use": [
+    {
+      "command": ["./scripts/deny-generated.sh", "{file}"],
+      "tool_matcher": "Edit|Create|ApplyPatch",
+      "timeout": 5
+    }
+  ]
+}
+```
+
+`command` is an array, not a shell string. Placeholders `{file}`, `{path}`, `{session_id}`, `{message_id}` are also exported as `CORTEX_FILE`, `CORTEX_SESSION_ID`, `CORTEX_MESSAGE_ID`. A failing `PreToolUse` hook stops the tool call — that is how you block writes to generated files. `/hooks` manages them from the TUI.
+
+## Plugins
+
+WebAssembly plugins add tools and hooks inside a sandboxed runtime.
+
+```bash
+cortex plugin list
+cortex plugin install <name>
+cortex plugin enable <name> / disable <name> / remove <name>
+cortex plugin new <name> --typescript    # scaffold
+cortex plugin dev --watch                # develop
+cortex plugin build / validate / publish
+```
+
+`/plugins` covers install, enable, and disable from the TUI. Configuration keys: `plugins`, `plugin_dirs`, `plugin_settings`.
+
+<Frame caption="/plugins: version, enabled state, and what each plugin adds — for example a /review command.">
+  <img src="/images/cli/runtime/120x40/plugins.png" alt="Cortex CLI plugins manager listing installed plugins" />
+</Frame>
+
+## Custom commands
+
+Markdown files under `.cortex/commands/` become slash commands; `/commands` lists them. See [Slash commands](/cli/slash-commands#your-own-commands). `cortex alias set` adds shell-level aliases for `cortex` subcommands.
+
+## Themes
+
+| Theme | Notes |
+| --- | --- |
+| **Cortex Night** (`dark`) | Default. Grey chrome on a black canvas; Cortex green `#1F4945` marks the focused control. |
+| **Cortex Day** (`light`) | Light background, dark text |
+| **Ocean Dark** (`ocean_dark`) | Deep blue and cyan |
+| **Monokai** (`monokai`) | Classic editor colours |
+
+`/theme` opens the picker — moving the selection previews live, **Esc** reverts — and `/theme monokai` switches directly. In config: `[tui.theme] name = "ocean_dark"`; `/reload-config` picks it up without restarting.
+
+## Editor integration
+
+`cortex acp --stdio` starts an Agent Client Protocol server for editors that speak it; `--allow-tool` and `--deny-tool` narrow what the editor may invoke. Running `cortex` inside an editor's terminal gives you the TUI as it is — there is no separate extension UI.
+
+## Related
+
+- [Configuration](/cli/configuration) — where all of this is stored.
+- [Modes and permissions](/cli/modes-and-permissions) — gating skills, MCP servers, and commands.

@@ -1,18 +1,50 @@
 ---
 title: "Routines"
-description: "Scheduled work on a bot you own. They fire in your local weekday hours."
+description: "Scheduled work on a bot you own. Routines fire in the owner's local weekday hours, pause and resume from the Computer rail, and follow your account across devices."
 ---
 
-Routines are scheduled work on a bot you own. They fire in the owner's local weekday hours.
-
-<Frame>
-  <img src="/images/product/bot-home.png" alt="Cortex Bot guest gate — this space is reserved for signed-in accounts" />
-</Frame>
+A routine is work a bot repeats on a schedule: every weekday morning, pull the report; on Fridays, check the release page; every hour during business hours, watch the queue. Routines belong to a bot you own and fire in **your** local weekday hours.
 
 ## Set one up
 
-1. Sign in and open a bot you own. Guests cannot create routines.
-2. Add a routine for weekday work you want repeated.
-3. Pause and resume from the Computer rail.
+<Steps>
+  <Step title="Sign in and open a bot you own">
+    Guests cannot create routines; a routine has to belong to an account that can come back and stop it.
+  </Step>
+  <Step title="Add a routine">
+    Describe the repeated work and when it should run. The bot can also create one for you from the conversation — *do this every weekday at nine* — through its `routine` tool.
+  </Step>
+  <Step title="Choose how it reports back">
+    Ask for a `notify` when something changes, or a short message each run.
+  </Step>
+  <Step title="Pause and resume from the Computer rail">
+    Routines are listed on the rail with their state.
+  </Step>
+</Steps>
 
-Hours follow **your** local weekday clock — not UTC on the guest, and not a Chat reminder.
+## Timing
+
+| Rule | Detail |
+| --- | --- |
+| Clock | The **owner's local** clock |
+| Days | Weekdays |
+| Not | UTC on the guest, and not a Chat reminder |
+
+A run wakes the bot's computer if it is asleep, does the work, and reports through the user-visible tools. Consequential steps inside a routine still park behind [approvals](/bot/approvals) unless you chose **Always** for that kind of step earlier.
+
+## Routines follow your account
+
+Your chats, projects, and **Bot routines** follow a signed-in account across devices — the web app and the [Bot desktop app](/bot/desktop) show the same routines.
+
+## Routines are not…
+
+| Object | What it is |
+| --- | --- |
+| [Plans](/chat/plans) | A task list in Chat |
+| [Skills](/bot/skills) | Instructions on *how* to do a job, not *when* |
+| [CLI `/goal`](/cli/goal) | A long-horizon objective for the terminal coding agent |
+
+## Related
+
+- [Computer](/bot/computer) — where routines run.
+- [Tools](/bot/tools) — `routine`, `notify`, `send_to_user`.

@@ -1,34 +1,67 @@
 ---
 title: "How Chat works"
-description: "One function-calling loop. Compaction fails closed. Chat's round budget stays in Chat."
+description: "A Chat turn is one tool-calling loop: the model asks for tools, Chat runs them, results flow back, and the loop ends when the model stops or hits Chat's round budget."
 ---
 
-A Chat turn is a real tool loop: the model emits tool calls, the API executes them, results re-enter the context, the loop continues until the model stops or hits Chat's round budget.
+A Chat turn is a real tool loop. The model emits tool calls, Chat executes them, the results re-enter the context, and the loop continues until the model stops or Chat reaches its round budget. What you see is the streamed result of that loop: tokens, then tools, then the finished reply.
 
-<Frame>
-  <img src="/images/product/chat-session.png" alt="A Cortex Chat thread with a reply in the conversation pane" />
+<Frame caption="A finished reply rendered from markdown — headings, emphasis, and math-style notation — after a turn with a High thinking level.">
+  <img src="/images/product/chat-reply-headings.png" alt="A Chat reply with headings and formatted prose explaining merge sort" />
 </Frame>
 
 ## What you see
 
-1. You send a message, with optional Library attachments.
-2. Tokens stream. Tools may run. Results come back into the thread.
-3. The model stops, or Chat hits eight tool rounds. That budget is Chat-only — do not copy it onto Code or Bot.
+1. You send a message, optionally with Library attachments.
+2. The composer reads **Cortex is responding…** and the send button becomes a stop control.
+3. Tokens stream. Tools may run. Their results come back into the thread.
+4. The model stops, or Chat hits its budget of **eight tool rounds**. That budget is Chat's own — Code and Bot have different stopping rules.
+
+## What goes into a turn
+
+| Input | Source |
+| --- | --- |
+| Your message | The composer |
+| Attachments | [Library](/chat/library) files, never a pasted URL |
+| Standing instructions | The [project](/chat/projects) the chat belongs to |
+| Preferences | [Memory](/chat/memory) |
+| Model and thinking level | The [composer chip](/chat/models) |
+| Tools | Built-in tools, connected apps enabled for Chat, and your MCP servers |
+
+After assembly, Chat clamps generation so prompt plus output fit the model's context window.
 
 ## Tools the model can receive
 
-`python`, `web_search`, `web_extract`, `current_time`, `skill_view`, canvas, memory, `generate_image`, `detect_image`, `read_artifact` / `grep_artifact`, `design_write` / `design_read`, plus Chat-enabled plugins and the owner's MCP servers.
+| Group | Tools |
+| --- | --- |
+| Information | `web_search`, `web_extract`, `current_time` |
+| Computation | `python` — a small snippet sandbox |
+| Media | `generate_image`, `detect_image` |
+| Documents | canvas tools, `read_artifact`, `grep_artifact` |
+| Context | memory tools, `skill_view` |
+| Design | `design_write`, `design_read` — host a Design canvas from Chat |
+| Yours | Connected apps enabled for **Chat**, and the account's MCP servers |
 
-Chat's Python tool is a small snippet sandbox. It is not Code's workspace shell or Bot's computer.
+Chat's `python` runs a snippet in an untrusted sandbox with no workspace. It is not Code's shell inside a Cloud guest, and it cannot see a repository or a Bot's desktop. See [Security](/security/overview).
 
 ## Compaction
 
-Compaction runs on the request path and fails closed. It keeps the last user ask, the active research plan, open artifact ids, and research child ids. A summariser outage is `service_unavailable`, not a silent drop of old turns.
+Long threads are compacted on the request path so they keep fitting the model. Compaction keeps the last user ask, the active research plan, open artifact ids, and research child ids. It **fails closed**: if the summariser is unavailable, the turn returns [`service_unavailable`](/problems/service_unavailable) rather than silently dropping old turns.
 
-English system prompt. No competitor product names.
+## Deep Research is a different loop
+
+A research run plans questions and fans out to parallel children with its own caps. It does not use the eight-round budget and does not draw tool chrome for each fetch. See [Deep Research](/chat/deep-research).
+
+## Compared with Code and Bot
+
+| | Chat | Code | Bot |
+| --- | --- | --- | --- |
+| Loop stops when | The model stops, or 8 tool rounds | The model stops, or the turn is cancelled | The model stops, a 15-minute deadline, or six identical tool calls in a row |
+| Code runs in | A snippet sandbox | The session's Cloud guest (or This PC / SSH) | The bot's computer |
+| Transcript | Streamed reply with tool results | A turn timeline | User-visible bubbles only |
+
+See [How Code works](/code/how-it-works) and [How Bot works](/bot/how-it-works).
 
 ## Related
 
-- [Streaming](/chat/streaming)
-- [Deep Research](/chat/deep-research) — its own loop, not the eight-round abort
-- [Security](/security/overview) — where Chat Python runs
+- [Streaming](/chat/streaming) — reconnects and run state.
+- [Models](/chat/models) — context windows and thinking levels.

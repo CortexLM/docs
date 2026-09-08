@@ -1,28 +1,46 @@
 ---
 title: "Ask, Plan, Agent"
-description: "A turn carries the choice; the session row is the default."
+description: "Choose how much a Code turn may change. Ask reads and explains, Plan proposes, Agent edits and runs. The choice rides on the turn; the session row holds the default."
 ---
 
-Ask, Plan, and Agent choose how a Code turn behaves. A follow-up can pick a different mode.
-
-<Frame>
-  <img src="/images/product/code-home.png" alt="Cortex Code guest gate — this space is reserved for signed-in accounts" />
-</Frame>
+Every Code turn runs in one of three modes. Pick it on the turn, or leave the session's default. A follow-up can pick a different mode — tighten to Ask to understand, widen to Agent to ship.
 
 ## What each mode may do
 
-| Mode | Edit files | Run shell | Extra |
+| Mode | Edit files | Run commands | What it produces |
 | --- | --- | --- | --- |
-| **Ask** | No | No | Read and explain |
-| **Plan** | No | No | Can write a mermaid plan |
-| **Agent** | Yes | Yes | Can change the repository |
+| **Ask** | No | No | Explanations, answers, code you can copy |
+| **Plan** | No | No | A plan block — steps, and a mermaid diagram when it helps |
+| **Agent** | Yes | Yes | Changes in the repository, with diffs and command output on the timeline |
 
-Ask and Plan withhold mutate tools. Plan writes mermaid via the plan tool. Agent uses the full workspace catalog inside the guest.
+Ask and Plan **withhold the mutating tools**. That is enforced by the harness, not by asking the model to behave: in those modes the edit and shell tools are not offered at all. Plan writes its proposal through a dedicated plan tool. Agent receives the full workspace catalog inside the guest. See [How Code works](/code/how-it-works).
+
+## When to use which
+
+| Situation | Mode |
+| --- | --- |
+| Unfamiliar code, *how does this work?* | **Ask** |
+| Estimating a change, reviewing an approach before anything moves | **Plan** |
+| A change you have already decided on | **Agent** |
+| Something went sideways and you want to understand before continuing | Follow up in **Ask**, then return to **Agent** |
 
 ## How to pick
 
-1. Choose Ask, Plan, or Agent on the turn. The session row is the default.
+1. Choose **Ask**, **Plan**, or **Agent** on the turn. The session row's setting is the default for new turns.
 2. Send the task.
-3. On a follow-up, pick a different mode if you want a tighter or looser loop.
+3. On a follow-up, change mode if you want a tighter or looser loop.
 
-Web Code has no model picker — web is Cloud only.
+Web Code has no model picker: the web app is Cloud-only and the runtime chooses the model. In the CLI, `/model` picks the model and the reasoning effort, `/mode` and **Shift+Tab** switch Agent / Plan / Ask, and `/plan` drafts a plan before any code is written — see [CLI modes and permissions](/cli/modes-and-permissions).
+
+<Frame caption="The CLI's slash palette in a small terminal: /plan drafts a plan before writing, /goal keeps a long-horizon objective.">
+  <img src="/images/cli/runtime/40x12/slash-palette.png" alt="Cortex CLI slash palette showing /plan and /goal in a 40 by 12 terminal" />
+</Frame>
+
+## Plan in practice
+
+A Plan turn reads the repository and returns a structured plan: the steps it would take, the files it would touch, the risks it sees. Nothing changes until you send an Agent turn. Ask for adjustments in Plan as many times as you like — the cheap moment to redirect is before any file moves. The CLI adds a **Spec** lock on top of Plan that keeps mutating tools blocked until you accept the plan; see [CLI modes](/cli/modes-and-permissions).
+
+## Related
+
+- [Sessions](/code/sessions) — where the turns live.
+- [Code quickstart](/code/quickstart) — a first Plan, then Agent.

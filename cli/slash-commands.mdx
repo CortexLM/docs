@@ -1,0 +1,180 @@
+---
+title: "Slash commands"
+description: "Everything you can type after / in the Cortex CLI composer — model, mode, permissions, plan, goal, sessions, files, MCP, diagnostics — and how to add your own."
+---
+
+Type `/` in the composer to open the command list. It shows the most-used commands first and filters as you type; the trailer *N more — keep typing to filter* means there is more below. A line beginning with `/` that is not a known command is sent to the agent as an ordinary message.
+
+<Frame caption="The slash palette after typing /: model, mode, permissions, plan, goal, effort, mcp, sandbox — and “13 more — keep typing to filter”.">
+  <img src="/images/cli/runtime/120x40/slash-palette.png" alt="Cortex CLI slash command palette showing /model, /mode, /permissions, /plan, /goal, /effort, /mcp, /sandbox" />
+</Frame>
+
+## The palette home
+
+These are the commands the palette shows first:
+
+| Command | What it does |
+| --- | --- |
+| `/model` | Choose the model for this session and its reasoning effort — Low, Medium, High |
+| `/mode` | Switch between **Agent**, **Plan**, and **Ask** |
+| `/permissions` | Set the approval policy — **Read-only**, **Smart**, or **Full access** |
+| `/plan` | Draft a plan before writing any code |
+| `/effort` | Tune reasoning effort for the current model |
+| `/goal` | Set, show, pause, resume, or clear a persisted long-horizon objective. See [Goals](/cli/goal) |
+| `/mcp` | View and manage MCP servers |
+| `/sandbox` | Configure sandboxed command execution |
+| `/usage` | Plan usage, quota, and limits |
+| `/resume` | Resume a previous session |
+| `/jobs` | Background work — Cloud hand-offs, subagents, and queued follow-ups (`/tasks` is the older name) |
+| `/skills` | List and manage skills |
+| `/btw` | Ask a side question while a turn runs — answered without touching the running turn |
+| `/compact` | Toggle the compact display |
+| `/clear` | Clear the current conversation |
+| `/diff` | Show a file diff |
+| `/copy` | How to copy text out |
+| `/config` | Show configuration |
+| `/login` · `/logout` | Sign in, or clear stored credentials |
+| `/settings` | Open the settings panel |
+| `/interrupt` | Stop the running turn (same as **Esc**) |
+
+Keep typing to filter — `/model` narrows the list to the commands that match:
+
+<Frame caption="Filtering the palette: /model matches /model, /mode, /mcp-reload, and /custom-commands.">
+  <img src="/images/cli/runtime/120x40/slash-model-typed.png" alt="Cortex CLI slash palette filtered by typing /model" />
+</Frame>
+
+## Session
+
+| Command | Aliases | Usage |
+| --- | --- | --- |
+| `/session` | `info` | Current session details |
+| `/new` | `n` | Start a new session |
+| `/clear` | `cls` | Clear the conversation, keep the session |
+| `/resume` | `r`, `load` | `/resume [session-id]` |
+| `/sessions` | `list` | List sessions |
+| `/fork` | `branch` | `/fork [name]` |
+| `/rename` | `mv` | `/rename <name>` |
+| `/favorite` · `/unfavorite` | `fav`, `star` | Mark or unmark a favourite |
+| `/export` | `save` | `/export [format]` — Markdown, JSON, or text |
+| `/share` | | `/share [duration]` — `30d`, `24h`, `60m`, or `never` |
+| `/timeline` | `tl` | The session timeline |
+| `/rewind` | `rw` | `/rewind [steps]` |
+| `/undo` · `/redo` | `u` | Undo or redo the last action |
+| `/delete` | `rm` | `/delete [session-id]` |
+
+Details: [Sessions](/cli/sessions).
+
+## Files and context
+
+| Command | Aliases | Usage |
+| --- | --- | --- |
+| `/add` | `a`, `include` | `/add <file>...` |
+| `/remove` | `exclude` | `/remove <file>...` |
+| `/search` | `find`, `grep` | `/search <pattern>` |
+| `/ls` | `dir`, `files` | `/ls [path]` |
+| `/tree` | | `/tree [path]` |
+| `/mention` | `@`, `ref` | `/mention <file\|symbol>` |
+| `/images` | `img` | `/images <file>...` |
+| `/context` | `ctx` | Show the current context files |
+| `/init` | | `/init [--force]` — write `AGENTS.md` |
+
+## Model and policy
+
+| Command | Usage |
+| --- | --- |
+| `/model [name]` | Pick a model; **Tab** cycles effort in the picker |
+| `/effort` | The same effort radios |
+| `/mode` | Agent, Plan, Ask |
+| `/permissions` | Read-only, Smart, Full access |
+| `/approval <ask\|session\|always\|never>` | Set the approval behaviour explicitly |
+| `/sandbox [on\|off]` | Toggle sandboxed execution |
+| `/auto [on\|off]` | Toggle auto-approval |
+| `/spec [off]` | Toggle specification mode |
+| `/temperature <0.0-2.0>` · `/tokens <n>` | Sampling controls |
+
+Details: [Modes and permissions](/cli/modes-and-permissions).
+
+## Agents, skills, tasks
+
+| Command | Aliases | Usage |
+| --- | --- | --- |
+| `/agents` | `subagents` | List and manage agents |
+| `/delegates` | | `/delegates [action]` — manage subagents |
+| `/jobs` | `tasks` | Background tasks and agents |
+| `/skills` | `sk` | List and manage skills |
+| `/skill` | `invoke` | `/skill <name> [args...]` |
+| `/skill-reload` | `sr` | Reload skills from disk |
+| `/plugins` | `plugin` | `/plugins [action] [plugin-id]` |
+| `/hooks` | | `/hooks [action]` |
+| `/commands` | `cmds` | List custom commands |
+| `/custom-commands` | `cc` | `/custom-commands [action]` |
+
+Details: [Extend](/cli/extend).
+
+## MCP
+
+| Command | Aliases | Usage |
+| --- | --- | --- |
+| `/mcp` | | Interactive server management |
+| `/mcp-tools` | `tools`, `lt` | List and manage MCP tools |
+| `/mcp-auth` | `auth` | MCP authentication |
+| `/mcp-reload` | | Reload MCP server configuration |
+
+## Account and usage
+
+| Command | Aliases | Usage |
+| --- | --- | --- |
+| `/login` · `/logout` | `signin`, `signout` | Sign in, or clear stored credentials |
+| `/account` | `whoami`, `me` | Account information |
+| `/billing` | `plan`, `subscription` | Billing status and credits |
+| `/usage` | `stats`, `credits` | `/usage [--from YYYY-MM-DD] [--to YYYY-MM-DD]` |
+| `/cost` | | Token usage and cost |
+| `/ratelimits` | `limits`, `quota` | API rate limits and usage |
+| `/refresh` | `retry` | Refresh billing after adding payment |
+
+<Frame caption="/usage: agent requests, tokens this month, and Cloud agent minutes against the plan's ceilings, with the renewal date.">
+  <img src="/images/cli/runtime/120x40/usage.png" alt="Cortex CLI /usage panel showing agent requests, tokens, and Cloud agent minutes" />
+</Frame>
+
+## Working with code
+
+| Command | Usage |
+| --- | --- |
+| `/diff [file]` | Show a diff |
+| `/review [target] [--base=branch]` | Review changes |
+| `/multiedit <pattern> <replacement> [--glob=pattern]` | Multi-file replace |
+| `/ghost [action]` | Ghost commits for undo |
+| `/bg-process [action] [target]` | Background processes |
+| `/install-github-app` | Install the Cortex GitHub App |
+| `/ide` | Manage IDE integration |
+
+## General and diagnostics
+
+| Command | Aliases | Usage |
+| --- | --- | --- |
+| `/help` | `h`, `?` | `/help [topic]` |
+| `/version` | `v` | Version information |
+| `/upgrade` | `update` | Check for and install updates |
+| `/settings` | `prefs` | Open the settings panel |
+| `/reload-config` | `reload` | Re-read configuration from disk |
+| `/theme` | | `/theme [name]` |
+| `/palette` | `cmd` | Open the command palette |
+| `/experimental` | `exp`, `features` | `/experimental [feature] [--enable\|--disable]` |
+| `/status` | `stat` | Application status |
+| `/config` | `cfg` | `/config [key]` |
+| `/logs` | `log` | `/logs [level]` |
+| `/debug` | `dbg` | `/debug [on\|off]` |
+| `/diagnostics` | `diag`, `lint` | `/diagnostics [file]` |
+| `/metrics` | `perf` | Performance metrics |
+| `/dump` | | `/dump [file]` |
+| `/bug` | | `/bug [description]` — report a problem |
+| `/quit` | `q`, `exit` | Quit |
+
+## Your own commands
+
+Add markdown files under `.cortex/commands/` in the project; `/commands` lists them. The file name is the command and the body is the prompt it sends. Project commands travel with the repository.
+
+## Related
+
+- [The TUI](/cli/tui) · [Keyboard shortcuts](/cli/keyboard)
+- The equivalents outside the TUI: `cortex --help` and `cortex <command> --help`

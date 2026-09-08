@@ -1,24 +1,40 @@
 ---
 title: "Origin check"
-description: "Check origin on attached media. Fail closed when the check cannot run."
+description: "Attach media and ask whether it is authentic. Cortex waits for a verdict, and says so plainly when the check cannot run."
 ---
 
-**Check origin** is for authenticity asks with attached media. It does not run on every Cortex-Image-1 picture.
+**Check origin** answers one question about a picture or a video you attach: does it look authentic, or does it carry the marks of generation or manipulation? It is an explicit ask on attached media — not something that runs silently on every image in a thread.
 
-<Frame>
-  <img src="/images/product/chat-session.png" alt="A Cortex Chat thread with a reply in the conversation pane" />
-</Frame>
+## Run a check
 
-## When to use it
+<Steps>
+  <Step title="Attach the media">
+    Choose **+ → Check origin** on the composer, or attach the file with **Attach file**. iPhone HEIC/HEIF photos are accepted.
+  </Step>
+  <Step title="Ask">
+    *Is this photo authentic?* or *Was this generated?* The turn runs the origin check on the attachment.
+  </Step>
+  <Step title="Wait for the verdict">
+    Cortex holds its reply until a verdict paints. You will not get a confident paragraph followed by a result that contradicts it.
+  </Step>
+</Steps>
 
-1. Attach the media to the turn. iPhone HEIC/HEIF is accepted on Check origin.
-2. Ask whether the media is authentic.
-3. Wait. Assistant copy waits until a verdict paints.
+## When the check cannot run
 
-## If the check cannot run
+If origin check is unavailable on a deployment, the product says so instead of guessing. That is fail-closed behaviour, not a broken button: no verdict is still no verdict. Ask again later rather than reading silence as a result.
 
-If origin check is unavailable on this deployment, the product says so rather than guessing. That is fail-closed, not a broken button.
+## What it is not
 
-<Note>
-Generated Cortex-Image-1 pictures are Library files. Check origin is a separate ask with attached media — not an automatic step after every generation.
-</Note>
+| It is | It is not |
+| --- | --- |
+| A check on media **you attach** | An automatic label on every generated picture |
+| A Chat turn | A Code tool or a Bot skill |
+| A verdict about the file's origin | A statement about the truth of what the picture shows |
+
+Pictures generated with [Cortex-Image-1](/chat/images) are ordinary Library files. If you want to know whether one of them reads as generated, attach it and ask — the check does not run on its own after generation.
+
+## Related
+
+- [Library](/chat/library) — where attached and generated media live.
+- [Image generation](/chat/images) — Cortex-Image-1.
+- [Security](/security/overview) — how Cortex handles your files.

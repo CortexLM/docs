@@ -1,46 +1,54 @@
 ---
-title: "Guides for Chat, Code, Bot and Design"
-description: "Product docs for the Cortex app — how to chat, ship code, run bots, and design with your team. Platform API lives elsewhere."
+title: "Guides for Chat, Code, Bot, Design, and the CLI"
+description: "Product docs for the Cortex app — how to chat, ship code, run bots, design with your team, and drive Code from a terminal. Platform API lives elsewhere."
 image: "/images/banners/getting-started.png"
 ---
 
 <code>docs.cortex.foundation</code>
 
-Product docs for the Cortex app — how to chat, ship code, run bots, and design with your team. **Platform API lives elsewhere.**
+Product docs for the Cortex app — how to chat, ship code, run bots, design with your team, and drive Code from a terminal. One account, one domain. **Platform API lives elsewhere.**
 
-<Frame>
-  <img src="/images/product/chat-home.png" alt="Cortex Chat home — Chat, Code, and Bot in the sidebar, composer ready" />
+<Frame caption="Cortex Chat home — Chat, Code, and Bot in the sidebar; recent conversations; the composer with its model chip; Code, Research, Docs, and Agents as starting points.">
+  <img src="/images/product/chat-home-recents.png" alt="Cortex Chat home with recent conversations in the sidebar and the composer ready" />
 </Frame>
 
 <p className="ink-cta-row">
   <a className="ink-btn" href="/getting-started/quickstart">Quickstart</a>
-  <a className="ink-btn ink-btn-quiet" href="/getting-started/desktop">Download Cortex</a>
+  <a className="ink-btn ink-btn-quiet" href="/getting-started/downloads">Download Cortex</a>
 </p>
 
 <CardGroup cols={3}>
   <Card title="Getting started" img="/images/banners/getting-started.png" href="/getting-started/quickstart">
-    Sign in and take your first chat, code, bot, or design session.
+    A first chat as a guest, then sign in for Code, Bot, and Design. Accounts, plans, settings.
   </Card>
   <Card title="Chat" img="/images/banners/chat.png" href="/chat">
-    Projects, documents, tools, and long-running conversations in Cortex Chat.
+    Projects, Library, plans, models, tools, Deep Research, images, and how a turn runs.
   </Card>
   <Card title="Code" img="/images/banners/code.png" href="/code">
-    Agentic coding in a Cloud guest — sessions, diffs, terminals, and review flows.
+    A coding agent in an isolated Cloud guest — sessions, Ask / Plan / Agent, GitHub, review.
   </Card>
   <Card title="Bot" img="/images/banners/bot.png" href="/bot">
-    Always-on agents, computer use, schedules, and Bot Cloud workflows.
+    Always-on agents with their own computer, approvals, routines, skills, and the Bot desktop app.
   </Card>
   <Card title="Design" img="/images/banners/design.png" href="/design">
-    Artboards, components, and Design desktop — persistable canvases from Chat or Code.
+    Persistable canvases hosted from Chat or Code, edited in the Design desktop app.
   </Card>
   <Card title="Security" img="/images/banners/security.png" href="/security/overview">
-    Privacy, permissions, sandboxes, and how Cortex handles your data.
+    What Cortex stores, cookies and consent, where code runs, export and deletion.
   </Card>
 </CardGroup>
 
-<Card title="Changelog" img="/images/banners/changelog.png" href="/changelog">
-  What shipped in Chat, Code, Bot, and Design — releases, fixes, and notable behavior changes.
-</Card>
+<CardGroup cols={3}>
+  <Card title="CLI" icon="terminal" href="/cli">
+    Cortex Code in the terminal — install, sign in, the TUI, slash commands, `/goal`, headless runs.
+  </Card>
+  <Card title="Changelog" icon="history" href="/changelog">
+    What shipped in Chat, Code, Bot, Design, and the CLI — dated, with the surface it changed.
+  </Card>
+  <Card title="API" icon="braces" href="/api/overview">
+    The problem-document format and the public catalog of error codes.
+  </Card>
+</CardGroup>
 
 <Note>
 The inference **Platform API** (a public model-inference API) is not documented on this site and is not implemented in this repository. See [Coming soon](/platform).

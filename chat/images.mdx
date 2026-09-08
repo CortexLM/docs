@@ -1,33 +1,51 @@
 ---
 title: "Image generation"
-description: "Cortex-Image-1. Quota, not a paywall, on Free and Guest."
+description: "Ask Chat for a picture and Cortex-Image-1 paints it. Generated images land in Library. On Free and Guest, images are a daily quota — not a paywall."
 ---
 
-Ask Chat for a picture. Chat loads the image-generation skill, then calls Cortex-Image-1 with a complete English scene.
+Ask for a picture in plain language, or choose **+ → Image** on the composer. Chat loads its image skill, turns your ask into a complete scene description, and calls **Cortex-Image-1**. The finished picture is a Library file you can reuse in any chat or project.
 
-<Frame>
-  <img src="/images/product/chat-session.png" alt="A Cortex Chat thread with a reply in the conversation pane" />
+<Frame caption="The composer's + menu: Attach file, Image, Check origin.">
+  <img src="/images/product/chat-composer-menu.png" alt="The composer + menu with Attach file, Image, and Check origin" />
 </Frame>
 
-## 1. Ask for a picture
+## Ask for a picture
 
-Describe a complete English scene. You can set a size and, optionally, a seed, a negative prompt, steps (1–50), and guidance (0–20).
+Describe the whole scene — subject, setting, light, style. You can also set:
 
-## 2. Watch the card
+| Option | Range | Notes |
+| --- | --- | --- |
+| Size | Preset sizes | Pick from the options offered |
+| Seed | Any integer | Same seed, same prompt: a reproducible picture |
+| Negative prompt | Free text | What to keep out of the frame |
+| Steps | 1–50 | More steps, more detail, more time |
+| Guidance | 0–20 | How closely the picture follows the prompt |
 
-| State | What you see |
+## What the card shows
+
+| State | You see |
 | --- | --- |
-| `queued` | Improving prompt… |
-| `generating` | Skeleton |
-| `done` | Library file |
-| `error` | Error square — never a spinner |
+| `queued` | **Improving prompt…** — Chat is completing the scene description |
+| `generating` | A skeleton where the picture will appear |
+| `done` | The picture, saved to Library |
+| `error` | An error square — never a spinner |
 
-A Library fetch that fails is the error square. Empty image-cluster URL fails closed before any quota is spent.
+If the Library fetch for a finished picture fails, you see the error square. If image generation is not configured on a deployment, the request fails closed before any quota is spent.
 
-## 3. Quota, not a paywall
+## Quota, not a paywall
 
-Free and Guest use `images_per_day`. Exhausting the window is `quota_exceeded`. A plan that does not include image generation at all is `entitlement_required`. See [Plans](/getting-started/plans).
+On **Free** and **Guest**, image generation is metered as `images_per_day`. Using the window is [`quota_exceeded`](/problems/quota_exceeded): wait for the reset shown under **Settings → Plan & billing**. A plan that does not include image generation at all is [`entitlement_required`](/problems/entitlement_required). Free explicitly lists *Image generation with Cortex-Image-1*. See [Plans](/getting-started/plans).
 
-Product name **Cortex-Image-1**; attribution "Built on NVIDIA Cosmos".
+## About the model
 
-Origin check does not run on every Cortex-Image-1 picture. See [Origin check](/chat/origin-check).
+**Cortex-Image-1** is the image model for Cortex Chat, in preview, built on NVIDIA Cosmos. It appears in **Settings → Models** beside the chat models with the attribution *Built on NVIDIA Cosmos*. See [Models](/chat/models).
+
+## Origin check is separate
+
+A generated picture is a Library file like any other. **Check origin** is a different ask — attach media and ask whether it is authentic. It does not run automatically after every generation. See [Origin check](/chat/origin-check).
+
+## Tips
+
+- One complete sentence beats a list of keywords: *A lighthouse on a granite headland at dusk, long exposure, soft teal sky.*
+- Reuse the seed to iterate on a picture you like while changing one thing at a time.
+- Use the negative prompt for the things the model keeps adding that you do not want.

@@ -1,29 +1,56 @@
 ---
-title: "Models"
-description: "Pick a model per conversation. Mini stays the default for new threads."
+title: "Models and thinking"
+description: "Pick a model per conversation from the composer chip, set how long Cortex thinks before answering, and know what happens at peak hours."
 ---
 
-New conversations default to **Cortex-Mini-1-Preview**. Existing rows keep the slug they were created with. The composer model chip is Chat-only — web Code has no model picker.
+Every conversation runs on a Cortex model. The chip under the composer — *Cortex 1 Mini · Preview · Thinking Low* by default — is where you change it. The choice belongs to the conversation: existing threads keep the model they were created with, and new chats start from the default.
+
+<Frame caption="The model chip opened: two preview models, the Thinking level, and the Deep Research toggle.">
+  <img src="/images/product/chat-model-picker.png" alt="Model picker — Cortex 1 Mini and Cortex Teutonic-1 in Preview, Thinking Low / Medium / High, and Deep Research" />
+</Frame>
 
 ## What you can pick
 
-| Model | Role |
-| --- | --- |
-| **Cortex-Mini-1-Preview** | Default for new threads |
-| **Cortex Teutonic-1** (`cortex-teutonic-1`) | Second public Preview beside Mini |
+| Model | Status | Context | Capabilities | Role |
+| --- | --- | --- | --- | --- |
+| **Cortex 1 Mini** | Preview | 262.1K | Reasoning, tools | The model Cortex is serving today. Default for new chats. |
+| **Cortex Teutonic-1** | Preview | 32.8K | Reasoning, tools | Second public preview, under active training. |
+| **Cortex-Image-1** | Preview | — | Image generation | Used when you ask for a picture. Built on NVIDIA Cosmos. See [Image generation](/chat/images). |
 
-Completions for Teutonic use a dedicated upstream. Empty configuration fails closed before quota, and never falls through to Mini.
+The composer model chip is a Chat control. Web Code has no model picker; the CLI has its own `/model` picker with the same family under English names (**Cortex Mini 1**, **Cortex 1**, **Cortex Max 1**) — see [CLI modes](/cli/modes-and-permissions).
+
+<Frame caption="Settings → Models lists the same models with their context windows and capabilities.">
+  <img src="/images/product/settings-models.png" alt="Settings → Models — Cortex 1 Mini, Cortex Teutonic-1, Cortex-Image-1, default thinking level, reasoning summaries" />
+</Frame>
+
+## Thinking level
+
+**Low**, **Medium**, or **High**. Higher thinking spends more time before answering and suits multi-step reasoning, careful writing, and anything where a wrong first draft is expensive. Low is right for quick questions. The level is per conversation; a saved default under **Settings → Models** is marked *coming soon*.
+
+**Show reasoning summaries** (also *coming soon* in Settings) displays a short summary of the model's thinking above each answer.
+
+## Deep Research
+
+The toggle at the bottom of the chip turns a conversation into a research run: plan the questions, read live sources, and write a cited report. It is a Chat feature only. See [Deep Research](/chat/deep-research).
 
 ## How a turn uses the model
 
-1. Pick the model on the conversation — not on web Code.
-2. After assembly, Chat clamps generation so prompt plus output still fit that model's context window.
-3. Thinking, when the model supports it, is a catalog capability — not a second product.
+1. You pick the model on the conversation.
+2. Chat assembles the prompt — your message, attachments from Library, memory, project instructions, tool results — and clamps generation so prompt plus output fit the model's context window.
+3. The model runs the tool loop until it stops or reaches Chat's round budget. See [How Chat works](/chat/how-it-works).
 
-There is no inference Platform API on this site: [Coming soon](/platform).
+Completions for Teutonic use their own upstream. If that upstream is not configured on a deployment, the request fails closed before any quota is spent and never falls through to Mini.
+
+## Availability and peak hours
+
+Model availability depends on your plan. During peak hours new chats may fall back to a faster model; the chip always tells you which model is serving the conversation. Go and higher plans get priority when the fleet is busy — see [Plans](/getting-started/plans).
+
+## What this page is not
+
+There is no public inference API on this site. Model names here are product names inside Cortex Chat, not endpoints. See [Coming soon](/platform).
 
 ## Related
 
-- [How Chat works](/chat/how-it-works) — the tool loop around the model.
 - [Streaming](/chat/streaming) — tokens as they arrive.
-- [Plans](/getting-started/plans) — quotas fail closed.
+- [Settings](/getting-started/settings) — defaults for new chats.
+- [Plans and quotas](/getting-started/plans) — quotas fail closed.

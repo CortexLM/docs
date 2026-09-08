@@ -1,48 +1,76 @@
 ---
 title: "Chat guides"
-description: "Projects, documents, tools, and conversations — everything for Cortex Chat."
+description: "Everything for Cortex Chat — conversations, projects, Library, plans, models, tools, research, images, and how a turn actually runs."
 image: "/images/banners/chat.png"
 ---
 
-<Card title="Chat quickstart" img="/images/banners/chat.png" href="/chat/quickstart">
-  First conversation, attach a file, and keep it in a project.
-</Card>
+Cortex Chat is the conversation product at [cortex.foundation](https://cortex.foundation). Ask questions, write, research with citations, work with documents and images, and keep related work together in projects. Chat works before you sign in; projects, files, memory, plans, and connections belong to a signed-in account.
 
-Start a conversation, bring in documents, and keep related work together. Cortex Chat works before you sign in; projects and connections require an account.
-
-<Frame>
-  <img src="/images/product/chat-home.png" alt="Cortex Chat home — Chat, Code, and Bot in the sidebar, composer ready" />
+<Frame caption="Chat home in the dark theme — the composer with its model chip and the four starting points: Code, Research, Docs, Agents. Theme is under Settings → General.">
+  <img src="/images/product/chat-home-dark.png" alt="Cortex Chat home in the dark theme" />
 </Frame>
 
-## Getting started
+## Start here
 
-New to Chat? Follow the [quickstart](/chat/quickstart), or read the [overview](/chat/overview) to decide when to use Chat, Code, or Bot.
+<CardGroup cols={3}>
+  <Card title="Quickstart" img="/images/banners/chat.png" href="/chat/quickstart">
+    First message, attach a file, pick a model, keep the thread in a project.
+  </Card>
+  <Card title="Overview" icon="compass" href="/chat/overview">
+    What Chat is for, what lives where in the sidebar, and when to switch to Code or Bot.
+  </Card>
+  <Card title="Accounts" icon="user" href="/getting-started/accounts">
+    Guest allowance versus a signed-in member, and what each can do.
+  </Card>
+</CardGroup>
 
 ## Core guides
 
 <CardGroup cols={2}>
-  <Card title="Overview" href="/chat/overview">
-    What Chat is for — projects, threads, and when to switch to Code or Bot.
+  <Card title="Projects" icon="folder" href="/chat/projects">
+    Standing instructions, chats, and files kept together. Every chat in a project starts from its instructions.
   </Card>
-  <Card title="Quickstart" href="/chat/quickstart">
-    First conversation, attach a file, and keep it in a project.
+  <Card title="Library" icon="files" href="/chat/library">
+    Everything you uploaded and everything the assistant produced. Files stay when a chat is deleted.
   </Card>
-  <Card title="Projects and docs" href="/chat/projects">
-    Organize threads, pin Library files, and keep context across sessions.
+  <Card title="Plans" icon="list-checks" href="/chat/plans">
+    Turn a long answer into steps you can tick off. Start one from any chat or from Planning.
   </Card>
-  <Card title="Tools and connectors" href="/chat/tools">
-    Chat tools, plugins, and MCP servers the owner enabled for Chat.
+  <Card title="Models and thinking" icon="cpu" href="/chat/models">
+    Cortex 1 Mini, Cortex Teutonic-1, the Thinking level, and what happens at peak hours.
   </Card>
-  <Card title="Models" href="/chat/models">
-    Pick a model per conversation. Mini is the default; Teutonic is a second Preview.
+  <Card title="Tools and connectors" icon="plug" href="/chat/tools">
+    Built-in tools, connected apps, GitHub, and MCP servers — and which product each connection reaches.
   </Card>
-  <Card title="Sharing and teams" href="/chat/sharing">
-    Guests, members, and what Chat does not share today.
+  <Card title="Sharing and teams" icon="users" href="/chat/sharing">
+    Chat is per account. What that means for projects, plans, and threads.
   </Card>
 </CardGroup>
 
-## Advanced guides
+## Research and media
 
-- **Research and media:** [Deep Research](/chat/deep-research), [image generation](/chat/images), [origin check](/chat/origin-check), and [voice](/chat/voice).
-- **Reusable context:** [Library](/chat/library), [memory](/chat/memory), and [canvases](/chat/canvases).
-- **Conversation behavior:** [How Chat works](/chat/how-it-works) and [streaming](/chat/streaming).
+<CardGroup cols={2}>
+  <Card title="Deep Research" icon="telescope" href="/chat/deep-research">
+    Plan the questions, read live sources, write a cited report.
+  </Card>
+  <Card title="Image generation" icon="image" href="/chat/images">
+    Cortex-Image-1 from the composer. Quota, not a paywall, on Free and Guest.
+  </Card>
+  <Card title="Origin check" icon="scan-search" href="/chat/origin-check">
+    Ask whether attached media is authentic. Fails closed when it cannot run.
+  </Card>
+  <Card title="Voice" icon="mic" href="/chat/voice">
+    Dictate with the mic and hear answers with Listen — when the deployment supports them.
+  </Card>
+</CardGroup>
+
+## Context that carries over
+
+- [Memory](/chat/memory) — standing preferences and facts, reviewable and deletable one by one.
+- [Canvases](/chat/canvases) — a document sidecar beside the conversation, drafted by Cortex or by you.
+
+## Under the hood
+
+- [How Chat works](/chat/how-it-works) — the tool loop, compaction, and Chat's round budget.
+- [Streaming](/chat/streaming) — tokens, then tools, then the finished reply; what happens on a dropped connection.
+- [Settings](/getting-started/settings) — theme, language, shortcuts, defaults, privacy.

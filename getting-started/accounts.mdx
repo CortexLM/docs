@@ -1,34 +1,61 @@
 ---
 title: "Accounts and sign-in"
-description: "Sign in via the Cortex app. Chat works as a guest; everything else needs a member."
+description: "Chat works as a guest. Sign in once for projects, files, Code, Bot, and the CLI — the same account everywhere."
 ---
 
-Sign in at [cortex.foundation](https://cortex.foundation). This site does not document the sign-in protocol.
+You sign in from the product: choose **Sign in to save your work** in the sidebar footer, or the **Sign in** button on any public page at [cortex.foundation](https://cortex.foundation). This site describes what the account unlocks; it does not document the sign-in protocol.
 
-<Frame>
-  <img src="/images/product/chat-home.png" alt="Cortex Chat home — Chat, Code, and Bot in the sidebar, composer ready" />
+<Frame caption="The sign-in dialog. Chats, projects, and Bot routines follow a signed-in account across devices.">
+  <img src="/images/product/accounts-sign-in.png" alt="Sign in to keep your sessions — continue with Google, Apple, email, or single sign-on" />
 </Frame>
 
 ## Guest and member
 
+A **guest** is anyone using Chat before signing in. A **member** is a signed-in account.
+
 | | Guest | Member |
 | --- | --- | --- |
-| Chat | Yes | Yes |
-| Projects, Library, memory | No | Yes |
-| Plugins and MCP servers | No | Yes |
-| Code or Bot working UI | No — public product pages only | Yes |
+| Chat conversations | Yes, within the guest allowance | Yes |
+| Projects, Library, memory, plans | No | Yes |
+| Connected apps and MCP servers | No | Yes |
+| GitHub connection | No | Yes |
+| Code and Bot working UI | No — the public product page and the **This space is reserved** gate | Yes |
 | Design canvases | No | Yes |
+| CLI and desktop apps | No | Yes |
+| Data export and account deletion | No | Yes, after two-factor confirmation |
 
-A guest cannot connect a plugin or MCP server, cannot open Code or Bot working UI, and cannot create a grant they could never revoke.
+The rule behind the table: a guest cannot create anything it could not come back to revoke. That is why a guest cannot connect an app, hold a GitHub grant, or own a bot.
 
-## Same account everywhere
+### The guest allowance
 
-The CLI and desktop app use the same Cortex account as the web app. Sign in from those apps when they ask.
+The banner above the composer shows the live number — at the time of writing, **100 messages today** and **500 this month**, with reset timers under **Settings → Plan & billing**. Guest chats live in the browser session; sign in before you close the tab if you want to keep them.
+
+## Ways to sign in
+
+The dialog offers **Continue with Google**, **Continue with Apple**, an email address, and **Single sign-on (SSO)** for organisations. Whatever you choose, it is one account: the web app, the desktop app, the Bot desktop app, and the CLI all recognise it.
+
+The CLI signs in from the terminal with `cortex login`, which opens the browser flow; machines without a browser use a device code. See [CLI sign-in](/cli/sign-in).
+
+## After you sign in
+
+- **Chat** keeps your conversations, projects, Library, memory, and plans across devices.
+- **Code** opens the working UI at `/code` instead of the guest gate. Connect GitHub from Code Home or **Settings → Integrations**.
+- **Bot** opens the setup form on first visit, then your list of bots in the sidebar.
+- **Settings → Account** switches from “You're browsing as a guest” to your account controls.
 
 ## Your data
 
-Export your data or delete your account from **Settings → Data & privacy**. Signed-in members confirm two-factor first. See [Security](/security/overview).
+**Settings → Data & privacy** holds export and deletion. Signed-in members confirm with an authenticator app first. Deletion takes effect within 30 days. What Cortex stores: your account details, conversations and attachments while history is on, saved memories, and billing records. The content of connected apps is read at question time and discarded — it is never stored. See [Security](/security/overview).
 
 <Note>
-There is no teammate-invite on a Chat thread. Cortex Chat is per account, not a shared workspace. See [Sharing and teams](/chat/sharing).
+Cortex Chat is per account, not a shared workspace. There is no teammate invite on a thread. See [Sharing and teams](/chat/sharing).
 </Note>
+
+## Troubleshooting
+
+| What you see | What it means |
+| --- | --- |
+| **This space is reserved** on `/code` or `/bot` | You are a guest. Sign in, or **Continue in Chat**. |
+| **Sign in to continue** in the composer banner | The guest allowance for today or this month is used up. Sign in to continue on the Free plan. |
+| Two-factor prompt on export or deletion | Expected. A signed-in account confirms destructive actions with an authenticator app. |
+| The CLI asks you to sign in again | The stored session expired or was cleared. Run `cortex login`. |

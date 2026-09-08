@@ -1,24 +1,51 @@
 ---
 title: "Approvals"
-description: "Allow / Deny / Always. Confirming runs the parked action."
+description: "Allow / Deny / Always. A bot parks consequential steps — connected-app changes and dangerous computer actions — and nothing runs until you choose."
 ---
 
-Confirm widgets are Allow / Deny / Always. Confirming **runs** the parked action — a connected-app change or a dangerous computer step.
+A bot can act, so it asks first. When it reaches a step that changes something in a connected app or could damage its computer, it **parks** the action and shows an approval widget in the conversation. The widget names the tool and what it is about to do.
 
-<Frame>
-  <img src="/images/product/bot-home.png" alt="Cortex Bot guest gate — this space is reserved for signed-in accounts" />
-</Frame>
-
-## 1. Read the parked step
-
-The widget names the tool and what it will do. Nothing runs until you choose.
-
-## 2. Choose
+## The three choices
 
 | Choice | What happens |
 | --- | --- |
-| **Allow** | Runs the parked action this time |
-| **Deny** | Does not run it |
-| **Always** | Runs it, and remembers that choice for next time |
+| **Allow** | Runs the parked action, this once |
+| **Deny** | Does not run it. The bot continues without that step and can propose something else. |
+| **Always** | Runs it, and remembers the choice for the next time this same kind of step appears |
 
-Denying does not run it. Always is for the next time that same kind of step appears — not a blanket for every tool.
+**Always** is scoped to that kind of step — not a blanket for every tool the bot has. Confirming **runs** the parked action; it is not a preview.
+
+## What parks
+
+| Category | Examples |
+| --- | --- |
+| Connected-app changes | Creating or editing records, sending messages, anything that writes through a plugin |
+| Dangerous computer steps | Deleting files, installing software, commands with broad effect |
+
+Reading, browsing, and taking screenshots do not park; they are how the bot works.
+
+## Read before you choose
+
+<Steps>
+  <Step title="Read the tool name and the description">
+    The widget says which tool wants to run and what it will do.
+  </Step>
+  <Step title="Look at the Computer rail if it helps">
+    The live desktop shows the state the bot is in. See [Computer](/bot/computer).
+  </Step>
+  <Step title="Choose">
+    Allow, Deny, or Always. The bot waits; a parked step never times out into a silent yes.
+  </Step>
+</Steps>
+
+## Approvals elsewhere
+
+| Surface | Control |
+| --- | --- |
+| **Code** | Modes — Ask and Plan withhold mutating tools entirely. See [Ask, Plan, Agent](/code/interactions) |
+| **CLI** | Numbered prompts before consequential commands, plus `/permissions` and a sandbox policy. See [Modes and permissions](/cli/modes-and-permissions) |
+
+## Related
+
+- [Tools](/bot/tools) — what can be parked.
+- [How Bot works](/bot/how-it-works) — approvals as user-visible rows.

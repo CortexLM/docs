@@ -1,22 +1,43 @@
 ---
 title: "Cortex Design"
-description: "Persistable canvases from Chat or Code. No fourth web shell mode."
+description: "Persistable canvases from Chat or Code, edited in a separate desktop app. No fourth mode in the web shell."
 ---
 
-A Design canvas is not a Chat project and not a Chat markdown sidecar. Frames, options, notes, and a Library drawer live on the board.
+A Design canvas is a board: frames, options, notes, and a Library drawer of reusable components, pages, and tokens. It is created when Chat or Code writes to it and persists on your account. You work on it in the **Design desktop app**.
 
-<Frame>
-  <img src="/images/product/design-home.png" alt="Cortex Connectors under Customize — search, discover, and connect apps" />
-</Frame>
+## The shape of the product
 
-The working UI is a separate desktop app. There is no `/design` tree in the web app and no Design segment on the Chat | Code | Bot switcher.
-
-You must be signed in. Another account's canvases are not visible.
+| Fact | What it means |
+| --- | --- |
+| **Hosted from Chat or Code** | Both products have design tools that create and write to a canvas. Bot does not. |
+| **Edited on desktop** | The working UI is a separate desktop app. There is no `/design` route in the web app and no Design segment on the Chat · Code · Bot switcher. |
+| **Private to your account** | Sign in first. Another account's canvases are not visible. |
+| **Not a Chat sidecar** | A Chat canvas is a document beside a conversation. A Design canvas is a board of frames. Different objects. |
 
 ## Start from Chat or Code
 
-1. Sign in.
-2. Host a canvas from Chat or from Code. Chat and Code can write frames through their design tools. Bot does not receive those tools.
-3. Open the board in the [Design desktop](/design/desktop) app.
+<Steps>
+  <Step title="Sign in">
+    Canvases are member objects.
+  </Step>
+  <Step title="Host a canvas">
+    Ask Chat — *lay these three screens out on a canvas* — or ask a Code session to draw the architecture. The design tools create the board, titled **Untitled canvas**, and write frames to it.
+  </Step>
+  <Step title="Open it on desktop">
+    Install the [Design desktop app](/design/desktop), sign in, and open the board. Edit frames, notes, and the Library drawer there.
+  </Step>
+</Steps>
 
-See [Canvases](/design/canvases) and [Library](/design/library).
+## What the web app will not do
+
+- Show a Design segment on the product switcher.
+- Open a working canvas in the browser.
+- Let a guest create a canvas.
+
+Hosting from Chat or Code still creates the object; the desktop app is where you work.
+
+## Next
+
+- [Canvases](/design/canvases) — what lives on the board.
+- [Library](/design/library) — components, pages, tokens.
+- [Design desktop](/design/desktop) — install and open.

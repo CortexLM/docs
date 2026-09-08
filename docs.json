@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "name": "Cortex Docs",
   "theme": "willow",
-  "description": "Product docs for Cortex Chat, Code, Bot, and Design. Platform API lives elsewhere.",
+  "description": "Product docs for Cortex Chat, Code, Bot, Design, and the Cortex CLI. Platform API lives elsewhere.",
   "colors": {
     "primary": "#1F4945",
     "light": "#8AC5B9",
@@ -65,6 +65,10 @@
             "href": "/bot"
           },
           {
+            "label": "CLI",
+            "href": "/cli"
+          },
+          {
             "label": "Design",
             "href": "/design"
           }
@@ -79,7 +83,7 @@
           },
           {
             "label": "Downloads",
-            "href": "/getting-started/desktop"
+            "href": "/getting-started/downloads"
           },
           {
             "label": "Changelog",
@@ -113,7 +117,7 @@
     "404": {
       "redirect": false,
       "title": "Page not found",
-      "description": "That path is not in Cortex Docs. Try [Chat guides](/chat), [Code](/code), [Bot](/bot), or [Design](/design). The inference Platform API is not documented here."
+      "description": "That path is not in Cortex Docs. Try [Get started](/getting-started/quickstart), [Chat](/chat), [Code](/code), [Bot](/bot), [CLI](/cli), or [Design](/design). The inference Platform API is not documented here."
     }
   },
   "seo": {
@@ -134,6 +138,10 @@
     {
       "source": "/chat/plugins",
       "destination": "/chat/tools"
+    },
+    {
+      "source": "/getting-started/cli",
+      "destination": "/cli/install"
     },
     {
       "source": "/api/authentication",
@@ -175,6 +183,38 @@
   "navigation": {
     "tabs": [
       {
+        "tab": "Get started",
+        "groups": [
+          {
+            "group": "Start here",
+            "pages": [
+              "getting-started/quickstart",
+              "getting-started/what-is-cortex",
+              "getting-started/accounts",
+              "getting-started/plans",
+              "getting-started/settings"
+            ],
+            "icon": "rocket"
+          },
+          {
+            "group": "Downloads",
+            "pages": [
+              "getting-started/downloads",
+              "getting-started/desktop"
+            ],
+            "icon": "download"
+          },
+          {
+            "group": "Help",
+            "pages": [
+              "getting-started/troubleshooting",
+              "security/overview"
+            ],
+            "icon": "life-buoy"
+          }
+        ]
+      },
+      {
         "tab": "Chat",
         "groups": [
           {
@@ -191,6 +231,7 @@
             "pages": [
               "chat/projects",
               "chat/library",
+              "chat/plans",
               "chat/models",
               "chat/tools",
               "chat/sharing"
@@ -198,14 +239,26 @@
             "icon": "book-open"
           },
           {
-            "group": "Advanced guides",
+            "group": "Research and media",
             "pages": [
               "chat/deep-research",
               "chat/images",
               "chat/origin-check",
+              "chat/voice"
+            ],
+            "icon": "search"
+          },
+          {
+            "group": "Context that carries over",
+            "pages": [
               "chat/memory",
-              "chat/canvases",
-              "chat/voice",
+              "chat/canvases"
+            ],
+            "icon": "brain"
+          },
+          {
+            "group": "Under the hood",
+            "pages": [
               "chat/how-it-works",
               "chat/streaming"
             ],
@@ -221,7 +274,7 @@
             "pages": [
               "code/index",
               "code/overview",
-              "code/github"
+              "code/quickstart"
             ],
             "icon": "rocket"
           },
@@ -229,18 +282,26 @@
             "group": "Core guides",
             "pages": [
               "code/sessions",
-              "code/cloud",
-              "code/interactions"
+              "code/interactions",
+              "code/github",
+              "code/cloud"
             ],
             "icon": "book-open"
           },
           {
-            "group": "Advanced guides",
+            "group": "Desktop and terminal",
             "pages": [
-              "code/how-it-works",
+              "code/desktop",
+              "code/cli"
+            ],
+            "icon": "monitor"
+          },
+          {
+            "group": "Advanced",
+            "pages": [
               "code/security",
-              "code/cli",
-              "code/desktop"
+              "code/how-it-works",
+              "code/troubleshooting"
             ],
             "icon": "sliders-horizontal"
           }
@@ -253,7 +314,8 @@
             "group": "Getting started",
             "pages": [
               "bot/index",
-              "bot/overview"
+              "bot/overview",
+              "bot/quickstart"
             ],
             "icon": "rocket"
           },
@@ -262,18 +324,75 @@
             "pages": [
               "bot/computer",
               "bot/tools",
-              "bot/approvals"
+              "bot/approvals",
+              "bot/routines",
+              "bot/skills"
             ],
             "icon": "book-open"
           },
           {
-            "group": "Advanced guides",
+            "group": "Desktop",
             "pages": [
-              "bot/routines",
-              "bot/skills",
-              "bot/how-it-works"
+              "bot/desktop"
+            ],
+            "icon": "monitor"
+          },
+          {
+            "group": "Advanced",
+            "pages": [
+              "bot/how-it-works",
+              "bot/troubleshooting"
             ],
             "icon": "sliders-horizontal"
+          }
+        ]
+      },
+      {
+        "tab": "CLI",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": [
+              "cli/index",
+              "cli/install",
+              "cli/sign-in",
+              "cli/quickstart"
+            ],
+            "icon": "rocket"
+          },
+          {
+            "group": "Working in the terminal",
+            "pages": [
+              "cli/tui",
+              "cli/slash-commands",
+              "cli/modes-and-permissions",
+              "cli/goal",
+              "cli/sessions",
+              "cli/keyboard"
+            ],
+            "icon": "terminal"
+          },
+          {
+            "group": "Automation",
+            "pages": [
+              "cli/headless"
+            ],
+            "icon": "workflow"
+          },
+          {
+            "group": "Customize",
+            "pages": [
+              "cli/configuration",
+              "cli/extend"
+            ],
+            "icon": "puzzle"
+          },
+          {
+            "group": "Help",
+            "pages": [
+              "cli/troubleshooting"
+            ],
+            "icon": "life-buoy"
           }
         ]
       },
@@ -296,36 +415,6 @@
               "design/library"
             ],
             "icon": "book-open"
-          }
-        ]
-      },
-      {
-        "tab": "Get started",
-        "groups": [
-          {
-            "group": "Start here",
-            "pages": [
-              "getting-started/quickstart",
-              "getting-started/what-is-cortex",
-              "getting-started/accounts",
-              "getting-started/plans"
-            ],
-            "icon": "rocket"
-          },
-          {
-            "group": "Downloads",
-            "pages": [
-              "getting-started/cli",
-              "getting-started/desktop"
-            ],
-            "icon": "download"
-          },
-          {
-            "group": "Security",
-            "pages": [
-              "security/overview"
-            ],
-            "icon": "shield-check"
           }
         ]
       },
@@ -397,9 +486,7 @@
   "contextual": {
     "options": [
       "copy",
-      "view",
-      "chatgpt",
-      "claude"
+      "view"
     ]
   },
   "icons": {

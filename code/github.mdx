@@ -1,26 +1,60 @@
 ---
 title: "Connect GitHub"
-description: "Connect GitHub in Cortex Code. No personal-access-token field."
+description: "Cortex Code reaches repositories through Connect GitHub — on Code Home, in the repository picker, and under Settings → Integrations. No personal-access-token field."
 ---
 
-Cortex Code reaches repositories through **Connect GitHub** — on Code Home, the repository picker, and Settings → Integrations.
+Code needs a repository to work on. You give it one by connecting GitHub from the product; Cortex then lists the repositories the grant covers and starts sessions on them. The same connection adds GitHub tools to Chat.
 
-<Frame>
-  <img src="/images/product/code-home.png" alt="Cortex Code guest gate — this space is reserved for signed-in accounts" />
+<Frame caption="Settings → Integrations. Connect GitHub adds four GitHub tools to chat and unlocks repositories for Code.">
+  <img src="/images/product/settings-integrations.png" alt="Settings → Integrations — GitHub with a Connect GitHub button and tools listed; Linear, Slack, Notion, Vercel marked Soon" />
 </Frame>
 
-## 1. Connect
+## Connect
 
-1. Sign in. A guest cannot hold a GitHub grant.
-2. Open Code Home, the repository picker, or **Settings → Integrations**.
-3. Choose **Connect GitHub**. There is no personal-access-token field.
+<Steps>
+  <Step title="Sign in">
+    A guest cannot hold a GitHub grant — there would be no way to come back and revoke it.
+  </Step>
+  <Step title="Choose Connect GitHub">
+    From **Code Home**, the **repository picker**, or **Settings → Integrations**.
+  </Step>
+  <Step title="Approve on GitHub">
+    Grant access to the repositories you want Code to see. There is no personal-access-token field anywhere in Cortex; the connection is the only route.
+  </Step>
+  <Step title="Pick a repository">
+    Back in Code, choose a repository and start a session. See [Sessions](/code/sessions).
+  </Step>
+</Steps>
 
-## 2. If something is missing
+## What the connection gives you
 
-| What you see | What it means |
+| Surface | What GitHub adds |
 | --- | --- |
-| No Connect control | GitHub is not available on this deployment |
-| **Reconnect** | The connection lapsed — reconnect in the product |
-| Public `/code` page | You are not signed in |
+| **Code** | The repository list; sessions clone and work inside the guest |
+| **Chat** | Four GitHub tools — list pull requests, list issues, create an issue, and more — available in your conversations |
+| **CLI** | `cortex pr <number>` to check out a pull request, and `cortex github install` to scaffold review workflows. See [Headless runs](/cli/headless) |
 
-This is separate from Chat's plugin catalogue. Code Cloud is not a plugin surface. Cortex Security's GitHub App is a different install — see [Cortex Security](/code/security).
+## If something is missing
+
+| What you see | What it means | Do this |
+| --- | --- | --- |
+| No **Connect** control | GitHub is not available on this deployment | Nothing to configure — the surface is not offered here |
+| **Reconnect** | The grant lapsed or was revoked on GitHub | Choose **Reconnect** and approve again |
+| The public `/code` page instead of Code Home | You are not signed in | Sign in |
+| A repository is not listed | The grant does not cover it | Reconnect and include it, or adjust the installation on GitHub |
+
+## Three different GitHub installs
+
+| Install | Purpose | Where |
+| --- | --- | --- |
+| **Connect GitHub** | Repositories for Code sessions; GitHub tools in Chat | Code Home, repository picker, Settings → Integrations |
+| **Cortex Security GitHub App** | Pull-request review as a check run | `/code/security` in the app — see [Cortex Security](/code/security) |
+| **`cortex github install`** | Workflow files for CI review from the CLI | Your repository — see [Headless runs](/cli/headless) |
+
+Connect GitHub is not part of Chat's connector catalogue under **Customize**, and Code Cloud is not a plugin surface.
+
+## Related
+
+- [Code quickstart](/code/quickstart)
+- [Tools and connectors](/chat/tools) — the rest of Chat's connections.
+- [Troubleshooting](/code/troubleshooting)

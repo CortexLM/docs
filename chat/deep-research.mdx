@@ -1,38 +1,66 @@
 ---
 title: "Deep Research"
-description: "A Chat turn action, not a Code tool and not a Bot skill."
+description: "Plan the questions, read live sources, and write a cited report. A Chat feature — not a Code tool and not a Bot skill."
 ---
 
-Deep Research stays in Chat. You plan questions, then run them. Code refuses that field. It is not a Bot skill.
+Deep Research turns a conversation into a research run. Instead of one answer, Cortex plans a set of questions, reads live sources for each in parallel, and writes a report with citations. You review the plan before it runs and read the report on the thread when it is done.
 
-<Frame>
-  <img src="/images/product/chat-session.png" alt="A Cortex Chat thread with a reply in the conversation pane" />
+<Frame caption="The Research card on Chat home prefills the composer and switches Deep Research on — the chip now ends in “De…” for Deep Research.">
+  <img src="/images/product/chat-deep-research.png" alt="Chat composer prefilled with “Research the latest on” and the model chip showing Deep Research enabled" />
 </Frame>
 
-## 1. Plan
+## Turn it on
 
-1. Stay in **Chat** — not Code, not Bot.
-2. Ask for a research plan. The conversation stays in chat mode.
-3. Review the plan block. A plan that has not been run still offers **Start** after you come back.
+Either:
 
-## 2. Run
+- Open the model chip under the composer and switch on **Deep Research** — *Plan the questions, read live sources and write a cited report.*
+- Choose the **Research** card on Chat home. It prefills *Research the latest on* and enables Deep Research for that conversation.
 
-Start the plan. The harness orchestrates Chat tools plus parallel per-question background children.
+Then describe what you want to know. The more specific the ask, the sharper the plan.
+
+## The run
+
+<Steps>
+  <Step title="Plan">
+    Cortex proposes the questions it will answer. The plan appears as a research block on the thread. Review it; a plan that has not been run still offers **Start** when you come back to the thread later.
+  </Step>
+  <Step title="Run">
+    Choose **Start**. Each question runs as its own background child, in parallel with the others, fetching and reading sources. **Start** disappears once the run has begun.
+  </Step>
+  <Step title="Read the report">
+    The report lands on the thread with its citations. Plan and report persist as research blocks, so you can return to them, ask follow-ups, or start a plan from the conversation.
+  </Step>
+</Steps>
+
+## Limits
 
 | Cap | Limit |
 | --- | --- |
-| Questions | 32 |
-| Sources | 80 |
-| In parallel | 8 |
+| Questions per run | 32 |
+| Sources per run | 80 |
+| Questions in parallel | 8 |
 | Fetches per question | 4 |
-| Child timeout | 180 seconds |
+| Time per question | 180 seconds |
 
-It does **not** copy Chat's eight-round abort onto that loop, and it does **not** emit tool-start / tool-end chrome.
+A research run has its own loop and its own limits. It does not inherit Chat's eight-round tool budget, and it does not draw tool-start / tool-end chrome for every fetch.
 
-## 3. Read the report
+## Where Deep Research lives
 
-Plan and report persist as research blocks on the thread. **Start** hides once the run has begun.
+| Surface | Available? |
+| --- | --- |
+| Cortex Chat | Yes — the toggle in the model chip |
+| Cortex Code | No. Code has web fetch inside a session, not Deep Research. |
+| Cortex Bot | No. Bot has `web_search` and `web_fetch` tools, not a research skill. |
+| CLI | No. `cortex scrape` fetches a single page; `--search` enables web search in a session. |
 
-<Note>
-Deep Research is a Chat turn. Do not look for it in Code's workspace tools or Bot's skill list.
-</Note>
+## Tips
+
+- Ask for the shape you want back: *a comparison table*, *a timeline*, *a one-page brief with sources*.
+- Attach documents to the same thread when your question depends on them; the run can read Library attachments alongside live sources.
+- For a quick factual answer, leave Deep Research off — a normal turn with web search is faster.
+
+## Related
+
+- [Models](/chat/models) — the chip where the toggle lives.
+- [Plans](/chat/plans) — turn the report into a task list.
+- [How Chat works](/chat/how-it-works) — the ordinary tool loop that Deep Research replaces.
