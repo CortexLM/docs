@@ -1,28 +1,47 @@
 ---
 title: "Library"
-description: "Files you uploaded. Chat attaches Library items, not a URL you typed."
+description: "Everything you uploaded to a chat or a project, and everything the assistant produced. Files stay in Library when a chat is deleted."
 ---
 
-Library is the files on your account. Attach them from the composer. Chat turns take those files from Library — never a URL you paste.
+Library is the file store on your account. Anything you attach in a chat, add to a project, or upload directly lands here, and so does everything the assistant generates — pictures from Cortex-Image-1 included. Open it from **Artifacts** in the sidebar.
 
-<Frame>
-  <img src="/images/product/chat-home.png" alt="Cortex Chat home — Chat, Code, and Bot in the sidebar, composer ready" />
+<Frame caption="Library, filtered by type: All, Images, PDFs, Code, Other.">
+  <img src="/images/product/chat-library.png" alt="Library — Nothing in your library yet. Attach a file in a chat, add one to a project, or upload it here." />
 </Frame>
 
-## Add a file
+## How files get in
 
-1. Sign in. Library belongs to a member account.
-2. Drop a file on the composer, or upload from Library.
-3. Type and size checks run at upload. A rejected file is not attached.
+| Route | What happens |
+| --- | --- |
+| **+ → Attach file** in the composer, or drop a file on it | The file is checked, stored in Library, and attached to the turn |
+| Add a file to a project | The file is stored in Library and available to that project's chats |
+| **Upload** in Library | The file is stored for later use |
+| The assistant generates something | Generated files — images, documents — are saved here |
+
+Type and size checks run at upload. A rejected file is not attached and does not appear in Library.
 
 ## Use a file in Chat
 
-Pick from Library when you start a turn. The conversation receives the file as an attachment, not as a path you typed.
+Pick from Library when you start a turn, or attach a fresh file. The conversation receives the file as an attachment. Cortex does not fetch a URL you paste as if it were an attachment — paste a link and Chat will read it as text, or use web tools to fetch the page.
 
-Generated pictures land in Library when [image generation](/chat/images) finishes. A Library fetch that fails shows the error square — never a spinner.
+Deleting a chat does not delete its files; they stay in Library until you remove them there.
+
+## Filters
+
+**All**, **Images**, **PDFs**, **Code**, **Other**. Generated pictures show under Images.
+
+## Failure states
+
+A Library fetch that fails shows an **error square** in the thread — never a spinner that spins forever. Retry the turn; if the file is gone from Library, attach it again.
+
+## Guests
+
+Library needs a signed-in account. A guest can attach files to the current session; they are not kept once the session ends. See [Accounts](/getting-started/accounts).
 
 ## Related
 
-- Pin files in a [project](/chat/projects).
-- Check attached media with [origin check](/chat/origin-check).
-- Export or delete the account from [Settings → Data & privacy](/getting-started/accounts).
+- [Projects](/chat/projects) — pin files to a body of work.
+- [Image generation](/chat/images) — generated pictures land here.
+- [Origin check](/chat/origin-check) — check attached media.
+- [Design library](/design/library) — a different object: components, pages, and tokens for canvases.
+- [Settings → Data & privacy](/getting-started/settings) — export or delete everything.

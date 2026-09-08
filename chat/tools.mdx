@@ -1,41 +1,82 @@
 ---
 title: "Tools and connectors"
-description: "Use built-in Chat tools, connect apps, and understand where MCP and Code's GitHub connection fit."
+description: "Built-in Chat tools, connected apps under Customize → Connectors, GitHub in Settings → Integrations, and MCP servers — and which product each connection reaches."
 ---
 
-Chat combines built-in tools with connected apps and MCP servers. Use Chat for research, writing, and working with documents; use Code for a repository workspace and Bot for computer tasks.
+A Chat turn can call tools. Some are built in — web search, Python snippets, image generation, memory, canvases. Others come from apps you connect, and from MCP servers you attach. This page explains where each lives and how to scope it.
 
-<Frame>
-  <img src="/images/product/chat-session.png" alt="A Cortex Chat thread with a reply in the conversation pane" />
+<Frame caption="Customize → Connectors. Discover, connect, and choose which product each app reaches. Cortex never sees your passwords.">
+  <img src="/images/product/chat-connectors.png" alt="Connectors — search connectors, Discover / All / Connected, apps grouped by category" />
 </Frame>
 
 ## Built-in tools
 
-| Task | Chat capability | Guide |
+| Task | What Chat uses | Guide |
 | --- | --- | --- |
-| Find information | Search the web and extract web content | [Deep Research](/chat/deep-research) |
-| Work through calculations | Run Python snippets | [How Chat works](/chat/how-it-works) |
-| Create pictures | Generate images with Cortex-Image-1 | [Image generation](/chat/images) |
-| Check attached media | Check origin; if unavailable, Chat says so rather than guessing | [Origin check](/chat/origin-check) |
-| Keep context | Use memory across conversations | [Memory](/chat/memory) |
-| Draft documents | Create markdown canvases | [Canvases](/chat/canvases) |
+| Find current information | Web search and web extraction | [Deep Research](/chat/deep-research) for a full cited run |
+| Work through a calculation or transform data | A Python snippet sandbox | [How Chat works](/chat/how-it-works) |
+| Create a picture | Cortex-Image-1 | [Image generation](/chat/images) |
+| Check attached media | Origin check | [Origin check](/chat/origin-check) |
+| Remember a preference across chats | Memory | [Memory](/chat/memory) |
+| Draft a document beside the chat | A canvas | [Canvases](/chat/canvases) |
+| Read a large attachment | Artifact read and search tools | [Library](/chat/library) |
 
-Chat's Python tool is not Code's workspace shell or Bot's computer. See [Chat overview](/chat/overview) to choose the right product.
+Chat's Python tool runs a small snippet with no workspace. It is not Code's shell inside a Cloud guest and not Bot's computer.
 
-## Connect apps
+## Connected apps
 
-You must be signed in to connect an app. In **Customize**, choose whether a connected app is available to **Cortex Chat**, **Cortex Bot**, or both.
+Open **Customize** in the sidebar (the page is titled **Connectors**). Apps are grouped by category — accounting, ads, CRM, and so on — with **Discover**, **All**, and **Connected** filters and a search box (⌘ K).
 
-Plugins enabled for **Chat** are available in the conversation. A connection enabled only for Bot is not a Chat connection.
+<Steps>
+  <Step title="Sign in">
+    Connecting an app needs an account: a guest session cannot be signed back into to revoke the connection later.
+  </Step>
+  <Step title="Connect">
+    Choose the app and follow its own sign-in. You stay signed in with the provider; Cortex never sees your passwords.
+  </Step>
+  <Step title="Choose where it is available">
+    Each connection can be available to **Cortex Chat**, **Cortex Bot**, or both. A connection enabled only for Bot is not a Chat tool, and Bot never inherits a tool you did not assign to it.
+  </Step>
+</Steps>
+
+Connected apps are read at question time. Their content is never stored by Cortex — see [Security](/security/overview).
+
+## Integrations in Settings
+
+**Settings → Integrations** lists the apps that add tools directly to your conversations. GitHub is live with four tools — list pull requests, list issues, create issue, and more. Linear, Slack, Notion, and Vercel are shown as coming soon. The GitHub connection is the same one Code uses for repositories; see [Connect GitHub](/code/github) for the walk-through.
 
 ## MCP servers
 
-MCP servers provide another source of tools for Chat conversations, alongside built-in tools and Chat-enabled plugins. You must be signed in to connect an MCP server; guests cannot connect one.
+Cortex Chat is a Model Context Protocol client. Under **Settings → Integrations → MCP servers**, attach a server over HTTP: a name, its URL, and an optional bearer token. Its tools join the model in chat alongside built-in tools and connected apps. You must be signed in.
 
-For how tool calls and results fit into a conversation, see [How Chat works](/chat/how-it-works).
+<Frame caption="Attach an MCP server: name, URL, optional bearer token.">
+  <img src="/images/product/settings-mcp-servers.png" alt="MCP servers — name, https URL, bearer token (optional), Add" />
+</Frame>
+
+| Field | Notes |
+| --- | --- |
+| **Name** | How the server appears in chat, for example `linear` |
+| **URL** | The server's HTTP endpoint, for example `https://mcp-server.example.com/mcp` |
+| **Bearer token** | Optional. Sent with each request to the server; never shown again. |
+
+The CLI is also an MCP client, with stdio and HTTP transports and its own configuration — see [Extend the CLI](/cli/extend).
 
 ## GitHub repositories belong in Code
 
-To connect GitHub for **Code repositories**, use **Connect GitHub** in Code Home, the repository picker, or **Settings → Integrations**. This is separate from Chat's plugin catalogue; Code Cloud is not a plugin surface.
+Connecting GitHub for **Code repositories** is a different control: **Connect GitHub** on Code Home, in the repository picker, or under **Settings → Integrations**. There is no personal-access-token field. If the connection lapses the product shows **Reconnect**; if GitHub is unavailable on your deployment, the control is not shown. See [Connect GitHub](/code/github).
 
-There is no personal-access-token field. If the connection has lapsed, the product shows **Reconnect**. If GitHub is unavailable on your deployment, the Connect control is not shown. See [Connect GitHub](/code/github).
+Cortex Security's GitHub App — pull-request review — is a third, separate install. See [Cortex Security](/code/security).
+
+## Frequently asked
+
+<AccordionGroup>
+  <Accordion title="Why can I see Connectors but not connect anything?">
+    You are a guest. The banner on the Connectors page explains it: connecting an app needs an account so the connection can be revoked later.
+  </Accordion>
+  <Accordion title="I connected an app for Bot. Why can't Chat use it?">
+    Connections are scoped per product. Open **Customize → Connectors** and enable it for Chat as well.
+  </Accordion>
+  <Accordion title="Does Cortex store the data it reads from my apps?">
+    No. Connected-app content is read at question time and discarded. See [Security](/security/overview).
+  </Accordion>
+</AccordionGroup>

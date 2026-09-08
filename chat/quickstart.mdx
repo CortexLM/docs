@@ -1,41 +1,55 @@
 ---
 title: "Chat quickstart"
-description: "Get from open to a useful first conversation — send, attach, and keep it in a project."
+description: "From an open tab to a useful first conversation — send, attach, pick a model, and keep the thread in a project."
 image: "/images/banners/chat.png"
 ---
 
-<Card title="Chat" img="/images/banners/chat.png" href="/chat">
-  Get from open to a useful first conversation.
-</Card>
+This walk-through takes about five minutes. Steps 1–3 work as a guest; step 4 needs a signed-in account.
 
-Get from open to a useful first conversation. Sign in if you want projects and tools; Chat also works as a guest.
-
-<Frame>
-  <img src="/images/product/chat-session.png" alt="A Cortex Chat thread with a reply in the conversation pane" />
+<Frame caption="A prompt typed into the composer. Enter sends; Shift + Enter adds a line.">
+  <img src="/images/product/chat-composer-typed.png" alt="The Chat composer with a multi-line prompt typed and ready to send" />
 </Frame>
 
-## 1. Open Chat
+<Steps>
+  <Step title="Open Chat and send a message">
+    Go to [cortex.foundation](https://cortex.foundation). Chat is the default surface. Type a question in the composer and press **Enter**.
 
-1. Launch [cortex.foundation](https://cortex.foundation).
-2. Select **Chat** from the product switcher.
-3. Start a new chat. It is an action, not a selected row in the sidebar.
+    ```text
+    Give me a three-row markdown table comparing bubble sort, merge sort and quicksort
+    by average time complexity and stability, then a short Python code block implementing merge sort.
+    ```
 
-## 2. Send a message
+    The reply streams in as it is written. Tables, headings, and code blocks render as you would expect; every code block has its own **Copy**. Press **Esc** if you want to stop a response.
+  </Step>
+  <Step title="Attach context">
+    Choose **+** on the composer, then **Attach file**, or drop a file onto the composer. Type and size checks run at upload; a rejected file is not attached. Attachments land in your [Library](/chat/library), and the conversation receives the file — never a URL you typed.
+  </Step>
+  <Step title="Pick a model and a thinking level">
+    Open the model chip under the text box. Choose **Cortex 1 Mini** (the default) or **Cortex Teutonic-1**, set **Thinking** to Low, Medium, or High, and switch on **Deep Research** when you want a cited report rather than a quick answer. The choice belongs to this conversation. See [Models](/chat/models).
+  </Step>
+  <Step title="Keep the thread in a project">
+    Sign in, then open **Projects** in the sidebar and choose **New project**. Give it a name and, optionally, standing instructions — they are read before every chat in the project. Start the next conversation inside it, or use **Move to project** in the header of an existing thread.
+  </Step>
+  <Step title="Turn the answer into a plan (optional)">
+    In the thread header choose **Start a plan**. The plan stays linked to the conversation and outlives it if you delete the chat. Track it under **Planning**. See [Plans](/chat/plans).
+  </Step>
+</Steps>
 
-Type in the composer and send. Tokens appear as they arrive, then tools, then the finished reply. If the connection drops, the product reconnects. See [Streaming](/chat/streaming).
+## Good first prompts
 
-## 3. Attach context
+| Try | Why it shows Chat well |
+| --- | --- |
+| *Summarize this quarterly report* with a PDF attached | Documents come from Library, not a pasted URL |
+| *Research the latest on …* with Deep Research on | Planned questions, live sources, a cited report |
+| *Draft a launch announcement* | Long-form writing with headings; open a canvas to keep editing |
+| *Plan a 5-day trip to Tokyo* | A natural candidate for **Start a plan** |
 
-1. Drop a file on the composer, or pick from [Library](/chat/library).
-2. Chat attaches those Library items — never a URL you typed.
-3. Images and files are accepted with type and size checks at upload.
+## What guests can and cannot do
 
-## 4. Keep the thread in a project
+Guests get a daily and monthly allowance (the banner above the composer shows it), can attach files to the current session, switch models, and use Deep Research. Projects, Library across sessions, memory, plans that persist, connected apps, and MCP servers need an account. See [Accounts](/getting-started/accounts).
 
-Projects keep threads and Library files together.
+## Next
 
-1. Sign in if you have not already. Guests cannot create a project.
-2. Open **Projects** in the Chat nav and create one.
-3. Start the conversation inside that project. A later chat in the same project still sees that grouping.
-
-Next: [Projects and docs](/chat/projects).
+- [Projects](/chat/projects) — instructions, chats, and files together.
+- [Library](/chat/library) — what happens to your uploads and generated files.
+- [Tools and connectors](/chat/tools) — connect an app or an MCP server.

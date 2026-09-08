@@ -1,16 +1,36 @@
 ---
 title: "Streaming"
-description: "Answers appear as they arrive — tokens, then tools, then the finished reply."
+description: "Answers appear as they are written — tokens, then tools, then the finished reply. If the connection drops, the thread reconnects; you do not resend."
 ---
 
-Chat answers stream as they are written. You see tokens, then tools, then the finished reply — not a dump after the turn ends.
+Chat streams. You see the answer being written rather than a block of text after the turn ends, and you can stop it at any point.
 
-<Frame>
-  <img src="/images/product/chat-session.png" alt="A Cortex Chat thread with a reply in the conversation pane" />
+<Frame caption="A turn in flight: the composer reads “Cortex is responding…” and the send button has become a stop control.">
+  <img src="/images/product/chat-streaming.png" alt="A Chat thread while a reply is in flight — Cortex is responding" />
 </Frame>
 
-## What happens on a drop
+## What streams, in order
 
-If the connection drops, the product reconnects. Run state lives in the thread, not in a status line about the transport.
+| Phase | What you see |
+| --- | --- |
+| Thinking | A blinking caret while the model reasons; longer at higher [thinking levels](/chat/models) |
+| Tokens | The reply appearing word by word, markdown rendering as it lands |
+| Tools | Tool results entering the thread when the model uses one |
+| Finished | **Copy**, **Listen**, and feedback controls under the reply |
 
-You do not need to resend the same turn to recover the reply that already started.
+## Stop a response
+
+Press **Esc**, or the stop control where the send button was. The partial reply stays in the thread. See [Keyboard shortcuts](/getting-started/settings#keyboard-shortcuts).
+
+## When the connection drops
+
+Run state lives in the thread, not in the transport. If your connection drops mid-reply, the product reconnects and the reply that already started continues. **Do not resend** the same message to recover it — you would start a second turn.
+
+## Queueing
+
+Sending while a reply is still streaming is not the intended path in the web app; wait for the reply or stop it first. The CLI queues follow-ups explicitly — see [The TUI](/cli/tui).
+
+## Related
+
+- [How Chat works](/chat/how-it-works) — the loop behind the stream.
+- [Troubleshooting](/getting-started/troubleshooting) — what a cut-short reply means.
