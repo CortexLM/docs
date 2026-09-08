@@ -1,29 +1,63 @@
 ---
 title: "Plans and quotas"
-description: "Free, Pro, Enterprise. Quotas fail closed — they are not a paywall in front of a missing entitlement."
+description: "Guest, Free, Go, Plus, and Pro as listed in Settings → Plan & billing. Quotas fail closed and tell you when they reset."
 ---
 
-Your plan and remaining quotas live on **Settings → Plan & billing** and in the product when a limit is reached.
+Your plan, today's usage, and the reset timers live under **Settings → Plan & billing**. The product is the source of truth for numbers; this page explains what each plan is for and how limits behave.
+
+<Frame caption="Settings → Plan & billing. The plan ladder as shown in the product; the Change plan buttons are marked Coming soon while checkout is being finished.">
+  <img src="/images/product/settings-plans.png" alt="Plan & billing — Free, Go, Plus, and Pro plan cards with their features" />
+</Frame>
+
+## The plans
+
+| Plan | Price | Who it is for | Includes |
+| --- | --- | --- | --- |
+| **Guest** | — | Anyone before signing in | A daily and monthly message allowance; conversations live in the browser session |
+| **Free** | $0 / month | Everyday tasks | Limited messages each day and month · Cortex 1 Mini · web search and code runs · image generation with Cortex-Image-1 · written conversations, subject to abuse protection |
+| **Go** | $8 / month | Everyday work | Everything in Free · more messages each day and month · priority when the fleet is busy · extended memory and context |
+| **Plus** | $20 / month | Advanced intelligence | Everything in Go · more messages and higher ceilings · projects and saved work · extended memory and context · early access to new features |
+| **Pro** | Custom | People who live in Cortex | Everything in Plus · unlimited messages · SSO, audit export, and private routing · team workspace and admin controls · preview access to new features |
+
+**Plus** is the recommended plan in the product. Switching takes effect at the next billing cycle. At the time of writing the **Get Free / Go / Plus / Pro** buttons and **Billing history** are marked **Coming soon**; the ladder above is what the product lists.
+
+## Usage and reset timers
+
+**Settings → Plan & billing** shows today's and this month's message counts with a reset countdown for each window.
+
+<Frame caption="A guest's usage: 100 messages today and 500 this month, each with its own reset timer.">
+  <img src="/images/product/settings-plan-usage.png" alt="Guest plan usage — messages today 0 of 100, messages this month 0 of 500, with reset timers" />
+</Frame>
 
 ## How limits fail
 
-| What happened | Code | Meaning |
+Cortex quotas **fail closed**: when a window is used up, the product says so and tells you when it resets. Nothing is silently downgraded, and there is no paywall pretending to be a quota.
+
+| What happened | Error code | What to do |
 | --- | --- | --- |
-| You used the window | `quota_exceeded` | Try again when the window resets |
-| The plan does not include it | `entitlement_required` | That capability is not on this plan |
+| You used the window for today or this month | [`quota_exceeded`](/problems/quota_exceeded) | Wait for the reset shown in the product, or move to a plan with higher ceilings |
+| The plan does not include the capability at all | [`entitlement_required`](/problems/entitlement_required) | That capability is not on this plan |
+| Too many requests in a short burst | [`rate_limited`](/problems/rate_limited) | Retry after the pause the product suggests |
+| The fleet is at capacity | [`no_capacity`](/problems/no_capacity) | Try again shortly; Go and above get priority when the fleet is busy |
 
-Do not invent a paywall in front of a quota. Cortex-Image-1 on Free is `images_per_day`. See [Image generation](/chat/images) and [Errors](/api/errors).
+Image generation on Free and Guest is metered as `images_per_day`. Running out is `quota_exceeded`, not a paywall. See [Image generation](/chat/images).
 
-## Plans
+The CLI shows the same thing in the terminal: when the agent quota is exhausted the composer is held with the reset time, and `/usage` shows the details. See [CLI troubleshooting](/cli/troubleshooting).
 
-| Plan | Where you see it |
-| --- | --- |
-| Free | Default for a signed-in account |
-| Pro | Settings → Plan & billing |
-| Enterprise | Settings → Plan & billing |
+## Model availability
 
-Exact numbers live in the product. This page does not invent a price list.
+Model availability depends on your plan. During peak hours new chats may fall back to a faster model; the composer chip always shows which model is serving the conversation. See [Models](/chat/models).
 
-## Closed Pro claim
+## Frequently asked
 
-Through **7 September 2026** (inclusive), a signed-in member could claim one month of Cortex Pro from the product. That window has closed. Claiming twice did not stack. Paying Pro is left alone.
+<AccordionGroup>
+  <Accordion title="Do guest messages and Free messages share a quota?">
+    No. The guest allowance belongs to the browser session and ends when you sign in. Free has its own daily and monthly limits on the account.
+  </Accordion>
+  <Accordion title="Does unused quota roll over?">
+    No. Daily and monthly windows reset on the timers shown in Plan & billing.
+  </Accordion>
+  <Accordion title="Was there a Pro trial?">
+    Through 7 September 2026 a signed-in member could claim one month of Cortex Pro from the product. That window has closed; claiming twice never stacked.
+  </Accordion>
+</AccordionGroup>

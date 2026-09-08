@@ -1,0 +1,76 @@
+---
+title: "Troubleshooting"
+description: "What the web app shows when something is off, what it means, and what to do — gates, quotas, reconnects, and product-facing errors."
+---
+
+Cortex prefers a clear message over a spinner. When something cannot run, the product says so in plain words and, where it can, tells you what to do next. This page collects those messages across Chat, Code, and Bot. The CLI has [its own page](/cli/troubleshooting).
+
+## Sign-in and access
+
+| What you see | Meaning | Do this |
+| --- | --- | --- |
+| **This space is reserved** on `/code` or `/bot` | You are a guest. Code and Bot are member surfaces. | **Sign in**, or **Continue in Chat**. |
+| **Sign in to continue** in the composer banner | Today's or this month's guest allowance is used up. | Sign in to continue on Free, or wait for the reset shown under **Settings → Plan & billing**. |
+| A dialog asking for an authenticator code | You asked to export or delete data. | Confirm with your authenticator app. |
+| No **Connect** control for an app or for GitHub | That connection is not available on this deployment, or you are a guest. | Sign in; if the control is still missing, it is not offered here. |
+
+## Quotas and plans
+
+| What you see | Meaning | Do this |
+| --- | --- | --- |
+| [`quota_exceeded`](/problems/quota_exceeded) | The daily or monthly window is used up. | Wait for the reset, or move to a plan with higher ceilings. |
+| [`entitlement_required`](/problems/entitlement_required) | The plan does not include that capability. | Compare plans under **Settings → Plan & billing**. |
+| [`rate_limited`](/problems/rate_limited) | Too many requests in a burst. | Pause, then retry. |
+| [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | Too many things running at once on the account. | Let a session or run finish first. |
+
+See [Plans and quotas](/getting-started/plans).
+
+## Chat
+
+| What you see | Meaning | Do this |
+| --- | --- | --- |
+| **Cortex is responding…** with a spinner on the send button | A turn is in flight. | Wait, or press **Esc** to stop it. |
+| An error square where an image should be | The Library fetch or the generation failed. It is never a spinner. | Retry the request. |
+| **Improving prompt…** on an image card | The picture is queued; Chat is turning your ask into a complete scene first. | Wait — the card becomes a skeleton, then the image. |
+| No mic in the composer, no **Listen** under an answer | Voice is not available on this deployment. | Nothing to configure — the capability is off, not broken. |
+| Origin check says it cannot run | The check is unavailable here. Cortex says so rather than guessing. | Ask again later; do not treat silence as a verdict. |
+| A reply cut short, then the thread reconnects | The connection dropped. Run state lives in the thread. | Do not resend; the reply that started continues. |
+| **Deep Research** is missing | Deep Research is a Chat feature. | You are in Code or Bot; switch to Chat. |
+
+## Code
+
+| What you see | Meaning | Do this |
+| --- | --- | --- |
+| **Reconnect** next to GitHub | The GitHub connection lapsed. | Choose **Reconnect** in Code Home or **Settings → Integrations**. |
+| Code says Cloud compute is unavailable | The deployment has no Cloud runtime right now. Code never runs your repository on the API instead. | Try again later, or use **This PC** on the desktop app or CLI. |
+| `/code/secrets` sends you home | There is no Secrets page. Environment for a guest belongs to that guest. | Set environment inside the session. |
+| A review shows **failed**, not approved | A Cortex Security review that could not run is stored as failed. | Read the check run; fix and push. |
+
+More: [Code troubleshooting](/code/troubleshooting).
+
+## Bot
+
+| What you see | Meaning | Do this |
+| --- | --- | --- |
+| **Connecting** on the Computer rail | The Cloud guest is starting. | Wait a moment. |
+| **Stream Unavailable** | The guest is running but its live desktop is not reachable. | Use **Open desktop** again, or **Sleep** and wake it. |
+| An **Allow / Deny / Always** widget | The bot parked a consequential step for you. Nothing runs until you choose. | Read the step, then decide. |
+| The setup form instead of a bot list | The account has no bots yet. That is a setup, not an empty list. | Create a bot. |
+
+More: [Bot troubleshooting](/bot/troubleshooting).
+
+## Service errors
+
+Every API failure is a problem document with a stable `code`, and the web app renders catalogue copy for it. Three codes may show a secondary `detail` line: `validation_failed`, `bad_request`, `invalid_state`. User-facing text names a product surface, never a vendor. Full list: [Problem catalog](/problems).
+
+| Code | Retry? |
+| --- | --- |
+| [`service_unavailable`](/problems/service_unavailable) | Yes, after a pause |
+| [`upstream_failure`](/problems/upstream_failure), [`upstream_timeout`](/problems/upstream_timeout) | Yes |
+| [`no_capacity`](/problems/no_capacity) | Yes; higher plans get priority when the fleet is busy |
+| [`internal`](/problems/internal) | Yes; keep the `request_id` if you report it |
+| [`safety_intervention`](/problems/safety_intervention), [`content_policy`](/problems/content_policy) | No — change the request |
+
+## Reporting a problem
+
+Keep the `request_id` from the error, the time, and the surface you were on. From the CLI, `cortex feedback bug "what happened" --include-logs` attaches diagnostics.

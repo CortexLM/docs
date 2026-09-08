@@ -1,33 +1,63 @@
 ---
-title: "Security"
-description: "Privacy, permissions, sandboxes, and how Cortex handles your data."
+title: "Security and privacy"
+description: "What Cortex stores, what it never stores, which cookies run, where your code executes, and how to export or delete your data."
 image: "/images/banners/security.png"
 ---
 
-This page is **how Cortex handles your data and where code runs**. It is not a status page.
+This page is about **how Cortex handles your data and where code runs**. It is not a status page, and it is not the [Cortex Security](/code/security) product that reviews pull requests.
 
-<Frame>
-  <img src="/images/banners/security.png" alt="Shield and lock — security is how Cortex handles data, not a product window" />
+## Cookies and consent
+
+Necessary cookies always run: session, language, and your cookie preference. Optional analytics stay off until you allow them, and a **Global Privacy Control** signal keeps them off. Nothing in the current build loads an optional tracker; the preference is recorded so a future one cannot fire without it.
+
+<Frame caption="The consent banner on first visit. Necessary only is a complete choice.">
+  <img src="/images/product/privacy-cookie-banner.png" alt="Cookies on this site — Necessary only or Allow optional" />
 </Frame>
 
-## Privacy and permissions
+## What Cortex stores
 
-Necessary cookies always; optional analytics default deny. Global Privacy Control refuses optional cookies. Export your data or delete your account from **Settings → Data & privacy**. Signed-in members confirm two-factor first.
+From **Settings → Data & privacy**, in the product's own words: your account details, conversations and attachments while history is on, saved memories, and billing records. **The content of connected apps is never stored** — Cortex reads it at question time, then discards it.
 
-A guest cannot connect a plugin, hold a GitHub grant, create a bot, or open Code working UI. That is fail-closed, not a missing button.
+<Frame caption="Settings → Data & privacy: chat history, model improvement (off by default), cookies, and optional analytics.">
+  <img src="/images/product/settings-data-privacy.png" alt="Data & privacy settings — Save chat history, Improve the model, Necessary cookies, Optional analytics" />
+</Frame>
+
+| Control | Default | What it means |
+| --- | --- | --- |
+| **Save chat history** | On | Conversations are kept in your account for any device. Off means new chats disappear when you close them. |
+| **Improve the model** | Off | Only when on may a sample of your conversations be reviewed to train future models. |
+| **Memory** | — | Standing preferences and facts you share, reviewable and deletable one by one. See [Memory](/chat/memory). |
+| **Two-factor authentication** | — | A signed-in account uses an authenticator app to confirm export and deletion. |
+| **Export my data / Delete all data** | — | Export everything held, or delete it permanently. Deletion takes effect within 30 days. |
+
+## Permissions
+
+A guest cannot connect a plugin or MCP server, hold a GitHub grant, create a bot, or open Code's working UI. That is fail-closed by design: a guest session cannot be signed back into to revoke a grant later, so it is never allowed to create one.
+
+Connected apps are scoped explicitly. Under **Customize → Connectors** you choose whether each connection is available to **Cortex Chat**, **Cortex Bot**, or both; Bot never inherits a tool you did not assign to it. You stay signed in with the provider — Cortex never sees your passwords.
 
 ## Where code runs
 
-| Surface | Where code runs |
-| --- | --- |
-| Chat Python | A small untrusted snippet sandbox, no workspace |
-| Code Cloud | An isolated Cloud guest, headless |
-| Bot computer | An isolated Cloud guest with a desktop and a shell |
+| Surface | Where code runs | What it can see |
+| --- | --- | --- |
+| Chat's Python tool | A small, untrusted snippet sandbox | The snippet only — no workspace, no repository |
+| Code Cloud | An isolated Cloud guest, headless | The repository prepared for that session |
+| Code on This PC or SSH | Your machine or your host, from the desktop app or CLI | The project directory you chose |
+| Bot computer | An isolated Cloud guest **with** a desktop and a shell | That guest's desktop, browser, and files |
+| Cortex Security | Reads the pull request in place on GitHub | The diff under review — nothing is pasted into a composer |
 
-Do not mix them up. Chat Python cannot see a Code repository.
+Do not mix them up. Chat Python cannot see a Code repository, and a Code session cannot reach a Bot's desktop.
+
+Consequential steps ask first. In Bot, dangerous computer actions and connected-app changes park behind [Allow / Deny / Always](/bot/approvals). In the CLI, every session runs under an approval policy and a sandbox, and the agent asks before it does anything consequential — see [Modes and permissions](/cli/modes-and-permissions).
+
+## Errors never name a vendor
+
+User-facing error text names a Cortex surface, never a subprocessor. The CLI's outage message is deliberately just *The coding service is temporarily unavailable*. Problem documents carry a stable `code` and a `request_id` you can quote when reporting an issue — see [Errors](/api/errors).
 
 ## Cortex Security (pull requests)
 
-GitHub App review of pull requests lives at `/code/security` in the app and [Cortex Security](/code/security) here. The public sitelink `/security` on `cortex.foundation` is a product page, not this docs article.
+GitHub App review of pull requests is a **product**, at `/code/security` in the app and documented under [Cortex Security](/code/security). The public link `cortex.foundation/security` is that product's page, not this article.
 
-Do not claim SOC 2, GDPR certification, or HIPAA in product copy.
+## What this page does not claim
+
+Cortex does not claim SOC 2, GDPR certification, or HIPAA compliance in product copy, and neither does this site. Legal documents live at [cortex.foundation/privacy](https://cortex.foundation/privacy), [cortex.foundation/terms](https://cortex.foundation/terms), and [cortex.foundation/ai-disclosures](https://cortex.foundation/ai-disclosures).

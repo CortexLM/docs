@@ -1,40 +1,53 @@
 ---
-title: "Desktop app"
-description: "Download Cortex for This PC, SSH, and Design's working UI. The browser stays Cloud-only."
+title: "Desktop app (Chat + Code)"
+description: "The Cortex desktop app carries Chat and Code, and adds This PC and SSH hosts for Code sessions. The browser stays Cloud-only."
 ---
 
-Download the Cortex desktop app from [releases.cortex.foundation](https://releases.cortex.foundation). Sign in from the app when it asks — the same account as the web app.
+The Cortex desktop app is the same Chat and Code you know from the browser, with one addition that only a native app can offer: Code sessions can run on **This PC** or over **SSH** as well as in the Cloud. Download it from [releases.cortex.foundation](https://releases.cortex.foundation) and sign in when the app asks — same account as the web.
 
-<Frame>
-  <img src="/images/product/code-home.png" alt="Cortex Code guest gate — this space is reserved for signed-in accounts" />
-</Frame>
+## Install and sign in
 
-## 1. Download and sign in
+<Steps>
+  <Step title="Download">
+    Open [releases.cortex.foundation](https://releases.cortex.foundation) and pick the build for your platform.
+  </Step>
+  <Step title="Open and sign in">
+    Launch the app. It asks you to sign in with your Cortex account; guests cannot use Code, so the desktop app expects a member.
+  </Step>
+  <Step title="Choose a host for Code">
+    Start a Code session and pick **Cloud**, **This PC**, or **SSH**. Chat needs no host — it works exactly as it does in the browser.
+  </Step>
+</Steps>
 
-1. Open `https://releases.cortex.foundation`.
-2. Install the desktop app for your platform.
-3. Sign in when the app asks.
+## What desktop adds
 
-This site does not document the sign-in protocol.
-
-## 2. What desktop adds
-
-| Surface | In the browser | On desktop / CLI |
+| Surface | In the browser | On desktop |
 | --- | --- | --- |
+| Chat | Yes | Yes — same account, same projects |
 | Code Cloud | Yes | Yes |
-| Bot Cloud | Yes | Yes |
-| This PC | No | Yes |
-| SSH | No | Shell only, no desktop |
-| Design working UI | No | Design desktop app |
+| Code on **This PC** | No | Yes |
+| Code over **SSH** | No | Yes — shell only, no desktop |
+| Bot Cloud | Yes | Use the web app or the [Bot desktop app](/bot/desktop) |
+| Design working UI | No | Separate [Design desktop app](/design/desktop) |
 
-Web Cortex Code and Cortex Bot stay Cloud-only. That is host placement, not a missing catalog.
+Web Code stays Cloud-only. That is host placement — the code runs where the host is — not a missing catalog entry.
 
-## 3. Design is a separate app
+## Hosts for Code
 
-Cortex Design's working UI is a separate desktop app. There is no `/design` mode in the web shell. Chat and Code can still host a canvas; you open the board on desktop. See [Design desktop](/design/desktop).
+| Host | Where the workspace tools run | Good for |
+| --- | --- | --- |
+| **Cloud** | An isolated Cloud guest prepared for your repository | Anything you would do in the browser |
+| **This PC** | Your machine, in the project directory you choose | Local toolchains, private networks, hardware |
+| **SSH** | A host you register, over its shell | Servers and build boxes you already have |
+
+This PC and SSH need an already connected Code session; Cortex never silently substitutes the Cloud for a host you selected. The CLI exposes the same hosts through `CORTEX_COMPUTER` — see [Code on desktop](/code/desktop) and [CLI configuration](/cli/configuration).
+
+## Two desktop apps
+
+The Cortex desktop app has a **Chat and Code** sidebar. Bots live in their own desktop app with an **agents, routines, and channels** sidebar and no Chat or Code — see [Bot desktop](/bot/desktop). Design's working UI is a third app — see [Design desktop](/design/desktop).
 
 ## Next
 
-- [Code on desktop](/code/desktop) — This PC and SSH for sessions.
-- [Bot computer](/bot/computer) — Cloud desktop in the browser; This PC on desktop.
-- [CLI](/getting-started/cli) — the same account, from a terminal.
+- [Code on desktop](/code/desktop) — choosing and using This PC and SSH.
+- [Install the CLI](/cli/install) — the same hosts from a terminal.
+- [Downloads](/getting-started/downloads) — every way to run Cortex.
