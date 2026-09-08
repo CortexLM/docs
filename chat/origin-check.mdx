@@ -3,9 +3,22 @@ title: "Origin check"
 description: "Check origin on attached media. Fail closed when the check cannot run."
 ---
 
-**Check origin** is for authenticity asks with attached media. It does not
-run on every Cortex-Image-1 picture.
+**Check origin** is for authenticity asks with attached media. It does not run on every Cortex-Image-1 picture.
 
-If origin check is unavailable on this deployment, the product says so rather
-than guessing. Assistant copy waits until a verdict paints. iPhone HEIC/HEIF
-is accepted on Check origin.
+<Frame>
+  <img src="/images/frames/chat-images.svg" alt="Chat media card — origin check waits for a verdict" />
+</Frame>
+
+## When to use it
+
+1. Attach the media to the turn. iPhone HEIC/HEIF is accepted on Check origin.
+2. Ask whether the media is authentic.
+3. Wait. Assistant copy waits until a verdict paints.
+
+## If the check cannot run
+
+If origin check is unavailable on this deployment, the product says so rather than guessing. That is fail-closed, not a broken button.
+
+<Note>
+Generated Cortex-Image-1 pictures are Library files. Check origin is a separate ask with attached media — not an automatic step after every generation.
+</Note>

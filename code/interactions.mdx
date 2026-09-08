@@ -3,9 +3,26 @@ title: "Ask, Plan, Agent"
 description: "A turn carries the choice; the session row is the default."
 ---
 
-Ask, Plan, and Agent choose how a Code turn behaves. Ask and Plan do not
-edit files or run shell. Plan can write a mermaid plan. Agent can change
-the repository.
+Ask, Plan, and Agent choose how a Code turn behaves. A follow-up can pick a different mode.
 
-A follow-up can pick a different mode. Web Code has no model picker — web
-is Cloud only.
+<Frame>
+  <img src="/images/frames/code-session.svg" alt="Ask, Plan, and Agent mode chips on a Code session" />
+</Frame>
+
+## What each mode may do
+
+| Mode | Edit files | Run shell | Extra |
+| --- | --- | --- | --- |
+| **Ask** | No | No | Read and explain |
+| **Plan** | No | No | Can write a mermaid plan |
+| **Agent** | Yes | Yes | Can change the repository |
+
+Ask and Plan withhold mutate tools. Plan writes mermaid via the plan tool. Agent uses the full workspace catalog inside the guest.
+
+## How to pick
+
+1. Choose Ask, Plan, or Agent on the turn. The session row is the default.
+2. Send the task.
+3. On a follow-up, pick a different mode if you want a tighter or looser loop.
+
+Web Code has no model picker — web is Cloud only.

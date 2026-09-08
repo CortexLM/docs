@@ -1,18 +1,33 @@
 ---
 title: "Bot tools"
-description: "Exhaustive against tool_declarations(false)."
+description: "The parent catalog — not a subset of Chat or Code."
 ---
 
-Parent catalog (not a subset): box `read`, `write`, `edit`, `shell`;
-computer-use `screenshot`, `grounded_click`, `type`, `hotkey`, `scroll`,
-`drag`, `wait`, `open_app`, `switch_app`, `save_note`, `code_agent`;
-`browser`; `web_search`, `web_fetch`; `update_memory`; `skill`; `routine`;
-user-visible `send_to_user`, `ask_user`, `notify`, `secret_request`; nested
-`task`; `send_to_agent`, `create_agent`, `create_channel`;
-`read_artifact`, `grep_artifact`; plus plugins enabled for Bot.
+A bot receives the parent tool catalog. The planner describes a control; a second inference call returns framebuffer coordinates. Do not let the planner guess raw pixels.
 
-The planner describes a control; a second inference call returns framebuffer
-`(x, y)`. Do not let the planner guess raw pixels.
+<Frame>
+  <img src="/images/frames/bot-computer.svg" alt="Bot using computer-use tools on a live Cloud desktop" />
+</Frame>
 
-Background `task` returns `{ ok, id, status: "queued" }` immediately. Children
-emit `task_started` / `task_progress` / `task_completed` / `task_failed`.
+## Catalog
+
+| Group | Tools |
+| --- | --- |
+| Box | `read`, `write`, `edit`, `shell` |
+| Computer use | `screenshot`, `grounded_click`, `type`, `hotkey`, `scroll`, `drag`, `wait`, `open_app`, `switch_app`, `save_note`, `code_agent` |
+| Browser | `browser` |
+| Web | `web_search`, `web_fetch` |
+| Memory and skills | `update_memory`, `skill`, `routine` |
+| User-visible | `send_to_user`, `ask_user`, `notify`, `secret_request` |
+| Nested | `task` |
+| Agents | `send_to_agent`, `create_agent`, `create_channel` |
+| Artifacts | `read_artifact`, `grep_artifact` |
+| Plugins | Plugins enabled for **Bot** |
+
+This is exhaustive against the parent declarations — not a Chat subset.
+
+## Background tasks
+
+Background `task` returns `{ ok, id, status: "queued" }` immediately. Children emit `task_started` / `task_progress` / `task_completed` / `task_failed`.
+
+Dangerous computer steps and connected-app changes park behind [Approvals](/bot/approvals).

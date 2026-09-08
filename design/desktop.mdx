@@ -1,8 +1,22 @@
 ---
 title: "Design desktop"
-description: "Separate Electron app. This repository does not ship a web Design shell."
+description: "Separate desktop app. This site does not ship a web Design shell."
 ---
 
-Desktop chrome waits on Designeur Paper lock. Until then, Chat and Code Agent
-can still write frames through `design_write` / `design_read`. Bot does not
-receive those tools.
+The working UI is a separate desktop app. There is no `/design` tree in the web app.
+
+<Frame>
+  <img src="/images/frames/desktop.svg" alt="Design called out as a desktop surface next to This PC and SSH" />
+</Frame>
+
+## 1. Install
+
+Download Cortex from [releases.cortex.foundation](https://releases.cortex.foundation). Sign in from the app when it asks. See [Desktop app](/getting-started/desktop).
+
+## 2. Open a canvas
+
+Chat and Code can still write frames through their design tools. Bot does not receive those tools. Open the board on desktop to edit frames, notes, and the Library drawer.
+
+## 3. What the web app will not do
+
+No Design segment on the Chat | Code | Bot switcher. No working canvas in the browser. Hosting from Chat or Code still creates the object; the desktop app is where you work.

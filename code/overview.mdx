@@ -3,11 +3,13 @@ title: "Cortex Code"
 description: "A coding agent in a Cloud guest, not a chat clone."
 ---
 
-<img src="/images/card-code.svg" alt="" />
+Cortex Code is a cloud coding product. Web Code is Cloud only. This PC and SSH exist on the desktop app and the CLI.
 
-Cortex Code is a cloud coding product. Web Code is Cloud only. This PC and SSH
-exist on the desktop app and the CLI. A guest on exact `/code` sees the public
-product page; deep links stay reserved for members.
+<Frame>
+  <img src="/images/frames/code-session.svg" alt="A Code session with Agent selected and a guest terminal" />
+</Frame>
+
+A guest on exact `/code` sees the public product page; deep links stay reserved for members.
 
 <CardGroup cols={2}>
   <Card title="Sessions" href="/code/sessions">Turn timeline, Ask / Plan / Agent</Card>
@@ -16,5 +18,13 @@ product page; deep links stay reserved for members.
   <Card title="Cortex Security" href="/code/security">GitHub App pull-request review</Card>
 </CardGroup>
 
-There is **no Secrets page**. Environment for a guest belongs to that guest.
-`/code/secrets` sends you home.
+There is **no Secrets page**. Environment for a guest belongs to that guest. `/code/secrets` sends you home.
+
+## What Code is not
+
+| Not this | Use instead |
+| --- | --- |
+| A Chat transcript | [Sessions](/code/sessions) — a turn timeline |
+| Chat's Python sandbox | [Cloud runtimes](/code/cloud) |
+| A Chat plugin | [Connect GitHub](/code/github) |
+| The public `/security` sitelink | [Cortex Security](/code/security) |

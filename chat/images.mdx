@@ -3,13 +3,31 @@ title: "Image generation"
 description: "Cortex-Image-1. Quota, not a paywall, on Free and Guest."
 ---
 
-`generate_image` is a Chat tool. A picture ask loads the `image-generation`
-skill, then calls the tool with a complete English scene, a `size`, and
-optional `seed`, `negative_prompt`, `steps` (1–50), and `guidance` (0–20).
+Ask Chat for a picture. Chat loads the image-generation skill, then calls Cortex-Image-1 with a complete English scene.
 
-SSE `image_generation` drives the card: `queued` (Improving prompt…),
-`generating` (skeleton), `done` (Library file), `error`. A Library fetch that
-fails is the error square, never a spinner. Empty image-cluster URL fails
-closed before any quota is spent.
+<Frame>
+  <img src="/images/frames/chat-images.svg" alt="Cortex-Image-1 card from queued prompt to a Library file" />
+</Frame>
 
-Product name Cortex-Image-1; attribution "Built on NVIDIA Cosmos".
+## 1. Ask for a picture
+
+Describe a complete English scene. You can set a size and, optionally, a seed, a negative prompt, steps (1–50), and guidance (0–20).
+
+## 2. Watch the card
+
+| State | What you see |
+| --- | --- |
+| `queued` | Improving prompt… |
+| `generating` | Skeleton |
+| `done` | Library file |
+| `error` | Error square — never a spinner |
+
+A Library fetch that fails is the error square. Empty image-cluster URL fails closed before any quota is spent.
+
+## 3. Quota, not a paywall
+
+Free and Guest use `images_per_day`. Exhausting the window is `quota_exceeded`. A plan that does not include image generation at all is `entitlement_required`. See [Plans](/getting-started/plans).
+
+Product name **Cortex-Image-1**; attribution "Built on NVIDIA Cosmos".
+
+Origin check does not run on every Cortex-Image-1 picture. See [Origin check](/chat/origin-check).

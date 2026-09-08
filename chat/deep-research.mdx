@@ -3,14 +3,36 @@ title: "Deep Research"
 description: "A Chat turn action, not a Code tool and not a Bot skill."
 ---
 
-The conversation stays in `chat` mode. The turn body carries
-`research: { action: "plan" | "run", plan? }`. Code mode refuses that field.
+Deep Research stays in Chat. You plan questions, then run them. Code refuses that field. It is not a Bot skill.
 
-The harness orchestrates Chat tools plus parallel per-question background
-children. Caps: 32 questions, 80 sources, 8 in parallel, 4 fetches per
-question, 180s child timeout. It does **not** copy Chat's eight-round abort
-onto that loop, and it does **not** emit `tool_start` / `tool_end`.
+<Frame>
+  <img src="/images/frames/chat-research.svg" alt="Deep Research plan with a Start control in a macOS window" />
+</Frame>
 
-Plan and report persist as `research_plan` and `research_report` blocks. A
-plan that has not been run still offers **Start** after a remount; Start hides
-once `action: "run"` has begun.
+## 1. Plan
+
+1. Stay in **Chat** — not Code, not Bot.
+2. Ask for a research plan. The conversation stays in chat mode.
+3. Review the plan block. A plan that has not been run still offers **Start** after you come back.
+
+## 2. Run
+
+Start the plan. The harness orchestrates Chat tools plus parallel per-question background children.
+
+| Cap | Limit |
+| --- | --- |
+| Questions | 32 |
+| Sources | 80 |
+| In parallel | 8 |
+| Fetches per question | 4 |
+| Child timeout | 180 seconds |
+
+It does **not** copy Chat's eight-round abort onto that loop, and it does **not** emit tool-start / tool-end chrome.
+
+## 3. Read the report
+
+Plan and report persist as research blocks on the thread. **Start** hides once the run has begun.
+
+<Note>
+Deep Research is a Chat turn. Do not look for it in Code's workspace tools or Bot's skill list.
+</Note>

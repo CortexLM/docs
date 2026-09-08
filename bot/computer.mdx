@@ -3,15 +3,26 @@ title: "Computer"
 description: "Web is Cloud only. Live desktop, not a screenshot slideshow."
 ---
 
+The Computer rail is a live desktop on a Cloud guest — not a slideshow of screenshots.
+
+<Frame>
+  <img src="/images/frames/bot-computer.svg" alt="Bot Computer rail with Open desktop and Sleep" />
+</Frame>
+
+## Hosts
+
 | Host | Where | Desktop |
 | --- | --- | --- |
 | Cloud | Isolated guest | Yes (desktop, browser, shell) |
 | This PC | Your machine | Desktop app only |
 | SSH | A registered host | Shell only, no desktop |
 
-The browser cannot choose This PC or SSH. Cloud Bot still has a shell and a
-live desktop.
+The browser cannot choose This PC or SSH. Cloud Bot still has a shell and a live desktop.
 
-Open desktop / Sleep live on the Computer rail. Connecting is only while the
-guest is starting. A running guest that is not live is Stream Unavailable —
-not stacked under Connecting.
+## Open desktop and Sleep
+
+1. Open a bot you own. Guests cannot drive a bot.
+2. Use **Open desktop** / **Sleep** on the Computer rail.
+3. Connecting is only while the guest is starting. A running guest that is not live is Stream Unavailable — not stacked under Connecting.
+
+See [How Bot works](/bot/how-it-works) for the turn that wakes a hibernated guest.

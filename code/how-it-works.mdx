@@ -1,17 +1,24 @@
 ---
 title: "How Code works"
-description: "Workspace tools execute inside the attached guest."
+description: "Workspace tools execute inside the attached guest — not in Chat Python."
 ---
 
-A Code Cloud session turn executes `read_file`, `write_file`, `edit_file`,
-`glob`, `grep`, `bash`, `todo_read`, `todo_write` **inside the attached
-Firecracker guest**. Not in the API process. Not in the 256 MiB Chat Python
-sandbox. `python` is Chat-only; a Code turn runs the guest's own Python
-through `bash`.
+A Code Cloud session turn executes workspace tools **inside the attached Firecracker guest**. Not in the API process. Not in the 256 MiB Chat Python sandbox.
 
-If the session names a repository and no runtime is attached, the harness
-auto-starts, attaches, and prepares that guest. Leaving
-`code_runtime_not_attached` as the first command is a bug.
+<Frame>
+  <img src="/images/frames/code-cloud.svg" alt="Code tools running inside an attached Cloud guest" />
+</Frame>
 
-Ask and Plan withhold mutate tools. Plan writes mermaid via `write_plan`.
-Compaction is Code's own keep-set and fails closed.
+## The workspace catalog
+
+`read_file`, `write_file`, `edit_file`, `glob`, `grep`, `bash`, `todo_read`, `todo_write` run in the guest. `python` is Chat-only; a Code turn runs the guest's own Python through `bash`.
+
+## Attach before the first command
+
+If the session names a repository and no runtime is attached, the harness auto-starts, attaches, and prepares that guest. Leaving the runtime unattached as the first command is a bug.
+
+## Modes and compaction
+
+Ask and Plan withhold mutate tools. Plan writes mermaid via `write_plan`. Compaction is Code's own keep-set and fails closed.
+
+Do not copy Chat's eight-round abort onto Code. See [How Chat works](/chat/how-it-works) and [How Bot works](/bot/how-it-works).

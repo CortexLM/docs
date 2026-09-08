@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" fill="none" role="img" aria-label="Image generation card in a macOS window">
+
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D7E4DC"/>
+      <stop offset="0.55" stop-color="#EFE8DC"/>
+      <stop offset="1" stop-color="#C4D0C4"/>
+    </linearGradient>
+    <radialGradient id="mist" cx="50%" cy="70%" r="60%">
+      <stop offset="0" stop-color="#FAF8F4" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#1F4945" stop-opacity="0.12"/>
+    </radialGradient>
+  </defs>
+  <rect width="960" height="560" fill="url(#sky)"/>
+  <rect width="960" height="560" fill="url(#mist)"/>
+  <path d="M0 360 C120 320 220 390 360 350 C500 310 620 390 960 330 L960 560 L0 560 Z" fill="#1F4945" opacity="0.22"/>
+  <path d="M0 400 C160 360 280 430 480 390 C680 350 780 430 960 380 L960 560 L0 560 Z" fill="#211F1C" opacity="0.16"/>
+  <ellipse cx="80" cy="430" rx="90" ry="64" fill="#1F4945" opacity="0.18"/><ellipse cx="180" cy="410" rx="70" ry="50" fill="#1F4945" opacity="0.22"/><ellipse cx="300" cy="440" rx="110" ry="79" fill="#1F4945" opacity="0.26"/><ellipse cx="720" cy="420" rx="95" ry="68" fill="#1F4945" opacity="0.18"/><ellipse cx="860" cy="400" rx="80" ry="57" fill="#1F4945" opacity="0.22"/>
+
+
+  <rect x="87" y="67" width="786" height="426" rx="16" fill="none" stroke="#1F4945" stroke-width="2"/>
+  <rect x="90" y="70" width="780" height="420" rx="13" fill="#FAF8F4"/>
+  <rect x="90" y="70" width="780" height="420" rx="13" fill="none" stroke="#211F1C" stroke-width="1.5"/>
+  <rect x="92" y="72" width="776" height="416" rx="11" fill="none" stroke="#E3DFD7" stroke-width="1"/>
+  <rect x="90" y="70" width="780" height="36" rx="13" fill="#F3F0EA"/>
+  <rect x="90" y="94" width="780" height="12" fill="#F3F0EA"/>
+  <path d="M90 106 H870" stroke="#211F1C" stroke-width="1"/>
+  <path d="M90 107 H870" stroke="#E3DFD7" stroke-width="1"/>
+  
+    <circle cx="108" cy="88" r="5" fill="#C4B8A8"/>
+    <circle cx="124" cy="88" r="5" fill="#C4B8A8"/>
+    <circle cx="140" cy="88" r="5" fill="#1F4945"/>
+
+  <text x="480.0" y="93" text-anchor="middle" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="600" fill="#211F1C">Chat · Cortex-Image-1</text>
+
+  <rect x="102" y="118" width="347.76" height="360" rx="10" fill="#F3F0EA"/>
+  <text x="122" y="154" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="500" fill="#6E6A62">Improving prompt…</text>
+  <rect x="122" y="174" width="307.76" height="280" rx="8" fill="#FAF8F4" stroke="#E3DFD7"/>
+  <path d="M172 338 C212 278, 262 368, 322 298" stroke="#1F4945" stroke-width="3" fill="none"/>
+  <circle cx="192" cy="258" r="18" fill="#1F4945" opacity="0.35"/>
+  <text x="473.76" y="158" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="600" fill="#6E6A62">generate_image</text>
+  <text x="473.76" y="190" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="16" font-weight="600" fill="#211F1C">A complete English scene</text>
+  <text x="473.76" y="222" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="500" fill="#6E6A62">queued → generating → Library file</text>
+  <text x="473.76" y="266" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="500" fill="#211F1C">Size, optional seed, steps 1–50</text>
+  <text x="473.76" y="294" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="13" font-weight="500" fill="#211F1C">Free and Guest: images_per_day quota</text>
+  <text x="473.76" y="334" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="500" fill="#6E6A62">Built on NVIDIA Cosmos</text>
+  <text x="473.76" y="366" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="500" fill="#6E6A62">Empty cluster URL fails closed</text>
+  <text x="473.76" y="394" text-anchor="start" font-family="Inter, ui-sans-serif, sans-serif" font-size="12" font-weight="500" fill="#6E6A62">before any quota is spent.</text>
+
+</svg>

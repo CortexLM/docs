@@ -60,10 +60,15 @@ Do not invent endpoints. There is no inference Platform API section here — see
 
 ## Visuals
 
-Brand green `#1F4945` is for doodle accents, not hero CTAs. Home and card
-actions use **ink on cream** (`.ink-btn` in `custom.css`) — filled ink, quiet
-outline; dark mode inverts to cream ink. Do not add a brand-green Install /
-`navbar.primary` button.
+Brand green `#1F4945` is for doodle accents, illustration focus rings, and
+window frames — not hero CTAs. Home and card actions use **ink on cream**
+(`.ink-btn` in `custom.css`) — filled ink, quiet outline; dark mode inverts
+to cream ink. Do not add a brand-green Install / `navbar.primary` button.
+
+Guide illustrations live under `images/frames/` (macOS + terminal chrome on a
+cream–green wallpaper) and `images/cli/` (vendored from CortexLM/cli
+`docs/media/`). Frame media is matte ink, dual hairlines, green focus —
+no violet, no cyan.
 
 Top navbar is Mintlify **Home + Documentation**, not the Chat | Code | Bot
 product switcher. Chat / Code / Bot / Design stay as documentation tabs.

@@ -5,8 +5,25 @@ description: "Pick a model per conversation. Mini stays the default for new thre
 
 New conversations default to **Cortex-Mini-1-Preview**. Existing rows keep the slug they were created with. The composer model chip is Chat-only — web Code has no model picker.
 
-**Cortex Teutonic-1** (`cortex-teutonic-1`) is a second public Preview beside Mini. Completions for Teutonic use a dedicated upstream. Empty configuration fails closed before quota, and never falls through to Mini.
+## What you can pick
 
-After assembly, Chat clamps `max_tokens` so prompt plus generation still fit that model's `context_tokens`. Thinking, when the model supports it, is a catalog capability — not a second product.
+| Model | Role |
+| --- | --- |
+| **Cortex-Mini-1-Preview** | Default for new threads |
+| **Cortex Teutonic-1** (`cortex-teutonic-1`) | Second public Preview beside Mini |
 
-Pass `model_slug` on the turn body. There is no inference Platform API on this site: [Coming soon](/platform).
+Completions for Teutonic use a dedicated upstream. Empty configuration fails closed before quota, and never falls through to Mini.
+
+## How a turn uses the model
+
+1. Pick the model on the conversation — not on web Code.
+2. After assembly, Chat clamps generation so prompt plus output still fit that model's context window.
+3. Thinking, when the model supports it, is a catalog capability — not a second product.
+
+There is no inference Platform API on this site: [Coming soon](/platform).
+
+## Related
+
+- [How Chat works](/chat/how-it-works) — the tool loop around the model.
+- [Streaming](/chat/streaming) — tokens as they arrive.
+- [Plans](/getting-started/plans) — quotas fail closed.

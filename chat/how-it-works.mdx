@@ -1,20 +1,34 @@
 ---
 title: "How Chat works"
-description: "One function-calling loop, compaction that fails closed."
+description: "One function-calling loop. Compaction fails closed. Chat's round budget stays in Chat."
 ---
 
-A Chat turn is a real tool loop: the model emits tool calls, the API executes
-them, results re-enter the context, the loop continues until the model stops
-or hits Chat's round budget (`CHAT_MAX_TOOL_ROUNDS = 8`). Do not copy that
-budget onto Code or Bot.
+A Chat turn is a real tool loop: the model emits tool calls, the API executes them, results re-enter the context, the loop continues until the model stops or hits Chat's round budget.
 
-**Catalog the model receives:** `python`, `web_search`, `web_extract`,
-`current_time`, `skill_view`, canvas, memory, `generate_image`, `detect_image`,
-`read_artifact` / `grep_artifact`, `design_write` / `design_read`, plus Chat-enabled
-plugins and the owner's MCP servers.
+<Frame>
+  <img src="/images/frames/chat-composer.svg" alt="Chat turn loop — tokens, tools, then a finished reply" />
+</Frame>
 
-**Compaction** runs on the request path and fails closed. Anchors: the last
-user ask, the active research plan, open `art_…` ids, research child ids.
-A summariser outage is `service_unavailable`, not a silent drop of old turns.
+## What you see
+
+1. You send a message, with optional Library attachments.
+2. Tokens stream. Tools may run. Results come back into the thread.
+3. The model stops, or Chat hits eight tool rounds. That budget is Chat-only — do not copy it onto Code or Bot.
+
+## Tools the model can receive
+
+`python`, `web_search`, `web_extract`, `current_time`, `skill_view`, canvas, memory, `generate_image`, `detect_image`, `read_artifact` / `grep_artifact`, `design_write` / `design_read`, plus Chat-enabled plugins and the owner's MCP servers.
+
+Chat's Python tool is a small snippet sandbox. It is not Code's workspace shell or Bot's computer.
+
+## Compaction
+
+Compaction runs on the request path and fails closed. It keeps the last user ask, the active research plan, open artifact ids, and research child ids. A summariser outage is `service_unavailable`, not a silent drop of old turns.
 
 English system prompt. No competitor product names.
+
+## Related
+
+- [Streaming](/chat/streaming)
+- [Deep Research](/chat/deep-research) — its own loop, not the eight-round abort
+- [Security](/security/overview) — where Chat Python runs

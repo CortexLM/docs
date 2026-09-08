@@ -1,13 +1,15 @@
-# Icon and card slots
+# Icon, card, and frame slots
 
-Paper lock boards (Designeur, Mathis lock pending) use **doodle** card art:
-cream paper, ink line, brand green `#1F4945`, a small leaf on several marks.
+Paper lock boards use **doodle** card art: cream paper, ink line, brand green
+`#1F4945`, a small leaf on several marks.
 
-Replace in place without renaming so Mintlify `img` paths stay stable.
-Until the locked Quiver exports land, these SVGs are structural stand-ins
-in the same slot names.
+Frame illustrations sit on a cream–green wallpaper with **matte ink** macOS or
+terminal chrome: dual hairlines, traffic lights, and a green focus ring.
+No violet. No cyan. Green is focus and frame only — never a filled meadow CTA.
 
-| File | Slot (Paper icon sheet) |
+CLI canon from `CortexLM/cli` `docs/media/` is vendored under `cli/`.
+
+| File | Slot |
 | --- | --- |
 | `doodle-getting-started.svg` | Open book, compass, leaf |
 | `doodle-chat.svg` | Overlapping speech bubbles, leaf |
@@ -19,5 +21,10 @@ in the same slot names.
 | `icon-*.svg` | Same art, kept for older `icon-*` references |
 | `card-chat.svg` … `card-design.svg` | How-it-works illustrations (same doodles) |
 | `icon-api.svg` `icon-cli.svg` `icon-desktop.svg` | Secondary slots, not on the home grid |
+| `frames/*.svg` | macOS / terminal window illustrations for guides |
+| `cli/intro.gif` | CLI desktop demo (vendored from CortexLM/cli) |
+| `cli/macos-wallpaper-green.jpg` | Forest wallpaper used in CLI frames |
+| `cli/splash.png` `cli/working.png` | Intro-preview stills (vendored) |
 
+Regenerate SVG frames with `python3 scripts/generate-docs-frames.py`.
 Home, Chat hub, and Get started cards use the `doodle-*` paths.

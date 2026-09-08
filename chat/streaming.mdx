@@ -1,10 +1,16 @@
 ---
 title: "Streaming"
-description: "Answers appear as they arrive."
+description: "Answers appear as they arrive — tokens, then tools, then the finished reply."
 ---
 
-Chat answers stream as they are written. You see tokens, then tools, then the
-finished reply — not a dump after the turn ends.
+Chat answers stream as they are written. You see tokens, then tools, then the finished reply — not a dump after the turn ends.
 
-If the connection drops, the product reconnects. Run state lives in the
-thread, not in a status line about the transport.
+<Frame>
+  <img src="/images/frames/chat-composer.svg" alt="Chat reply streaming into the thread as tokens arrive" />
+</Frame>
+
+## What happens on a drop
+
+If the connection drops, the product reconnects. Run state lives in the thread, not in a status line about the transport.
+
+You do not need to resend the same turn to recover the reply that already started.
