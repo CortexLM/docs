@@ -8,7 +8,7 @@ Guide heroes that depict the product are **real Cortex screenshots**:
 
 - `banners/*.png` — section / home cards (Chat, Code, Bot, Design, …)
 - `product/*.png` — live Chat / Code / Bot / Settings / public-page captures, one per guide
-- `cli/` — vendored from CortexLM/cli `docs/media/` (GIF, wallpaper, terminal stills)
+- `cli/` — vendored from CortexLM/cli: the README GIF and the Designer runtime pack (`cli/runtime/`)
 
 Do not add abstract product-window SVGs. `frames/*.svg` is retired.
 Do not add Ask Assistant chrome or pixel plates. Never show the same
@@ -34,8 +34,7 @@ product capture on two pages; capture the surface instead.
 | `card-chat.svg` … `card-design.svg` | How-it-works illustrations (same doodles) |
 | `product/*.png` | Live app captures, one distinct surface per page — see `product/README.md` |
 | `cli/intro.gif` | CLI desktop demo (vendored from CortexLM/cli) |
-| `cli/macos-wallpaper-green.jpg` | Forest wallpaper used in CLI frames |
-| `cli/splash.png` `cli/working.png` `cli/composer.png` `cli/shell.png` `cli/palette.png` `cli/model.png` | Intro-preview stills (vendored), one per CLI page |
+| `cli/runtime/*.png` | Designer runtime pack — one distinct TUI state per frame, see `cli/README.md` |
 
 Home, Chat hub, Get started, and other section cards use the `banners/*`
 paths. Green is focus and frame only — never a filled meadow CTA. No violet.

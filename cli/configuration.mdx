@@ -41,6 +41,10 @@ cortex debug config --diff # what differs from the defaults
 
 `/config` and `/reload-config` do the reading from inside the TUI.
 
+<Frame caption="/config: a read-only view of the effective configuration — model, effort, permissions, sandbox, TUI settings, and the configured MCP servers. Edit with your editor.">
+  <img src="/images/cli/runtime/config-tree.png" alt="Cortex CLI /config tree view of the effective configuration" />
+</Frame>
+
 ## Keys
 
 ### Model
@@ -94,6 +98,12 @@ alternate_screen = true   # false stays inline in the host terminal
 [tui.theme]
 name = "dark"             # dark, light, ocean_dark, monokai
 ```
+
+The same options are interactive under `/settings` (or **F2**) — Appearance, Mouse, Behavior, AI, Git, Cloud, Privacy — with a search box at the top.
+
+<Frame caption="/settings → Appearance: compact mode, screen mode, timestamps, thinking blocks, grouped tool calls, line numbers, word wrap, syntax highlight, animations, theme.">
+  <img src="/images/cli/runtime/settings-appearance.png" alt="Cortex CLI settings modal open on the Appearance section" />
+</Frame>
 
 ### History and execution
 

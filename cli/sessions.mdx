@@ -34,22 +34,19 @@ cortex resume --all           # do not filter the picker by directory
 
 Inside the TUI, `/resume [session-id]` does the same, and **Ctrl+S** or **Ctrl+O** opens the sessions panel:
 
-```text
-   Type to search sessions
-   ──────────────────────────────────────────────────────────────
-
-   > fix login redirect      2h ago · 14 messages · cortex/fix-login-redirect
-     composer chip design    yesterday · 31 messages
-     bump version to 0.1.7   3 days ago · 6 messages
-
- Enter:resume  |  f:favorite  |  d:delete  |  Esc:close
-```
+<Frame caption="/resume: type to search; each row shows the title, age, message count, and branch. Enter resumes, f favourites, d deletes.">
+  <img src="/images/cli/runtime/resume-picker.png" alt="Cortex CLI resume picker listing recent sessions" />
+</Frame>
 
 `cortex run --continue` continues the most recent session non-interactively; `cortex run --session <ID>` continues a specific one. A persisted [goal](/cli/goal) comes back with the session.
 
 ## Starting fresh
 
-`/new` starts a new session without leaving the TUI. `/clear` empties the conversation but keeps the session.
+`/new` starts a new session without leaving the TUI. `/clear` empties the conversation but keeps the session — it asks first, and says exactly what is dropped and what is kept.
+
+<Frame caption="/clear: the transcript is dropped; git, files, and config stay as they are.">
+  <img src="/images/cli/runtime/clear-confirm.png" alt="Cortex CLI clear-conversation confirmation with Yes, clear and No, keep it" />
+</Frame>
 
 ## Rewinding and forking
 

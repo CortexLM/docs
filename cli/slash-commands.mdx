@@ -5,8 +5,8 @@ description: "Everything you can type after / in the Cortex CLI composer — mod
 
 Type `/` in the composer to open the command list. It shows the most-used commands first and filters as you type; the trailer *N more — keep typing to filter* means there is more below. A line beginning with `/` that is not a known command is sent to the agent as an ordinary message.
 
-<Frame caption="The slash palette after typing /: model, mode, permissions, plan, effort, mcp, sandbox, usage, resume, jobs, skills, and more.">
-  <img src="/images/cli/palette.png" alt="Cortex CLI slash command palette in macOS Terminal on a forest desktop" />
+<Frame caption="The slash palette after typing /: model, mode, permissions, plan, goal, effort, mcp, sandbox — and “13 more — keep typing to filter”.">
+  <img src="/images/cli/runtime/slash-palette.png" alt="Cortex CLI slash command palette showing /model, /mode, /permissions, /plan, /goal, /effort, /mcp, /sandbox" />
 </Frame>
 
 ## The palette home
@@ -36,6 +36,12 @@ These are the commands the palette shows first:
 | `/login` · `/logout` | Sign in, or clear stored credentials |
 | `/settings` | Open the settings panel |
 | `/interrupt` | Stop the running turn (same as **Esc**) |
+
+Keep typing to filter — `/model` narrows the list to the commands that match:
+
+<Frame caption="Filtering the palette: /model matches /model, /mode, /mcp-reload, and /custom-commands.">
+  <img src="/images/cli/runtime/slash-model-typed.png" alt="Cortex CLI slash palette filtered by typing /model" />
+</Frame>
 
 ## Session
 
@@ -125,6 +131,10 @@ Details: [Extend](/cli/extend).
 | `/cost` | | Token usage and cost |
 | `/ratelimits` | `limits`, `quota` | API rate limits and usage |
 | `/refresh` | `retry` | Refresh billing after adding payment |
+
+<Frame caption="/usage: agent requests, tokens this month, and Cloud agent minutes against the plan's ceilings, with the renewal date.">
+  <img src="/images/cli/runtime/usage.png" alt="Cortex CLI /usage panel showing agent requests, tokens, and Cloud agent minutes" />
+</Frame>
 
 ## Working with code
 

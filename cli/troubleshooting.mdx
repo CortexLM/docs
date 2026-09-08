@@ -18,10 +18,9 @@ For a single run, `-v` and `--trace` increase console verbosity and can expose s
 
 ## “The coding service is temporarily unavailable”
 
-```text
-   × The coding service is temporarily unavailable
-     Try again in a moment — your work so far is saved in this session.
-```
+<Frame caption="The outage state: the error, what to do next, and a composer that retries on Enter — your work so far is saved in this session.">
+  <img src="/images/cli/runtime/error-unavailable.png" alt="Cortex CLI showing The coding service is temporarily unavailable with a retry composer" />
+</Frame>
 
 Cortex could not reach the coding API. The message is deliberately the whole story — the CLI does not surface provider, SDK, or transport names.
 
@@ -65,6 +64,14 @@ cortex exec --list-tools
 
 Something narrowed the set: `--enabled-tools` / `--disabled-tools`, the agent's `tools` field, the current mode, or the `permission` table.
 
+## An edit broke the build
+
+After an edit, a **Diagnostics** row lists compiler errors and warnings with file and line, so the agent — and you — can see what to fix next. `/diagnostics [file]` runs the same check on demand.
+
+<Frame caption="An Edit row followed by Diagnostics: one error and one warning, each with its location.">
+  <img src="/images/cli/runtime/diagnostics.png" alt="Cortex CLI Diagnostics row listing an error and a warning after an edit" />
+</Frame>
+
 ## An MCP server is not connecting
 
 ```bash
@@ -77,11 +84,9 @@ Common causes: the stdio command is not on `PATH` in the environment Cortex laun
 
 ## Quota exhausted
 
-```text
-   × Agent quota exhausted
-     Agent requests    500 / 500   ████████████████████████
-     Resets in 4h 12m. Switch to MAX token billing to continue now, or upgrade at cortex.foundation/billing
-```
+<Frame caption="× Agent quota exhausted: the meter, the reset time, and the two ways to continue now. The composer holds follow-ups until the window resets.">
+  <img src="/images/cli/runtime/quota-exhausted.png" alt="Cortex CLI quota exhausted state with a held composer" />
+</Frame>
 
 The composer is held — *Add a follow-up — held until quota resets* — and follow-ups queue until the window resets. `/usage` shows the details. Quotas fail closed; see [Plans and quotas](/getting-started/plans).
 

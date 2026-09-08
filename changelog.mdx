@@ -10,8 +10,10 @@ Dated notes on what the products ship. Each entry names a change the app or the 
   <img src="/images/product/news-announcement.png" alt="Cortex Chat, Cortex Code, and Cortex Bot are live — Cortex Foundation announcement" />
 </Frame>
 
-<Update label="8 September 2026" description="Cortex CLI 0.1.10">
-- The README demo is regenerated from the shipped TUI on a green macOS desktop, with a pointer that walks the composer, the slash palette, `/model`, and a Shell tool row. The stills on the [CLI pages](/cli) come from this render.
+<Update label="8 September 2026" description="Cortex CLI 0.1.10 · /goal on main">
+- **`/goal`** — persisted long-horizon objectives with `goal.json` on the session, an 8-turn budget, evidence-based completion, and a composer chip — merged to the CLI main branch in [CortexLM/cli #54](https://github.com/CortexLM/cli/pull/54). It ships with the next tagged release; `cortex upgrade` will pick it up. See [Goals](/cli/goal).
+- **One approval path** — the permission prompt is the locked inline numbered picker (run once · always allow in this project · edit command · decline), merged in [#53](https://github.com/CortexLM/cli/pull/53). See [Modes and permissions](/cli/modes-and-permissions).
+- The Designer runtime pack — headless renders of every TUI state at 120×40 — is what the [CLI pages](/cli) now show. The README demo on a green macOS desktop is regenerated from the same chrome.
 - Release: [v0.1.10 on GitHub](https://github.com/CortexLM/cli/releases/tag/v0.1.10). Update with `cortex upgrade`.
 </Update>
 
