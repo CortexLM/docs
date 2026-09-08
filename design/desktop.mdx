@@ -1,22 +1,49 @@
 ---
 title: "Design desktop"
-description: "Separate desktop app. This site does not ship a web Design shell."
+description: "The working UI for Cortex Design is a separate desktop app. Chat and Code create canvases; you edit them here."
 ---
 
-The working UI is a separate desktop app. There is no `/design` tree in the web app.
+The Design working UI is a desktop app of its own. The web app creates and lists canvases when Chat or Code hosts one; editing frames, notes, options, and the Library drawer happens here.
 
-<Frame>
-  <img src="/images/product/design-home.png" alt="Cortex Connectors under Customize — search, discover, and connect apps" />
-</Frame>
+## Install
 
-## 1. Install
+<Steps>
+  <Step title="Download">
+    Desktop builds are published at [releases.cortex.foundation](https://releases.cortex.foundation). Pick the Design desktop app for your platform.
+  </Step>
+  <Step title="Sign in">
+    Same account as the web app. Canvases are member objects.
+  </Step>
+  <Step title="Open a canvas">
+    Your canvases follow your account. Boards hosted from Chat or Code are already listed.
+  </Step>
+</Steps>
 
-Download Cortex from [releases.cortex.foundation](https://releases.cortex.foundation). Sign in from the app when it asks. See [Desktop app](/getting-started/desktop).
+## Work on a board
 
-## 2. Open a canvas
+Edit frames and notes, lay out options side by side, and pull components, pages, and tokens from the Library drawer. Rename the board from **Untitled canvas** to something useful; the host binding to the originating Chat conversation or Code session stays.
 
-Chat and Code can still write frames through their design tools. Bot does not receive those tools. Open the board on desktop to edit frames, notes, and the Library drawer.
+## What the web app will not do
 
-## 3. What the web app will not do
+| | Web app | Design desktop |
+| --- | --- | --- |
+| Create a canvas from Chat or Code | Yes | — |
+| List your canvases | Yes | Yes |
+| Edit frames, notes, options | No | Yes |
+| Library drawer | No | Yes |
+| Design segment on the Chat · Code · Bot switcher | No | — |
 
-No Design segment on the Chat | Code | Bot switcher. No working canvas in the browser. Hosting from Chat or Code still creates the object; the desktop app is where you work.
+## Three desktop apps
+
+| App | Carries |
+| --- | --- |
+| [Cortex desktop](/getting-started/desktop) | Chat and Code, with This PC and SSH hosts |
+| [Cortex Bot desktop](/bot/desktop) | Agents, routines, channels |
+| **Cortex Design desktop** | Canvases and the Library drawer |
+
+See [Downloads](/getting-started/downloads) for the full list.
+
+## Related
+
+- [Canvases](/design/canvases) · [Library](/design/library)
+- [Chat canvases](/chat/canvases) — the document sidecar, which stays in the browser.

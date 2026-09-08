@@ -1,15 +1,47 @@
 ---
 title: "Changelog"
-description: "What shipped in Chat, Code, Bot, and Design — releases, fixes, and notable behavior changes."
+description: "What shipped in Cortex Chat, Code, Bot, Design, and the CLI — dated, with a link to the surface it changed."
 image: "/images/banners/changelog.png"
 ---
 
-What shipped in Chat, Code, Bot, and Design — releases, fixes, and notable behavior changes.
+Dated notes on what the products ship. Each entry names a change the app or the CLI already carries and links the surface it touched. Announcements from the Foundation are on [cortex.foundation/news](https://cortex.foundation/news).
 
-<Frame>
-  <img src="/images/banners/changelog.png" alt="Notebook and upward arrows — what shipped in Chat, Code, Bot, and Design" />
+<Frame caption="cortex.foundation/news — the 30 August 2026 announcement that Chat, Code, and Bot are live.">
+  <img src="/images/product/news-announcement.png" alt="Cortex Chat, Cortex Code, and Cortex Bot are live — Cortex Foundation announcement" />
 </Frame>
 
-This page is a **stub** until dated entries land. When you add a note, name a change the app already ships, with a date, and link the surface. Do not announce an inference Platform API here until that product exists.
+<Update label="8 September 2026" description="Cortex CLI 0.1.10">
+- The README demo is regenerated from the shipped TUI on a green macOS desktop, with a pointer that walks the composer, the slash palette, `/model`, and a Shell tool row. The stills on the [CLI pages](/cli) come from this render.
+- Release: [v0.1.10 on GitHub](https://github.com/CortexLM/cli/releases/tag/v0.1.10). Update with `cortex upgrade`.
+</Update>
 
-Meanwhile, start from the [quickstart](/getting-started/quickstart) or a product hub: [Chat](/chat), [Code](/code), [Bot](/bot), [Design](/design).
+<Update label="7 September 2026" description="Cortex CLI 0.1.8 · 0.1.9">
+- **`/model` effort radios** — Low, Medium, High, with **Tab** cycling them; `/effort` opens the same picker. See [Modes and permissions](/cli/modes-and-permissions).
+- **Alternate screen by default** — the TUI takes the full viewport; `cortex --no-alternate-screen` or `[tui] alternate_screen = false` stays inline. See [The TUI](/cli/tui).
+- **Welcome splash and empty session** — two lines of copy, dropped after the first turn; composer and footer only afterwards.
+- **Product-facing outage copy** — *The coding service is temporarily unavailable*, followed by what to do next. MCP connect / drop and sandbox deny paint live rows.
+- **Runtime chrome lock** — numbered pickers for login, mode, permissions, approvals, and plan confirmation; the footer shows model, mode, and remaining context; markdown tables render as a plus-ASCII grid, code fences get a language tag and line numbers, edit tiles show unified diffs with word-level colour.
+- **Model product names everywhere** — Cortex Mini 1, Cortex 1, Cortex Max 1.
+- **Windows installer** detects the CPU architecture correctly under PowerShell 5.1 StrictMode. See [Install](/cli/install).
+- **Cloud is the default Code runtime** for the TUI and `cortex exec`; This PC and SSH are explicit opt-in through `CORTEX_COMPUTER` and require an already connected session. See [Configuration](/cli/configuration).
+- Releases: [v0.1.8](https://github.com/CortexLM/cli/releases/tag/v0.1.8) and v0.1.9.
+</Update>
+
+<Update label="3 September 2026" description="Cortex CLI 0.1.7">
+- TUI grey chrome lock and the first README hero GIF.
+- CLI builds publish automatically to `software.cortex.foundation` on each tagged release; `cortex upgrade` reads the manifest there. See [Install](/cli/install).
+- Example WebAssembly plugins drop an unmaintained allocator dependency.
+- Release: [v0.1.7 on GitHub](https://github.com/CortexLM/cli/releases/tag/v0.1.7).
+</Update>
+
+<Update label="30 August 2026" description="Cortex Chat, Cortex Code, and Cortex Bot are live">
+- **Cortex Chat**, **Cortex Code**, and **Cortex Bot** are available at [cortex.foundation](https://cortex.foundation). One account opens all three; there is no second identity.
+- Chat is the assistant for research, writing, and everyday questions, and works before you sign in. See [Chat](/chat).
+- Code is a coding agent that works inside a repository on an isolated runtime. See [Code](/code).
+- Bot is a computer-using agent with its own desktop. See [Bot](/bot).
+- Announcement: [cortex.foundation/news/cortex-chat-code-bot](https://cortex.foundation/news/cortex-chat-code-bot).
+</Update>
+
+## How this page is kept
+
+An entry names a change the product already ships, with a date, and links the surface. Product previews stay labelled as previews. The inference Platform API is not announced here until that product exists — see [Coming soon](/platform).

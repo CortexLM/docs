@@ -1,30 +1,39 @@
 ---
 title: "Design guides"
-description: "Persistable canvases hosted from Chat or Code. Desktop UI is a separate app."
+description: "Cortex Design — persistable canvases hosted from Chat or Code and edited in the Design desktop app. Frames, notes, options, and a Library of components, pages, and tokens."
 image: "/images/banners/design.png"
 ---
 
-<Card title="Design" img="/images/banners/design.png" href="/design/overview">
-  Persistable canvases hosted from Chat or Code. Desktop UI is a separate app.
-</Card>
-
-Cortex Design canvases are not a Chat project and not a Chat markdown sidecar. There is no `/design` mode in the web shell.
-
-<Frame>
-  <img src="/images/product/design-home.png" alt="Cortex Connectors under Customize — search, discover, and connect apps" />
-</Frame>
+Cortex Design is where visual work lives. A canvas is a board of frames, notes, and options that you host from a Chat conversation or a Code session and then open in the **Design desktop app** to work on. There is no Design mode in the web shell: the browser creates and lists canvases, the desktop app is where you edit them.
 
 <CardGroup cols={2}>
-  <Card title="Overview" href="/design/overview">
-    What a canvas is, who can create one, what the web app does not host.
+  <Card title="Overview" img="/images/banners/design.png" href="/design/overview">
+    What a canvas is, who can create one, and what the web app does not host.
   </Card>
-  <Card title="Canvases" href="/design/canvases">
-    Frames, notes, host binding to Chat or Code.
+  <Card title="Design desktop" icon="monitor" href="/design/desktop">
+    Install the working UI, open a board, edit frames and notes.
   </Card>
-  <Card title="Library" href="/design/library">
-    Components, pages, tokens. Thumbnails are uploaded, not rasterised here.
+  <Card title="Canvases" icon="layout-template" href="/design/canvases">
+    Frames, notes, options, and the host binding to Chat or Code. Default title Untitled canvas.
   </Card>
-  <Card title="Desktop" href="/design/desktop">
-    The working UI is a separate desktop app.
+  <Card title="Library" icon="library" href="/design/library">
+    Components, pages, and tokens you reuse across canvases. Thumbnails are uploaded.
   </Card>
 </CardGroup>
+
+## Design and the other products
+
+| Object | Product | What it is |
+| --- | --- | --- |
+| **Design canvas** | Design | A board of frames and notes, edited on desktop |
+| [Chat canvas](/chat/canvases) | Chat | A document beside one conversation |
+| [Plan](/chat/plans) | Chat | A task list |
+| Code file | Code | A file inside a session's guest |
+
+Chat and Code can host a Design canvas through their design tools; Bot does not receive those tools.
+
+## Where to start
+
+1. Sign in — canvases belong to a member account and are private to it.
+2. Ask Chat or Code to put something on a canvas. The object is created with the title **Untitled canvas**.
+3. Install the [Design desktop app](/design/desktop) and open the board there.
