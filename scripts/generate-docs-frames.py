@@ -125,9 +125,10 @@ def wrap(body: str, w: int = 960, h: int = 560, label: str = "Cortex") -> str:
 
 def switcher() -> str:
     chrome, cx, cy, cw, ch = macos_window(90, 70, 780, 420, "Cortex — cortex.foundation")
+    main = cx + 184
     pills = []
     for i, (name, on) in enumerate((("Chat", True), ("Code", False), ("Bot", False))):
-        px = cx + 24 + i * 88
+        px = main + 16 + i * 88
         bg = SELECT if on else "transparent"
         ink = GREEN if on else MUTED
         bar = f'<rect x="{px}" y="{cy + 8}" width="72" height="28" rx="7" fill="{bg}"/>'
@@ -135,18 +136,18 @@ def switcher() -> str:
             bar += f'<rect x="{px}" y="{cy + 8}" width="3" height="28" rx="1.5" fill="{GREEN}"/>'
         pills.append(bar + text(px + 36, cy + 27, name, size=13, fill=ink, weight=600, anchor="middle"))
     composer = f'''
-  <rect x="{cx + 24}" y="{cy + ch - 72}" width="{cw - 48}" height="56" rx="12" fill="{RAIL}" stroke="{INK}" stroke-width="1"/>
-  <rect x="{cx + 26}" y="{cy + ch - 70}" width="{cw - 52}" height="52" rx="10" fill="none" stroke="{LINE}" stroke-width="1"/>
-  {text(cx + 44, cy + ch - 38, "Ask Cortex anything…", size=14, fill=MUTED)}
-  <rect x="{cx + cw - 86}" y="{cy + ch - 58}" width="46" height="28" rx="8" fill="{INK}"/>
-  {text(cx + cw - 63, cy + ch - 39, "Send", size=11, fill=CREAM, weight=600, anchor="middle")}
+  <rect x="{main + 16}" y="{cy + ch - 72}" width="{cx + cw - main - 40}" height="56" rx="12" fill="{RAIL}" stroke="{INK}" stroke-width="1"/>
+  <rect x="{main + 18}" y="{cy + ch - 70}" width="{cx + cw - main - 44}" height="52" rx="10" fill="none" stroke="{LINE}" stroke-width="1"/>
+  {text(main + 36, cy + ch - 38, "Ask Cortex anything…", size=14, fill=MUTED)}
+  <rect x="{cx + cw - 70}" y="{cy + ch - 58}" width="46" height="28" rx="8" fill="{INK}"/>
+  {text(cx + cw - 47, cy + ch - 39, "Send", size=11, fill=CREAM, weight=600, anchor="middle")}
 '''
     bubbles = f'''
-  <rect x="{cx + 24}" y="{cy + 52}" width="280" height="44" rx="12" fill="{RAIL}"/>
-  {text(cx + 40, cy + 79, "What can Cortex Chat do?", size=13, fill=INK)}
-  <rect x="{cx + 24}" y="{cy + 108}" width="420" height="68" rx="12" fill="{CREAM}" stroke="{LINE}" stroke-width="1"/>
-  {text(cx + 40, cy + 134, "Projects, documents, research, and pictures —", size=13, fill=INK)}
-  {text(cx + 40, cy + 156, "before you sign in. Code and Bot need an account.", size=13, fill=INK)}
+  <rect x="{main + 16}" y="{cy + 52}" width="280" height="44" rx="12" fill="{RAIL}"/>
+  {text(main + 32, cy + 79, "What can Cortex Chat do?", size=13, fill=INK)}
+  <rect x="{main + 16}" y="{cy + 108}" width="420" height="68" rx="12" fill="{CREAM}" stroke="{LINE}" stroke-width="1"/>
+  {text(main + 32, cy + 134, "Projects, documents, research, and pictures —", size=13, fill=INK)}
+  {text(main + 32, cy + 156, "before you sign in. Code and Bot need an account.", size=13, fill=INK)}
 '''
     sidebar = f'''
   <rect x="{cx}" y="{cy}" width="168" height="{ch}" fill="{RAIL}"/>
@@ -163,8 +164,7 @@ def switcher() -> str:
         + sidebar
         + "".join(pills)
         + bubbles
-        + composer
-        + text(cx + 200, cy + 28, "Chat  ·  Code  ·  Bot", size=12, fill=MUTED, weight=600),
+        + composer,
         label="Cortex product switcher in a macOS window",
     )
 
