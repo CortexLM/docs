@@ -1,28 +1,64 @@
 ---
 title: "Computer"
-description: "Web is Cloud only. Live desktop, not a screenshot slideshow."
+description: "The Computer rail is a live desktop on a Cloud guest — screen, browser, shell — not a slideshow of screenshots. Web is Cloud-only; This PC lives on the Bot desktop app."
 ---
 
-The Computer rail is a live desktop on a Cloud guest — not a slideshow of screenshots.
-
-<Frame>
-  <img src="/images/product/bot-home.png" alt="Cortex Bot guest gate — this space is reserved for signed-in accounts" />
-</Frame>
+Every bot can have a computer. In the web app it is an isolated Cloud guest with a desktop, and the **Computer rail** on the right of the open bot shows that desktop live while the bot works.
 
 ## Hosts
 
-| Host | Where | Desktop |
-| --- | --- | --- |
-| Cloud | Isolated guest | Yes (desktop, browser, shell) |
-| This PC | Your machine | Desktop app only |
-| SSH | A registered host | Shell only, no desktop |
+| Host | Where | Desktop | Available from |
+| --- | --- | --- | --- |
+| **Cloud** | An isolated guest on the Cortex farm | Yes — desktop, browser, shell | Web app, Bot desktop app |
+| **This PC** | Your machine | Your own desktop | [Bot desktop app](/bot/desktop) only |
+| **SSH** | A host you register | No — shell only | Bot desktop app |
 
-The browser cannot choose This PC or SSH. Cloud Bot still has a shell and a live desktop.
+The browser cannot choose This PC or SSH; that is host placement, not a missing option. A Cloud bot still has a full desktop and a shell.
 
 ## Open desktop and Sleep
 
-1. Open a bot you own. Guests cannot drive a bot.
-2. Use **Open desktop** / **Sleep** on the Computer rail.
-3. Connecting is only while the guest is starting. A running guest that is not live is Stream Unavailable — not stacked under Connecting.
+<Steps>
+  <Step title="Open a bot you own">
+    Guests cannot drive a bot.
+  </Step>
+  <Step title="Choose Open desktop">
+    The guest starts. The rail reads **Connecting** only while the guest is starting.
+  </Step>
+  <Step title="Watch it work">
+    The live screen shows what the bot sees and does — pages it opens, controls it clicks, files it edits.
+  </Step>
+  <Step title="Choose Sleep when you are done">
+    The guest hibernates. The next active turn wakes it before the model is prompted, so the bot never has to apologise that it has no shell.
+  </Step>
+</Steps>
 
-See [How Bot works](/bot/how-it-works) for the turn that wakes a hibernated guest.
+## Rail states
+
+| State | Meaning |
+| --- | --- |
+| **Connecting** | The guest is starting. Only then. |
+| Live desktop | The guest is running and its screen is reachable |
+| **Stream Unavailable** | The guest is running but its live screen is not reachable right now. This is its own state — not stacked under Connecting. |
+| Asleep | You chose **Sleep**, or the guest hibernated after idling |
+
+## What the bot can do on its computer
+
+The computer-use tools let the bot look (`screenshot`), point precisely (`grounded_click`), type, press hotkeys, scroll, drag, wait, open and switch apps, save a note, and hand a coding task to `code_agent`. The planner describes the control it wants; a second inference call returns the exact framebuffer coordinates, so the planner never guesses raw pixels. A `browser` tool and a `shell` round it out. Full list: [Tools](/bot/tools).
+
+Dangerous computer steps park behind [Approvals](/bot/approvals) before they run.
+
+## Three machines, again
+
+| Surface | Machine |
+| --- | --- |
+| **Bot computer** | Isolated Cloud guest **with** a desktop |
+| **Code Cloud** | Isolated Cloud guest, headless — see [Cloud runtimes](/code/cloud) |
+| **Chat Python** | A snippet sandbox, no workspace |
+
+A bot's desktop cannot see a Code repository, and a Code session cannot reach a bot's screen. See [Security](/security/overview).
+
+## Related
+
+- [How Bot works](/bot/how-it-works) — the turn that wakes a hibernated guest.
+- [Routines](/bot/routines) — scheduled work on the same computer.
+- [Troubleshooting](/bot/troubleshooting)

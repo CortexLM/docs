@@ -1,21 +1,58 @@
 ---
 title: "Cortex Bot"
-description: "One list of bots in the sidebar. Zero bots is a setup."
+description: "A bot with its own computer, listed once in the sidebar. An account with no bots gets the setup form, not an empty list. Guests see the public product page."
 ---
 
-The account's bots are listed once, in the shell sidebar. The pane is the *open* bot — conversation in the centre, Computer rail on the right.
+Cortex Bot is a computer-using agent. Where Chat answers and Code changes a repository, a bot **does things on a desktop**: opens a browser, clicks through a flow, reads files, runs a shell command, and reports back in a few short messages. You can watch its screen while it works, and it asks before it does anything consequential.
 
-<Frame>
-  <img src="/images/product/bot-home.png" alt="Cortex Bot guest gate — this space is reserved for signed-in accounts" />
+<Frame caption="The public Bot page's four commitments: a real desktop, your bots listed once, plugins you chose, one product and one sign-in.">
+  <img src="/images/product/bot-public-features.png" alt="Cortex Bot feature grid — A real desktop not a transcript, Your bots listed once, Plugins you chose, One product one sign-in" />
 </Frame>
 
-An account with no bots gets the setup form, not an empty list. Sprite, Finch and Pebble are not defaults.
+## The shape of the product
 
-Guests cannot create or drive a bot. Exact `/bot` is the public product page for a guest.
+| Commitment | What it means |
+| --- | --- |
+| **A real desktop, not a transcript** | Each bot can have a computer: a screen, a browser, files. You watch it work instead of pasting a web page into chat. |
+| **Your bots, listed once** | The account's bots live in the sidebar. The pane is the open bot — conversation in the middle, its computer on the right. |
+| **Plugins you chose** | A connected app reaches Chat, Bot, or both — you pick. A bot never inherits a tool you did not assign. |
+| **One product, one sign-in** | Create a bot after you sign in. A guest session cannot own something it could never come back to revoke. |
 
-<CardGroup cols={2}>
-  <Card title="Computer" href="/bot/computer">Cloud guest, noVNC, Open desktop / Sleep</Card>
-  <Card title="Tools" href="/bot/tools">shell, grounded_click, send_to_user</Card>
-  <Card title="Approvals" href="/bot/approvals">Allow / Deny / Always executes the tool</Card>
-  <Card title="Routines" href="/bot/routines">Owner's local weekday hours</Card>
-</CardGroup>
+## First run
+
+An account with no bots gets the **setup form**, not an empty list. Name the bot, decide what it is for, and create it. There are no pre-made bots with invented names waiting in the list.
+
+## The open bot
+
+| Area | What is there |
+| --- | --- |
+| **Sidebar** | Your bots, listed once |
+| **Centre** | The conversation — short bubbles from the bot, your replies, and parked approvals |
+| **Computer rail (right)** | The live desktop, with **Open desktop** and **Sleep**, plus routines |
+
+## Who can drive a bot
+
+Guests see the public product page at `/bot` and the **This space is reserved** gate on deep links. Signed-in members create and drive bots. Bots are private to the account — see [Sharing](/chat/sharing).
+
+## Bot compared with Chat and Code
+
+| | Chat | Code | Bot |
+| --- | --- | --- | --- |
+| Best at | Questions, writing, research | Changing a repository | Doing tasks on a desktop, on a schedule |
+| Runs in | A snippet sandbox | An isolated guest, headless | An isolated guest **with a desktop** |
+| You see | A streamed reply | A turn timeline | Short user-visible messages plus the live screen |
+| Guardrail | Tool round budget | Ask / Plan / Agent | Allow / Deny / Always approvals |
+
+## Where Bot lives
+
+| Surface | Host for the computer |
+| --- | --- |
+| Web app (`/bot`) | Cloud |
+| [Bot desktop app](/bot/desktop) | Cloud, This PC |
+| SSH | Shell only, no desktop |
+
+## Next
+
+- [Bot quickstart](/bot/quickstart)
+- [Computer](/bot/computer) · [Tools](/bot/tools) · [Approvals](/bot/approvals)
+- [Routines](/bot/routines) · [Skills](/bot/skills)

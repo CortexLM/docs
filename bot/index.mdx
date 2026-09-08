@@ -1,36 +1,53 @@
 ---
 title: "Bot guides"
-description: "Always-on agents, computer use, schedules, and Cloud workflows."
+description: "Cortex Bot — a bot with its own computer. Browses, clicks, and works on a desktop you can watch; parks consequential steps behind approvals; runs routines on your local weekday hours."
 image: "/images/banners/bot.png"
 ---
 
-<Card title="Bot" img="/images/banners/bot.png" href="/bot/overview">
-  Always-on agents, computer use, schedules, and Cloud workflows.
-</Card>
+Cortex Bot is an always-on teammate. Each bot can have a computer — a screen, a browser, files — and you watch it work. Your bots are listed once, in the sidebar; the pane is the open bot, conversation in the middle and its computer on the right. Bots belong to a signed-in account.
 
-The account's bots are listed once, in the shell sidebar. The pane is the open bot — conversation in the centre, Computer rail on the right. Zero bots is a setup, not an empty list.
-
-<Frame>
-  <img src="/images/product/bot-home.png" alt="Cortex Bot guest gate — this space is reserved for signed-in accounts" />
+<Frame caption="cortex.foundation/bot — the public product page a guest sees. Sign in to create a bot.">
+  <img src="/images/product/bot-public.png" alt="Cortex Bot public page — a bot with its own computer" />
 </Frame>
 
-<CardGroup cols={2}>
-  <Card title="Overview" href="/bot/overview">
-    One list, first-run setup, who can drive a bot.
+## Start here
+
+<CardGroup cols={3}>
+  <Card title="Quickstart" img="/images/banners/bot.png" href="/bot/quickstart">
+    Sign in, create a bot, open its computer, give it a first task.
   </Card>
-  <Card title="Computer" href="/bot/computer">
-    Cloud guest, noVNC, Open desktop / Sleep. Web is Cloud only.
+  <Card title="Overview" icon="compass" href="/bot/overview">
+    One list of bots, first-run setup, who can drive a bot.
   </Card>
-  <Card title="Tools" href="/bot/tools">
-    shell, grounded_click, send_to_user, and the rest of the parent catalog.
-  </Card>
-  <Card title="Approvals" href="/bot/approvals">
-    Allow / Deny / Always executes the parked tool.
-  </Card>
-  <Card title="Routines" href="/bot/routines">
-    Owner's local weekday hours.
-  </Card>
-  <Card title="Skills" href="/bot/skills">
-    First-party skills the bot can run.
+  <Card title="Bot desktop" icon="monitor" href="/bot/desktop">
+    A desktop app built around agents, routines, and channels — no Chat or Code sidebar.
   </Card>
 </CardGroup>
+
+## Core guides
+
+<CardGroup cols={2}>
+  <Card title="Computer" icon="app-window" href="/bot/computer">
+    A live desktop on a Cloud guest, not a screenshot slideshow. Open desktop, Sleep, and the three hosts.
+  </Card>
+  <Card title="Tools" icon="wrench" href="/bot/tools">
+    The parent catalog — shell, computer use, browser, web, memory, skills, messaging, nested tasks.
+  </Card>
+  <Card title="Approvals" icon="shield-check" href="/bot/approvals">
+    Allow / Deny / Always. Nothing consequential runs until you choose.
+  </Card>
+  <Card title="Routines" icon="calendar-clock" href="/bot/routines">
+    Scheduled work on a bot you own, on your local weekday hours.
+  </Card>
+  <Card title="Skills" icon="book-marked" href="/bot/skills">
+    First-party instruction bundles a bot can follow.
+  </Card>
+  <Card title="Connected apps" icon="plug" href="/chat/tools">
+    A connection reaches Chat, Bot, or both — you pick, under Customize → Connectors.
+  </Card>
+</CardGroup>
+
+## Advanced
+
+- [How Bot works](/bot/how-it-works) — user-visible bubbles only, no round counter, waking a hibernated guest.
+- [Troubleshooting](/bot/troubleshooting) — Connecting versus Stream Unavailable, parked steps, the setup form.

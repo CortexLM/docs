@@ -1,18 +1,38 @@
 ---
 title: "Skills"
-description: "Enable skills on a bot you own."
+description: "Skills are instruction bundles a bot can follow. Enable first-party skills on a bot you own; the bot loads one when the task calls for it."
 ---
 
-Skills are extra instructions a bot can run. Enable them on a bot you own.
-
-<Frame>
-  <img src="/images/product/bot-home.png" alt="Cortex Bot guest gate — this space is reserved for signed-in accounts" />
-</Frame>
+A skill tells a bot **how** a particular job is done — the checklist for a weekly report, the steps for a support triage, the way your team wants a summary written. Instead of carrying every procedure in its context all the time, the bot loads a skill when the task calls for it.
 
 ## Enable a skill
 
-1. Sign in. A guest cannot enable or run skills.
-2. Open a bot you own.
-3. Enable the first-party skills that bot should follow.
+<Steps>
+  <Step title="Sign in and open a bot you own">
+    A guest cannot enable or run skills.
+  </Step>
+  <Step title="Enable the first-party skills the bot should follow">
+    Each bot has its own set. Enable only what that bot's job needs.
+  </Step>
+  <Step title="Let the bot use them">
+    The bot loads a skill through its `skill` tool when a task matches. You can also ask for one by name in the conversation.
+  </Step>
+</Steps>
 
-Skills are not Deep Research and not Code's workspace catalog. See [Bot tools](/bot/tools) for the `skill` tool, and [How Bot works](/bot/how-it-works) for what the user sees.
+## Skills are not…
+
+| Object | What it is |
+| --- | --- |
+| [Deep Research](/chat/deep-research) | A Chat research run |
+| Code's workspace catalog | The tools a [Code session](/code/how-it-works) runs in its guest |
+| [Routines](/bot/routines) | *When* a bot works; a skill is *how* |
+| Connected apps | Tools from apps you connected under **Customize → Connectors** |
+
+## Skills in the CLI
+
+The CLI has its own skills system for the coding agent — `SKILL.md` bundles with frontmatter, found in your project or under `~/.cortex/skills/`, loaded through a `UseSkill` tool and gated by the `permission.skill` table. Those are CLI skills for Code, separate from Bot's first-party skills. See [Extend the CLI](/cli/extend).
+
+## Related
+
+- [Tools](/bot/tools) — the `skill` tool and the rest of the catalog.
+- [How Bot works](/bot/how-it-works) — what you see when a skill runs.

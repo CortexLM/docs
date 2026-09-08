@@ -1,24 +1,55 @@
 ---
 title: "How Bot works"
-description: "No round counter. User-visible bubbles only."
+description: "What you see is a few short bubbles, not the inner loop. No round counter; a 15-minute turn deadline; six identical tool calls stop a turn. An active turn wakes a hibernated guest first."
 ---
 
-What the user sees is several short bubbles, not the inner tool loop. `send_to_user`, `ask_user`, `notify`, and `secret_request` each persist as their own row. Listing the conversation returns only user-visible kinds.
+A bot's turn is a tool loop on a computer. Most of it is invisible by design: the conversation shows only the messages the bot chose to send you, the questions it asked, the notifications it raised, and the credentials it requested. The screen on the Computer rail shows the rest.
 
-<Frame>
-  <img src="/images/product/bot-home.png" alt="Cortex Bot guest gate — this space is reserved for signed-in accounts" />
-</Frame>
+## What you see
+
+Four tools produce rows in the conversation, and each persists as its own row:
+
+| Tool | Row |
+| --- | --- |
+| `send_to_user` | A message from the bot |
+| `ask_user` | A question that waits for you |
+| `notify` | A notification |
+| `secret_request` | A request for a credential, entered by you |
+
+Listing the conversation returns only these user-visible kinds. Plain assistant text outside them is **dropped**, not rewritten into a canned message — so a bot that has nothing to say says nothing.
+
+Parked steps show as approval widgets; see [Approvals](/bot/approvals).
 
 ## When a turn stops
 
-The Bot loop continues until the model stops calling tools, the process is draining, a 15-minute turn deadline, or six consecutive identical tool calls. It does **not** grow a round counter and does **not** inherit Chat's eight-round abort.
+| Stop condition | Detail |
+| --- | --- |
+| The model stops calling tools | The normal end |
+| The process is draining | A deployment restart lets the turn finish cleanly |
+| **15-minute turn deadline** | Long jobs belong in a [routine](/bot/routines) or a background `task` |
+| **Six consecutive identical tool calls** | A loop guard |
 
-## What is dropped
+There is **no round counter**. Bot does not inherit Chat's eight-round budget — a computer task legitimately takes many steps.
 
-Plain assistant text is dropped, not rewritten as a canned blob. Subagents cannot `send_to_user` or nest `task`.
+## Background tasks and subagents
+
+`task` runs work in the background and reports `task_started` / `task_progress` / `task_completed` or `task_failed`. Subagents cannot `send_to_user` and cannot nest another `task`; everything flows back through the parent bot, which decides what to tell you. See [Tools](/bot/tools).
 
 ## Waking the guest
 
-An active Bot turn resumes a hibernated Cloud guest before the model is prompted. The prompt never tells the model to apologise that it has no bash.
+An active turn on a bot whose Cloud guest has hibernated **resumes the guest before the model is prompted**. The bot always starts a turn with its shell and desktop available; the prompt never tells the model to apologise for missing a computer. See [Computer](/bot/computer).
 
-See [Computer](/bot/computer) and [Approvals](/bot/approvals).
+## Computer use, precisely
+
+The planner describes the control it wants — *the Save button in the dialog* — and a second inference call returns framebuffer coordinates for `grounded_click`. The planner never guesses raw pixels. Screenshots feed the next step.
+
+## Compared with Chat and Code
+
+| | Chat | Code | Bot |
+| --- | --- | --- | --- |
+| Stops on | 8 tool rounds | Model stops or Stop | 15-minute deadline, six identical calls |
+| You see | Streamed reply with tool results | Turn timeline | User-visible bubbles plus the live screen |
+| Guardrail | Round budget | Ask / Plan / Agent | Allow / Deny / Always |
+| Machine | Snippet sandbox | Headless guest | Guest **with** a desktop |
+
+See [How Chat works](/chat/how-it-works) and [How Code works](/code/how-it-works).

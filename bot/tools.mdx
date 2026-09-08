@@ -1,33 +1,55 @@
 ---
 title: "Bot tools"
-description: "The parent catalog — not a subset of Chat or Code."
+description: "The parent tool catalog a bot receives — files and shell, computer use, browser, web, memory and skills, user-visible messages, nested tasks, agents, artifacts, and the plugins you enabled for Bot."
 ---
 
-A bot receives the parent tool catalog. The planner describes a control; a second inference call returns framebuffer coordinates. Do not let the planner guess raw pixels.
-
-<Frame>
-  <img src="/images/product/bot-home.png" alt="Cortex Bot guest gate — this space is reserved for signed-in accounts" />
-</Frame>
+A bot receives the **parent catalog**: everything below, plus the connected apps you enabled for Bot. It is not a subset of Chat's tools or Code's workspace catalog — it is its own set, built around having a computer.
 
 ## Catalog
 
-| Group | Tools |
-| --- | --- |
-| Box | `read`, `write`, `edit`, `shell` |
-| Computer use | `screenshot`, `grounded_click`, `type`, `hotkey`, `scroll`, `drag`, `wait`, `open_app`, `switch_app`, `save_note`, `code_agent` |
-| Browser | `browser` |
-| Web | `web_search`, `web_fetch` |
-| Memory and skills | `update_memory`, `skill`, `routine` |
-| User-visible | `send_to_user`, `ask_user`, `notify`, `secret_request` |
-| Nested | `task` |
-| Agents | `send_to_agent`, `create_agent`, `create_channel` |
-| Artifacts | `read_artifact`, `grep_artifact` |
-| Plugins | Plugins enabled for **Bot** |
+| Group | Tools | Notes |
+| --- | --- | --- |
+| **Files and shell** | `read`, `write`, `edit`, `shell` | On the bot's computer |
+| **Computer use** | `screenshot`, `grounded_click`, `type`, `hotkey`, `scroll`, `drag`, `wait`, `open_app`, `switch_app`, `save_note`, `code_agent` | The planner names a control; a second inference call returns framebuffer coordinates. The planner never guesses raw pixels. |
+| **Browser** | `browser` | Drive a browser on the desktop |
+| **Web** | `web_search`, `web_fetch` | Search and fetch without opening the browser |
+| **Memory and skills** | `update_memory`, `skill`, `routine` | Remember, follow a [skill](/bot/skills), schedule a [routine](/bot/routines) |
+| **User-visible** | `send_to_user`, `ask_user`, `notify`, `secret_request` | The only things that appear as bubbles in the conversation |
+| **Nested** | `task` | Background work with progress events |
+| **Agents** | `send_to_agent`, `create_agent`, `create_channel` | Work with other agents and channels |
+| **Artifacts** | `read_artifact`, `grep_artifact` | Read and search large outputs |
+| **Plugins** | Connected apps enabled for **Bot** | Under **Customize → Connectors** — see [Tools and connectors](/chat/tools) |
 
-This is exhaustive against the parent declarations — not a Chat subset.
+## User-visible tools
+
+What you see in the conversation is a handful of short bubbles, not the inner loop. Four tools produce them:
+
+| Tool | What you see |
+| --- | --- |
+| `send_to_user` | A message from the bot |
+| `ask_user` | A question that waits for your answer |
+| `notify` | A notification — useful from a [routine](/bot/routines) |
+| `secret_request` | A request for a credential the bot needs, entered by you, never typed into the transcript |
+
+Plain assistant text outside these tools is dropped, not rewritten into a canned message. See [How Bot works](/bot/how-it-works).
 
 ## Background tasks
 
-Background `task` returns `{ ok, id, status: "queued" }` immediately. Children emit `task_started` / `task_progress` / `task_completed` / `task_failed`.
+`task` starts work in the background and returns immediately with `{ ok, id, status: "queued" }`. The child then emits `task_started`, `task_progress`, and `task_completed` or `task_failed`. Children cannot `send_to_user` and cannot nest another `task`; everything reports back through the parent.
 
-Dangerous computer steps and connected-app changes park behind [Approvals](/bot/approvals).
+## What parks behind approvals
+
+Dangerous computer steps and changes in connected apps do not run on the bot's say-so. They park as **Allow / Deny / Always** in the conversation. See [Approvals](/bot/approvals).
+
+## What is not here
+
+| Not a Bot tool | Where it lives |
+| --- | --- |
+| Deep Research | [Chat](/chat/deep-research) |
+| Code's `read_file` / `edit_file` / `bash` workspace catalog | [Code sessions](/code/how-it-works) — though `code_agent` can hand a coding task to Code |
+| Design canvas tools | Chat and Code host canvases; Bot does not receive those tools. See [Design](/design) |
+
+## Related
+
+- [Computer](/bot/computer) — the machine the tools run on.
+- [Skills](/bot/skills) — instruction bundles the `skill` tool loads.
