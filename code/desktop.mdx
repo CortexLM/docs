@@ -39,6 +39,10 @@ CORTEX_SSH_HOST=build-box cortex        # naming an SSH host also selects SSH
 
 This PC and SSH need an **already connected Code session**. Cortex will not create one on the fly and will not substitute the Cloud silently; if you select a host without a connected session, the CLI tells you so in plain words. Either resume a session that already has the host, or unset `CORTEX_COMPUTER` to use the Cloud. See [CLI configuration](/cli/configuration).
 
+<Frame caption="The CLI composer once a host is connected. Whichever host runs the tools, the session looks the same from here.">
+  <img src="/images/cli/runtime/40x12/composer-hover.png" alt="Cortex CLI composer with the pointer over it, rendered in a 40 by 12 terminal" />
+</Frame>
+
 ## Bot has the same shape
 
 Bot's Computer rail follows the same rule: **Cloud** in the browser, **This PC** on the Bot desktop app, **SSH** as shell only. See [Bot computer](/bot/computer).

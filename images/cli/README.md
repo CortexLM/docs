@@ -11,11 +11,21 @@ photographed macOS desktop. Generated, not a live recording. Used on `cli/index`
 
 ## `runtime/` — Designer cli pack
 
-Headless `MockTerminal` renders of the live session chrome at 120×40, vendored
-from `docs/media/tui-lock-v2/runtime/120x40/` at CortexLM/cli `4d41ef36`
-(`[feat] /goal persisted long-horizon workflows (#54)`). Inky background,
-dual-hairline composer, model chip on the border, accent `#1F4945`. The full pack
-is 82 boards; these are the ones the guides use.
+Headless `MockTerminal` renders of the live session chrome, vendored byte-for-byte
+from CortexLM/cli tip `4d41ef362481ec816ac395e0e64fe6a54327de14`
+(`[feat] /goal persisted long-horizon workflows (#54)`):
+
+```
+https://raw.githubusercontent.com/CortexLM/cli/4d41ef362481ec816ac395e0e64fe6a54327de14/docs/media/tui-lock-v2/runtime/120x40/<name>.png
+https://raw.githubusercontent.com/CortexLM/cli/4d41ef362481ec816ac395e0e64fe6a54327de14/docs/media/tui-lock-v2/runtime/40x12/<name>.png
+```
+
+The layout mirrors the source: `runtime/120x40/` (1232×912) and `runtime/40x12/`
+(432×296). Inky background, dual-hairline composer, model chip on the border,
+accent `#1F4945`. The full pack is 82 boards at 120×40 and 36 at 40×12; these are
+the ones the guides use. `custom.css` shows 40×12 boards at their natural width.
+
+### 120×40
 
 | File | State | Used on |
 | --- | --- | --- |
@@ -46,6 +56,7 @@ is 82 boards; these are the ones the guides use.
 | `resume-picker.png` | `/resume` session picker | `cli/sessions` |
 | `clear-confirm.png` | `/clear` confirmation | `cli/sessions` |
 | `shortcuts-overlay.png` | Ctrl+X shortcuts overlay | `cli/keyboard` |
+| `permission-prompt-hover.png` | Approval prompt, pointer over a row | `cli/keyboard` |
 | `config-tree.png` | `/config` read-only tree | `cli/configuration` |
 | `settings-appearance.png` | `/settings` → Appearance | `cli/configuration` |
 | `mcp-servers.png` | `/mcp` server manager | `cli/extend` |
@@ -55,8 +66,24 @@ is 82 boards; these are the ones the guides use.
 | `quota-exhausted.png` | × Agent quota exhausted, held composer | `cli/troubleshooting` |
 | `diagnostics.png` | Diagnostics row after an edit | `cli/troubleshooting` |
 
+### 40×12
+
+Compact boards. Used where another product's page points at the CLI, and once
+on `cli/tui` to show the chrome folding into a small terminal. No
+`permission-prompt-hover` exists at this size in the source.
+
+| File | State | Used on |
+| --- | --- | --- |
+| `composer-empty.png` | Empty composer at 40×12 | `cli/tui` (Display) |
+| `welcome-cortex.png` | Welcome splash at 40×12 | `getting-started/downloads` |
+| `composer-typing.png` | Typing a prompt at 40×12 | `code/cli` |
+| `composer-hover.png` | Composer, pointer hovering, at 40×12 | `code/desktop` |
+| `slash-palette.png` | Palette showing `/plan` and `/goal` at 40×12 | `code/interactions` |
+| `goal-chip-active.png` | Goal · 2/8 chip at 40×12 | `code/how-it-works` |
+| `permission-prompt.png` | Approval prompt at 40×12 | `security/overview` |
+
 Refresh from the CLI repository rather than editing pixels here. When a new state
-is needed, take the matching board from the pack (`docs/media/tui-lock-v2/runtime/`)
-and add a row above. Not vendored on purpose: `login-success.png` (shows a real
-account address). The earlier macOS-desktop composites (`splash`, `working`,
-`composer`, `model`, `palette`, `shell`) were retired in favour of this pack.
+is needed, take the matching board from the pack and add a row above. Not
+vendored on purpose: `login-success.png` (shows a real account address). The
+earlier macOS-desktop composites (`splash`, `working`, `composer`, `model`,
+`palette`, `shell`) were retired in favour of this pack.

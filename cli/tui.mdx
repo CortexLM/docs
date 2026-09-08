@@ -6,7 +6,7 @@ description: "What is on screen when you run cortex — the timeline and its row
 `cortex` with a terminal attached starts the interactive UI. It takes the full viewport by default (the alternate screen) and gives you three things: a **timeline** of the conversation and the agent's work, a **composer** at the bottom, and a **footer** with the model, the mode, and the most useful shortcut.
 
 <Frame caption="The empty composer: > with a block caret, the placeholder “Plan, search, build anything”, the mode on the top border, the model chip Cortex Mini 1 (medium) on the bottom border, and the footer hints.">
-  <img src="/images/cli/runtime/composer-empty.png" alt="Cortex CLI empty Agent composer with the model chip on its border" />
+  <img src="/images/cli/runtime/120x40/composer-empty.png" alt="Cortex CLI empty Agent composer with the model chip on its border" />
 </Frame>
 
 ## Starting it
@@ -42,11 +42,11 @@ Before the first turn the timeline shows two lines — *Welcome to Cortex, the c
 Tool rows collapse to a summary; with the timeline focused, press **e** to expand or collapse the selected one.
 
 <Frame caption="Tool tiles: a grouped “3 tool calls” header, Read and Grep rows with their summaries, and a Shell row whose failing test is quoted beneath it.">
-  <img src="/images/cli/runtime/tool-tiles.png" alt="Cortex CLI timeline with Read, Grep, and Shell tool rows and a failing test result" />
+  <img src="/images/cli/runtime/120x40/tool-tiles.png" alt="Cortex CLI timeline with Read, Grep, and Shell tool rows and a failing test result" />
 </Frame>
 
 <Frame caption="An Edit tile: the unified diff with a dim gutter, red removals, green additions, and a +2 −1 stat.">
-  <img src="/images/cli/runtime/diff-hunk.png" alt="Cortex CLI edit tile showing a unified diff hunk" />
+  <img src="/images/cli/runtime/120x40/diff-hunk.png" alt="Cortex CLI edit tile showing a unified diff hunk" />
 </Frame>
 
 ## The status line
@@ -62,15 +62,15 @@ While a turn runs, a line above the composer shows a spinner, the stage — *Thi
 - Submit while a turn is running and the message is **queued** — the composer reads *Add a follow-up — Enter to queue* and shows how many are waiting.
 
 <Frame caption="Typing: the placeholder is gone, the caret follows the text, and the footer switches to Enter:send · Alt+Enter:newline.">
-  <img src="/images/cli/runtime/composer-typing.png" alt="Cortex CLI composer with a prompt being typed" />
+  <img src="/images/cli/runtime/120x40/composer-typing.png" alt="Cortex CLI composer with a prompt being typed" />
 </Frame>
 
 <Frame caption="Two follow-ups queued behind a running Shell command — sent when the current step finishes. ↑ edits a queued item.">
-  <img src="/images/cli/runtime/queue.png" alt="Cortex CLI with a running Shell tool and two queued follow-ups" />
+  <img src="/images/cli/runtime/120x40/queue.png" alt="Cortex CLI with a running Shell tool and two queued follow-ups" />
 </Frame>
 
 <Frame caption="A hand-off: & fix the flaky login redirect test and open a PR — the timeline shows the Cloud agent id, its branch, and where to follow it.">
-  <img src="/images/cli/runtime/cloud-handoff.png" alt="Cortex CLI showing Handed off to Cortex Cloud with agent, branch, and follow links" />
+  <img src="/images/cli/runtime/120x40/cloud-handoff.png" alt="Cortex CLI showing Handed off to Cortex Cloud with agent, branch, and follow links" />
 </Frame>
 
 ## Footer
@@ -106,7 +106,7 @@ Most of the surface area is one key or one slash command away:
 - **Ctrl+Q** or `/quit` quits. **Ctrl+C** force-quits.
 
 <Frame caption="After Esc: the Shell row is marked stopped, the timeline records × Stopped with the time and tokens spent, and the composer offers ↑ to edit your last message.">
-  <img src="/images/cli/runtime/interrupt-stopped.png" alt="Cortex CLI after interrupting a turn — × Stopped" />
+  <img src="/images/cli/runtime/120x40/interrupt-stopped.png" alt="Cortex CLI after interrupting a turn — × Stopped" />
 </Frame>
 
 ## When the service is unreachable
@@ -116,6 +116,12 @@ The TUI says **The coding service is temporarily unavailable** and offers to ret
 ## Display
 
 `/theme` switches between **Cortex Night** (default), **Cortex Day**, **Ocean Dark**, and **Monokai**. `/compact` toggles a denser layout. The accent is Cortex green `#1F4945` on the focused control; the rest of the chrome is grey. See [Extend → Themes](/cli/extend#themes).
+
+The chrome holds its shape in a small terminal. At 40 columns by 12 rows the composer keeps its border, mode label, model chip, and footer hint:
+
+<Frame caption="The empty composer at 40×12 — the same chrome, folded to a small window.">
+  <img src="/images/cli/runtime/40x12/composer-empty.png" alt="Cortex CLI empty composer rendered in a 40 by 12 terminal" />
+</Frame>
 
 ## Related
 

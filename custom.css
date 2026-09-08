@@ -11,6 +11,13 @@
   height: auto;
   border-radius: 12px;
 }
+/* 40×12 TUI boards are 432 px wide renders of a small terminal; show them at
+   their own size instead of stretching them across the column. */
+#content img[src*="/images/cli/runtime/40x12/"] {
+  width: auto;
+  max-width: 100%;
+  margin-inline: auto;
+}
 
 :root {
   --docs-ink: #1f1d1a;

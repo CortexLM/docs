@@ -18,13 +18,13 @@ Every CLI session runs under three controls: a **mode** that decides which tools
 Plan and Ask are **harness locks**: the mutating tools are withheld, not merely discouraged. In Plan mode the composer border reads *Plan · no edits* and the agent drafts a plan first.
 
 <Frame caption="Plan mode: a numbered plan — “no files change until you approve” — and a composer bordered Plan · no edits.">
-  <img src="/images/cli/runtime/mode-plan.png" alt="Cortex CLI in Plan mode showing a drafted plan and the Plan · no edits composer" />
+  <img src="/images/cli/runtime/120x40/mode-plan.png" alt="Cortex CLI in Plan mode showing a drafted plan and the Plan · no edits composer" />
 </Frame>
 
 When a plan is ready, the TUI asks whether to implement it — **Yes, switch to Agent mode and implement**, or **No, keep planning**:
 
 <Frame caption="Implement this plan? Enter confirms and switches to Agent; Esc keeps planning.">
-  <img src="/images/cli/runtime/plan-confirm.png" alt="Cortex CLI plan confirmation picker with two numbered options" />
+  <img src="/images/cli/runtime/120x40/plan-confirm.png" alt="Cortex CLI plan confirmation picker with two numbered options" />
 </Frame>
 
 The same three modes exist in web Code as Ask / Plan / Agent — see [Ask, Plan, Agent](/code/interactions).
@@ -40,7 +40,7 @@ Why it exists: you see the shape of the work while it is still cheap to redirect
 When the agent wants to run something consequential, the prompt appears inline under the command and the composer waits. There is one approval path: numbered options — run once, always allow this kind of command in this project, edit the command first, or decline and say what to do instead.
 
 <Frame caption="Cortex wants to run $ npm install … — 1 Yes, run once · 2 Yes, always allow npm install in this project · 3 Edit command · 4 No — tell Cortex what to do instead.">
-  <img src="/images/cli/runtime/permission-prompt.png" alt="Cortex CLI inline approval prompt with four numbered options" />
+  <img src="/images/cli/runtime/120x40/permission-prompt.png" alt="Cortex CLI inline approval prompt with four numbered options" />
 </Frame>
 
 `/permissions` sets the policy for the session:
@@ -52,7 +52,7 @@ When the agent wants to run something consequential, the prompt appears inline u
 | **Full access** | Only ask when leaving the sandbox |
 
 <Frame caption="/permissions — how Cortex asks before acting: Smart (current), Read-only, Full access.">
-  <img src="/images/cli/runtime/permissions-picker.png" alt="Cortex CLI /permissions picker with Smart, Read-only, and Full access" />
+  <img src="/images/cli/runtime/120x40/permissions-picker.png" alt="Cortex CLI /permissions picker with Smart, Read-only, and Full access" />
 </Frame>
 
 From the command line the same thing is `--ask-for-approval <untrusted|on-failure|on-request|never>`; `on-request` is the default. `/approval <ask|session|always|never>` sets it explicitly inside the TUI, and `/auto on` toggles auto-approval. Choosing *always allow … in this project* remembers that kind of command for the project, not every command.
@@ -72,7 +72,7 @@ The sandbox limits what a tool may touch when it does run.
 When the sandbox blocks something, the timeline says so and offers a way through — keep it blocked, allow once, or allow for this session:
 
 <Frame caption="× Sandbox denied — curl was blocked by the workspace sandbox; network is allowlisted. Keep blocked, Allow once, or Allow for this session.">
-  <img src="/images/cli/runtime/sandbox-deny.png" alt="Cortex CLI sandbox denial with three numbered options" />
+  <img src="/images/cli/runtime/120x40/sandbox-deny.png" alt="Cortex CLI sandbox denial with three numbered options" />
 </Frame>
 
 ## The permission table
@@ -103,7 +103,7 @@ external_directory = "deny"
 `/model` (or **Ctrl+M**) lists the models under their product names — **Cortex Mini 1**, **Cortex 1**, **Cortex Max 1** — and lets you set reasoning effort with **Tab**: **Low** for quick edits and questions, **Medium** for everyday coding (the default), **High** for hard, multi-file changes. `/effort` opens the same radios directly.
 
 <Frame caption="Effort for Cortex Mini 1: High · Medium (default, selected) · Low. Enter applies; Tab goes back to the model list.">
-  <img src="/images/cli/runtime/model-effort-medium.png" alt="Cortex CLI /model effort picker with Medium Effort selected" />
+  <img src="/images/cli/runtime/120x40/model-effort-medium.png" alt="Cortex CLI /model effort picker with Medium Effort selected" />
 </Frame>
 
 | Model | Role |

@@ -34,7 +34,7 @@ cortex mcp debug <name> --test-auth --no-cache
 In the TUI, `/mcp` (or **Ctrl+E**) opens the manager, `/mcp-tools` lists each server's tools, `/mcp-auth` handles servers that need sign-in, and `/mcp-reload` re-reads the configuration.
 
 <Frame caption="/mcp: each server with its tool count and state — connected, authenticating, or failed with r to reconnect.">
-  <img src="/images/cli/runtime/mcp-servers.png" alt="Cortex CLI MCP server manager listing four servers and their connection state" />
+  <img src="/images/cli/runtime/120x40/mcp-servers.png" alt="Cortex CLI MCP server manager listing four servers and their connection state" />
 </Frame>
 
 A tool `search` from server `myserver` is presented to the agent as `mcp__myserver__search` — that is the name to use with `--enabled-tools`, `--disabled-tools`, and the `permission.mcp` table. Configuration lives under `mcp_servers` in `config.toml`:
@@ -82,7 +82,7 @@ tools:
 `/skills` lists them, `/skill <name> [args]` forces one, `/skill-reload` re-reads after editing, and `cortex debug skill <name>` shows how one resolves. Gate them with `[permission.skill]`.
 
 <Frame caption="/skills: searchable, each with its description and whether it comes from the project or your user directory.">
-  <img src="/images/cli/runtime/skills.png" alt="Cortex CLI skills picker listing project and user skills" />
+  <img src="/images/cli/runtime/120x40/skills.png" alt="Cortex CLI skills picker listing project and user skills" />
 </Frame>
 
 Bot has its own first-party skills — see [Bot skills](/bot/skills).
@@ -174,7 +174,7 @@ cortex plugin build / validate / publish
 `/plugins` covers install, enable, and disable from the TUI. Configuration keys: `plugins`, `plugin_dirs`, `plugin_settings`.
 
 <Frame caption="/plugins: version, enabled state, and what each plugin adds — for example a /review command.">
-  <img src="/images/cli/runtime/plugins.png" alt="Cortex CLI plugins manager listing installed plugins" />
+  <img src="/images/cli/runtime/120x40/plugins.png" alt="Cortex CLI plugins manager listing installed plugins" />
 </Frame>
 
 ## Custom commands

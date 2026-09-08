@@ -50,6 +50,10 @@ Do not mix them up. Chat Python cannot see a Code repository, and a Code session
 
 Consequential steps ask first. In Bot, dangerous computer actions and connected-app changes park behind [Allow / Deny / Always](/bot/approvals). In the CLI, every session runs under an approval policy and a sandbox, and the agent asks before it does anything consequential — see [Modes and permissions](/cli/modes-and-permissions).
 
+<Frame caption="The CLI asking before it runs an install: run once, always allow in this project, edit the command, or decline.">
+  <img src="/images/cli/runtime/40x12/permission-prompt.png" alt="Cortex CLI approval prompt rendered in a 40 by 12 terminal" />
+</Frame>
+
 ## Errors never name a vendor
 
 User-facing error text names a Cortex surface, never a subprocessor. The CLI's outage message is deliberately just *The coding service is temporarily unavailable*. Problem documents carry a stable `code` and a `request_id` you can quote when reporting an issue — see [Errors](/api/errors).
