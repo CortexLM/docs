@@ -1,0 +1,90 @@
+---
+title: "Cortex CLI"
+description: "Cortex Code in your terminal — an interactive session view, one-shot runs, headless mode for CI, and the extension points: MCP servers, skills, agents, hooks, plugins."
+image: "/images/banners/code.png"
+---
+
+The Cortex CLI is **Cortex Code for the terminal**. One binary, `cortex`, gives you an interactive TUI with a live timeline and approvals, one-shot runs from your own shell, and a headless mode for scripts and CI. It uses the same account and the same Code sessions as the web and desktop apps, runs on the Cloud runtime by default, and never runs the model on your laptop.
+
+<Frame caption="The CLI in a macOS Terminal: splash, a prompt, the slash palette, the model picker, and a Shell tool row. A generated desktop demo of the shipped TUI, not a live recording.">
+  <img src="/images/cli/intro.gif" alt="Cortex CLI on a macOS desktop: splash, prompt, slash commands, and a Shell tool row" />
+</Frame>
+
+## Install in one line
+
+<CodeGroup>
+```bash macOS and Linux
+curl -fsSL https://software.cortex.foundation/install.sh | sh
+```
+
+```powershell Windows
+irm https://software.cortex.foundation/install.ps1 | iex
+```
+</CodeGroup>
+
+```bash
+cortex login
+cd ~/code/my-project
+cortex
+```
+
+<p className="ink-cta-row">
+  <a className="ink-btn" href="/cli/install">Install</a>
+  <a className="ink-btn ink-btn-quiet" href="/cli/quickstart">Quickstart</a>
+</p>
+
+## What one binary gives you
+
+| Surface | Command | Use it for |
+| --- | --- | --- |
+| **Interactive TUI** | `cortex` | Everyday work: a timeline, approvals, Agent / Plan / Ask, sessions you can resume, rewind, and fork |
+| **One-shot** | `cortex run "…"` | A single request from your shell, streamed, with session continuation and sharing |
+| **Headless** | `cortex exec "…"` | Scripts and CI: autonomy levels, JSON output, turn and time limits |
+
+## Guides
+
+<CardGroup cols={2}>
+  <Card title="Install" icon="download" href="/cli/install">
+    Installer, checksums, version pins, channels, `cortex upgrade`, uninstall.
+  </Card>
+  <Card title="Sign in" icon="key-round" href="/cli/sign-in">
+    `cortex login` in a browser, device code for headless machines, API keys for CI, the OS keyring.
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/cli/quickstart">
+    First session, `AGENTS.md`, choosing autonomy.
+  </Card>
+  <Card title="The TUI" icon="terminal" href="/cli/tui">
+    Timeline rows, the composer, status line, queueing follow-ups, interrupting.
+  </Card>
+  <Card title="Slash commands" icon="slash" href="/cli/slash-commands">
+    Everything after `/` — model, mode, permissions, plan, goal, sessions, MCP, diagnostics.
+  </Card>
+  <Card title="Modes and permissions" icon="shield-check" href="/cli/modes-and-permissions">
+    Agent / Plan / Ask, Spec, approvals, sandbox, the `permission` table, effort.
+  </Card>
+  <Card title="Goals" icon="target" href="/cli/goal">
+    `/goal` — a persisted long-horizon objective that survives compaction and resume.
+  </Card>
+  <Card title="Sessions" icon="history" href="/cli/sessions">
+    Resume, rewind, fork, export, import, share, lock, clean up.
+  </Card>
+  <Card title="Headless runs" icon="workflow" href="/cli/headless">
+    `cortex exec` and `cortex run` in scripts, GitHub Actions, GitLab CI.
+  </Card>
+  <Card title="Configuration" icon="settings" href="/cli/configuration">
+    `config.toml`, profiles, environment variables, data locations, hosts.
+  </Card>
+  <Card title="Extend" icon="puzzle" href="/cli/extend">
+    MCP servers, skills, agents and subagents, hooks, plugins, themes.
+  </Card>
+  <Card title="Troubleshooting" icon="life-buoy" href="/cli/troubleshooting">
+    Outage copy, hosts that refuse, the agent that will not edit, MCP, quotas.
+  </Card>
+</CardGroup>
+
+## Conventions on these pages
+
+- Commands are written `cortex …`. The installed binary is `Cortex`; the installer adds `cortex` and `agent` symlinks, and both spellings work on case-insensitive filesystems.
+- Everything documented here is backed by the shipped CLI. `cortex --help` and `cortex <command> --help` are generated from the same definitions and are always authoritative.
+- The CLI talks to the Cortex API at `api.cortex.foundation`. Releases are published to `software.cortex.foundation`.
+- Source and issues: [github.com/CortexLM/cli](https://github.com/CortexLM/cli), Apache-2.0.

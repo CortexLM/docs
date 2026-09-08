@@ -1,0 +1,98 @@
+---
+title: "Install the CLI"
+description: "Install Cortex CLI on macOS, Linux, or Windows. The installer verifies a SHA-256 checksum before it writes anything; cortex upgrade keeps it current."
+---
+
+The installer downloads the release build for your platform from [software.cortex.foundation](https://software.cortex.foundation), verifies its SHA-256 checksum against the release manifest, and installs the binary. Nothing is written until the checksum matches.
+
+<Frame caption="The welcome splash after a fresh install: Welcome to Cortex, the coding agent CLI · / commands · @ files · ! shell · & cloud.">
+  <img src="/images/cli/splash.png" alt="Cortex CLI splash in macOS Terminal on a green forest desktop" />
+</Frame>
+
+## macOS and Linux
+
+```bash
+curl -fsSL https://software.cortex.foundation/install.sh | sh
+```
+
+Installs `Cortex` into `~/.local/bin`, plus `cortex` and `agent` symlinks. Add that directory to your `PATH` if it is not there already. Python 3.8 or later is required by the installer.
+
+Prefer to read the script first:
+
+```bash
+curl -fsSL https://software.cortex.foundation/install.sh | less
+```
+
+What the installer does and refuses to do:
+
+| Behaviour | Detail |
+| --- | --- |
+| Selects the right asset | GNU or musl Linux for x86_64 and AArch64; macOS for Intel and Apple silicon |
+| Fails closed | Unknown architectures, unknown libc, or a missing platform asset stop the install |
+| Bounded downloads | Redirects are rejected; extraction accepts only the release binary |
+| Protects your `bin` | Refuses to overwrite unrelated commands or binary symlinks |
+| Keeps a recovery copy | An existing binary is kept as `Cortex.old`; a failed post-install check restores it |
+
+### Options
+
+| Variable | Effect |
+| --- | --- |
+| `CORTEX_VERSION=0.1.8` | Pin a version, for example `curl … \| CORTEX_VERSION=0.1.8 sh` |
+| `CORTEX_INSTALL_DIR=…` | Change the prefix; the binary goes in its `bin` |
+| `CORTEX_CHANNEL=stable\|beta\|nightly` | Pick a release channel |
+
+## Windows
+
+```powershell
+irm https://software.cortex.foundation/install.ps1 | iex
+```
+
+Installs into `%LOCALAPPDATA%\Cortex\bin` after the same checksum check. Add that folder to your user `PATH` yourself — the installer does not edit your profile. Windows x64 only; ARM64 and 32-bit builds are not published, and the installer does not silently substitute another architecture. An existing binary is kept as `Cortex.old.exe`.
+
+## Check it worked
+
+```bash
+cortex --version
+```
+
+## Update
+
+```bash
+cortex upgrade            # latest on your channel
+cortex upgrade --check    # report only
+cortex upgrade 0.1.10     # a specific version
+```
+
+`cortex upgrade` fetches the release manifest from `software.cortex.foundation`, verifies SHA-256 before replacing the binary, keeps a `.old` recovery copy, and checks the new binary's `--version` before finishing. A lookup failure returns a non-zero exit status — an unavailable release is never reported as already installed. Installations made through a package manager are directed back to that package manager.
+
+The TUI also offers `/upgrade`, and `check_for_update_on_startup` in [configuration](/cli/configuration) controls the launch-time check.
+
+## Homebrew and WinGet
+
+The release pipeline publishes assets that a Homebrew formula in `CortexLM/homebrew-tap` and a WinGet package `CortexLM.Cortex` reference. Coverage varies by platform; the shell and PowerShell installers above are the supported path.
+
+## Build from source
+
+```bash
+# Linux only: headers for the optional audio/desktop crates
+sudo apt-get install -y libasound2-dev pkg-config
+
+cargo build -p cortex-cli --release
+# binary: target/release/Cortex
+```
+
+Use the Rust toolchain pinned in the repository's `rust-toolchain.toml`.
+
+## Uninstall
+
+```bash
+cortex uninstall --dry-run     # show what would be removed
+cortex uninstall               # remove the binary and data
+cortex uninstall --keep-config --keep-data
+cortex uninstall --backup      # archive data first
+```
+
+## Next
+
+- [Sign in](/cli/sign-in) — `cortex login`.
+- [Quickstart](/cli/quickstart) — a first session.

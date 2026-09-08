@@ -1,0 +1,76 @@
+---
+title: "Goals"
+description: "/goal keeps a long-horizon objective attached to the session. It survives the end of a turn, context compaction, and resume — the agent keeps planning, acting, and verifying until the work is evidence-complete."
+---
+
+A normal turn ends when the model stops. A **goal** does not: `/goal` attaches an objective to the session, and the agent keeps working toward it across turns — planning, acting, verifying — until the work is **evidence-complete**, until you pause or clear it, or until the budget runs out. The goal survives the end of a turn, context compaction, and closing and resuming the TUI.
+
+This is Cortex session state, not a second coding provider. Agent mode still talks to the Cortex API; `/goal` is harness state — persist, continue, wrap up.
+
+## Commands
+
+| Command | Effect |
+| --- | --- |
+| `/goal <objective>` | Create or replace the active goal and start a kickoff turn |
+| `/goal` | Show the objective, state, progress, and budget |
+| `/goal pause` | Stop auto-continuation. Only you can pause; the model cannot. |
+| `/goal resume` | Resume a paused or blocked goal if budget remains |
+| `/goal clear` | Delete the persisted goal |
+
+A reserved word is only special when it is the **entire** argument. `/goal pause the deploy` sets an objective; it does not pause.
+
+## What you see
+
+The composer carries a chip with the goal's progress, painted in Cortex green:
+
+```text
+   > ship the rate limiter and prove it with tests                                   09:20 AM
+
+ ╭─ Agent ─ Goal · 2/8──────────────────────────────────────────────────────────────────────╮
+ │ > Plan, search, build anything                                                           │
+ ╰──────────────────────────────────────────────────────────────── Cortex Mini 1 (medium) ─╯
+```
+
+The chip reads `Goal · 2/8` while active, and `paused`, `done`, `budget`, or `blocked` in the other states.
+
+## States
+
+| State | Meaning |
+| --- | --- |
+| `active` | The agent continues automatically between turns |
+| `paused` | You stopped auto-continuation; resume when ready |
+| `complete` | Evidence-complete — see below |
+| `budget_limited` | The turn or token budget ran out; resume with a fresh budget if you want more |
+| `blocked` | The agent needs something from you; resume after you provide it |
+
+## Evidence, not vibes
+
+Completion is evidence-based. To mark a goal done the model must call `UpdateGoal` with a reason **and** at least one of: a file path, a command, or a test. A confident paragraph is not enough.
+
+## Budget
+
+The default budget is **8 turns**. Near the limit — one turn left, or 85% of a token cap — the next continuation asks the agent to wrap up rather than open new scope.
+
+## Where it is stored
+
+`goal.json` lives next to the session files:
+
+```text
+~/.cortex/sessions/{session-id}/goal.json
+```
+
+Resuming the session reloads it. See [Sessions](/cli/sessions) and [Configuration → Data locations](/cli/configuration#data-locations).
+
+## When to use a goal
+
+| Situation | Goal or not |
+| --- | --- |
+| *Fix this one test* | A normal turn |
+| *Ship the rate limiter and prove it with tests* — several files, a build, tests | **Goal** |
+| Something you want done overnight in CI | [`cortex exec`](/cli/headless) with `--max-turns` and `--timeout` |
+| Scheduled, repeated work on a computer | A [Bot routine](/bot/routines) |
+
+## Related
+
+- [Modes and permissions](/cli/modes-and-permissions) — a goal still runs under your approval policy and sandbox.
+- [Sessions](/cli/sessions) — resume brings the goal back.

@@ -1,0 +1,193 @@
+---
+title: "Headless and one-shot runs"
+description: "cortex exec for CI and scripts — autonomy levels, JSON output, turn and time limits — and cortex run for a single streamed request from your own shell."
+---
+
+Two entry points work without a terminal, so they are safe in pipelines where the TUI refuses to start:
+
+| Command | Use it for |
+| --- | --- |
+| `cortex exec` | CI, scripts, automation. Autonomy levels, structured output, turn and time limits. Fails closed with a non-zero exit. |
+| `cortex run` | A single request from your shell. Streams a formatted answer, continues sessions, can share the result. |
+
+Both use the **Cloud** runtime unless `CORTEX_COMPUTER` selects This PC or SSH — see [Configuration](/cli/configuration).
+
+## `cortex exec`
+
+### Give it a prompt
+
+```bash
+cortex exec "explain what src/main.rs does"
+cortex exec -f prompt.txt
+echo "review the diff" | cortex exec
+```
+
+### Autonomy
+
+There is nobody to ask in headless mode, so `--auto` is the safety control that matters.
+
+| Level | Allows |
+| --- | --- |
+| `read-only` | Reading, searching, analysing. No file changes, no commands. **Default.** |
+| `low` | Basic file operations — documentation, formatting, comments |
+| `medium` | Adds package installation, builds, local git operations |
+| `high` | Full access, including operations that reach outside the workspace |
+
+```bash
+cortex exec --auto read-only "review this code for security issues"
+cortex exec --auto low      "fix all formatting issues in src/"
+cortex exec --auto medium   "implement unit tests for the auth module"
+```
+
+<Warning>
+`--skip-permissions-unsafe` bypasses every permission check and cannot be combined with `--auto`. Use it only in a disposable environment — an isolated container or an ephemeral runner with no credentials. Never on a developer machine, a shared runner, or anything holding secrets.
+</Warning>
+
+### Output formats
+
+`-o` / `--output-format`:
+
+| Value | Output |
+| --- | --- |
+| `text` | Human-readable. **Default.** Its shape is not a contract. |
+| `json` | One JSON document with the final result |
+| `stream-json` | JSON Lines, one event per line, as execution proceeds |
+| `stream-jsonrpc` | JSON-RPC streaming for multi-turn conversations |
+
+```bash
+cortex exec -o json "list all TODO comments" | jq -r '.response'
+cortex exec -o stream-json "run the test suite" | tee run.jsonl
+```
+
+`--response-format text|json|json_object` shapes what the model returns; `--output-schema` takes inline JSON or a schema file for structured output.
+
+### Add context
+
+| Flag | Effect |
+| --- | --- |
+| `--include <GLOB>` / `--exclude <GLOB>` | Filter files in the context; repeatable |
+| `--git-diff` | Include the current git diff |
+| `--url <URL>` | Fetch a URL into the context; repeatable |
+| `--clipboard` | Read the clipboard |
+| `-i`, `--image <PATH>` | Attach an image; repeatable |
+
+### Limits
+
+```bash
+cortex exec --timeout 1800 "refactor the storage layer"   # default 600 seconds
+cortex exec --max-turns 10 "quick task"                   # default 100 turns
+```
+
+A turn is one complete request/response cycle with the model.
+
+### Choose tools
+
+```bash
+cortex exec --list-tools
+cortex exec --enabled-tools Read,Grep,Glob "map the module structure"
+cortex exec --disabled-tools Execute "suggest a fix without running anything"
+```
+
+### Other flags
+
+| Flag | Effect |
+| --- | --- |
+| `-m`, `--model <MODEL>` | Model for this run |
+| `-r`, `--reasoning-effort <LEVEL>` | Reasoning effort |
+| `--use-spec` / `--spec-model <MODEL>` | Run through [Spec mode](/cli/modes-and-permissions#spec-mode) |
+| `-s`, `--session-id <ID>` | Continue an existing session |
+| `--cwd <PATH>` | Working directory |
+| `--system <PROMPT>` | Replace the system prompt |
+| `--max-tokens <N>` | Cap the response |
+| `--echo` | Include the prompt in the output |
+
+`cortex exec --help` has the complete list.
+
+## `cortex run`
+
+Interactive-adjacent: streams a formatted answer into your terminal and understands sessions.
+
+```bash
+cortex run "explain the release process"
+cortex run --continue "now write it up as a checklist"
+cortex run --session <ID> "and add the rollback steps"
+cortex run --share "summarise today's changes"     # prints a share URL
+cortex run --agent reviewer --format json "review src/auth"
+cortex run -f context.md -o answer.md "turn this into a runbook"
+```
+
+`--format default|json|jsonl` (alias `--output`); `--copy` puts the answer on the clipboard; `--output-file` writes it to disk; `--notification` raises a desktop notification when done.
+
+## Examples
+
+### GitHub Actions
+
+```yaml
+name: Cortex review
+on: [pull_request]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Review the diff
+        env:
+          CORTEX_API_KEY: ${{ secrets.CORTEX_API_KEY }}
+        run: |
+          cortex exec --auto read-only --git-diff \
+            --timeout 600 --max-turns 20 \
+            "Review this diff for bugs, security issues and missing tests"
+```
+
+`cortex github install` scaffolds workflows for pull-request review and issue automation if you would rather not write the YAML.
+
+### GitLab CI
+
+```yaml
+code-review:
+  script:
+    - cortex exec --auto read-only -o json "Review the code changes" > review.json
+  artifacts:
+    paths: [review.json]
+```
+
+### A shell script
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+if git diff --quiet; then
+  echo "No changes to review"
+  exit 0
+fi
+
+cortex exec --auto read-only --git-diff \
+  --timeout 300 --max-turns 20 \
+  -o json "Review these changes for issues" \
+  | jq -r '.response'
+```
+
+### Continue a session across invocations
+
+```bash
+session=$(cortex exec -o json "analyse this codebase" | jq -r '.session_id')
+cortex exec -s "$session" "now focus on the auth module"
+```
+
+## Practices worth keeping
+
+1. **Start at `read-only`** and raise autonomy only when the task needs it. A review job never needs write access.
+2. **Always set `--timeout` and `--max-turns` in CI.** They are the difference between a failed job and a runner that hangs.
+3. **Use `-o json` or `-o stream-json`** when something downstream parses the output.
+4. **Keep the transcript.** `-o stream-json … | tee run.jsonl` is your audit trail.
+5. **Pass credentials through the environment**, never on the command line. See [Sign in](/cli/sign-in).
+
+## Related
+
+- [Modes and permissions](/cli/modes-and-permissions)
+- [Sessions](/cli/sessions)
+- [Cortex Security](/code/security) — the GitHub App alternative for pull-request review.

@@ -1,0 +1,229 @@
+---
+title: "Configuration"
+description: "config.toml keys, profiles, precedence, the environment variables the CLI reads, where data lives on disk, and how to select the Cloud, This PC, or SSH host."
+---
+
+Cortex reads a **global** config file, an optional **project** config file, and any overrides you pass on the command line — in that order, later sources winning. Environment variables sit between the files and the flags.
+
+## Where the files live
+
+| Scope | Location |
+| --- | --- |
+| Global | `~/.cortex/config.toml` — or `CORTEX_CONFIG_DIR`, `CORTEX_HOME`, or `CORTEX_CONFIG` if set. TOML, JSON, and JSONC are accepted by extension. |
+| Project | The first of `.cortex/config.toml`, `.cortex/config.json`, `.cortex/config.jsonc`, `cortex.toml`, `cortex.json`, `cortex.jsonc`, walking up from the working directory to the project or git root |
+| Command line | `-c key=value` / `--config key=value`, repeatable. Values parse as TOML scalars. |
+
+Commit the project file when the settings belong to the repository rather than to you.
+
+## Precedence
+
+From strongest to weakest:
+
+1. `-c` / `--config` overrides and other command-line flags
+2. Environment variables
+3. Project config file
+4. Global config file
+5. Built-in defaults
+
+## Inspect and edit
+
+```bash
+cortex config              # the resolved configuration
+cortex config --json
+cortex config --edit
+cortex config get <key>
+cortex config set <key> <value>
+cortex config unset <key>
+
+cortex debug config --env  # which environment variables influence the result
+cortex debug config --diff # what differs from the defaults
+```
+
+`/config` and `/reload-config` do the reading from inside the TUI.
+
+## Keys
+
+### Model
+
+| Key | Notes |
+| --- | --- |
+| `model` | Default model |
+| `model_reasoning_effort` | `low` · `medium` · `high` |
+| `model_reasoning_summary` | `none` · `brief` · `detailed` · `auto` |
+| `model_context_window` | Override the assumed context window |
+| `model_auto_compact_token_limit` | When to auto-compact the conversation |
+| `model_aliases` | Map your own short names to model ids |
+| `small_model` | Used for cheap background work such as titles and summaries |
+
+### Permissions and sandboxing
+
+| Key | Values | Meaning |
+| --- | --- | --- |
+| `approval_policy` | `untrusted`, `on-failure`, `on-request`, `never` | When to ask before running a tool. `on-request` is the default. |
+| `sandbox_mode` | `read-only`, `workspace-write`, `danger-full-access` | What the sandbox permits. `workspace-write` is the default. |
+| `trusted_directories` | array of paths | Directories that do not prompt on entry |
+
+```toml
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+writable_roots = ["/tmp/scratch"]
+network_access = false
+```
+
+The `permission` table sets per-capability policy — see [Modes and permissions](/cli/modes-and-permissions#the-permission-table).
+
+### Behaviour
+
+| Key | Meaning |
+| --- | --- |
+| `instructions` | Extra instructions prepended to every session |
+| `current_agent` | The agent used by default |
+| `hide_agent_reasoning` / `show_raw_agent_reasoning` | Reasoning display |
+| `check_for_update_on_startup` | Look for a new release on launch |
+| `disable_paste_burst` | Turn off paste-burst detection in the composer |
+
+### TUI
+
+```toml
+[tui]
+animations = true
+notifications = true
+alternate_screen = true   # false stays inline in the host terminal
+
+[tui.theme]
+name = "dark"             # dark, light, ocean_dark, monokai
+```
+
+### History and execution
+
+```toml
+[history]
+persistence = "save-all"  # or "none"
+max_bytes = 10000000
+
+[execution]
+max_agent_threads = 4
+max_tool_threads = 8
+command_timeout_seconds = 120
+http_timeout_seconds = 60
+streaming = true
+```
+
+Each `execution` key has a flag: `--max-agent-threads`, `--max-tool-threads`, `--command-timeout`, `--http-timeout`, `--no-streaming`.
+
+### Extensions
+
+| Key | Points at |
+| --- | --- |
+| `mcp_servers` | [MCP servers](/cli/extend#mcp-servers) |
+| `plugins`, `plugin_dirs`, `plugin_settings` | [Plugins](/cli/extend#plugins) |
+| `commands` | Custom slash commands |
+
+### Profiles
+
+A profile is a named bundle you select with `-p` / `--profile`:
+
+```toml
+[profiles.review]
+model = "your-model-id"
+approval_policy = "never"
+sandbox_mode = "read-only"
+```
+
+```bash
+cortex --profile review "review the last three commits"
+```
+
+## Environment variables
+
+Values are never documented here — keep secrets in your keyring or CI secret store.
+
+### Locations
+
+| Variable | Effect |
+| --- | --- |
+| `CORTEX_HOME` | Root for config and data. Default `~/.cortex`. |
+| `CORTEX_CONFIG_DIR` | Config directory, taking priority over `CORTEX_HOME` |
+| `CORTEX_CONFIG` | Path to a specific config file |
+| `CORTEX_DATA_DIR` · `CORTEX_CACHE_DIR` | Data and cache directories |
+
+### Account
+
+| Variable | Effect |
+| --- | --- |
+| `CORTEX_API_KEY` | API key for headless and CI use |
+| `CORTEX_AUTH_TOKEN` | Session or bearer token |
+| `CORTEX_API_URL` | API base URL. Defaults to `https://api.cortex.foundation`. |
+
+Interactive use should prefer `cortex login`. See [Sign in](/cli/sign-in).
+
+### Host for Code
+
+The TUI and `cortex exec` create a **Cloud** Code session unless you select another host.
+
+| Variable | Effect |
+| --- | --- |
+| `CORTEX_COMPUTER` | Unset or `cloud` uses the Cloud. `this_pc` (aliases `this-pc`, `local`, `paired`, `connected`) or `ssh` selects those hosts. |
+| `CORTEX_SSH_HOST` (alias `CORTEX_SSH_TARGET`) | SSH target; setting it selects SSH |
+
+This PC and SSH require an **already connected** Code session. Cortex will not create one on the fly and will not substitute the Cloud silently. See [Code on desktop](/code/desktop).
+
+### Model, logging, diagnostics
+
+| Variable | Effect |
+| --- | --- |
+| `CORTEX_MODEL` · `CORTEX_DEFAULT_MODEL` | Default model and fallback |
+| `CORTEX_MAX_TOKENS` · `CORTEX_TEMPERATURE` | Response cap and sampling default |
+| `CORTEX_LOG_LEVEL` | `error`, `warn`, `info`, `debug`, `trace` |
+| `RUST_LOG` · `RUST_BACKTRACE` | Standard Rust logging controls |
+| `NO_COLOR` | Disable colour; `--color never` sets it for child processes |
+| `CORTEX_DIAGNOSTICS_DIR` | Where `--debug` writes bounded, content-free diagnostics |
+
+### Set for you, not by you
+
+Hook scripts and plugins can read `CORTEX_FILE`, `CORTEX_SESSION_ID`, `CORTEX_MESSAGE_ID`, and `CORTEX_PLUGIN_ARGS`. Cortex populates them for the processes it spawns.
+
+### Standard variables Cortex respects
+
+`EDITOR` / `VISUAL` for `cortex agent edit` and similar; `SHELL` for completions; `HTTPS_PROXY` / `HTTP_PROXY` for `cortex scrape`; `PATH`, `TERM`, `LANG`, `LC_ALL`, `USER` in `cortex debug system`.
+
+## Data locations
+
+```bash
+cortex debug paths
+```
+
+```text
+~/.cortex/
+├── config.toml          Global configuration
+├── sessions/            Session transcripts (and goal.json beside a goal)
+├── code-sessions.json   Workspace → Code session id
+├── agents/              Personal agents
+├── skills/              Personal skills
+├── plugins/             Installed plugins
+├── mcp/                 MCP server state
+├── snapshots/           Workspace snapshots
+├── cache/               Model, response, and update caches; logs/ inside
+├── feedback/            Queued feedback submissions
+├── aliases.toml         Command aliases
+└── session_locks.json   Sessions protected from cleanup
+```
+
+Inside a project: `AGENTS.md` (from `cortex init`), `.cortex/config.toml`, `.cortex/agents/`, `.cortex/skills/`, `.cortex/plugins/`, `.cortex/commands/`. `.agents/` and `.agent/` are also scanned. Project files take priority over personal ones with the same name.
+
+Some subsystems use the platform application directory — `~/.local/share/Cortex/` on Linux, `~/Library/Application Support/Cortex/` on macOS, `%APPDATA%\Cortex\` on Windows — and the platform cache directory. A legacy `~/.config/cortex` is still read so older installs keep working.
+
+**Credentials** live in the OS keyring, not in any of these directories. See [Sign in](/cli/sign-in).
+
+## Shell completions
+
+```bash
+cortex completion bash --install    # also zsh, fish, powershell, elvish
+```
+
+## Related
+
+- [Modes and permissions](/cli/modes-and-permissions)
+- [Extend](/cli/extend) — `mcp_servers`, agents, skills, hooks, plugins.
+- [Troubleshooting](/cli/troubleshooting)
