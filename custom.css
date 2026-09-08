@@ -5,6 +5,7 @@
 
 #content img[src*="/images/product/"],
 #content img[src*="/images/cli/"],
+#content img[src*="/images/banners/"],
 #content img[src*="/images/frames/"] {
   width: 100%;
   height: auto;

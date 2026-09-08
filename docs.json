@@ -118,7 +118,8 @@
   },
   "seo": {
     "metatags": {
-      "og:site_name": "Cortex Docs"
+      "og:site_name": "Cortex Docs",
+      "og:image": "/images/banners/getting-started.png"
     },
     "organization": {
       "name": "Cortex",
