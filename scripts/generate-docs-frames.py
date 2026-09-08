@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
-"""Generate macOS + terminal frame illustrations for Cortex docs.
+"""RETIRED — do not generate abstract product-window SVGs.
 
-Tokens: cream #FAF8F4 · ink #211F1C · green #1F4945 (focus / frame only).
-Chrome: matte ink, dual hairlines, green focus. No violet, no cyan.
+Guide heroes use real Cortex CLI media (`images/cli/`) or marked
+`images/product/*.png` hooks for upcoming staging screenshots.
+
+This script is kept so the retired plates can be inspected. Running it
+is an error unless `--force-write-retired-frames` is passed.
+Tokens below are historical (cream / ink / #1F4945).
 """
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 OUT = Path(__file__).resolve().parents[1] / "images" / "frames"
@@ -519,6 +524,12 @@ FRAMES = {
 
 
 def main() -> None:
+    if "--force-write-retired-frames" not in sys.argv:
+        sys.stderr.write(
+            "generate-docs-frames.py is retired. Do not add abstract product-window "
+            "SVGs. Use images/cli/ or overwrite images/product/*.png.\n"
+        )
+        raise SystemExit(2)
     OUT.mkdir(parents=True, exist_ok=True)
     for name, fn in FRAMES.items():
         path = OUT / name

@@ -265,6 +265,12 @@ JSON
 must_fail "$missingnav" "missing-mintlify-page"
 must_fail "$missingnav" "also-missing-mintlify-page"
 
+# Retired fake-app SVG plates must not appear in public MDX.
+frames="$tmp/fake-app-frame"
+seed "$frames"
+printf '\n<img src="/images/frames/switcher.svg" alt="mock" />\n' >> "$frames/site/problems/not_found.mdx"
+must_fail "$frames" "fake-app"
+
 # A navbar href with no MDX page must fail even when every `pages` slug exists.
 missinghref="$tmp/missing-href"
 seed "$missinghref"
