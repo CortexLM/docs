@@ -111,7 +111,7 @@ def api(key: str, path: str, method: str = "GET", body: dict | None = None, retr
                     url,
                     headers=headers,
                     data=data,
-                    timeout=90,
+                    timeout=(15, 60),  # connect, read — avoid multi-minute hangs
                     impersonate="chrome",
                 )
                 txt = (resp.text or "")[:400]
@@ -168,19 +168,24 @@ def api(key: str, path: str, method: str = "GET", body: dict | None = None, retr
 def list_all(key: str, path: str) -> list:
     out: list = []
     cursor = None
+    page_n = 0
     while True:
+        page_n += 1
         p = path
         if cursor:
             sep = "&" if "?" in path else "?"
             p = f"{path}{sep}cursor={urllib.parse.quote(cursor)}"
+        log(f"list_all {path} page={page_n} so_far={len(out)}")
         page = api(key, p)
         if isinstance(page, list):
+            log(f"list_all {path} done count={len(page)} (array)")
             return page
         out.extend(page.get("results") or page.get("items") or [])
         if not page.get("has_more") or not page.get("next_cursor"):
             break
         cursor = page["next_cursor"]
         time.sleep(0.2)
+    log(f"list_all {path} done count={len(out)}")
     return out
 
 
@@ -252,6 +257,7 @@ def discover_pages(docs_root: Path) -> list[dict]:
 
 
 def ensure_section(key: str, name: str) -> dict:
+    log(f"ensure_section {name!r}")
     for s in list_all(key, "/sections"):
         if s.get("name") == name:
             return s
