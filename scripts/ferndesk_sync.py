@@ -54,30 +54,110 @@ def log(msg: str) -> None:
     print(msg, flush=True)
 
 
+# Chrome-like UA so CF sees a browser-ish client alongside TLS impersonation.
+_CHROME_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+)
+_ACCEPT = "application/json, text/plain, */*"
+
+
+def _in_ci() -> bool:
+    return os.environ.get("CI") == "true" or os.environ.get("GITHUB_ACTIONS") == "true"
+
+
+def _http_client():
+    """Prefer curl_cffi Chrome TLS fingerprint; urllib only outside CI if missing."""
+    try:
+        from curl_cffi import requests as cffi_requests  # type: ignore
+
+        return ("curl_cffi", cffi_requests)
+    except ImportError:
+        if _in_ci():
+            raise RuntimeError(
+                "curl_cffi is required in CI (Cloudflare Error 1010 bans GHA urllib TLS). "
+                "Install with: pip install curl_cffi"
+            ) from None
+        return ("urllib", None)
+
+
+def _is_cf_1010(status: int, body: str) -> bool:
+    if status != 403:
+        return False
+    b = body.lower()
+    return "1010" in b or "browser_signature_banned" in b or "error 1010" in b
+
+
 def api(key: str, path: str, method: str = "GET", body: dict | None = None, retries: int = 6):
-    headers = {"Authorization": f"Bearer {key}", "Accept": "application/json"}
+    headers = {
+        "Authorization": f"Bearer {key}",
+        "Accept": _ACCEPT,
+        "User-Agent": _CHROME_UA,
+    }
     data = None
     if body is not None:
         data = json.dumps(body).encode()
         headers["Content-Type"] = "application/json"
+
+    client_kind, cffi_requests = _http_client()
     last = None
+    url = API + path
+
     for i in range(retries):
-        req = urllib.request.Request(API + path, data=data, headers=headers, method=method)
         try:
+            if client_kind == "curl_cffi":
+                resp = cffi_requests.request(
+                    method,
+                    url,
+                    headers=headers,
+                    data=data,
+                    timeout=90,
+                    impersonate="chrome",
+                )
+                txt = (resp.text or "")[:400]
+                if resp.status_code >= 400:
+                    last = f"{method} {path} -> {resp.status_code} {txt}"
+                    if resp.status_code in (429, 502, 503, 504) or _is_cf_1010(
+                        resp.status_code, txt
+                    ):
+                        wait = min(90, 3 * (2**i))
+                        kind = (
+                            "cf1010/403"
+                            if _is_cf_1010(resp.status_code, txt)
+                            else f"rate/limit {resp.status_code}"
+                        )
+                        log(f"{kind}; sleep {wait}s")
+                        time.sleep(wait)
+                        continue
+                    raise RuntimeError(last)
+                raw = resp.content or b""
+                return json.loads(raw) if raw else {}
+
+            # urllib fallback (local/dev only — GHA TLS fingerprint is banned by CF)
+            req = urllib.request.Request(url, data=data, headers=headers, method=method)
             with urllib.request.urlopen(req, timeout=90) as r:
                 raw = r.read()
                 return json.loads(raw) if raw else {}
         except urllib.error.HTTPError as e:
             txt = e.read().decode("utf-8", "replace")[:400]
             last = f"{method} {path} -> {e.code} {txt}"
-            if e.code in (429, 502, 503, 504):
+            if e.code in (429, 502, 503, 504) or _is_cf_1010(e.code, txt):
                 wait = min(90, 3 * (2**i))
-                log(f"rate/limit {e.code}; sleep {wait}s")
+                kind = "cf1010/403" if _is_cf_1010(e.code, txt) else f"rate/limit {e.code}"
+                log(f"{kind}; sleep {wait}s")
                 time.sleep(wait)
                 continue
             raise RuntimeError(last) from e
         except urllib.error.URLError as e:
             last = f"{method} {path} -> URLError {e}"
+            wait = min(90, 3 * (2**i))
+            log(f"transport error; sleep {wait}s ({e})")
+            time.sleep(wait)
+            continue
+        except RuntimeError:
+            raise
+        except Exception as e:
+            last = f"{method} {path} -> {type(e).__name__} {e}"
             wait = min(90, 3 * (2**i))
             log(f"transport error; sleep {wait}s ({e})")
             time.sleep(wait)

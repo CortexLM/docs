@@ -41,3 +41,13 @@ Prompt the Droid to run `scripts/ferndesk_sync.py` against the tip of `CortexLM/
 
 - Sync **upserts** by slug; it does **not** delete FernDesk-only articles.
 - Mintlify remains the source of truth in git until cutover is complete.
+
+## Cloudflare / GitHub Actions
+
+FernDesk sits behind Cloudflare. GHA's stock Python `urllib` TLS fingerprint triggers
+**Error 1010** (`browser_signature_banned`). The sync script uses `curl_cffi` with
+`impersonate="chrome"` in CI (Chrome-like User-Agent + Accept; retries 403/1010 with
+backoff). Local runs fall back to urllib only if `curl_cffi` is not installed.
+
+Separately: the FernDesk UI still needs **Connect domain** for `docs.cortex.foundation`
+HTTPS. That custom-domain 403 is unrelated to CF 1010 on `api.ferndesk.com`.
