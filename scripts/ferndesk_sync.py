@@ -406,7 +406,14 @@ def discover_pages(docs_root: Path) -> list[dict]:
             continue
         meta, body = strip_frontmatter(path.read_text(encoding="utf-8", errors="replace"))
         md = mdx_to_markdown(body)
-        title = meta.get("title") or path.stem.replace("-", " ").title()
+        raw_title = meta.get("title") or path.stem.replace("-", " ").replace("_", " ").title()
+        # FernDesk 400s on bare snake_case problem codes as titles (COR-444).
+        if "_" in raw_title and " " not in raw_title:
+            desc = (meta.get("description") or "").split(".")[0].strip()
+            nice = raw_title.replace("_", " ").title()
+            title = f"{desc} ({raw_title})" if desc else nice
+        else:
+            title = raw_title.replace("_", " ") if "_" in raw_title else raw_title
         slug = rel.rsplit(".", 1)[0]
         if slug.endswith("/index"):
             slug = slug[: -len("/index")] or "index"
@@ -506,7 +513,11 @@ def main() -> int:
             if a.get("sectionId") == section["id"]
         ]
         by_slug = {
-            a.get("slug"): {"id": a["id"], "status": a.get("status")}
+            a.get("slug"): {
+                "id": a["id"],
+                "status": a.get("status"),
+                "keywords": a.get("keywords") or "",
+            }
             for a in articles
             if a.get("slug")
         }
@@ -531,9 +542,15 @@ def main() -> int:
         if existing:
             eid = existing["id"] if isinstance(existing, dict) else existing
             estatus = existing.get("status") if isinstance(existing, dict) else None
+            ekw = (existing.get("keywords") or "") if isinstance(existing, dict) else ""
             if dry:
                 log(f"DRY update {page['slug']} -> {eid}")
                 skipped += 1
+                continue
+            # Skip PATCH when Mintlify fingerprint already present (saves write quota).
+            if page["fp"] and f"fp:{page['fp']}" in ekw:
+                skipped += 1
+                log(f"skip unchanged {page['slug']}")
                 continue
             try:
                 api(key, f"/articles/{eid}", "PATCH", body_common, label=page["slug"])
@@ -547,6 +564,12 @@ def main() -> int:
                 failures.append({"slug": page["slug"], "op": "update", "error": str(e)})
                 log(f"ERROR update {page['slug']} failed after retries: {e}")
                 continue
+            by_slug[page["slug"]] = {
+                "id": eid,
+                "status": "published" if publish else (estatus or "draft"),
+                "keywords": page["keywords"],
+            }
+            cache_path.write_text(json.dumps(by_slug, indent=2) + "\n")
             updated += 1
             log(f"updated {page['slug']}")
             time.sleep(1.2)
@@ -556,6 +579,41 @@ def main() -> int:
             log(f"DRY create {page['slug']} in {page['collection']}")
             created += 1
             continue
+        # Lookup-before-create: avoid POST when slug already exists but missed cache.
+        looked = None
+        try:
+            for a in list_all(
+                key,
+                f"/articles?sectionId={urllib.parse.quote(str(section['id']))}&slug={urllib.parse.quote(page['slug'])}",
+                max_pages=3,
+            ):
+                if a.get("slug") == page["slug"]:
+                    looked = a
+                    break
+        except RuntimeError as e:
+            log(f"slug lookup failed for {page['slug']}: {e}")
+        if looked:
+            try:
+                api(key, f"/articles/{looked['id']}", "PATCH", body_common, label=page["slug"])
+                if publish and looked.get("status") != "published":
+                    time.sleep(0.3)
+                    api(key, f"/articles/{looked['id']}/publish", "POST", {}, label=page["slug"])
+            except RuntimeError as e:
+                failed += 1
+                failures.append({"slug": page["slug"], "op": "lookup-update", "error": str(e)})
+                log(f"ERROR lookup-update {page['slug']} failed after retries: {e}")
+                continue
+            by_slug[page["slug"]] = {
+                "id": looked["id"],
+                "status": looked.get("status") or "published",
+                "keywords": page["keywords"],
+            }
+            cache_path.write_text(json.dumps(by_slug, indent=2) + "\n")
+            updated += 1
+            log(f"lookup-update {page['slug']}")
+            time.sleep(1.5)
+            continue
+
         try:
             art = api(
                 key,

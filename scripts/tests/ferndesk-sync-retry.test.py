@@ -262,7 +262,7 @@ docs_root = Path(tempfile.mkdtemp(prefix="ferndesk-docs-"))
 SECTIONS = [{"id": "sec-1", "name": "Staging"}]
 COLLECTIONS = [{"id": "col-1", "sectionId": "sec-1", "title": "Getting Started"}]
 
-# --- create conflict recovery (main's slug lookup + PATCH) still works -------
+# --- slug lookup / create conflict recovery (lookup-before-create + PATCH) -------
 def conflict_routes(method, url, n):
     if "/sections" in url:
         return FakeResponse(200, SECTIONS)
@@ -300,7 +300,7 @@ try:
     check("conflict recovery reports no failures", summary.get("failed") == 0, summary)
     check("conflict recovery caches the found id", json.loads(cache_path.read_text()).get(
         "getting-started-quickstart", {}).get("id") == "art-9", cache_path.read_text())
-    check("conflict recovery is logged", any("recovered-update" in line for line in logs), logs)
+    check("conflict recovery is logged", any(("recovered-update" in line or "lookup-update" in line) for line in logs), logs)
 finally:
     restore(saved)
 
