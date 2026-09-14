@@ -246,3 +246,7 @@ body:has([data-assistant-bar]:not([aria-hidden="true"])) #footer { padding-botto
   border-color: var(--docs-cream);
   color: var(--docs-cream) !important;
 }
+
+:is(.dark) .status-cortex-logo {
+  content: url("/logo/banner-dark.png");
+}
