@@ -27,6 +27,37 @@ GitHub Action: `.github/workflows/ferndesk-sync.yml`
 
 Repo secret required: `FERNDESK_API_KEY`.
 
+## Write-path rate limits (429)
+
+`POST /articles` answers `429` / `{"code":"rate_limited"}` under load. The write
+path (article create, update, publish, and collection create) backs off
+exponentially — 5s doubling to a 180s cap, the slower ladder 429 needs; 5xx and
+CF 1010 keep 3s doubling to 90s — and waits for `Retry-After` (delta-seconds or
+HTTP-date) whenever the server sends it and it is larger.
+
+Retries stay bounded on three axes, so a rate-limited run finishes and reports
+instead of hanging:
+
+| Env | Default | Meaning |
+|-----|---------|---------|
+| `FERNDESK_WRITE_RETRIES` | `12` | attempts per write |
+| `FERNDESK_WRITE_DEADLINE` | `1800` | seconds of retrying for one write |
+| `FERNDESK_WRITE_BUDGET` | `5400` | seconds of retry time for the whole run (`0` disables) |
+
+Reads share the 12-attempt default. A `Retry-After` above 300s is treated as
+unusable and the exponential ladder is used instead. Hard 4xx (400/401/404)
+fail immediately without retrying.
+
+One page that exhausts its retries does not abort the rest of the run: the sync
+continues, then logs a `FAILURES` line, records `failed` / `failed_slugs` in the
+SUMMARY, and exits `1`. Nothing is cached for a failed write, so the next run
+retries that page cleanly. Re-run the sync (or the workflow) once the limit
+clears.
+
+A create that trips a slug conflict (409/422, or a message naming the slug) is
+recovered by looking the article up and PATCHing it, so a stale cache or a
+pagination miss does not surface as a failure.
+
 ## Factory Droid path (agent)
 
 When Manager Deploy lands **prod** and content needs judgment (rewrites, gap fill, migration QA), launch Factory Droid only:
@@ -41,6 +72,8 @@ Prompt the Droid to run `scripts/ferndesk_sync.py` against the tip of `CortexLM/
 
 - Sync **upserts** by slug; it does **not** delete FernDesk-only articles.
 - Mintlify remains the source of truth in git until cutover is complete.
+- `python3 scripts/tests/ferndesk-sync-retry.test.py` covers the write-path
+  retry policy offline (faked transport, virtual clock).
 
 ## Cloudflare / GitHub Actions
 

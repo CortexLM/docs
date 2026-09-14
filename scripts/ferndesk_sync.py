@@ -8,12 +8,17 @@ Env:
   FERNDESK_DRY_LOCAL 1 = discover pages only, no API
   FERNDESK_FULL_SCAN 1 = rebuild slug cache by listing all articles
   FERNDESK_SLUG_CACHE path to slug→id cache (default .ferndesk-slug-cache.json)
+  FERNDESK_WRITE_RETRIES  attempts per article/collection write (default 12)
+  FERNDESK_WRITE_DEADLINE seconds of retrying allowed per write (default 1800)
+  FERNDESK_WRITE_BUDGET   seconds of retry time for the whole run (default 5400)
   DOCS_ROOT          docs repo root (default: cwd)
 
 Idempotent upsert by slug. Never deletes FernDesk-only articles (safe migration).
 """
 from __future__ import annotations
 
+import datetime
+import email.utils
 import hashlib
 import json
 import os
@@ -88,7 +93,111 @@ def _is_cf_1010(status: int, body: str) -> bool:
     return "1010" in b or "browser_signature_banned" in b or "error 1010" in b
 
 
-def api(key: str, path: str, method: str = "GET", body: dict | None = None, retries: int = 12):
+# Transient failures worth retrying. 429 is the article-write rate limit
+# (`{"code":"rate_limited"}`); 5xx are origin hiccups behind Cloudflare.
+_RETRY_STATUSES = (429, 502, 503, 504)
+_WRITE_METHODS = {"POST", "PATCH", "PUT", "DELETE"}
+_BACKOFF_BASE = 3.0
+_BACKOFF_CAP = 90.0
+# 429 needs a longer cool-down than 5xx/CF 1010 — FernDesk rate limits recover
+# slowly once the article writes start tripping them.
+_RATE_LIMIT_BACKOFF_BASE = 5.0
+_RATE_LIMIT_BACKOFF_CAP = 180.0
+# A server-supplied Retry-After past this cap is treated as unusable and the
+# exponential ladder is used instead — an unbounded header must not park CI.
+_RETRY_AFTER_CAP = 300.0
+# Attempts per request. Writes additionally carry a per-write deadline and a
+# run-wide budget so a rate-limited run always finishes and reports.
+_DEFAULT_RETRIES = 12
+_DEFAULT_WRITE_RETRIES = 12
+
+
+def _env_number(name: str, default: float, minimum: float = 0.0) -> float:
+    raw = os.environ.get(name)
+    if raw is None or not raw.strip():
+        return default
+    try:
+        value = float(raw)
+    except ValueError:
+        log(f"WARN {name}={raw!r} is not a number; using {default:g}")
+        return default
+    if value < minimum:
+        log(f"WARN {name}={raw!r} below minimum {minimum:g}; using {minimum:g}")
+        return minimum
+    return value
+
+
+def _header(headers, name: str) -> str | None:
+    """Read a response header from curl_cffi/urllib without trusting either API."""
+    if headers is None:
+        return None
+    try:
+        value = headers.get(name)
+    except Exception:
+        return None
+    return value if isinstance(value, str) else None
+
+
+def _retry_after_seconds(value: str | None) -> float | None:
+    """Retry-After as delta-seconds or HTTP-date; None when absent or malformed."""
+    if not value or not value.strip():
+        return None
+    raw = value.strip()
+    try:
+        return max(0.0, float(raw))
+    except ValueError:
+        pass
+    try:
+        when = email.utils.parsedate_to_datetime(raw)
+    except (TypeError, ValueError):
+        return None
+    if when is None:
+        return None
+    if when.tzinfo is None:
+        when = when.replace(tzinfo=datetime.timezone.utc)
+    return max(0.0, (when - datetime.datetime.now(datetime.timezone.utc)).total_seconds())
+
+
+def _retry_delay(attempt: int, retry_after: float | None, status: int | None = None) -> tuple[float, str]:
+    """Wait before the next attempt: server's Retry-After when usable, else backoff.
+
+    429 gets the slower ladder main introduced (5s doubling to 180s); other
+    transient statuses and CF 1010 keep the shorter one (3s doubling to 90s).
+    """
+    if status == 429:
+        backoff = min(_RATE_LIMIT_BACKOFF_CAP, _RATE_LIMIT_BACKOFF_BASE * (2**attempt))
+    else:
+        backoff = min(_BACKOFF_CAP, _BACKOFF_BASE * (2**attempt))
+    if retry_after is None:
+        return backoff, "backoff"
+    if retry_after > _RETRY_AFTER_CAP:
+        return backoff, f"backoff (Retry-After {retry_after:.0f}s over {_RETRY_AFTER_CAP:.0f}s cap)"
+    return max(backoff, retry_after), "Retry-After"
+
+
+# Retry time spent on writes so far. A sustained 429 storm across ~100 pages
+# could otherwise run past the job timeout and lose the SUMMARY entirely, so
+# the run stops retrying once the budget is gone and reports what landed.
+_write_budget_spent = 0.0
+
+
+def _write_budget_left() -> float | None:
+    """Seconds of write retry time left, or None when the budget is disabled."""
+    limit = _env_number("FERNDESK_WRITE_BUDGET", 5400.0, 0.0)
+    if limit <= 0:
+        return None
+    return max(0.0, limit - _write_budget_spent)
+
+
+def api(
+    key: str,
+    path: str,
+    method: str = "GET",
+    body: dict | None = None,
+    retries: int | None = None,
+    deadline: float | None = None,
+    label: str | None = None,
+):
     headers = {
         "Authorization": f"Bearer {key}",
         "Accept": _ACCEPT,
@@ -102,8 +211,46 @@ def api(key: str, path: str, method: str = "GET", body: dict | None = None, retr
     client_kind, cffi_requests = _http_client()
     last = None
     url = API + path
+    tag = f" [{label}]" if label else ""
+
+    # Writes are the constrained path (POST /articles 429 `rate_limited`), so
+    # they additionally get a wall-clock deadline and share a run-wide budget;
+    # reads just get the attempt count.
+    if retries is None:
+        retries = int(
+            _env_number("FERNDESK_WRITE_RETRIES", _DEFAULT_WRITE_RETRIES, 1.0)
+            if method in _WRITE_METHODS
+            else _DEFAULT_RETRIES
+        )
+    if deadline is None and method in _WRITE_METHODS:
+        deadline = _env_number("FERNDESK_WRITE_DEADLINE", 1800.0, 1.0)
+    started = time.monotonic()
+    retry_after: float | None = None
+    retry_status: int | None = None
+    status_note = "transient failure"
+    write = method in _WRITE_METHODS
+    budget_left = _write_budget_left() if write else None
 
     for i in range(retries):
+        if i:
+            wait, why = _retry_delay(i - 1, retry_after, retry_status)
+            if deadline is not None and time.monotonic() - started + wait > deadline:
+                last = f"{last} (deadline {deadline:.0f}s exceeded after {i} attempts)"
+                break
+            if budget_left is not None:
+                if wait > budget_left:
+                    last = (
+                        f"{last} (write retry budget exhausted after {i} attempts; "
+                        "rerun the sync once the rate limit clears)"
+                    )
+                    break
+                budget_left -= wait
+                globals()["_write_budget_spent"] = _write_budget_spent + wait
+            log(
+                f"{method} {path}{tag} retry {i}/{retries - 1} "
+                f"{status_note}; sleep {wait:.1f}s ({why})"
+            )
+            time.sleep(wait)
         try:
             if client_kind == "curl_cffi":
                 resp = cffi_requests.request(
@@ -117,19 +264,16 @@ def api(key: str, path: str, method: str = "GET", body: dict | None = None, retr
                 txt = (resp.text or "")[:400]
                 if resp.status_code >= 400:
                     last = f"{method} {path} -> {resp.status_code} {txt}"
-                    if resp.status_code in (429, 502, 503, 504) or _is_cf_1010(
+                    if resp.status_code in _RETRY_STATUSES or _is_cf_1010(
                         resp.status_code, txt
                     ):
-                        # 429 needs longer cool-down than 5xx/1010
-                        cap = 180 if resp.status_code == 429 else 90
-                        wait = min(cap, (5 if resp.status_code == 429 else 3) * (2**i))
-                        kind = (
+                        retry_after = _retry_after_seconds(_header(resp.headers, "Retry-After"))
+                        retry_status = resp.status_code
+                        status_note = (
                             "cf1010/403"
                             if _is_cf_1010(resp.status_code, txt)
-                            else f"rate/limit {resp.status_code}"
+                            else f"HTTP {resp.status_code}"
                         )
-                        log(f"{kind}; sleep {wait}s")
-                        time.sleep(wait)
                         continue
                     raise RuntimeError(last)
                 raw = resp.content or b""
@@ -143,27 +287,25 @@ def api(key: str, path: str, method: str = "GET", body: dict | None = None, retr
         except urllib.error.HTTPError as e:
             txt = e.read().decode("utf-8", "replace")[:400]
             last = f"{method} {path} -> {e.code} {txt}"
-            if e.code in (429, 502, 503, 504) or _is_cf_1010(e.code, txt):
-                cap = 180 if e.code == 429 else 90
-                wait = min(cap, (5 if e.code == 429 else 3) * (2**i))
-                kind = "cf1010/403" if _is_cf_1010(e.code, txt) else f"rate/limit {e.code}"
-                log(f"{kind}; sleep {wait}s")
-                time.sleep(wait)
+            if e.code in _RETRY_STATUSES or _is_cf_1010(e.code, txt):
+                retry_after = _retry_after_seconds(_header(e.headers, "Retry-After"))
+                retry_status = e.code
+                status_note = "cf1010/403" if _is_cf_1010(e.code, txt) else f"HTTP {e.code}"
                 continue
             raise RuntimeError(last) from e
         except urllib.error.URLError as e:
             last = f"{method} {path} -> URLError {e}"
-            wait = min(90, 3 * (2**i))
-            log(f"transport error; sleep {wait}s ({e})")
-            time.sleep(wait)
+            retry_after = None
+            retry_status = None
+            status_note = f"transport error ({e})"
             continue
         except RuntimeError:
             raise
         except Exception as e:
             last = f"{method} {path} -> {type(e).__name__} {e}"
-            wait = min(90, 3 * (2**i))
-            log(f"transport error; sleep {wait}s ({e})")
-            time.sleep(wait)
+            retry_after = None
+            retry_status = None
+            status_note = f"transport error ({e})"
             continue
     raise RuntimeError(last or "retries exhausted")
 
@@ -371,7 +513,8 @@ def main() -> int:
         cache_path.write_text(json.dumps(by_slug, indent=2) + "\n")
         log(f"wrote slug cache {len(by_slug)}")
 
-    created = updated = skipped = 0
+    created = updated = skipped = failed = 0
+    failures: list[dict] = []
     for page in pages:
         page["keywords"] = page["keywords"].replace("{ENV}", target)
         coll = ensure_collection(key, page["collection"], section["id"], colls)
@@ -392,10 +535,18 @@ def main() -> int:
                 log(f"DRY update {page['slug']} -> {eid}")
                 skipped += 1
                 continue
-            api(key, f"/articles/{eid}", "PATCH", body_common)
-            if publish and estatus != "published":
-                time.sleep(0.15)
-                api(key, f"/articles/{eid}/publish", "POST", {})
+            try:
+                api(key, f"/articles/{eid}", "PATCH", body_common, label=page["slug"])
+                if publish and estatus != "published":
+                    time.sleep(0.15)
+                    api(key, f"/articles/{eid}/publish", "POST", {}, label=page["slug"])
+            except RuntimeError as e:
+                # One stuck article must not abort the remaining pages; the
+                # failure still fails the run and lands in SUMMARY.
+                failed += 1
+                failures.append({"slug": page["slug"], "op": "update", "error": str(e)})
+                log(f"ERROR update {page['slug']} failed after retries: {e}")
+                continue
             updated += 1
             log(f"updated {page['slug']}")
             time.sleep(1.2)
@@ -406,34 +557,47 @@ def main() -> int:
             created += 1
             continue
         try:
-            art = api(key, "/articles", "POST", {**body_common, "publish": publish})
+            art = api(
+                key,
+                "/articles",
+                "POST",
+                {**body_common, "publish": publish},
+                label=page["slug"],
+            )
         except RuntimeError as e:
             # Slug may already exist (pagination/cache miss) — recover via lookup + PATCH.
             msg = str(e)
-            if "409" not in msg and "already" not in msg.lower() and "slug" not in msg.lower() and "422" not in msg:
-                raise
-            log(f"create conflict for {page['slug']}; looking up existing…")
-            found = None
-            for a in list_all(
-                key,
-                f"/articles?sectionId={urllib.parse.quote(str(section['id']))}&slug={urllib.parse.quote(page['slug'])}",
-                max_pages=5,
-            ):
-                if a.get("slug") == page["slug"]:
-                    found = a
-                    break
-            if not found:
-                raise
-            art = found
-            api(key, f"/articles/{art['id']}", "PATCH", body_common)
-            if publish and art.get("status") != "published":
-                time.sleep(0.3)
-                api(key, f"/articles/{art['id']}/publish", "POST", {})
-            by_slug[page["slug"]] = {"id": art["id"], "status": art.get("status") or "published"}
-            cache_path.write_text(json.dumps(by_slug, indent=2) + "\n")
-            updated += 1
-            log(f"recovered-update {page['slug']}")
-            time.sleep(1.5)
+            if "409" in msg or "already" in msg.lower() or "slug" in msg.lower() or "422" in msg:
+                log(f"create conflict for {page['slug']}; looking up existing…")
+                found = None
+                for a in list_all(
+                    key,
+                    f"/articles?sectionId={urllib.parse.quote(str(section['id']))}&slug={urllib.parse.quote(page['slug'])}",
+                    max_pages=5,
+                ):
+                    if a.get("slug") == page["slug"]:
+                        found = a
+                        break
+                if found:
+                    art = found
+                    api(key, f"/articles/{art['id']}", "PATCH", body_common, label=page["slug"])
+                    if publish and art.get("status") != "published":
+                        time.sleep(0.3)
+                        api(key, f"/articles/{art['id']}/publish", "POST", {}, label=page["slug"])
+                    by_slug[page["slug"]] = {
+                        "id": art["id"],
+                        "status": art.get("status") or "published",
+                    }
+                    cache_path.write_text(json.dumps(by_slug, indent=2) + "\n")
+                    updated += 1
+                    log(f"recovered-update {page['slug']}")
+                    time.sleep(1.5)
+                    continue
+            # Still stuck: one page must not abort the remaining pages, but the
+            # failure is recorded and fails the run.
+            failed += 1
+            failures.append({"slug": page["slug"], "op": "create", "error": str(e)})
+            log(f"ERROR create {page['slug']} failed after retries: {e}")
             continue
         by_slug[page["slug"]] = {
             "id": art.get("id"),
@@ -451,11 +615,21 @@ def main() -> int:
         "created": created,
         "updated": updated,
         "skipped": skipped,
+        "failed": failed,
     }
+    if failures:
+        summary["failed_slugs"] = [f["slug"] for f in failures]
+        log("FAILURES " + json.dumps(failures))
     log("SUMMARY " + json.dumps(summary))
     Path(os.environ.get("FERNDESK_SUMMARY_PATH") or "ferndesk-sync-summary.json").write_text(
         json.dumps(summary, indent=2) + "\n"
     )
+    if failures:
+        log(
+            f"ERROR {failed} of {len(pages)} pages failed after retries "
+            "(see FAILURES above); rerun the sync once the rate limit clears"
+        )
+        return 1
     return 0
 
 
