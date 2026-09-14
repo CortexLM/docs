@@ -10,6 +10,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import re
 import sys
 import tempfile
 from contextlib import contextmanager
@@ -31,6 +32,17 @@ def check(name: str, cond: bool, detail: object = "") -> None:
     else:
         failures.append(name)
         print(f"FAIL {name} {detail}")
+
+
+def _raises(fn, *args, **kwargs) -> bool:
+    """True when `fn(*args)` raises ValueError — used for the input guards."""
+    try:
+        fn(*args, **kwargs)
+    except ValueError:
+        return True
+    except Exception:
+        return False
+    return False
 
 
 @contextmanager
@@ -251,6 +263,52 @@ try:
     check("budget 0 disables the run-wide cap", raised is not None and "deadline" in raised, raised)
 finally:
     restore(saved)
+
+# --- slug sanitization (COR-444: 19 problems-* pages 400'd on create) --------
+# FernDesk 400s a slug outside `[a-z0-9]+(-[a-z0-9]+)*`. Problem codes are
+# snake_case and mirrored as file names, so `problems/bad_request` used to be
+# sent verbatim as `problems-bad_request` and rejected. The page has to keep its
+# file name (it matches `ErrorCode::as_str`), so the slug is sanitized here.
+_SLUG_OK = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
+
+check("snake_case becomes hyphenated", fs.sanitize_slug("problems/bad_request") == "problems-bad-request",
+      fs.sanitize_slug("problems/bad_request"))
+check("folder separator becomes a hyphen", fs.sanitize_slug("api/errors") == "api-errors",
+      fs.sanitize_slug("api/errors"))
+check("already-clean slug is unchanged", fs.sanitize_slug("problems-conflict") == "problems-conflict")
+check("uppercase is folded down", fs.sanitize_slug("Problems/Bad_Request") == "problems-bad-request",
+      fs.sanitize_slug("Problems/Bad_Request"))
+check("repeated separators collapse", fs.sanitize_slug("a__b--c") == "a-b-c", fs.sanitize_slug("a__b--c"))
+check("edge separators are trimmed", fs.sanitize_slug("__lead_trail__") == "lead-trail",
+      fs.sanitize_slug("__lead_trail__"))
+check("a slug with nothing usable raises", _raises(fs.sanitize_slug, "___"))
+
+# Every problem page in this repository must produce a FernDesk-legal slug, and
+# the sanitizer must not make two pages collide onto one article.
+if (ROOT / "problems").is_dir():
+    _pages = fs.discover_pages(ROOT)
+    _problem_pages = [p for p in _pages if p["path"].startswith("problems/")]
+    check("problem pages are discovered", len(_problem_pages) >= 20, len(_problem_pages))
+    _bad = [p["slug"] for p in _problem_pages if not _SLUG_OK.fullmatch(p["slug"])]
+    check("every problem slug is FernDesk-legal", not _bad, _bad)
+    _underscored = [p["slug"] for p in _problem_pages if "_" in p["slug"]]
+    check("no problem slug keeps an underscore", not _underscored, _underscored)
+    _slugs = [p["slug"] for p in _pages]
+    check("sanitized slugs stay unique repo-wide", len(_slugs) == len(set(_slugs)),
+          len(_slugs) - len(set(_slugs)))
+    # The wire contract for `type` is the snake_case code; sanitizing the slug
+    # must not leave a bare snake_case title, which FernDesk also rejects.
+    _bad_titles = [p["title"] for p in _problem_pages if "_" in p["title"] and " " not in p["title"]]
+    check("no bare snake_case title survives", not _bad_titles, _bad_titles)
+
+# A collision introduced by sanitizing must fail the run, not overwrite a page.
+_collide_root = Path(tempfile.mkdtemp(prefix="ferndesk-collide-"))
+(_collide_root / "getting-started").mkdir(parents=True)
+for _name in ("a_b.mdx", "a-b.mdx"):
+    (_collide_root / "getting-started" / _name).write_text(
+        "---\ntitle: Collide\n---\n\nHi.\n", encoding="utf-8"
+    )
+check("colliding slugs raise instead of overwriting", _raises(fs.discover_pages, _collide_root))
 
 # --- shared fixtures for the end-to-end runs ---------------------------------
 docs_root = Path(tempfile.mkdtemp(prefix="ferndesk-docs-"))
