@@ -165,12 +165,25 @@ def api(key: str, path: str, method: str = "GET", body: dict | None = None, retr
     raise RuntimeError(last or "retries exhausted")
 
 
-def list_all(key: str, path: str) -> list:
+def list_all(key: str, path: str, max_pages: int = 100) -> list:
+    """Paginate FernDesk list endpoints with anti-loop guards.
+
+    FernDesk has been observed to return has_more/next_cursor forever on
+    /collections (GHA ran 13k+ pages / ~278k rows). Guard with:
+      - max_pages hard cap
+      - repeated next_cursor detection
+      - stop when a page adds no new item ids
+    """
     out: list = []
     cursor = None
     page_n = 0
+    seen_cursors: set[str] = set()
+    seen_ids: set = set()
     while True:
         page_n += 1
+        if page_n > max_pages:
+            log(f"list_all {path} stop: max_pages={max_pages} so_far={len(out)}")
+            break
         p = path
         if cursor:
             sep = "&" if "?" in path else "?"
@@ -180,10 +193,25 @@ def list_all(key: str, path: str) -> list:
         if isinstance(page, list):
             log(f"list_all {path} done count={len(page)} (array)")
             return page
-        out.extend(page.get("results") or page.get("items") or [])
+        batch = page.get("results") or page.get("items") or []
+        new_ids = 0
+        for item in batch:
+            out.append(item)
+            iid = item.get("id") if isinstance(item, dict) else None
+            if iid is not None and iid not in seen_ids:
+                seen_ids.add(iid)
+                new_ids += 1
         if not page.get("has_more") or not page.get("next_cursor"):
             break
-        cursor = page["next_cursor"]
+        nxt = str(page["next_cursor"])
+        if nxt in seen_cursors:
+            log(f"list_all {path} stop: repeated cursor so_far={len(out)}")
+            break
+        if batch and new_ids == 0:
+            log(f"list_all {path} stop: no new ids so_far={len(out)}")
+            break
+        seen_cursors.add(nxt)
+        cursor = nxt
         time.sleep(0.2)
     log(f"list_all {path} done count={len(out)}")
     return out
@@ -306,7 +334,8 @@ def main() -> int:
         return 2
 
     section = ensure_section(key, section_name)
-    colls = list_all(key, "/collections")
+    # Scope to section — unscoped /collections paginated forever in GHA (COR-444).
+    colls = list_all(key, f"/collections?sectionId={urllib.parse.quote(str(section['id']))}")
     cache_path = Path(os.environ.get("FERNDESK_SLUG_CACHE", f".ferndesk-slug-cache-{target}.json"))
     by_slug: dict = {}
     cache_loaded = False
@@ -319,7 +348,15 @@ def main() -> int:
             by_slug = {}
     if (not cache_loaded) or os.environ.get("FERNDESK_FULL_SCAN") == "1":
         log("scanning articles for section (set FERNDESK_FULL_SCAN=1 to force)…")
-        articles = [a for a in list_all(key, "/articles") if a.get("sectionId") == section["id"]]
+        articles = [
+            a
+            for a in list_all(
+                key,
+                f"/articles?sectionId={urllib.parse.quote(str(section['id']))}",
+                max_pages=200,
+            )
+            if a.get("sectionId") == section["id"]
+        ]
         by_slug = {
             a.get("slug"): {"id": a["id"], "status": a.get("status")}
             for a in articles
