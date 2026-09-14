@@ -88,6 +88,10 @@
           {
             "label": "Changelog",
             "href": "/changelog"
+          },
+          {
+            "label": "System status",
+            "href": "/status"
           }
         ]
       },
@@ -97,6 +101,10 @@
           {
             "label": "Website",
             "href": "https://cortex.foundation"
+          },
+          {
+            "label": "Status",
+            "href": "https://status.cortex.foundation"
           },
           {
             "label": "Privacy",
@@ -208,6 +216,7 @@
             "group": "Help",
             "pages": [
               "getting-started/troubleshooting",
+              "status",
               "security/overview"
             ],
             "icon": "life-buoy"

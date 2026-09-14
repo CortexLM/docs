@@ -1,0 +1,54 @@
+---
+title: "System status"
+description: "Live availability for Cortex Web, API, Chat, Code, and Bot — incidents, maintenance, and history."
+---
+
+<div className="status-cortex-logo">
+  <img src="/logo/banner-light.png" alt="Cortex" width="220" />
+</div>
+
+# System status
+
+Cortex publishes live component health, incident history, and scheduled maintenance on the public status page.
+
+<p className="ink-cta-row">
+  <a className="ink-btn" href="https://status.cortex.foundation">Open status.cortex.foundation</a>
+  <a className="ink-btn ink-btn-quiet" href="/getting-started/troubleshooting">Troubleshooting</a>
+</p>
+
+<Note>
+The canonical status URL is **[status.cortex.foundation](https://status.cortex.foundation)**. Bookmark that page for outages and planned maintenance. This docs article explains what it covers and how it relates to product troubleshooting.
+</Note>
+
+## What we report
+
+| Component | What it covers |
+| --- | --- |
+| **Web** | The Cortex website and signed-in app shell at [cortex.foundation](https://cortex.foundation) |
+| **API** | Product API routes used by Chat, Code, Bot, Design, and the CLI |
+| **Chat** | Conversations, tools, Deep Research, images, and related Chat services |
+| **Code** | Code Cloud sessions, desktop/CLI coding agent backends, and related Code services |
+| **Bot** | Bot computers, approvals, routines, and related Bot services |
+
+Component names stay product-facing. Individual incidents may mark one or more of these surfaces as affected.
+
+## During an incident
+
+1. Check **[status.cortex.foundation](https://status.cortex.foundation)** for the current banner and component states.
+2. Subscribe on that page if you want email (or other) updates for the next change.
+3. Keep any `request_id` from an error in the app — see [Troubleshooting](/getting-started/troubleshooting) and the [problem catalog](/problems).
+
+User-facing error text names a Cortex surface, never a vendor. Status updates are the place for fleet-wide notices.
+
+## Documentation vs status
+
+| Resource | Use it for |
+| --- | --- |
+| [status.cortex.foundation](https://status.cortex.foundation) | Live uptime, incidents, maintenance windows |
+| [Troubleshooting](/getting-started/troubleshooting) | What a specific product message means and what to do next |
+| [Security and privacy](/security/overview) | Data handling — not availability |
+| [Changelog](/changelog) | What shipped — not outages |
+
+## Brand
+
+Status communications use Cortex green (`#1F4945`) and the Cortex logo. The status site is hosted under the `cortex.foundation` domain so it stays available when you need it most.

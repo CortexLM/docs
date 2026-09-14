@@ -71,6 +71,10 @@ Every API failure is a problem document with a stable `code`, and the web app re
 | [`internal`](/problems/internal) | Yes; keep the `request_id` if you report it |
 | [`safety_intervention`](/problems/safety_intervention), [`content_policy`](/problems/content_policy) | No — change the request |
 
+## System-wide outages
+
+If Chat, Code, Bot, or the API are all failing at once, check **[status.cortex.foundation](https://status.cortex.foundation)** before filing a bug. Fleet incidents and maintenance windows are posted there — see [System status](/status).
+
 ## Reporting a problem
 
 Keep the `request_id` from the error, the time, and the surface you were on. From the CLI, `cortex feedback bug "what happened" --include-logs` attaches diagnostics.
