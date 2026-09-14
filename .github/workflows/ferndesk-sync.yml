@@ -60,6 +60,12 @@ jobs:
             echo "dry=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Install curl_cffi
+        run: |
+          set -euo pipefail
+          python3 -m pip install --upgrade pip
+          python3 -m pip install curl_cffi
+
       - name: Sync
         env:
           FERNDESK_API_KEY: ${{ secrets.FERNDESK_API_KEY }}
