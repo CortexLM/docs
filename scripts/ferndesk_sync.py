@@ -429,7 +429,8 @@ def discover_pages(docs_root: Path) -> list[dict]:
             {
                 "path": rel,
                 "title": title,
-                "slug": slug.replace("/", "-"),
+                # FernDesk rejects underscores in slugs (POST 400); normalize.
+                "slug": slug.replace("/", "-").replace("_", "-"),
                 "collection": coll,
                 "markdown": md,
                 "fp": fp,
