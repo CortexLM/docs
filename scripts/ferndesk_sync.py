@@ -88,7 +88,7 @@ def _is_cf_1010(status: int, body: str) -> bool:
     return "1010" in b or "browser_signature_banned" in b or "error 1010" in b
 
 
-def api(key: str, path: str, method: str = "GET", body: dict | None = None, retries: int = 6):
+def api(key: str, path: str, method: str = "GET", body: dict | None = None, retries: int = 12):
     headers = {
         "Authorization": f"Bearer {key}",
         "Accept": _ACCEPT,
@@ -120,7 +120,9 @@ def api(key: str, path: str, method: str = "GET", body: dict | None = None, retr
                     if resp.status_code in (429, 502, 503, 504) or _is_cf_1010(
                         resp.status_code, txt
                     ):
-                        wait = min(90, 3 * (2**i))
+                        # 429 needs longer cool-down than 5xx/1010
+                        cap = 180 if resp.status_code == 429 else 90
+                        wait = min(cap, (5 if resp.status_code == 429 else 3) * (2**i))
                         kind = (
                             "cf1010/403"
                             if _is_cf_1010(resp.status_code, txt)
@@ -142,7 +144,8 @@ def api(key: str, path: str, method: str = "GET", body: dict | None = None, retr
             txt = e.read().decode("utf-8", "replace")[:400]
             last = f"{method} {path} -> {e.code} {txt}"
             if e.code in (429, 502, 503, 504) or _is_cf_1010(e.code, txt):
-                wait = min(90, 3 * (2**i))
+                cap = 180 if e.code == 429 else 90
+                wait = min(cap, (5 if e.code == 429 else 3) * (2**i))
                 kind = "cf1010/403" if _is_cf_1010(e.code, txt) else f"rate/limit {e.code}"
                 log(f"{kind}; sleep {wait}s")
                 time.sleep(wait)
@@ -185,9 +188,12 @@ def list_all(key: str, path: str, max_pages: int = 100) -> list:
             log(f"list_all {path} stop: max_pages={max_pages} so_far={len(out)}")
             break
         p = path
+        if "limit=" not in path and "pageSize=" not in path:
+            sep0 = "&" if "?" in p else "?"
+            p = f"{p}{sep0}limit=100"
         if cursor:
-            sep = "&" if "?" in path else "?"
-            p = f"{path}{sep}cursor={urllib.parse.quote(cursor)}"
+            sep = "&" if "?" in p else "?"
+            p = f"{p}{sep}cursor={urllib.parse.quote(cursor)}"
         log(f"list_all {path} page={page_n} so_far={len(out)}")
         page = api(key, p)
         if isinstance(page, list):
@@ -392,14 +398,43 @@ def main() -> int:
                 api(key, f"/articles/{eid}/publish", "POST", {})
             updated += 1
             log(f"updated {page['slug']}")
-            time.sleep(0.3)
+            time.sleep(1.2)
             continue
 
         if dry:
             log(f"DRY create {page['slug']} in {page['collection']}")
             created += 1
             continue
-        art = api(key, "/articles", "POST", {**body_common, "publish": publish})
+        try:
+            art = api(key, "/articles", "POST", {**body_common, "publish": publish})
+        except RuntimeError as e:
+            # Slug may already exist (pagination/cache miss) — recover via lookup + PATCH.
+            msg = str(e)
+            if "409" not in msg and "already" not in msg.lower() and "slug" not in msg.lower() and "422" not in msg:
+                raise
+            log(f"create conflict for {page['slug']}; looking up existing…")
+            found = None
+            for a in list_all(
+                key,
+                f"/articles?sectionId={urllib.parse.quote(str(section['id']))}&slug={urllib.parse.quote(page['slug'])}",
+                max_pages=5,
+            ):
+                if a.get("slug") == page["slug"]:
+                    found = a
+                    break
+            if not found:
+                raise
+            art = found
+            api(key, f"/articles/{art['id']}", "PATCH", body_common)
+            if publish and art.get("status") != "published":
+                time.sleep(0.3)
+                api(key, f"/articles/{art['id']}/publish", "POST", {})
+            by_slug[page["slug"]] = {"id": art["id"], "status": art.get("status") or "published"}
+            cache_path.write_text(json.dumps(by_slug, indent=2) + "\n")
+            updated += 1
+            log(f"recovered-update {page['slug']}")
+            time.sleep(1.5)
+            continue
         by_slug[page["slug"]] = {
             "id": art.get("id"),
             "status": art.get("status") or ("published" if publish else "draft"),
@@ -407,7 +442,7 @@ def main() -> int:
         cache_path.write_text(json.dumps(by_slug, indent=2) + "\n")
         created += 1
         log(f"created {page['slug']} {art.get('id')}")
-        time.sleep(0.4)
+        time.sleep(1.5)
 
     summary = {
         "target": target,
