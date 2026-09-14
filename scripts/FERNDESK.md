@@ -58,6 +58,33 @@ A create that trips a slug conflict (409/422, or a message naming the slug) is
 recovered by looking the article up and PATCHing it, so a stale cache or a
 pagination miss does not surface as a failure.
 
+## Slugs and titles (FernDesk POST 400)
+
+FernDesk accepts a slug only in `[a-z0-9]+(-[a-z0-9]+)*`. It answers `POST
+/articles` with **400** for anything else, so `problems/bad_request` used to be
+sent verbatim as `problems-bad_request` and rejected: 19 `problems-*` pages
+failed while `problems-conflict`, `problems-forbidden`, and `problems-gone`
+created fine.
+
+The MDX file name cannot change — it matches `ErrorCode::as_str` and the page's
+`/problems/{code}` type URI — so the slug is sanitized at the sync boundary by
+`sanitize_slug()`: lowercased, every run of other characters (`_`, `/`, spaces,
+`--`) collapsed to one hyphen, ends trimmed. `problems/bad_request` →
+`problems-bad-request`, `api/errors` → `api-errors`.
+
+Two source paths that sanitize to one slug (`a_b.mdx` and `a-b.mdx`) would
+silently overwrite one article, so `discover_pages` raises instead of syncing.
+
+Titles are separate: a bare snake_case code is not a usable article title, so a
+page whose title is `bad_request` is published as `Bad request (bad_request)`
+using its `description`. The title keeps the snake_case code, since that is the
+wire contract readers search for.
+
+`scripts/tests/ferndesk-sync-retry.test.py` holds both rules: it runs
+`discover_pages` over this repository and fails if any problem page produces an
+illegal slug, keeps an underscore, collides with another page, or keeps a bare
+snake_case title.
+
 ## Factory Droid path (agent)
 
 When Manager Deploy lands **prod** and content needs judgment (rewrites, gap fill, migration QA), launch Factory Droid only:

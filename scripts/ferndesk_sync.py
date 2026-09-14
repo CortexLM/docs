@@ -14,6 +14,9 @@ Env:
   DOCS_ROOT          docs repo root (default: cwd)
 
 Idempotent upsert by slug. Never deletes FernDesk-only articles (safe migration).
+Slugs are sanitized to FernDesk's `[a-z0-9]+(-[a-z0-9]+)*` (COR-444: snake_case
+problem codes such as `problems/bad_request` 400'd on create) and bare
+snake_case titles are humanized from the page `description`.
 """
 from __future__ import annotations
 
@@ -392,8 +395,33 @@ def content_fingerprint(md: str) -> str:
     return hashlib.sha256(md.encode()).hexdigest()[:16]
 
 
+# FernDesk answers `POST /articles` with 400 for a slug outside
+# `[a-z0-9]+(-[a-z0-9]+)*`. The backend's problem codes are snake_case
+# (`bad_request`) and this repo mirrors them as file names, so every
+# `problems/*.mdx` with an underscore failed to create (COR-444: 19 pages).
+# Sanitize the slug at the sync boundary rather than renaming the MDX: the file
+# name has to keep matching `ErrorCode::as_str` and the page's
+# `/problems/{code}` type URI.
+_SLUG_SEPARATORS = re.compile(r"[^a-z0-9]+")
+
+
+def sanitize_slug(raw: str) -> str:
+    """FernDesk-safe slug: lowercase, hyphen-separated, no `_` or stray `-`.
+
+    Collapses every run of other characters (`_`, `/`, spaces, `--`) to one
+    hyphen and trims the ends, so `problems/bad_request` becomes
+    `problems-bad-request`. Raises when nothing slug-worthy is left, rather
+    than publishing an article at an empty or nonsense slug.
+    """
+    slug = _SLUG_SEPARATORS.sub("-", raw.strip().lower()).strip("-")
+    if not slug:
+        raise ValueError(f"cannot build a FernDesk slug from {raw!r}")
+    return slug
+
+
 def discover_pages(docs_root: Path) -> list[dict]:
-    pages = []
+    pages: list[dict] = []
+    seen_slugs: dict[str, str] = {}
     for path in sorted(docs_root.rglob("*")):
         if not path.is_file() or path.suffix not in {".mdx", ".md"}:
             continue
@@ -425,12 +453,20 @@ def discover_pages(docs_root: Path) -> list[dict]:
             if not coll:
                 continue
         fp = content_fingerprint(md)
+        # Two paths can sanitize to one slug (`a_b.mdx` + `a-b.mdx`); the second
+        # would silently overwrite the first article. Fail loudly instead.
+        slug = sanitize_slug(slug)
+        prior = seen_slugs.get(slug)
+        if prior is not None:
+            raise ValueError(
+                f"slug collision: {rel} and {prior} both map to FernDesk slug {slug!r}"
+            )
+        seen_slugs[slug] = rel
         pages.append(
             {
                 "path": rel,
                 "title": title,
-                # FernDesk rejects underscores in slugs (POST 400); normalize.
-                "slug": slug.replace("/", "-").replace("_", "-"),
+                "slug": slug,
                 "collection": coll,
                 "markdown": md,
                 "fp": fp,
