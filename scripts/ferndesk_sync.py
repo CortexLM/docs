@@ -406,7 +406,14 @@ def discover_pages(docs_root: Path) -> list[dict]:
             continue
         meta, body = strip_frontmatter(path.read_text(encoding="utf-8", errors="replace"))
         md = mdx_to_markdown(body)
-        title = meta.get("title") or path.stem.replace("-", " ").title()
+        raw_title = meta.get("title") or path.stem.replace("-", " ").replace("_", " ").title()
+        # FernDesk 400s on bare snake_case problem codes as titles (COR-444).
+        if "_" in raw_title and " " not in raw_title:
+            desc = (meta.get("description") or "").split(".")[0].strip()
+            nice = raw_title.replace("_", " ").title()
+            title = f"{desc} ({raw_title})" if desc else nice
+        else:
+            title = raw_title.replace("_", " ") if "_" in raw_title else raw_title
         slug = rel.rsplit(".", 1)[0]
         if slug.endswith("/index"):
             slug = slug[: -len("/index")] or "index"
