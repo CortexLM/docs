@@ -24,6 +24,18 @@ Every Cortex surface — the web app, the desktop apps, and the CLI — reads th
 
 Connect apps and GitHub from **Settings** and **Customize** in the product. There is no public plugin webhook catalog on this site.
 
+## How a problem document is built
+
+| Field | Comes from |
+| --- | --- |
+| `type` | The base `https://docs.cortex.foundation/problems` plus the `code` |
+| `code` | A fixed snake_case identifier — the part to branch on |
+| `status` | The HTTP status the response carries |
+| `request_id` | Per request; the value to quote when reporting a problem |
+| `title`, `detail` | English diagnostic text for logs, not for end users |
+
+Because the base is fixed and the path is the `code`, a `type` URL resolves to a page on this site. That is the whole reason the catalog exists: an error can point at its own explanation instead of leaving a reader with a bare status.
+
 ## What is not here
 
 - Authentication, session cookies, device codes, or identity-provider internals.
@@ -34,4 +46,5 @@ Connect apps and GitHub from **Settings** and **Customize** in the product. Ther
 
 - [Errors](/api/errors) — the problem document format.
 - [Problem catalog](/problems) — all codes in one table.
+- [Platform API](/platform) — why there is no inference API.
 - [Troubleshooting](/getting-started/troubleshooting) — what to do when you see one.

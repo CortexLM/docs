@@ -17,6 +17,8 @@ Cortex Chat is a **per-account** product. Your threads, projects, Library, memor
 
 The reasoning: a guest cannot create anything it could not come back to revoke, and a member's work is never visible to another member.
 
+Because a guest's work lives in the browser session, signing in is what makes it survive a closed tab — the allowance, the threads, and the attachments all move onto the account. See [Accounts](/getting-started/accounts).
+
 ## What does not exist today
 
 - No teammate invite on a thread or a project.
@@ -32,6 +34,12 @@ Do not expect a sharing control to appear in the thread header — the two actio
 | A team workspace with admin controls, SSO, and audit export | The **Pro** plan lists these — see [Plans](/getting-started/plans) |
 | Sharing a coding session transcript | The CLI can share a session with `/share` or `cortex run --share` — see [CLI sessions](/cli/sessions) |
 | Reviewing a pull request with colleagues | [Cortex Security](/code/security) posts its review as a GitHub check run on the pull request |
+
+The pattern is consistent: the surfaces that involve other people are the ones attached to a repository, a session transcript, or a plan tier — not a conversation. That is deliberate. A thread carries whatever you happened to paste into it, so there is no link that would hand it to someone else.
+
+## What a signed-in account does share
+
+Nothing between accounts, but a lot between your own devices. Your threads, projects, Library, memory, plans, and Bot routines follow the account, which is why signing in is what makes them persist at all. See [Accounts](/getting-started/accounts).
 
 ## Export and deletion
 

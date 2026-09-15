@@ -37,6 +37,17 @@ A guest cannot connect a plugin or MCP server, hold a GitHub grant, create a bot
 
 Connected apps are scoped explicitly. Under **Customize → Connectors** you choose whether each connection is available to **Cortex Chat**, **Cortex Bot**, or both; Bot never inherits a tool you did not assign to it. You stay signed in with the provider — Cortex never sees your passwords.
 
+## What each product can reach
+
+| Product | What it reads | What it can change |
+| --- | --- | --- |
+| **Chat** | Files you attach, connected apps enabled for Chat, pages its web tools fetch | Nothing outside your own account and its Library |
+| **Code** | The one repository attached to the session | Files in that repository, inside the session's guest |
+| **Bot** | Its own computer, and connected apps enabled for Bot | Its desktop and files, plus connected-app changes — parked behind [Approvals](/bot/approvals) |
+| **Cortex Security** | The pull request under review, read in place | Nothing. It posts a check run. |
+
+Chat cannot see a repository, a Code session cannot reach a bot's desktop, and a bot cannot read a Code session's files. The products do not share a working surface — see [Where code runs](#where-code-runs).
+
 ## Where code runs
 
 | Surface | Where code runs | What it can see |
@@ -66,6 +77,8 @@ GitHub App review of pull requests is a **product**, at `/code/security` in the 
 ## What this page does not claim
 
 Cortex does not claim SOC 2, GDPR certification, or HIPAA compliance in product copy, and neither does this site. Legal documents live at [cortex.foundation/privacy](https://cortex.foundation/privacy), [cortex.foundation/terms](https://cortex.foundation/terms), and [cortex.foundation/ai-disclosures](https://cortex.foundation/ai-disclosures).
+
+The controls above are what the product actually does — what it stores, what it never stores, and where each surface runs. Where a certification would be needed, the honest answer today is that there is no claim to read, and this page will not invent one. If that changes, it will be announced where the rest of Cortex is: the [changelog](/changelog) and [cortex.foundation](https://cortex.foundation).
 
 ## Related
 

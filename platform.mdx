@@ -29,6 +29,22 @@ navigation does not grow a reference for something that is not there.
 The [API tab](/api/overview) documents the RFC 9457 problem format the apps
 and the CLI already use. That is the whole public API surface.
 
+## What to do instead
+
+Most requests that sound like an API call already have a product answer:
+
+| The API-shaped ask | What exists today |
+| --- | --- |
+| Run a prompt from a script | The [CLI](/cli) — `cortex run` for a one-shot, `cortex exec` for CI |
+| Automate a repository change | A [Code session](/code), or `cortex exec` with a git diff |
+| Put an agent on a schedule | A Bot [routine](/bot/routines) |
+| React to an error your integration sees | Branch on `code` from the [problem catalog](/problems) |
+| Connect an external tool to a chat | An [MCP server](/chat/tools) under **Settings → Integrations** |
+
+These are product surfaces with their own sign-in, not API keys. If you need
+something none of them covers, that is a gap in the Platform API — not a
+hidden endpoint.
+
 ## When this changes
 
 A Platform API would be announced on the [changelog](/changelog) and at
@@ -40,4 +56,5 @@ unofficial.
 
 - [Public API](/api/overview) — what this site does document.
 - [Problem catalog](/problems) — the `type` URIs every error points at.
+- [CLI headless runs](/cli/headless) — the closest thing to an automation surface today.
 - [Changelog](/changelog) — where a Platform launch would appear.
