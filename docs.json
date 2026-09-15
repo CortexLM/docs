@@ -86,6 +86,10 @@
             "href": "/getting-started/downloads"
           },
           {
+            "label": "Troubleshooting",
+            "href": "/getting-started/troubleshooting"
+          },
+          {
             "label": "Changelog",
             "href": "/changelog"
           },
@@ -125,7 +129,7 @@
     "404": {
       "redirect": false,
       "title": "Page not found",
-      "description": "That path is not in Cortex Docs. Try [Get started](/getting-started/quickstart), [Chat](/chat), [Code](/code), [Bot](/bot), [CLI](/cli), or [Design](/design). The inference Platform API is not documented here."
+      "description": "That path is not in Cortex Docs. Try [Get started](/getting-started/quickstart), [Chat](/chat), [Code](/code), [Bot](/bot), [CLI](/cli), or [Design](/design). If a product message sent you here, the [problem catalog](/problems) explains it. The inference Platform API is not documented here."
     }
   },
   "seo": {
@@ -140,6 +144,22 @@
   },
   "redirects": [
     {
+      "source": "/chat/overview",
+      "destination": "/chat"
+    },
+    {
+      "source": "/code/overview",
+      "destination": "/code"
+    },
+    {
+      "source": "/bot/overview",
+      "destination": "/bot"
+    },
+    {
+      "source": "/design/overview",
+      "destination": "/design"
+    },
+    {
       "source": "/chat/conversations",
       "destination": "/chat/projects"
     },
@@ -148,8 +168,24 @@
       "destination": "/chat/tools"
     },
     {
+      "source": "/chat/artifacts",
+      "destination": "/chat/library"
+    },
+    {
       "source": "/getting-started/cli",
       "destination": "/cli/install"
+    },
+    {
+      "source": "/getting-started/desktop-app",
+      "destination": "/getting-started/desktop"
+    },
+    {
+      "source": "/code/goals",
+      "destination": "/cli/goal"
+    },
+    {
+      "source": "/troubleshooting",
+      "destination": "/getting-started/troubleshooting"
     },
     {
       "source": "/api/authentication",
@@ -195,8 +231,8 @@
         "groups": [
           {
             "group": "Start here",
+            "root": "getting-started/quickstart",
             "pages": [
-              "getting-started/quickstart",
               "getting-started/what-is-cortex",
               "getting-started/accounts",
               "getting-started/plans",
@@ -206,16 +242,16 @@
           },
           {
             "group": "Downloads",
+            "root": "getting-started/downloads",
             "pages": [
-              "getting-started/downloads",
               "getting-started/desktop"
             ],
             "icon": "download"
           },
           {
             "group": "Help",
+            "root": "getting-started/troubleshooting",
             "pages": [
-              "getting-started/troubleshooting",
               "status",
               "security/overview"
             ],
@@ -227,25 +263,24 @@
         "tab": "Chat",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Chat",
+            "root": "chat/index",
             "pages": [
-              "chat/index",
-              "chat/overview",
-              "chat/quickstart"
-            ],
-            "icon": "rocket"
-          },
-          {
-            "group": "Core guides",
-            "pages": [
+              "chat/quickstart",
               "chat/projects",
               "chat/library",
               "chat/plans",
-              "chat/models",
-              "chat/tools",
               "chat/sharing"
             ],
-            "icon": "book-open"
+            "icon": "message-square"
+          },
+          {
+            "group": "Models and tools",
+            "pages": [
+              "chat/models",
+              "chat/tools"
+            ],
+            "icon": "cpu"
           },
           {
             "group": "Research and media",
@@ -255,7 +290,7 @@
               "chat/origin-check",
               "chat/voice"
             ],
-            "icon": "search"
+            "icon": "telescope"
           },
           {
             "group": "Context that carries over",
@@ -266,12 +301,19 @@
             "icon": "brain"
           },
           {
-            "group": "Under the hood",
+            "group": "How Chat works",
             "pages": [
               "chat/how-it-works",
               "chat/streaming"
             ],
             "icon": "sliders-horizontal"
+          },
+          {
+            "group": "Help",
+            "pages": [
+              "chat/troubleshooting"
+            ],
+            "icon": "life-buoy"
           }
         ]
       },
@@ -279,40 +321,45 @@
         "tab": "Code",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Code",
+            "root": "code/index",
             "pages": [
-              "code/index",
-              "code/overview",
-              "code/quickstart"
-            ],
-            "icon": "rocket"
-          },
-          {
-            "group": "Core guides",
-            "pages": [
+              "code/quickstart",
               "code/sessions",
-              "code/interactions",
-              "code/github",
-              "code/cloud"
+              "code/interactions"
             ],
-            "icon": "book-open"
+            "icon": "code"
           },
           {
-            "group": "Desktop and terminal",
+            "group": "Repositories",
             "pages": [
+              "code/github",
+              "code/security"
+            ],
+            "icon": "github"
+          },
+          {
+            "group": "Where it runs",
+            "pages": [
+              "code/cloud",
               "code/desktop",
               "code/cli"
             ],
-            "icon": "monitor"
+            "icon": "cloud"
           },
           {
-            "group": "Advanced",
+            "group": "How Code works",
             "pages": [
-              "code/security",
-              "code/how-it-works",
-              "code/troubleshooting"
+              "code/how-it-works"
             ],
             "icon": "sliders-horizontal"
+          },
+          {
+            "group": "Help",
+            "pages": [
+              "code/troubleshooting"
+            ],
+            "icon": "life-buoy"
           }
         ]
       },
@@ -320,24 +367,23 @@
         "tab": "Bot",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Bot",
+            "root": "bot/index",
             "pages": [
-              "bot/index",
-              "bot/overview",
-              "bot/quickstart"
+              "bot/quickstart",
+              "bot/computer",
+              "bot/tools"
             ],
-            "icon": "rocket"
+            "icon": "bot"
           },
           {
-            "group": "Core guides",
+            "group": "Control and scheduling",
             "pages": [
-              "bot/computer",
-              "bot/tools",
               "bot/approvals",
               "bot/routines",
               "bot/skills"
             ],
-            "icon": "book-open"
+            "icon": "shield-check"
           },
           {
             "group": "Desktop",
@@ -347,12 +393,18 @@
             "icon": "monitor"
           },
           {
-            "group": "Advanced",
+            "group": "How Bot works",
             "pages": [
-              "bot/how-it-works",
-              "bot/troubleshooting"
+              "bot/how-it-works"
             ],
             "icon": "sliders-horizontal"
+          },
+          {
+            "group": "Help",
+            "pages": [
+              "bot/troubleshooting"
+            ],
+            "icon": "life-buoy"
           }
         ]
       },
@@ -360,9 +412,9 @@
         "tab": "CLI",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get started",
+            "root": "cli/index",
             "pages": [
-              "cli/index",
               "cli/install",
               "cli/sign-in",
               "cli/quickstart"
@@ -409,21 +461,14 @@
         "tab": "Design",
         "groups": [
           {
-            "group": "Getting started",
-            "pages": [
-              "design/index",
-              "design/overview",
-              "design/desktop"
-            ],
-            "icon": "rocket"
-          },
-          {
-            "group": "Core guides",
+            "group": "Design",
+            "root": "design/index",
             "pages": [
               "design/canvases",
+              "design/desktop",
               "design/library"
             ],
-            "icon": "book-open"
+            "icon": "layout-template"
           }
         ]
       },
@@ -432,16 +477,16 @@
         "groups": [
           {
             "group": "Public",
+            "root": "api/overview",
             "pages": [
-              "api/overview",
               "api/errors"
             ],
             "icon": "braces"
           },
           {
             "group": "Problems",
+            "root": "problems/index",
             "pages": [
-              "problems/index",
               "problems/validation_failed",
               "problems/bad_request",
               "problems/idempotency_key_reuse",

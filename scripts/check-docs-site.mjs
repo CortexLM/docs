@@ -153,6 +153,9 @@ function collectNavPages(node, out = []) {
   if (typeof node !== 'object') return out;
   if (typeof node.page === 'string') pushNavSlug(node.page, out);
   if (typeof node.href === 'string') pushNavSlug(node.href, out);
+  // A group's `root` is the page its title opens. It is not repeated in
+  // `pages`, so walking only `pages` would leave a dead root link green.
+  if (typeof node.root === 'string') pushNavSlug(node.root, out);
   if (Array.isArray(node.pages)) collectNavPages(node.pages, out);
   if (Array.isArray(node.groups)) collectNavPages(node.groups, out);
   if (Array.isArray(node.tabs)) collectNavPages(node.tabs, out);

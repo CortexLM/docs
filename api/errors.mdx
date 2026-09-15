@@ -1,9 +1,9 @@
 ---
 title: "Errors"
-description: "RFC 9457 problem+json. Branch on code. type URIs live on this site."
+description: "Every Cortex failure is an RFC 9457 problem document. Branch on code, read request_id, and know which fields are safe to render."
 ---
 
-Every failure is `application/problem+json`:
+Every failure Cortex returns is an `application/problem+json` document:
 
 ```json
 {
@@ -16,14 +16,39 @@ Every failure is `application/problem+json`:
 }
 ```
 
-- **`code`** is the contract. Mirror: `@cortex/api-types` `ErrorCode`.
-- **`title` / `detail`** are English, for logs and humans reading raw JSON.
-  The web app renders catalog copy. Three codes may show `detail` as a
-  secondary line: `validation_failed`, `bad_request`, `invalid_state`.
-- **`type`** is dereferenceable: [Problem catalog](/problems).
-- **`request_id`** is always present and safe to show.
+## Fields
 
-User-facing `detail` names a product surface, never a vendor ("The audio
-service is temporarily unavailable.", not a subprocessor's name).
+| Field | Always present | What to do with it |
+| --- | --- | --- |
+| **`code`** | Yes | **This is the contract.** Branch on `code`, never on `title` or `detail`. The same code means the same thing on every surface. |
+| **`type`** | Yes | A dereferenceable URL for the code — [Problem catalog](/problems). Stable; safe to link. |
+| **`status`** | Yes | The HTTP status. Present in the body as well so a logged document is self-describing. |
+| **`request_id`** | Yes | Always present, always safe to show or log. Quote it when reporting a problem. |
+| **`title`** | Yes | English, for logs and humans reading raw JSON. Do not render it to end users. |
+| **`detail`** | Sometimes | English, for logs and humans reading raw JSON. Do not render it to end users. |
 
-Full catalog: [Problems](/problems).
+## Rendering rules
+
+The web app renders catalog copy for a code rather than the wire text. If you are building a client against these documents, do the same.
+
+- **Render your own copy** for `code`. The catalog page for each code explains the situation in product language.
+- **Do not render `detail`.** It is diagnostic text, and it may name an internal component or a specific resource id.
+- **Three codes may show `detail` as a secondary line**: `validation_failed`, `bad_request`, and `invalid_state`. Even there it is supplementary, not the message.
+- **User-facing text never names a vendor.** `detail` names a Cortex surface — *The audio service is temporarily unavailable.* — never a subprocessor.
+
+## Handling a code
+
+| Situation | What to do |
+| --- | --- |
+| The catalog marks the code **Retryable: yes** | Retry after the delay the response suggests, then back off. |
+| The catalog marks it **Retryable: no** | Retrying the same request will fail the same way. Change the request, the plan, or the state. |
+| You see `rate_limited` or `quota_exceeded` | Both are HTTP 429 but mean different things — transport throttling versus a plan window. See [Plans and quotas](/getting-started/plans). |
+| You see `internal` or an upstream code | Keep the `request_id`. Check [status.cortex.foundation](https://status.cortex.foundation) if it repeats. |
+
+Full list with statuses and retry guidance: [Problem catalog](/problems).
+
+## Related
+
+- [Problem catalog](/problems) — every code, status, and retry answer.
+- [Public API](/api/overview) — what this tab covers.
+- [Troubleshooting](/getting-started/troubleshooting) — what to do about a message you see in the product.
