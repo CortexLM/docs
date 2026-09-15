@@ -84,3 +84,8 @@ backoff). Local runs fall back to urllib only if `curl_cffi` is not installed.
 
 Separately: the FernDesk UI still needs **Connect domain** for `docs.cortex.foundation`
 HTTPS. That custom-domain 403 is unrelated to CF 1010 on `api.ferndesk.com`.
+
+When that record goes in, use a **Direct CNAME (DNS only)** — **do not enable
+orange-cloud Proxied**; that causes Cloudflare **Cross-User Banned** (Error 1014).
+The same rule holds for every other Cortex custom domain that CNAMEs to a
+third-party host: [`README.md`](../README.md#custom-domain-dns).

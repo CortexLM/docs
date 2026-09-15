@@ -23,6 +23,19 @@ Requires Node 20.17+. The site is intended to publish at
 step in the Mintlify dashboard. Connect `CortexLM/docs`, branch `main`, with
 the content directory set to the repository root (not `apps/docs`).
 
+### Custom-domain DNS
+
+Every Cortex custom domain that CNAMEs to a third-party hostname is a
+**Direct CNAME (DNS only)** — `docs.cortex.foundation` (Mintlify),
+`status.cortex.foundation` (status page), the FernDesk **Connect domain**, and
+the `software.cortex.foundation` / `releases.cortex.foundation` R2 custom
+domains owned by
+[`CortexLM/backend`](https://github.com/CortexLM/backend)
+(`docs/software-cdn.md`).
+
+> **Use a Direct CNAME (DNS only). Do not enable orange-cloud Proxied** — that
+> causes Cloudflare **Cross-User Banned** (Error 1014).
+
 ## Checks
 
 ```bash
