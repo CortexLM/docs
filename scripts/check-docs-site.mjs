@@ -201,6 +201,35 @@ function assertNavPagesExist(parsed) {
   }
 }
 
+/**
+ * An MDX page no navigation entry reaches is dead weight: it still gets
+ * indexed, and still shows up in search — but no reader can navigate to it.
+ * This is how the old tree accumulated a second hub for every product
+ * (`chat/overview` beside `chat/index`) and pages whose only inbound links
+ * were from other orphans.
+ *
+ * The home page is reachable from the navbar's `/` link, which `pushNavSlug`
+ * drops as a non-slug, so it is exempted by name.
+ */
+function assertNoOrphanPages(docsJson) {
+  let parsed;
+  try {
+    parsed = JSON.parse(docsJson);
+  } catch {
+    return; // already reported as invalid JSON
+  }
+  const nav = new Set(navPages(parsed));
+  for (const file of walk(ROOT)) {
+    if (!file.endsWith('.mdx')) continue;
+    const slug = relative(ROOT, file).replace(/\.mdx$/, '');
+    if (slug === 'index') continue;
+    if (nav.has(slug) || nav.has(slug.replace(/\/index$/, ''))) continue;
+    fail(
+      `${slug}.mdx is not reachable from docs.json navigation (orphaned page)`,
+    );
+  }
+}
+
 const AUTH_INTERNALS = [
   { pattern: /\/auth\//, label: '/auth/' },
   { pattern: /\/oauth\//, label: '/oauth/' },
@@ -350,6 +379,37 @@ for (const extra of pageCodes) {
   }
 }
 
+/**
+ * The catalog table in `problems/index.mdx` is hand-maintained while the pages
+ * beside it are generated in lockstep with the backend. That is the same decay
+ * this file exists to catch: a new code lands as a page, the catalog keeps
+ * listing the old set, and the index — the page a reader actually lands on —
+ * silently stops being complete.
+ */
+function assertCatalogCoversPages() {
+  const rel = 'problems/index.mdx';
+  if (!existsSync(join(ROOT, rel))) {
+    fail(`${rel} is missing (problem catalog index)`);
+    return;
+  }
+  const catalog = read(rel);
+  const listed = new Set(
+    [...catalog.matchAll(/\]\(\/problems\/([a-z_]+)\)/g)].map((m) => m[1]),
+  );
+  for (const code of pageCodes) {
+    if (!listed.has(code)) {
+      fail(`${rel} does not link \`${code}\`; every problem page belongs in the catalog`);
+    }
+  }
+  for (const code of listed) {
+    if (!pageCodes.has(code)) {
+      fail(`${rel} links \`${code}\`, which has no page at problems/${code}.mdx`);
+    }
+  }
+}
+
+assertCatalogCoversPages();
+
 if (!existsSync(join(docsRoot, 'docs.json'))) {
   fail('docs.json is missing (Mintlify site config)');
 } else {
@@ -362,6 +422,7 @@ if (!existsSync(join(docsRoot, 'docs.json'))) {
   }
   assertDocsChrome(docsJson);
   assertNoStagingNav(docsJson);
+  assertNoOrphanPages(docsJson);
 }
 
 for (const rel of FORBIDDEN_AUTH_PAGES) {

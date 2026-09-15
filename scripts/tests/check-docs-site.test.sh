@@ -58,7 +58,7 @@ RS
         "groups": [
           {
             "group": "Problems",
-            "pages": ["problems/not_found", "problems/internal"]
+            "pages": ["problems/index", "problems/not_found", "problems/internal"]
           }
         ]
       }
@@ -79,6 +79,16 @@ title: "${code}"
 | \`GET\` | \`/v1/conversations\` |
 MDX
   done
+  cat > "$dest/site/problems/index.mdx" <<'MDX'
+---
+title: "Problem catalog"
+---
+
+| Code | HTTP |
+| --- | --- |
+| [`not_found`](/problems/not_found) | 404 |
+| [`internal`](/problems/internal) | 500 |
+MDX
 }
 
 must_fail() {
@@ -318,7 +328,7 @@ cat > "$goodroot/site/docs.json" <<'JSON'
           {
             "group": "Problems",
             "root": "problems/not_found",
-            "pages": ["problems/internal"]
+            "pages": ["problems/internal", "problems/index"]
           }
         ]
       }
@@ -435,5 +445,51 @@ seed "$stagingcopy"
 printf '\nUse the staging environment at `/staging/api` for pre-prod keys.\n' \
   >> "$stagingcopy/site/problems/not_found.mdx"
 must_fail "$stagingcopy" "staging"
+
+# A page no navigation entry reaches still gets indexed, but no reader can
+# navigate to it. That is how the tree accumulated a second hub for every
+# product.
+orphan="$tmp/orphan-page"
+seed "$orphan"
+cat > "$orphan/site/problems/leftover.mdx" <<'MDX'
+---
+title: "Leftover"
+---
+
+`type` is `https://docs.cortex.foundation/problems/leftover`.
+MDX
+must_fail "$orphan" "orphaned page"
+
+# The catalog index is hand-maintained while the pages beside it are generated
+# in lockstep with the backend. A page the catalog forgets is invisible to the
+# reader who lands on the index.
+drift="$tmp/catalog-drift"
+seed "$drift"
+cat > "$drift/site/problems/index.mdx" <<'MDX'
+---
+title: "Problem catalog"
+---
+
+| Code | HTTP |
+| --- | --- |
+| [`not_found`](/problems/not_found) | 404 |
+MDX
+must_fail "$drift" "does not link \`internal\`"
+
+# And the reverse: a catalog entry with no page behind it.
+dangling="$tmp/catalog-dangling"
+seed "$dangling"
+cat > "$dangling/site/problems/index.mdx" <<'MDX'
+---
+title: "Problem catalog"
+---
+
+| Code | HTTP |
+| --- | --- |
+| [`not_found`](/problems/not_found) | 404 |
+| [`internal`](/problems/internal) | 500 |
+| [`ghost`](/problems/ghost) | 500 |
+MDX
+must_fail "$dangling" "no page at problems/ghost.mdx"
 
 echo "check-docs-site: ok"
