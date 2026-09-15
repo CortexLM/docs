@@ -8,6 +8,9 @@ repository root, not in `apps/docs`. Preview and validation commands are in
 - Do not publish authentication/session internals, credentials, private API
   routes, farm details, or backend operator runbooks.
 - Preserve the Home + Documentation navbar and ink-on-cream CTAs.
+- Keep navigation a flat list of top-level groups (`navigation.groups`).
+  `navigation.tabs` renders a product dropdown in the navbar; the hubs already
+  are that second level, so a tab makes the reader pick Chat twice.
 - Keep every navigation slug backed by a page and every problem page's
   `type` URL on `https://docs.cortex.foundation/problems/{code}`.
 - One hub page per product (`<product>/index.mdx`). Do not add a second

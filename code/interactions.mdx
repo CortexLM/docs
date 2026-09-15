@@ -41,7 +41,15 @@ Web Code has no model picker: the web app is Cloud-only and the runtime chooses 
 
 A Plan turn reads the repository and returns a structured plan: the steps it would take, the files it would touch, the risks it sees. Nothing changes until you send an Agent turn. Ask for adjustments in Plan as many times as you like — the cheap moment to redirect is before any file moves. The CLI adds a **Spec** lock on top of Plan that keeps mutating tools blocked until you accept the plan; see [CLI modes](/cli/modes-and-permissions).
 
+## Modes are a harness lock, not a promise
+
+The three modes are worth trusting because of where the decision is made. Ask and Plan do not receive the editing and shell tools at all, so there is no instruction the model could follow, misread, or talk itself out of — the tools are simply absent from the request. That is also why a mode change takes effect on the next turn rather than mid-turn: the tool set is chosen when the turn is built.
+
+In Agent, the mode is not a safety net. The agent runs the full workspace catalog inside the guest, which is why the guest is isolated, why approvals exist in the CLI, and why the timeline keeps the diff. Read what it did before your next turn.
+
 ## Related
 
 - [Sessions](/code/sessions) — where the turns live.
 - [Code quickstart](/code/quickstart) — a first Plan, then Agent.
+- [How Code works](/code/how-it-works) — the catalog each mode receives.
+- [Code troubleshooting](/code/troubleshooting) — a mode that will not edit.

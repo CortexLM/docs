@@ -22,6 +22,21 @@ A Chat canvas is a document panel beside a conversation. Cortex can draft it, yo
 2. Edit directly in the panel. The conversation and the document stay in step.
 3. **Close** the panel when you are done; your edits are kept with the conversation.
 
+## What writes to it
+
+Canvas tools are part of the tool set a Chat turn can receive, alongside the document readers. A turn reaches them the same way it reaches any other tool — the model asks, Chat runs it. See [How Chat works](/chat/how-it-works).
+
+Two of those tools are for Design boards rather than documents: `design_write` and `design_read`. Chat can host a **Design** canvas through them, and that object opens in the Design desktop app. See [Design](/design).
+
+## Canvas, plan, or Library?
+
+| You want | Use |
+| --- | --- |
+| A document you shape over several turns | A **canvas** — this page |
+| A task list you tick off | A [plan](/chat/plans) |
+| A file you attach or the assistant produced | [Library](/chat/library) |
+| A board of frames and notes | A [Design canvas](/design/canvases) |
+
 ## What it is not
 
 | Object | What it is |
@@ -37,3 +52,4 @@ There is no `/design` mode in the web app. Chat can host a **Design** canvas —
 
 - [Projects](/chat/projects) — keep the chat and its document with the rest of the work.
 - [Library](/chat/library) — attachments the draft can draw on.
+- [Design canvases](/design/canvases) — the other object called a canvas.

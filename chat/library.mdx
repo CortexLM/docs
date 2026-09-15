@@ -39,6 +39,17 @@ A Library fetch that fails shows an **error square** in the thread — never a s
 
 Library needs a signed-in account. A guest can attach files to the current session; they are not kept once the session ends. See [Accounts](/getting-started/accounts).
 
+## Library across the products
+
+Chat's Library is the file store for your account, and it is a Chat surface — Code sessions work in their guest's filesystem, and a bot has its own computer. The one other thing called a library is the [Design library](/design/library): components, pages, and tokens for canvases, which lives in the Design desktop app and shares nothing with this one.
+
+| Object | Product | What it holds |
+| --- | --- | --- |
+| **Library** (this page) | Chat | Files you uploaded, and files the assistant produced |
+| [Design library](/design/library) | Design | Components, pages, tokens |
+| Code session files | Code | The repository checked out in that session's guest |
+| Bot computer files | Bot | Files on that bot's own desktop |
+
 ## Related
 
 - [Projects](/chat/projects) — pin files to a body of work.

@@ -225,267 +225,124 @@
     }
   ],
   "navigation": {
-    "tabs": [
+    "groups": [
       {
-        "tab": "Get started",
-        "groups": [
-          {
-            "group": "Start here",
-            "root": "getting-started/quickstart",
-            "pages": [
-              "getting-started/what-is-cortex",
-              "getting-started/accounts",
-              "getting-started/plans",
-              "getting-started/settings"
-            ],
-            "icon": "rocket"
-          },
-          {
-            "group": "Downloads",
-            "root": "getting-started/downloads",
-            "pages": [
-              "getting-started/desktop"
-            ],
-            "icon": "download"
-          },
-          {
-            "group": "Help",
-            "root": "getting-started/troubleshooting",
-            "pages": [
-              "status",
-              "security/overview"
-            ],
-            "icon": "life-buoy"
-          }
+        "group": "Start here",
+        "root": "getting-started/quickstart",
+        "icon": "rocket",
+        "pages": [
+          "getting-started/what-is-cortex",
+          "getting-started/accounts",
+          "getting-started/plans",
+          "getting-started/settings"
         ]
       },
       {
-        "tab": "Chat",
-        "groups": [
-          {
-            "group": "Chat",
-            "root": "chat/index",
-            "pages": [
-              "chat/quickstart",
-              "chat/projects",
-              "chat/library",
-              "chat/plans",
-              "chat/sharing"
-            ],
-            "icon": "message-square"
-          },
-          {
-            "group": "Models and tools",
-            "pages": [
-              "chat/models",
-              "chat/tools"
-            ],
-            "icon": "cpu"
-          },
-          {
-            "group": "Research and media",
-            "pages": [
-              "chat/deep-research",
-              "chat/images",
-              "chat/origin-check",
-              "chat/voice"
-            ],
-            "icon": "telescope"
-          },
-          {
-            "group": "Context that carries over",
-            "pages": [
-              "chat/memory",
-              "chat/canvases"
-            ],
-            "icon": "brain"
-          },
-          {
-            "group": "How Chat works",
-            "pages": [
-              "chat/how-it-works",
-              "chat/streaming"
-            ],
-            "icon": "sliders-horizontal"
-          },
-          {
-            "group": "Help",
-            "pages": [
-              "chat/troubleshooting"
-            ],
-            "icon": "life-buoy"
-          }
+        "group": "Downloads",
+        "root": "getting-started/downloads",
+        "icon": "download",
+        "pages": [
+          "getting-started/desktop"
         ]
       },
       {
-        "tab": "Code",
-        "groups": [
-          {
-            "group": "Code",
-            "root": "code/index",
-            "pages": [
-              "code/quickstart",
-              "code/sessions",
-              "code/interactions"
-            ],
-            "icon": "code"
-          },
-          {
-            "group": "Repositories",
-            "pages": [
-              "code/github",
-              "code/security"
-            ],
-            "icon": "github"
-          },
-          {
-            "group": "Where it runs",
-            "pages": [
-              "code/cloud",
-              "code/desktop",
-              "code/cli"
-            ],
-            "icon": "cloud"
-          },
-          {
-            "group": "How Code works",
-            "pages": [
-              "code/how-it-works"
-            ],
-            "icon": "sliders-horizontal"
-          },
-          {
-            "group": "Help",
-            "pages": [
-              "code/troubleshooting"
-            ],
-            "icon": "life-buoy"
-          }
+        "group": "Chat",
+        "root": "chat/index",
+        "icon": "message-square",
+        "pages": [
+          "chat/quickstart",
+          "chat/projects",
+          "chat/library",
+          "chat/plans",
+          "chat/sharing",
+          "chat/models",
+          "chat/tools",
+          "chat/deep-research",
+          "chat/images",
+          "chat/origin-check",
+          "chat/voice",
+          "chat/memory",
+          "chat/canvases",
+          "chat/how-it-works",
+          "chat/streaming",
+          "chat/troubleshooting"
         ]
       },
       {
-        "tab": "Bot",
-        "groups": [
-          {
-            "group": "Bot",
-            "root": "bot/index",
-            "pages": [
-              "bot/quickstart",
-              "bot/computer",
-              "bot/tools"
-            ],
-            "icon": "bot"
-          },
-          {
-            "group": "Control and scheduling",
-            "pages": [
-              "bot/approvals",
-              "bot/routines",
-              "bot/skills"
-            ],
-            "icon": "shield-check"
-          },
-          {
-            "group": "Desktop",
-            "pages": [
-              "bot/desktop"
-            ],
-            "icon": "monitor"
-          },
-          {
-            "group": "How Bot works",
-            "pages": [
-              "bot/how-it-works"
-            ],
-            "icon": "sliders-horizontal"
-          },
-          {
-            "group": "Help",
-            "pages": [
-              "bot/troubleshooting"
-            ],
-            "icon": "life-buoy"
-          }
+        "group": "Code",
+        "root": "code/index",
+        "icon": "code",
+        "pages": [
+          "code/quickstart",
+          "code/sessions",
+          "code/interactions",
+          "code/github",
+          "code/security",
+          "code/cloud",
+          "code/desktop",
+          "code/cli",
+          "code/how-it-works",
+          "code/troubleshooting"
         ]
       },
       {
-        "tab": "CLI",
-        "groups": [
-          {
-            "group": "Get started",
-            "root": "cli/index",
-            "pages": [
-              "cli/install",
-              "cli/sign-in",
-              "cli/quickstart"
-            ],
-            "icon": "rocket"
-          },
-          {
-            "group": "Working in the terminal",
-            "pages": [
-              "cli/tui",
-              "cli/slash-commands",
-              "cli/modes-and-permissions",
-              "cli/goal",
-              "cli/sessions",
-              "cli/keyboard"
-            ],
-            "icon": "terminal"
-          },
-          {
-            "group": "Automation",
-            "pages": [
-              "cli/headless"
-            ],
-            "icon": "workflow"
-          },
-          {
-            "group": "Customize",
-            "pages": [
-              "cli/configuration",
-              "cli/extend"
-            ],
-            "icon": "puzzle"
-          },
-          {
-            "group": "Help",
-            "pages": [
-              "cli/troubleshooting"
-            ],
-            "icon": "life-buoy"
-          }
+        "group": "Bot",
+        "root": "bot/index",
+        "icon": "bot",
+        "pages": [
+          "bot/quickstart",
+          "bot/computer",
+          "bot/tools",
+          "bot/approvals",
+          "bot/routines",
+          "bot/skills",
+          "bot/desktop",
+          "bot/how-it-works",
+          "bot/troubleshooting"
         ]
       },
       {
-        "tab": "Design",
-        "groups": [
-          {
-            "group": "Design",
-            "root": "design/index",
-            "pages": [
-              "design/canvases",
-              "design/desktop",
-              "design/library"
-            ],
-            "icon": "layout-template"
-          }
+        "group": "CLI",
+        "root": "cli/index",
+        "icon": "terminal",
+        "pages": [
+          "cli/install",
+          "cli/sign-in",
+          "cli/quickstart",
+          "cli/tui",
+          "cli/slash-commands",
+          "cli/modes-and-permissions",
+          "cli/goal",
+          "cli/sessions",
+          "cli/keyboard",
+          "cli/headless",
+          "cli/configuration",
+          "cli/extend",
+          "cli/troubleshooting"
         ]
       },
       {
-        "tab": "API",
-        "groups": [
-          {
-            "group": "Public",
-            "root": "api/overview",
-            "pages": [
-              "api/errors"
-            ],
-            "icon": "braces"
-          },
+        "group": "Design",
+        "root": "design/index",
+        "icon": "layout-template",
+        "pages": [
+          "design/canvases",
+          "design/desktop",
+          "design/library",
+          "design/troubleshooting"
+        ]
+      },
+      {
+        "group": "API",
+        "root": "api/overview",
+        "icon": "braces",
+        "pages": [
+          "api/errors",
           {
             "group": "Problems",
             "root": "problems/index",
+            "icon": "circle-alert",
+            "expanded": false,
             "pages": [
               "problems/validation_failed",
               "problems/bad_request",
@@ -511,28 +368,25 @@
               "problems/upstream_timeout",
               "problems/service_unavailable",
               "problems/no_capacity"
-            ],
-            "icon": "circle-alert"
+            ]
           }
         ]
       },
       {
-        "tab": "Changelog",
-        "groups": [
-          {
-            "group": "Release notes",
-            "pages": [
-              "changelog"
-            ],
-            "icon": "history"
-          },
-          {
-            "group": "Coming soon",
-            "pages": [
-              "platform"
-            ],
-            "icon": "clock"
-          }
+        "group": "Help",
+        "root": "getting-started/troubleshooting",
+        "icon": "life-buoy",
+        "pages": [
+          "status",
+          "security/overview"
+        ]
+      },
+      {
+        "group": "Changelog",
+        "root": "changelog",
+        "icon": "history",
+        "pages": [
+          "platform"
         ]
       }
     ]

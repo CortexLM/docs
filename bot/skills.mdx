@@ -29,6 +29,16 @@ A skill tells a bot **how** a particular job is done — the checklist for a wee
 | [Routines](/bot/routines) | *When* a bot works; a skill is *how* |
 | Connected apps | Tools from apps you connected under **Customize → Connectors** |
 
+## How a bot reaches a skill
+
+A skill is not a tool the bot runs on its own initiative — it is an instruction bundle the `skill` tool loads, and the `skill` tool is one entry in the catalog a bot receives. See [Tools](/bot/tools) for where it sits among files and shell, computer use, browser, and the user-visible tools.
+
+Because a skill is instructions rather than a capability, loading one does not add permissions. A skill that tells the bot to change something in a connected app still parks that change behind [Approvals](/bot/approvals), and a skill that tells it to delete files still parks the dangerous step. The skill describes the job; the approval decides whether it runs.
+
+## What you see when a skill runs
+
+A skill runs inside the bot's turn, so it does not produce a row of its own. The conversation shows only the user-visible tools — `send_to_user`, `ask_user`, `notify`, and `secret_request` — and the [Computer](/bot/computer) rail shows the rest as it happens. See [How Bot works](/bot/how-it-works).
+
 ## Skills in the CLI
 
 The CLI has its own skills system for the coding agent — `SKILL.md` bundles with frontmatter, found in your project or under `~/.cortex/skills/`, loaded through a `UseSkill` tool and gated by the `permission.skill` table. Those are CLI skills for Code, separate from Bot's first-party skills. See [Extend the CLI](/cli/extend).
@@ -37,3 +47,4 @@ The CLI has its own skills system for the coding agent — `SKILL.md` bundles wi
 
 - [Tools](/bot/tools) — the `skill` tool and the rest of the catalog.
 - [How Bot works](/bot/how-it-works) — what you see when a skill runs.
+- [Routines](/bot/routines) — the schedule a skill does not provide.

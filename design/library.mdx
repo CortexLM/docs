@@ -20,6 +20,16 @@ The Design library holds the reusable pieces of your visual work: **components**
   </Step>
 </Steps>
 
+## What each kind of item is for
+
+| Item | What it is | Reused by |
+| --- | --- | --- |
+| **Component** | A piece you place on a frame | Frames on any of your canvases |
+| **Page** | A screen built from components | The board you are working on |
+| **Token** | A colour, spacing, or type value | Components and pages that reference it |
+
+Tokens are the reason two frames can look like one product: change the value once and the components that reference it follow. They are values you maintain, not a theme the app picks for you.
+
 ## Two libraries
 
 | | Design library | [Chat Library](/chat/library) |
@@ -30,7 +40,14 @@ The Design library holds the reusable pieces of your visual work: **components**
 
 Same word, different objects. Items in one do not appear in the other.
 
+## Who can use it
+
+Library items are member objects, like the canvases they sit on: a guest cannot create one, and another account's items are never listed. See [Accounts](/getting-started/accounts).
+
+The drawer is on the desktop only. The web app lists canvases but has no Library drawer and no `/design` route — see [Design desktop](/design/desktop).
+
 ## Related
 
 - [Canvases](/design/canvases) — where components are placed.
 - [Design desktop](/design/desktop)
+- [Design troubleshooting](/design/troubleshooting) — a Library item that is not where you expected.

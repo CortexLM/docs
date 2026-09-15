@@ -1,0 +1,60 @@
+---
+title: "Design troubleshooting"
+description: "Where a canvas lives, why the browser will not edit it, a Library item that is not there, and the app that is not opening."
+keywords: ["errors", "problems", "fixes", "not working", "canvas missing"]
+---
+
+Design spans two places on purpose: the browser creates and lists a canvas, the [Design desktop app](/design/desktop) edits it. Most confusion comes from looking for the editor in the wrong one. For the rest of the app see [Troubleshooting](/getting-started/troubleshooting).
+
+## Access
+
+| What you see | Cause | Fix |
+| --- | --- | --- |
+| No canvas tools at all | You are a guest | Canvases are member objects. Sign in — see [Accounts](/getting-started/accounts) |
+| A canvas that is not yours is missing | Canvases are private to the account that owns them | Expected. Another account's boards are never listed |
+| **No `/design` route** in the browser | The web app has no Design mode | Create and list canvases from Chat or Code, then edit in the desktop app |
+
+## The canvas
+
+| What you see | Cause | Fix |
+| --- | --- | --- |
+| The board is called **Untitled canvas** | That is the default until you rename it | Rename it from the desktop app; the host binding stays |
+| Frames are missing after a rename | The rename did not change which conversation hosts the board | Reopen the board — the host binding is unchanged by a rename |
+| The canvas disappeared from the list | Deleting a canvas hides it from the list | There is no restore. Host a new one from [Chat](/chat/canvases) or [Code](/code) |
+| Chat made a document, not a board | A [Chat canvas](/chat/canvases) is a document beside one conversation | Ask for a **Design** canvas, or open the board from the Design desktop app |
+
+## The Library
+
+| What you see | Cause | Fix |
+| --- | --- | --- |
+| No Library drawer in the browser | The drawer lives on a canvas in the desktop app | Open the board in the [Design desktop app](/design/desktop) |
+| A component has no thumbnail | Thumbnails are **uploaded**, not rendered | Upload one, or leave it — the item still works |
+| A Chat file is not in the Design Library | They are different objects that share a word | See [two libraries](/design/library#two-libraries) |
+
+## The desktop app
+
+| What you see | Cause | Fix |
+| --- | --- | --- |
+| The app asks you to sign in | Canvases are member objects | Sign in with the same account as the web app |
+| Your boards are not listed | The app is signed in as a different account | Sign in as the account that hosted them |
+| A download is missing for your platform | Desktop builds are published per platform | Check [releases.cortex.foundation](https://releases.cortex.foundation) — see [Downloads](/getting-started/downloads) |
+
+## Errors
+
+Design uses the same problem documents as the rest of Cortex:
+
+| Code | Meaning |
+| --- | --- |
+| [`unauthenticated`](/problems/unauthenticated) | You are not signed in |
+| [`forbidden`](/problems/forbidden) | The action is not permitted for this account |
+| [`not_found`](/problems/not_found) | The canvas or Library item no longer exists |
+| [`invalid_state`](/problems/invalid_state) | The board is not in a state that allows the action |
+
+Full list: [Problem catalog](/problems).
+
+## Related
+
+- [Canvases](/design/canvases) — what lives on a board and how it is hosted.
+- [Design desktop](/design/desktop) — the app that edits it.
+- [Design library](/design/library) — components, pages, and tokens.
+- [Troubleshooting](/getting-started/troubleshooting) — the same guidance across all products.

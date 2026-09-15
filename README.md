@@ -53,6 +53,16 @@ downstream mirror to sync: the site publishes from this repository, branch
 | API | The RFC 9457 problem format and the catalog of error codes | `api/overview` |
 | Changelog | Dated release notes, and the deferred Platform API | `changelog` |
 
+Navigation is **one flat list of top-level groups** — `navigation.groups`, not
+`navigation.tabs`. A tab renders a second-level switcher in the navbar, and the
+product hubs already are that second level; the sidebar would otherwise ask a
+reader to pick Chat twice. `docs-ui.test.mjs` fails if `tabs`, `dropdowns`, or
+`products` come back, or if a product group stops opening its hub.
+
+Each product group is flat: the hub, then every page of that product in reading
+order, then its troubleshooting page. Nested groups inside a product group are
+for reference material only — the problem catalog is the one that remains.
+
 Each product tab opens on a single hub page (`<product>/index.mdx`). Do not
 re-introduce a second overview page beside it — one entry point per product,
 with the task guides beneath it in the sidebar.
@@ -103,7 +113,7 @@ that adds the code. The full check fails when:
 - the top navbar is not Home + Documentation, or it carries Chat | Code | Bot chrome / `navbar.primary`
 - the home page uses Mintlify Cards as brand-green Install CTAs instead of `.ink-btn`
 - public MDX documents `/auth/`, `/oauth/`, `refresh_token`, WorkOS, or `cortex_rt`
-- `api/authentication.mdx` or `api/oauth.mdx` exist, or the API tab lists them
+- `api/authentication.mdx` or `api/oauth.mdx` exist, or the API group lists them
 
 Do not invent endpoints. There is no inference Platform API section here — see
 `platform.mdx`. Sign in via the app; this tree has no auth stack.
@@ -131,5 +141,6 @@ grids on Home and the hubs — never as a lone full-width `Card`. Cream, ink,
 
 Top navbar is Mintlify **Home + Documentation**, not the Chat | Code | Bot
 product switcher. Get started / Chat / Code / Bot / CLI / Design stay as
-documentation tabs. Competitor product names never appear in copy,
-titles, or `docs.json`.
+top-level **sidebar groups**, not navbar tabs: a tab would put the product
+switcher back in the navbar as a dropdown. Competitor product names never
+appear in copy, titles, or `docs.json`.

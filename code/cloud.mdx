@@ -52,8 +52,21 @@ Environment for a guest belongs to that guest. Set what a session needs inside t
 
 The Cloud is the only host in the browser. **This PC** and **SSH** exist on the desktop app and the CLI — see [Code on desktop](/code/desktop). Those hosts require an already connected Code session; Cortex never silently substitutes the Cloud for a host you chose.
 
+## When there is no capacity
+
+A guest is a real machine, so a session can fail to start for operational reasons rather than a bug in your repository. Both cases fail closed and name the reason:
+
+| Code | What happened | What to do |
+| --- | --- | --- |
+| [`no_capacity`](/problems/no_capacity) | No guest could be started right now | Try again shortly. Higher plans get priority when the fleet is busy |
+| [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | Too many sessions or runs active on the account | Let one finish, then start this one |
+| [`service_unavailable`](/problems/service_unavailable) | The service is temporarily unavailable | Retry after a pause — your session and its files stay as they were |
+
+Code never runs your repository on the API process as a fallback, and it never reports a started session that has no guest behind it. See [Troubleshooting](/code/troubleshooting) and the [problem catalog](/problems).
+
 ## Related
 
 - [How Code works](/code/how-it-works) — the tool catalog that runs in the guest.
 - [Sessions](/code/sessions)
+- [Code troubleshooting](/code/troubleshooting) — Cloud availability and failed starts.
 - [Bot computer](/bot/computer) — the guest that does have a desktop.

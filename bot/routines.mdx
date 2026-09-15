@@ -37,6 +37,15 @@ A run wakes the bot's computer if it is asleep, does the work, and reports throu
 
 Your chats, projects, and **Bot routines** follow a signed-in account across devices — the web app and the [Bot desktop app](/bot/desktop) show the same routines.
 
+## When a routine runs
+
+A routine is not a turn you started, so it has to be able to run without you watching. Two things follow from that:
+
+- **The computer wakes first.** A routine on a bot whose guest is asleep resumes the guest before the model is prompted, the same way a turn does. The bot starts with its shell and desktop available. See [Computer](/bot/computer).
+- **Approvals still apply.** A consequential step inside a routine parks behind [Allow / Deny / Always](/bot/approvals) unless you already chose **Always** for that kind of step. A routine does not silently gain permission because you are not there to watch it.
+
+A routine that hits the 15-minute turn deadline ends there; the work it already did stays. Long jobs belong in a background `task` inside the routine. See [How Bot works](/bot/how-it-works).
+
 ## Routines are not…
 
 | Object | What it is |
