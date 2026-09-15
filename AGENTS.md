@@ -13,6 +13,10 @@ repository root, not in `apps/docs`. Preview and validation commands are in
 - One hub page per product (`<product>/index.mdx`). Do not add a second
   overview page beside it, and give every page a `title`, a `description`,
   and a closing **Related** or **Next** section.
+- Keep `description` under 160 characters so it is not truncated in search
+  results and link previews. Where the product's sidebar label differs from
+  the page title (the sidebar says **Artifacts**, the page is **Library**),
+  add the label to `keywords` so either term finds the page.
 - Run `node scripts/check-docs-site.mjs` and
   `bash scripts/tests/check-docs-site.test.sh`, then
   `node scripts/tests/docs-ui.test.mjs` and

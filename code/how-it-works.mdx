@@ -1,6 +1,7 @@
 ---
 title: "How Code works"
-description: "Workspace tools execute inside the attached Cloud guest — never in the API process, never in Chat's Python sandbox. Modes withhold mutating tools; compaction fails closed."
+description: "Workspace tools execute inside the attached guest — never in the API process or Chat sandbox. Modes withhold mutating tools; compaction fails closed."
+keywords: ["tool loop", "context", "compaction"]
 ---
 
 A Code turn is a tool loop like Chat's, with two differences that define the product: the tools operate on a real repository inside an isolated guest, and the mode you choose decides which tools the model is offered at all.

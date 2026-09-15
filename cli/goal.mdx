@@ -1,6 +1,7 @@
 ---
 title: "Goals"
-description: "/goal keeps a long-horizon objective attached to the session. It survives the end of a turn, context compaction, and resume — the agent keeps planning, acting, and verifying until the work is evidence-complete."
+description: "/goal attaches a long-horizon objective to the session. It survives compaction and resume while the agent keeps planning, acting, and verifying."
+keywords: ["objective", "long running", "/goal"]
 ---
 
 A normal turn ends when the model stops. A **goal** does not: `/goal` attaches an objective to the session, and the agent keeps working toward it across turns — planning, acting, verifying — until the work is **evidence-complete**, until you pause or clear it, or until the budget runs out. The goal survives the end of a turn, context compaction, and closing and resuming the TUI.

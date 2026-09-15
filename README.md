@@ -61,6 +61,17 @@ Every page ends with a **Related** or **Next** section so a reader is never at
 a dead end, and every page carries a `title` and a `description` in its
 frontmatter. Product pages also carry an `image` for link previews.
 
+Keep `description` under 160 characters — longer text is truncated in search
+results and link previews. Titles are unique across the site; where two pages
+would otherwise collide (`Sessions` in Code and in the CLI, `Canvases` in Chat
+and in Design) the title carries the product and `sidebarTitle` keeps the
+sidebar short.
+
+Where the product's sidebar label differs from the page title, list the label
+in `keywords` so either term finds the page. The sidebar says **Artifacts**;
+the page is [Library](/chat/library). It says **Planning**; the page is
+[Plans](/chat/plans). It says **Agents**; the page is [Cortex Bot](/bot).
+
 ## Checks
 
 ```bash

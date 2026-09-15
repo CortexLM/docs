@@ -15,7 +15,7 @@ Cream / ink / `#1F4945` stay on site chrome. The pixels are the app.
 | `chat-home-recents.png` | Chat home with Recents populated | `index` |
 | `chat-home-dark.png` | Chat home, Dark theme | `chat/index` |
 | `chat-home-fr.png` | Chat home, French interface | `getting-started/what-is-cortex` |
-| `chat-session.png` | A thread with a one-paragraph reply | `chat/overview` |
+| `chat-session.png` | A thread with a one-paragraph reply | `chat/index` |
 | `chat-composer-typed.png` | A multi-line prompt typed in the composer | `chat/quickstart` |
 | `chat-composer-menu.png` | The composer `+` menu: Attach file, Image, Check origin | `chat/images` |
 | `chat-model-picker.png` | Model chip open: models, Thinking, Deep Research | `chat/models` |
@@ -54,10 +54,10 @@ Cream / ink / `#1F4945` stay on site chrome. The pixels are the app.
 | File | Surface | Used on |
 | --- | --- | --- |
 | `code-public.png` | `cortex.foundation/code` public page | `code/index` |
-| `code-public-features.png` | Same page, feature grid | `code/overview` |
+| `code-public-features.png` | Same page, feature grid | `code/index` |
 | `code-home.png` | Code guest gate (“This space is reserved”) | `code/quickstart` |
 | `bot-public.png` | `cortex.foundation/bot` public page | `bot/index` |
-| `bot-public-features.png` | Same page, feature grid | `bot/overview` |
+| `bot-public-features.png` | Same page, feature grid | `bot/index` |
 | `bot-home.png` | Bot guest gate | `bot/quickstart` |
 | `security-public.png` | `cortex.foundation/security` public page | `code/security` |
 | `security-public-features.png` | Same page, feature grid | `code/security` |
