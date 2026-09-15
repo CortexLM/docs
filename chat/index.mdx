@@ -1,6 +1,6 @@
 ---
-title: "Chat guides"
-description: "Everything for Cortex Chat — conversations, projects, Library, plans, models, tools, research, images, and how a turn actually runs."
+title: "Cortex Chat"
+description: "Cortex Chat — conversation, research, documents, and images. Projects, Library, canvases, plans, memory, models, and connected tools."
 image: "/images/banners/chat.png"
 ---
 
@@ -13,18 +13,18 @@ Cortex Chat is the conversation product at [cortex.foundation](https://cortex.fo
 ## Start here
 
 <CardGroup cols={3}>
-  <Card title="Quickstart" img="/images/banners/chat.png" href="/chat/quickstart">
+  <Card title="Chat quickstart" img="/images/banners/chat.png" href="/chat/quickstart">
     First message, attach a file, pick a model, keep the thread in a project.
-  </Card>
-  <Card title="Overview" icon="compass" href="/chat/overview">
-    What Chat is for, what lives where in the sidebar, and when to switch to Code or Bot.
   </Card>
   <Card title="Accounts" icon="user" href="/getting-started/accounts">
     Guest allowance versus a signed-in member, and what each can do.
   </Card>
+  <Card title="How Chat works" icon="sliders-horizontal" href="/chat/how-it-works">
+    The tool loop, streaming, compaction, and when to switch to Code or Bot.
+  </Card>
 </CardGroup>
 
-## Core guides
+## Work in Chat
 
 <CardGroup cols={2}>
   <Card title="Projects" icon="folder" href="/chat/projects">
@@ -33,8 +33,14 @@ Cortex Chat is the conversation product at [cortex.foundation](https://cortex.fo
   <Card title="Library" icon="files" href="/chat/library">
     Everything you uploaded and everything the assistant produced. Files stay when a chat is deleted.
   </Card>
+  <Card title="Canvases" icon="file-pen" href="/chat/canvases">
+    A document panel beside the conversation — drafted by Cortex or by you, editable after the chat moves on.
+  </Card>
   <Card title="Plans" icon="list-checks" href="/chat/plans">
     Turn a long answer into steps you can tick off. Start one from any chat or from Planning.
+  </Card>
+  <Card title="Memory" icon="brain" href="/chat/memory">
+    Standing preferences and facts, reviewable and deletable one by one.
   </Card>
   <Card title="Models and thinking" icon="cpu" href="/chat/models">
     Cortex 1 Mini, Cortex Teutonic-1, the Thinking level, and what happens at peak hours.
@@ -64,13 +70,8 @@ Cortex Chat is the conversation product at [cortex.foundation](https://cortex.fo
   </Card>
 </CardGroup>
 
-## Context that carries over
+## Where Chat stops
 
-- [Memory](/chat/memory) — standing preferences and facts, reviewable and deletable one by one.
-- [Canvases](/chat/canvases) — a document sidecar beside the conversation, drafted by Cortex or by you.
+Chat does not run Code's workspace shell or Bot's computer. Its Python tool is a snippet sandbox with no workspace and cannot see a repository. Use [Code](/code) for a repository, [Bot](/bot) for an always-on teammate with a desktop, and the [CLI](/cli) to drive Code from a terminal.
 
-## Under the hood
-
-- [How Chat works](/chat/how-it-works) — the tool loop, compaction, and Chat's round budget.
-- [Streaming](/chat/streaming) — tokens, then tools, then the finished reply; what happens on a dropped connection.
 - [Settings](/getting-started/settings) — theme, language, shortcuts, defaults, privacy.

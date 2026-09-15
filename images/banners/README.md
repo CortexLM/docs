@@ -12,6 +12,7 @@ Do not add Ask Assistant chrome or pixel plates here.
 | `chat.png` | Chat hub and Chat quickstart |
 | `code.png` | Code hub |
 | `bot.png` | Bot hub |
-| `design.png` | Design hub |
 | `security.png` | Security |
 | `changelog.png` | Changelog |
+
+There is no Design banner: Design is not a public product vertical.

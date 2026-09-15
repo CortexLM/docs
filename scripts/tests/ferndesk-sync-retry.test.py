@@ -259,7 +259,7 @@ docs_root = Path(tempfile.mkdtemp(prefix="ferndesk-docs-"))
     "---\ntitle: Quickstart\n---\n\nHello.\n", encoding="utf-8"
 )
 
-SECTIONS = [{"id": "sec-1", "name": "Staging"}]
+SECTIONS = [{"id": "sec-1", "name": "Production"}]
 COLLECTIONS = [{"id": "col-1", "sectionId": "sec-1", "title": "Getting Started"}]
 
 # --- slug lookup / create conflict recovery (lookup-before-create + PATCH) -------
@@ -268,6 +268,8 @@ def conflict_routes(method, url, n):
         return FakeResponse(200, SECTIONS)
     if "/collections" in url:
         return FakeResponse(200, COLLECTIONS)
+    if "/articles" in url and url.endswith("/publish") and method == "POST":
+        return FakeResponse(200, {"id": "art-9", "status": "published"})
     if "/articles" in url and method == "POST":
         return FakeResponse(409, {"error": "slug already exists", "code": "conflict"})
     if "/articles" in url and "slug=" in url:
@@ -287,7 +289,7 @@ client, logs, fake_time, saved = install(conflict_routes)
 try:
     with env(
         FERNDESK_API_KEY="test-key",
-        FERNDESK_TARGET="staging",
+        FERNDESK_TARGET="production",
         FERNDESK_SLUG_CACHE=str(cache_path),
         FERNDESK_SUMMARY_PATH=str(summary_path),
         DOCS_ROOT=str(docs_root),
@@ -299,7 +301,8 @@ try:
     check("conflict recovery counts an update", summary.get("updated") == 1, summary)
     check("conflict recovery reports no failures", summary.get("failed") == 0, summary)
     check("conflict recovery caches the found id", json.loads(cache_path.read_text()).get(
-        "getting-started-quickstart", {}).get("id") == "art-9", cache_path.read_text())
+        "by_slug", {}).get("getting-started-quickstart", {}).get("id") == "art-9",
+        cache_path.read_text())
     check("conflict recovery is logged", any(("recovered-update" in line or "lookup-update" in line) for line in logs), logs)
 finally:
     restore(saved)
@@ -310,6 +313,8 @@ def sync_routes(method, url, n):
         return FakeResponse(200, SECTIONS)
     if "/collections" in url:
         return FakeResponse(200, COLLECTIONS)
+    if "/articles" in url and url.endswith("/publish") and method == "POST":
+        return FakeResponse(200, {"id": "art-1", "status": "published"})
     if "/articles" in url and method == "POST":
         # The residual COR-444 case: article creation stays rate limited.
         return FakeResponse(429, {"error": "Too many requests", "code": "rate_limited"},
@@ -326,7 +331,7 @@ client, logs, fake_time, saved = install(sync_routes)
 try:
     with env(
         FERNDESK_API_KEY="test-key",
-        FERNDESK_TARGET="staging",
+        FERNDESK_TARGET="production",
         FERNDESK_WRITE_RETRIES="3",
         FERNDESK_SLUG_CACHE=str(cache_path),
         FERNDESK_SUMMARY_PATH=str(summary_path),
@@ -339,8 +344,207 @@ try:
     check("summary counts the failure", summary.get("failed") == 1, summary)
     check("summary names the stuck slug", summary.get("failed_slugs") == ["getting-started-quickstart"], summary)
     check("summary still reports the page total", summary.get("pages") == 1, summary)
-    check("no article id cached for a failed write", json.loads(cache_path.read_text()) == {}, cache_path.read_text())
+    check("no article id cached for a failed write",
+          json.loads(cache_path.read_text()).get("by_slug") == {}, cache_path.read_text())
     check("FAILURES line is logged", any(line.startswith("FAILURES ") for line in logs), logs)
+finally:
+    restore(saved)
+
+# --- production only: a staging target must be refused, not published --------
+# docs.cortex.foundation serves the FernDesk Production section. A staging
+# mirror put pre-prod articles on the public domain, so the sync refuses any
+# target other than production rather than quietly creating one.
+def never_called(method, url, n):
+    raise AssertionError(f"staging target must not reach the API: {method} {url}")
+
+
+summary_path = docs_root / "summary-staging.json"
+client, logs, fake_time, saved = install(never_called)
+try:
+    with env(
+        FERNDESK_API_KEY="test-key",
+        FERNDESK_TARGET="staging",
+        FERNDESK_SUMMARY_PATH=str(summary_path),
+        DOCS_ROOT=str(docs_root),
+    ):
+        code = fs.main()
+    check("a staging target is refused", code == 2, code)
+    check("refusal names the target", any("staging" in line for line in logs), logs)
+    check("refusal explains the public-domain reason",
+          any("public" in line.lower() for line in logs), logs)
+    check("no summary written for a refused run", not summary_path.exists(), summary_path)
+finally:
+    restore(saved)
+
+# --- retire: unpublish articles whose MDX page is gone ----------------------
+# Deleting an MDX page does not remove its FernDesk article; the upsert path
+# never deletes. Without an explicit retire, a retired page keeps serving on
+# the public domain (how /staging and duplicate hubs stayed reachable).
+def retire_routes(method, url, n):
+    if "/sections" in url:
+        return FakeResponse(200, SECTIONS)
+    if "/collections" in url:
+        return FakeResponse(200, COLLECTIONS)
+    if "/articles" in url and url.endswith("/unpublish") and method == "POST":
+        retire_calls.append(url)
+        return FakeResponse(200, {"id": "art-orphan", "status": "draft"})
+    if "/articles" in url and url.endswith("/publish") and method == "POST":
+        return FakeResponse(200, {"id": "art-1", "status": "published"})
+    if "/articles" in url and method == "PATCH":
+        return FakeResponse(200, {"id": "art-1", "status": "published"})
+    if "/articles" in url and method == "POST":
+        return FakeResponse(200, {"id": "art-1", "status": "published"})
+    if "/articles" in url:
+        return FakeResponse(200, {"results": [
+            {"id": "art-1", "slug": "getting-started-quickstart", "status": "published",
+             "sectionId": "sec-1", "keywords": "source:mintlify;path:getting-started/quickstart.mdx"},
+            {"id": "art-orphan", "slug": "staging-index", "status": "published",
+             "sectionId": "sec-1", "keywords": "source:mintlify;path:staging/index.mdx"},
+            {"id": "art-fern", "slug": "fern-only", "status": "published",
+             "sectionId": "sec-1", "keywords": "hand-written"},
+        ], "has_more": False})
+    return FakeResponse(404, {"code": "not_found"})
+
+
+retire_calls: list = []
+summary_path = docs_root / "summary-retire.json"
+cache_path = docs_root / "cache-retire.json"
+client, logs, fake_time, saved = install(retire_routes)
+try:
+    with env(
+        FERNDESK_API_KEY="test-key",
+        FERNDESK_TARGET="production",
+        FERNDESK_RETIRE="1",
+        FERNDESK_SLUG_CACHE=str(cache_path),
+        FERNDESK_SUMMARY_PATH=str(summary_path),
+        DOCS_ROOT=str(docs_root),
+        FERNDESK_FULL_SCAN="1",
+    ):
+        code = fs.main()
+    summary = json.loads(summary_path.read_text())
+    check("retire keeps the run green", code == 0, code)
+    check("retire unpublishes the orphaned page",
+          any(u.endswith("/articles/art-orphan/unpublish") for u in retire_calls), retire_calls)
+    check("retire leaves FernDesk-only articles alone",
+          not any("art-fern" in u for u in retire_calls), retire_calls)
+    check("retire counts what it unpublished", summary.get("retired") == 1, summary)
+    check("retire is logged", any(line.startswith("retired ") for line in logs), logs)
+finally:
+    restore(saved)
+
+# --- retire is off unless asked for -----------------------------------------
+retire_calls = []
+summary_path = docs_root / "summary-no-retire.json"
+cache_path = docs_root / "cache-no-retire.json"
+client, logs, fake_time, saved = install(retire_routes)
+try:
+    with env(
+        FERNDESK_API_KEY="test-key",
+        FERNDESK_TARGET="production",
+        FERNDESK_SLUG_CACHE=str(cache_path),
+        FERNDESK_SUMMARY_PATH=str(summary_path),
+        DOCS_ROOT=str(docs_root),
+        FERNDESK_FULL_SCAN="1",
+    ):
+        code = fs.main()
+    summary = json.loads(summary_path.read_text())
+    check("retire stays off by default", retire_calls == [], retire_calls)
+    check("no retired count when retire is off", "retired" not in summary, summary)
+finally:
+    restore(saved)
+
+# --- identity is the Mintlify path, not the slug ----------------------------
+# FernDesk rewrites a slug it considers taken: `chat` is stored as `chat-8hul5`.
+# A sync that resolves identity by slug therefore never finds its article after
+# a cache loss and creates another copy — which is how the public site ended up
+# with nine `index-*` articles. Identity must come from the `path:<rel>` marker
+# in keywords, which survives the rewrite.
+def rewritten_slug_routes(method, url, n):
+    if "/sections" in url:
+        return FakeResponse(200, SECTIONS)
+    if "/collections" in url:
+        return FakeResponse(200, COLLECTIONS)
+    if "/articles" in url and url.endswith("/publish") and method == "POST":
+        return FakeResponse(200, {"id": "art-chat", "status": "published"})
+    if "/articles" in url and url.endswith("/unpublish") and method == "POST":
+        rewrite_retire_calls.append(url)
+        return FakeResponse(200, {"id": "art-dup", "status": "draft"})
+    if "/articles" in url and method == "PATCH":
+        return FakeResponse(200, {"id": "art-chat", "status": "published"})
+    if "/articles" in url and method == "POST":
+        # A create here would be the bug: the article already exists.
+        rewrite_create_calls.append(url)
+        return FakeResponse(200, {"id": "art-new", "slug": "getting-started-quickstart-9x1yz",
+                                  "status": "published"})
+    if "/articles" in url:
+        # The section already holds the page under a rewritten slug, plus a
+        # second copy made by an earlier cache-losing run.
+        return FakeResponse(200, {"results": [
+            {"id": "art-chat", "slug": "getting-started-quickstart-8hul5",
+             "status": "published", "sectionId": "sec-1",
+             "keywords": "source:mintlify;path:getting-started/quickstart.mdx;fp:abc"},
+            {"id": "art-dup", "slug": "getting-started-quickstart-2zzq7",
+             "status": "published", "sectionId": "sec-1",
+             "keywords": "source:mintlify;path:getting-started/quickstart.mdx;fp:old"},
+        ], "has_more": False})
+    return FakeResponse(404, {"code": "not_found"})
+
+
+rewrite_retire_calls: list = []
+rewrite_create_calls: list = []
+summary_path = docs_root / "summary-rewrite.json"
+cache_path = docs_root / "cache-rewrite.json"
+client, logs, fake_time, saved = install(rewritten_slug_routes)
+try:
+    with env(
+        FERNDESK_API_KEY="test-key",
+        FERNDESK_TARGET="production",
+        FERNDESK_SLUG_CACHE=str(cache_path),
+        FERNDESK_SUMMARY_PATH=str(summary_path),
+        DOCS_ROOT=str(docs_root),
+        FERNDESK_FULL_SCAN="1",
+    ):
+        code = fs.main()
+    summary = json.loads(summary_path.read_text())
+    check("a rewritten slug is still found by path", rewrite_create_calls == [], rewrite_create_calls)
+    check("the run stays green", code == 0, code)
+    check("the existing article is updated", summary.get("updated") == 1, summary)
+    check("nothing is created", summary.get("created") == 0, summary)
+    check("the duplicate copy is reported", summary.get("duplicates") == 1, summary)
+    check("a duplicate is logged for the operator",
+          any(line.startswith("DUPLICATES ") for line in logs), logs)
+    cached = json.loads(cache_path.read_text())
+    check("the cache records the rewritten slug",
+          cached.get("by_path", {}).get("getting-started/quickstart.mdx", {}).get("id") == "art-chat",
+          cached)
+finally:
+    restore(saved)
+
+# --- retire removes the duplicate copies, not the canonical one -------------
+rewrite_retire_calls = []
+rewrite_create_calls = []
+summary_path = docs_root / "summary-rewrite-retire.json"
+cache_path = docs_root / "cache-rewrite-retire.json"
+client, logs, fake_time, saved = install(rewritten_slug_routes)
+try:
+    with env(
+        FERNDESK_API_KEY="test-key",
+        FERNDESK_TARGET="production",
+        FERNDESK_RETIRE="1",
+        FERNDESK_SLUG_CACHE=str(cache_path),
+        FERNDESK_SUMMARY_PATH=str(summary_path),
+        DOCS_ROOT=str(docs_root),
+        FERNDESK_FULL_SCAN="1",
+    ):
+        code = fs.main()
+    summary = json.loads(summary_path.read_text())
+    check("retire unpublishes the duplicate",
+          any(u.endswith("/articles/art-dup/unpublish") for u in rewrite_retire_calls),
+          rewrite_retire_calls)
+    check("retire keeps the canonical article",
+          not any(u.endswith("/articles/art-chat/unpublish") for u in rewrite_retire_calls),
+          rewrite_retire_calls)
+    check("retire counts the duplicate", summary.get("retired") == 1, summary)
 finally:
     restore(saved)
 

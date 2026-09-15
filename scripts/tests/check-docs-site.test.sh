@@ -298,4 +298,78 @@ cat > "$missinghref/site/docs.json" <<'JSON'
 JSON
 must_fail "$missinghref" "missing-mintlify-page"
 
+# Staging must not return to the public site. docs.cortex.foundation served a
+# /staging collection publicly once; a re-added page, nav entry, or redirect
+# would put pre-prod copy back on the domain.
+stagingnav="$tmp/staging-nav"
+seed "$stagingnav"
+mkdir -p "$stagingnav/site/staging"
+cat > "$stagingnav/site/staging/index.mdx" <<'MDX'
+---
+title: "Index"
+---
+Staging mirror — unpublished drafts / pre-prod docs
+MDX
+cat > "$stagingnav/site/docs.json" <<'JSON'
+{
+  "name": "Cortex",
+  "logo": { "href": "https://docs.cortex.foundation" },
+  "navbar": {
+    "links": [
+      { "label": "Home", "href": "/" },
+      { "label": "Documentation", "href": "/problems/not_found" }
+    ]
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Staging",
+        "groups": [
+          { "group": "Drafts", "pages": ["staging/index"] }
+        ]
+      }
+    ]
+  }
+}
+JSON
+must_fail "$stagingnav" "staging"
+
+# A redirect into a staging path is the same leak by another route.
+stagingredirect="$tmp/staging-redirect"
+seed "$stagingredirect"
+cat > "$stagingredirect/site/docs.json" <<'JSON'
+{
+  "name": "Cortex",
+  "logo": { "href": "https://docs.cortex.foundation" },
+  "navbar": {
+    "links": [
+      { "label": "Home", "href": "/" },
+      { "label": "Documentation", "href": "/problems/not_found" }
+    ]
+  },
+  "redirects": [
+    { "source": "/drafts", "destination": "/staging/index" }
+  ],
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "API",
+        "groups": [
+          { "group": "Problems", "pages": ["problems/not_found", "problems/internal"] }
+        ]
+      }
+    ]
+  }
+}
+JSON
+must_fail "$stagingredirect" "staging"
+
+# Copy that sends a reader to a staging host or path must fail even when the
+# page itself is fine.
+stagingcopy="$tmp/staging-copy"
+seed "$stagingcopy"
+printf '\nUse the staging environment at `/staging/api` for pre-prod keys.\n' \
+  >> "$stagingcopy/site/problems/not_found.mdx"
+must_fail "$stagingcopy" "staging"
+
 echo "check-docs-site: ok"

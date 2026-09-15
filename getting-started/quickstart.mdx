@@ -1,12 +1,12 @@
 ---
 title: "Quickstart"
-description: "Open Cortex in a browser, get a first answer from Chat, then sign in for Code, Bot, and Design."
+description: "Open Cortex in a browser, get a first answer from Chat, then sign in for Code and Bot."
 image: "/images/banners/getting-started.png"
 ---
 
-Cortex is one account across four products: **Chat**, **Code**, **Bot**, and **Design**, plus a **CLI** for the terminal. This page takes you from a browser tab to a useful first session in about five minutes.
+Cortex is one account across three products — **Chat**, **Code**, and **Bot** — plus a **CLI** for the terminal. This page takes you from a browser tab to a useful first session in about five minutes.
 
-<Frame caption="Cortex Chat home as a guest — Chat, Code, and Bot in the sidebar, the composer ready, and 100 free messages before you sign in.">
+<Frame caption="Cortex Chat home as a guest — Chat, Code, and Bot in the sidebar, the composer ready, and a daily guest allowance before you sign in.">
   <img src="/images/product/chat-home.png" alt="Cortex Chat home — Chat, Code, and Bot in the sidebar, composer ready" />
 </Frame>
 
@@ -18,8 +18,8 @@ Cortex is one account across four products: **Chat**, **Code**, **Bot**, and **D
 | Keep projects, files, memory, and plans | A signed-in account |
 | Connect apps, GitHub, or MCP servers | A signed-in account |
 | Open Code or Bot | A signed-in account |
-| Run Code on **This PC** or over **SSH** | The [desktop app](/getting-started/desktop) or the [CLI](/cli) |
-| Edit a Design canvas | The [Design desktop app](/design/desktop) |
+| Run Code on **This PC** or over **SSH** | The [desktop app](/getting-started/downloads) or the [CLI](/cli) |
+| Drive Code from a shell or CI | The [Cortex CLI](/cli/install) |
 
 <Steps>
   <Step title="Open Chat">
@@ -32,7 +32,7 @@ Cortex is one account across four products: **Chat**, **Code**, **Bot**, and **D
     Summarize this quarterly report in five bullet points, then list three risks.
     ```
   </Step>
-  <Step title="Attach a file or pick a mode">
+  <Step title="Attach a file or pick a model">
     The **+** button on the composer offers **Attach file**, **Image**, and **Check origin**. The model chip below the text box switches between **Cortex 1 Mini** and **Cortex Teutonic-1**, sets the **Thinking** level, and turns on **Deep Research**.
   </Step>
   <Step title="Sign in when you want more">
@@ -41,20 +41,15 @@ Cortex is one account across four products: **Chat**, **Code**, **Bot**, and **D
   <Step title="Pick your next surface">
     | Surface | First useful thing | Guide |
     | --- | --- | --- |
-    | **Chat** | Create a project with standing instructions | [Chat quickstart](/chat/quickstart) |
-    | **Code** | Connect GitHub and start a Cloud session on a repository | [Code quickstart](/code/quickstart) |
-    | **Bot** | Create a bot and open its computer | [Bot quickstart](/bot/quickstart) |
-    | **CLI** | Install, sign in, run `cortex` in a project | [CLI quickstart](/cli/quickstart) |
-    | **Design** | Host a canvas from Chat or Code, then open it on desktop | [Design](/design) |
+    | **Chat** | Projects, Library, canvases, Deep Research | [Chat](/chat) |
+    | **Code** | Connect GitHub and start a session on a repository | [Code](/code) |
+    | **Bot** | Create a bot and give it a task on its computer | [Bot](/bot) |
+    | **CLI** | Run `cortex` in a project directory | [CLI](/cli) |
   </Step>
 </Steps>
 
-## Install the desktop app or the CLI
-
-The browser runs Chat, Code Cloud, and Bot Cloud. **This PC** and **SSH** hosts exist only on the desktop app and the CLI — that is where the code runs, not a missing feature in the browser.
-
 <p className="ink-cta-row">
-  <a className="ink-btn" href="/getting-started/downloads">Download Cortex</a>
+  <a className="ink-btn" href="/chat/quickstart">Chat quickstart</a>
   <a className="ink-btn ink-btn-quiet" href="/cli/install">Install the CLI</a>
 </p>
 
@@ -62,16 +57,16 @@ The browser runs Chat, Code Cloud, and Bot Cloud. **This PC** and **SSH** hosts 
 
 <CardGroup cols={2}>
   <Card title="Chat guides" img="/images/banners/chat.png" href="/chat">
-    Projects, Library, plans, models, tools, research, and images.
+    Projects, Library, canvases, plans, models, tools, research, and images.
   </Card>
   <Card title="Code guides" img="/images/banners/code.png" href="/code">
-    Sessions in an isolated Cloud guest, GitHub, Ask / Plan / Agent, pull-request review.
+    Sessions in an isolated runtime, GitHub, Ask / Plan / Agent, pull-request review.
   </Card>
   <Card title="Bot guides" img="/images/banners/bot.png" href="/bot">
     Always-on agents with their own computer, approvals, routines, and skills.
   </Card>
-  <Card title="Design guides" img="/images/banners/design.png" href="/design">
-    Persistable canvases hosted from Chat or Code, edited in the Design desktop app.
+  <Card title="CLI guides" icon="terminal" href="/cli">
+    Install, sign in, the TUI, slash commands, headless runs, and extensions.
   </Card>
 </CardGroup>
 
@@ -79,7 +74,7 @@ The browser runs Chat, Code Cloud, and Bot Cloud. **This PC** and **SSH** hosts 
 
 <AccordionGroup>
   <Accordion title="Do I need an account to try Cortex?">
-    No. Chat works as a guest with a daily and monthly message allowance (100 messages today and 500 this month at the time of writing — the banner above the composer shows the live numbers). Everything that must survive a closed tab — projects, files, memory, Code, Bot — needs a signed-in account.
+    No. Chat works as a guest with a daily and monthly message allowance — the banner above the composer shows the live numbers. Everything that must survive a closed tab, including projects, files, memory, Code, and Bot, needs a signed-in account.
   </Accordion>
   <Accordion title="Where does my code run?">
     Web Code runs in an isolated Cloud guest. Chat's Python tool is a small snippet sandbox with no workspace. Bot's computer is a Cloud guest with a desktop. **This PC** and **SSH** are desktop and CLI hosts. See [Security](/security/overview).
@@ -88,6 +83,6 @@ The browser runs Chat, Code Cloud, and Bot Cloud. **This PC** and **SSH** hosts 
     You are not signed in. Code and Bot are member surfaces so that a guest session can never create something it cannot come back to revoke. Choose **Sign in**, or **Continue in Chat**.
   </Accordion>
   <Accordion title="Is there a public inference API?">
-    Not on this site. The inference Platform API is [coming soon](/platform) and has no endpoints to document yet. The [API tab](/api/overview) covers the problem-document format the app already uses.
+    Not yet, and this site does not document one. The [API reference](/api/overview) covers what is public today: the problem-document format and the error-code catalog the product already returns.
   </Accordion>
 </AccordionGroup>

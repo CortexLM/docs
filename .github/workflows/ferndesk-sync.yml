@@ -1,8 +1,13 @@
 name: FernDesk sync
 
 # Lightest durable path: after docs land on main (and on explicit dispatch from
-# backend production deploy), upsert Mintlify MDX into FernDesk Production.
-# Staging target is available for previews; Compliance owns the always-à-jour gate.
+# backend production deploy), upsert Mintlify MDX into the FernDesk Production
+# section — the section docs.cortex.foundation serves.
+#
+# Production only, deliberately. A staging mirror put pre-prod and draft
+# articles on the public docs domain, so this workflow does not offer a staging
+# target and the sync refuses one if it is ever set. Nothing reaches this
+# repository that is not ready to be public.
 #
 # Factory Droid (custom:deepseek/deepseek-v4.1-flash, effort medium) is the
 # agent path for non-mechanical content work / gap fills — see
@@ -21,13 +26,12 @@ on:
     types: [ferndesk-sync]
   workflow_dispatch:
     inputs:
-      target:
-        description: FernDesk section target
-        type: choice
-        options: [production, staging]
-        default: production
       dry_run:
         description: Plan only (FERNDESK_DRY_RUN=1)
+        type: boolean
+        default: false
+      retire:
+        description: Also unpublish Production articles whose MDX page was deleted (FERNDESK_RETIRE=1)
         type: boolean
         default: false
 
@@ -35,7 +39,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ferndesk-sync-${{ github.event.inputs.target || 'production' }}
+  group: ferndesk-sync-production
   cancel-in-progress: false
 
 jobs:
@@ -44,21 +48,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Resolve target
-        id: t
-        run: |
-          set -euo pipefail
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "target=${{ inputs.target }}" >> "$GITHUB_OUTPUT"
-            echo "dry=${{ inputs.dry_run }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" = "repository_dispatch" ]; then
-            echo "target=${{ github.event.client_payload.target || 'production' }}" >> "$GITHUB_OUTPUT"
-            echo "dry=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "target=production" >> "$GITHUB_OUTPUT"
-            echo "dry=false" >> "$GITHUB_OUTPUT"
-          fi
 
       - name: Install curl_cffi
         run: |
@@ -69,18 +58,17 @@ jobs:
       - name: Restore FernDesk slug cache
         uses: actions/cache@v4
         with:
-          path: |
-            .ferndesk-slug-cache-production.json
-            .ferndesk-slug-cache-staging.json
-          key: ferndesk-slug-${{ steps.t.outputs.target }}-${{ github.run_id }}
+          path: .ferndesk-slug-cache.json
+          key: ferndesk-slug-production-${{ github.run_id }}
           restore-keys: |
-            ferndesk-slug-${{ steps.t.outputs.target }}-
+            ferndesk-slug-production-
 
       - name: Sync
         env:
           FERNDESK_API_KEY: ${{ secrets.FERNDESK_API_KEY }}
-          FERNDESK_TARGET: ${{ steps.t.outputs.target }}
-          FERNDESK_DRY_RUN: ${{ steps.t.outputs.dry == 'true' && '1' || '0' }}
+          FERNDESK_TARGET: production
+          FERNDESK_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '1' || '0' }}
+          FERNDESK_RETIRE: ${{ github.event_name == 'workflow_dispatch' && inputs.retire && '1' || '0' }}
           DOCS_ROOT: ${{ github.workspace }}
         run: |
           set -euo pipefail

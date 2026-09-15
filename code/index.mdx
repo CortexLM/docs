@@ -1,30 +1,53 @@
 ---
-title: "Code guides"
-description: "Cortex Code — a coding agent that works inside your repository on an isolated runtime. Sessions, Ask / Plan / Agent, GitHub, Cloud guests, desktop hosts, the CLI, and pull-request review."
+title: "Cortex Code"
+description: "Cortex Code — a coding agent that works inside your repository on an isolated runtime. Sessions, Ask / Plan / Agent, GitHub, Cloud guests, desktop hosts, and pull-request review."
 image: "/images/banners/code.png"
 ---
 
-Cortex Code is a coding agent, not a chat with a different icon. You point it at a repository, describe the change, and it works through the task inside an isolated runtime — reading, editing, running your build and tests — while you watch a timeline of what it did and decide how much it may do on its own.
+Cortex Code is a coding agent, not a chat with a different icon. You point it at a repository, describe the change, and it works through the task inside an isolated runtime — reading, editing, running your build and tests — while you watch a timeline of what it did and decide how much it may do on its own. It is available in the web app, the desktop app, and the CLI, with one account across all three.
 
-<Frame caption="cortex.foundation/code — the public product page a guest sees. Sign in to open the working UI.">
-  <img src="/images/product/code-public.png" alt="Cortex Code public page — a coding agent that works inside the repository" />
+<Frame caption="The four commitments on the public Code page: one repository per runtime, reviews that stay failed when they fail, no pasted diff, the same account as Chat.">
+  <img src="/images/product/code-public-features.png" alt="Cortex Code feature grid — One repository per runtime, Reviews that stay failed when they fail, No pasted diff, The same account as Chat" />
 </Frame>
+
+## What Code is
+
+| Commitment | What it means for you |
+| --- | --- |
+| **One repository per runtime** | Each session gets an isolated guest on the same farm as Cortex Bot, without a desktop. The environment is installed by the agent, not guessed from a filename. |
+| **Reviews stay failed when they fail** | A Cortex Security review is one pass over a diff. A failed review is stored as failed — never rewritten as an approval. |
+| **No pasted diff** | Code writes the change in the repository; Cortex Security reads the pull request in place. Neither asks you to paste a patch into a box. |
+| **The same account as Chat** | Sign in on cortex.foundation. No second identity. |
+
+## Who can open it
+
+Code is a member surface. A guest visiting `/code` sees the public product page, and deep links show **This space is reserved** with **Continue in Chat** or **Sign in**. Once signed in, `/code` opens Code Home: connect GitHub, pick a repository, start a session. See [Accounts](/getting-started/accounts).
+
+## Where it runs
+
+| Surface | Host | Notes |
+| --- | --- | --- |
+| **Web app** | Cloud | The browser has no way to run tools on your disk; it stays Cloud-only |
+| **Desktop app** | Cloud · This PC · SSH | This PC and SSH run the workspace tools where you point them |
+| **CLI** | Cloud · This PC · SSH | Cloud is the default; the others are explicit opt-in |
+
+See [Hosts](/code/desktop) for what each one means and when to pick it.
 
 ## Start here
 
 <CardGroup cols={3}>
-  <Card title="Quickstart" img="/images/banners/code.png" href="/code/quickstart">
+  <Card title="Code quickstart" img="/images/banners/code.png" href="/code/quickstart">
     Sign in, connect GitHub, start a Cloud session, review the timeline.
   </Card>
-  <Card title="Overview" icon="compass" href="/code/overview">
-    What Code is, who can open it, and what it deliberately is not.
+  <Card title="Hosts" icon="monitor" href="/code/desktop">
+    Cloud, This PC, and SSH — which surface offers which, and how to select one.
   </Card>
   <Card title="CLI" icon="terminal" href="/cli">
     The same Code sessions from your terminal, scripts, and CI.
   </Card>
 </CardGroup>
 
-## Core guides
+## Work in Code
 
 <CardGroup cols={2}>
   <Card title="Sessions" icon="list" href="/code/sessions">
@@ -39,21 +62,22 @@ Cortex Code is a coding agent, not a chat with a different icon. You point it at
   <Card title="Cloud runtimes" icon="cloud" href="/code/cloud">
     One isolated guest per session on the same farm as Bot, prepared by the agent.
   </Card>
-</CardGroup>
-
-## Desktop and terminal
-
-<CardGroup cols={2}>
-  <Card title="Code on desktop" icon="monitor" href="/code/desktop">
-    This PC and SSH hosts exist on the desktop app and the CLI. The browser stays Cloud-only.
+  <Card title="Cortex Security" icon="shield-check" href="/code/security">
+    GitHub App pull-request review that stays failed when it fails.
   </Card>
-  <Card title="Code in the terminal" icon="square-terminal" href="/code/cli">
-    How the CLI maps onto Code sessions, and where the full CLI documentation lives.
+  <Card title="How Code works" icon="sliders-horizontal" href="/code/how-it-works">
+    Workspace tools execute inside the attached guest; modes withhold mutating tools.
   </Card>
 </CardGroup>
 
-## Advanced
+## What Code is not
 
-- [Cortex Security](/code/security) — GitHub App pull-request review that stays failed when it fails.
-- [How Code works](/code/how-it-works) — workspace tools execute inside the attached guest; modes withhold mutating tools.
-- [Troubleshooting](/code/troubleshooting) — gates, Reconnect, Cloud availability, and what a failed review means.
+| Code does | Code does not |
+| --- | --- |
+| Work inside a repository you connected | Answer general questions — that is [Chat](/chat) |
+| Show a timeline of reads, edits, and commands | Drive a desktop on a schedule — that is [Bot](/bot) |
+| Run in the Cloud, on This PC, or over SSH | Run in the browser on your local machine |
+
+## Troubleshooting
+
+[Code troubleshooting](/code/troubleshooting) covers gates, **Reconnect**, Cloud availability, and what a failed review means.

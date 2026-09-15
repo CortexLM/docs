@@ -1,30 +1,39 @@
 ---
-title: "Bot guides"
+title: "Cortex Bot"
 description: "Cortex Bot — a bot with its own computer. Browses, clicks, and works on a desktop you can watch; parks consequential steps behind approvals; runs routines on your local weekday hours."
 image: "/images/banners/bot.png"
 ---
 
-Cortex Bot is an always-on teammate. Each bot can have a computer — a screen, a browser, files — and you watch it work. Your bots are listed once, in the sidebar; the pane is the open bot, conversation in the middle and its computer on the right. Bots belong to a signed-in account.
+Cortex Bot is a computer-using agent. Where Chat answers and Code changes a repository, a bot **does things on a desktop**: opens a browser, clicks through a flow, reads files, runs a shell command, and reports back in a few short messages. You can watch its screen while it works, and it asks before it does anything consequential. Bots belong to a signed-in account.
 
-<Frame caption="cortex.foundation/bot — the public product page a guest sees. Sign in to create a bot.">
-  <img src="/images/product/bot-public.png" alt="Cortex Bot public page — a bot with its own computer" />
+<Frame caption="The public Bot page's four commitments: a real desktop, your bots listed once, plugins you chose, one product and one sign-in.">
+  <img src="/images/product/bot-public-features.png" alt="Cortex Bot feature grid — A real desktop not a transcript, Your bots listed once, Plugins you chose, One product one sign-in" />
 </Frame>
+
+## The shape of the product
+
+| Commitment | What it means |
+| --- | --- |
+| **A real desktop, not a transcript** | Each bot can have a computer: a screen, a browser, files. You watch it work instead of pasting a web page into chat. |
+| **Your bots, listed once** | The account's bots live in the sidebar. The pane is the open bot — conversation in the middle, its computer on the right. |
+| **Plugins you chose** | A connected app reaches Chat, Bot, or both — you pick. A bot never inherits a tool you did not assign. |
+| **One product, one sign-in** | Create a bot after you sign in. A guest session cannot own something it could never come back to revoke. |
 
 ## Start here
 
 <CardGroup cols={3}>
-  <Card title="Quickstart" img="/images/banners/bot.png" href="/bot/quickstart">
+  <Card title="Bot quickstart" img="/images/banners/bot.png" href="/bot/quickstart">
     Sign in, create a bot, open its computer, give it a first task.
-  </Card>
-  <Card title="Overview" icon="compass" href="/bot/overview">
-    One list of bots, first-run setup, who can drive a bot.
   </Card>
   <Card title="Bot desktop" icon="monitor" href="/bot/desktop">
     A desktop app built around agents, routines, and channels — no Chat or Code sidebar.
   </Card>
+  <Card title="Approvals" icon="shield-check" href="/bot/approvals">
+    Allow / Deny / Always. Nothing consequential runs until you choose.
+  </Card>
 </CardGroup>
 
-## Core guides
+## Work in Bot
 
 <CardGroup cols={2}>
   <Card title="Computer" icon="app-window" href="/bot/computer">
@@ -32,9 +41,6 @@ Cortex Bot is an always-on teammate. Each bot can have a computer — a screen, 
   </Card>
   <Card title="Tools" icon="wrench" href="/bot/tools">
     The parent catalog — shell, computer use, browser, web, memory, skills, messaging, nested tasks.
-  </Card>
-  <Card title="Approvals" icon="shield-check" href="/bot/approvals">
-    Allow / Deny / Always. Nothing consequential runs until you choose.
   </Card>
   <Card title="Routines" icon="calendar-clock" href="/bot/routines">
     Scheduled work on a bot you own, on your local weekday hours.
@@ -45,9 +51,24 @@ Cortex Bot is an always-on teammate. Each bot can have a computer — a screen, 
   <Card title="Connected apps" icon="plug" href="/chat/tools">
     A connection reaches Chat, Bot, or both — you pick, under Customize → Connectors.
   </Card>
+  <Card title="How Bot works" icon="sliders-horizontal" href="/bot/how-it-works">
+    User-visible bubbles only, no round counter, waking a hibernated guest.
+  </Card>
 </CardGroup>
 
-## Advanced
+## First run
 
-- [How Bot works](/bot/how-it-works) — user-visible bubbles only, no round counter, waking a hibernated guest.
-- [Troubleshooting](/bot/troubleshooting) — Connecting versus Stream Unavailable, parked steps, the setup form.
+An account with no bots gets the **setup form**, not an empty list. Name the bot, decide what it is for, and create it. There are no pre-made bots with invented names waiting in the list.
+
+## Bot compared with Chat and Code
+
+| | Chat | Code | Bot |
+| --- | --- | --- | --- |
+| Best at | Questions, writing, research | Changing a repository | Doing tasks on a desktop, on a schedule |
+| Runs in | A snippet sandbox | An isolated guest, headless | An isolated guest **with a desktop** |
+| You see | A streamed reply | A turn timeline | Short user-visible messages plus the live screen |
+| Guardrail | Tool round budget | Ask / Plan / Agent | Allow / Deny / Always approvals |
+
+## Troubleshooting
+
+[Bot troubleshooting](/bot/troubleshooting) covers **Connecting** versus **Stream Unavailable**, parked steps, and the setup form.
