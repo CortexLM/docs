@@ -1,0 +1,67 @@
+---
+title: "Chat troubleshooting"
+description: "What Chat shows when a turn, a file, a model, or a connection does not behave — and what to do about it."
+keywords: ["errors", "problems", "fixes", "not working"]
+---
+
+Chat says what is wrong in plain words rather than spinning. This page maps those messages to causes and fixes. For the whole app, see [Troubleshooting](/getting-started/troubleshooting); for the terminal, [CLI troubleshooting](/cli/troubleshooting).
+
+## The reply
+
+| What you see | Cause | Fix |
+| --- | --- | --- |
+| A reply cut short, then the thread reconnects | The connection dropped mid-reply | **Do not resend.** Run state lives in the thread; the reply that already started continues. See [Streaming](/chat/streaming). |
+| The send button stays a stop control | A turn is in flight | Wait, or press **Esc** to stop it. The partial reply stays. |
+| A long thread answers more vaguely than it did | The thread was compacted to fit the model's context window | Start a new chat, or put the standing detail in a [project](/chat/projects) so it is not repeated. See [How Chat works](/chat/how-it-works). |
+| A turn fails with [`service_unavailable`](/problems/service_unavailable) | Compaction could not summarise the thread | Retry. Compaction fails closed rather than dropping your earlier turns. |
+
+## Files and images
+
+| What you see | Cause | Fix |
+| --- | --- | --- |
+| A file will not attach | Type or size check failed at upload | A rejected file is not attached and does not enter Library. Try a supported type or a smaller file. |
+| An error square where an image should be | The Library fetch or the generation failed | Retry the request. It is never an endless spinner. |
+| **Improving prompt…** on an image card | The picture is queued; Chat is completing the scene description first | Wait — the card becomes a skeleton, then the image. |
+| A generated picture is missing from the thread | It saved to Library but the fetch failed | Open [Library](/chat/library) and attach it from there. |
+| Image generation is unavailable | The deployment has image generation switched off | The request fails closed before any quota is spent. See [Image generation](/chat/images). |
+
+## Models and research
+
+| What you see | Cause | Fix |
+| --- | --- | --- |
+| The model on the chip is not the one you picked | Peak-hour fallback, or the conversation kept the model it was created with | Check the chip: it always names the model serving the conversation. See [Models](/chat/models). |
+| A model is missing from the chip | Availability depends on your plan | Compare plans under **Settings → Plan & billing**. See [Plans](/getting-started/plans). |
+| **Deep Research** is missing | You are in Code or Bot | Deep Research is a Chat feature. Switch to Chat. |
+| A research run stops early | A per-run cap was reached | Questions, sources, and parallelism are capped per run. See [Deep Research](/chat/deep-research). |
+| Origin check says it cannot run | The check is unavailable on this deployment | Ask again later. Cortex says so rather than guessing — do not read silence as a verdict. See [Origin check](/chat/origin-check). |
+
+## Voice
+
+| What you see | Cause | Fix |
+| --- | --- | --- |
+| No mic in the composer | The deployment cannot transcribe | Nothing to configure — the capability is off, not broken. |
+| No **Listen** under an answer | The deployment cannot speak | Same. Voice controls appear only when the deployment behind them can do the work. |
+
+See [Voice](/chat/voice).
+
+## Quotas and access
+
+| What you see | Cause | Fix |
+| --- | --- | --- |
+| **Sign in to continue** above the composer | The guest allowance for today or this month is used up | Sign in to continue on Free, or wait for the reset. |
+| [`quota_exceeded`](/problems/quota_exceeded) | A daily or monthly window is exhausted | The error carries when it resets. See [Plans and quotas](/getting-started/plans). |
+| [`entitlement_required`](/problems/entitlement_required) | The plan does not include that capability at all | Compare plans under **Settings → Plan & billing**. |
+| [`rate_limited`](/problems/rate_limited) | Too many requests in a short burst | Pause, then retry. |
+| Projects, Library, or Memory are missing | You are a guest | Those need a signed-in account. See [Accounts](/getting-started/accounts). |
+| A connected app cannot be used in Chat | The connection is enabled for Bot only | **Customize → Connectors** → enable it for **Cortex Chat**. See [Tools and connectors](/chat/tools). |
+| No **Connect** control for an app | That connection is not available on this deployment, or you are a guest | Sign in; if it is still missing, it is not offered here. |
+
+## Still stuck
+
+Keep the `request_id` from the error, the time, and the surface you were on. Check [status.cortex.foundation](https://status.cortex.foundation) if Chat is failing alongside other products — see [System status](/status). Full error semantics: [Problem catalog](/problems).
+
+## Related
+
+- [How Chat works](/chat/how-it-works) — the tool loop and its round budget.
+- [Streaming](/chat/streaming) — what a dropped connection does and does not lose.
+- [Troubleshooting](/getting-started/troubleshooting) — the same guidance across all products.

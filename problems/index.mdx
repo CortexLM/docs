@@ -1,15 +1,27 @@
 ---
 title: "Problem catalog"
-description: "Dereferenceable type URIs for RFC 9457 documents from api.cortex.foundation."
+description: "Every Cortex error code, its HTTP status, whether retrying helps, and the page that explains it."
+keywords: ["error codes", "troubleshooting", "status codes"]
 ---
 
-`PROBLEM_TYPE_BASE` is `https://docs.cortex.foundation/problems`. Each
-`ErrorCode` on the wire has a page at `/problems/{code}` whose path is the
-snake_case `code` (not kebab-case).
+Every Cortex failure carries a `code` and a `type`. The `type` is a URL that resolves to a page on this site, so an error message can point at its own explanation.
 
-These pages are the `type` member of a problem document. They are generated
-from `crates/cortex-core/src/error.rs` and must stay in lockstep — CI fails
-if a code is missing.
+The base is `https://docs.cortex.foundation/problems`. Each code has a page at `/problems/{code}`, and the path is the snake_case `code` — `rate_limited`, not `rate-limited`.
+
+## Start with the status
+
+| Status | Usually means | Where to look |
+| --- | --- | --- |
+| **400 / 422** | The request was malformed or the resource forbids it | [`validation_failed`](/problems/validation_failed), [`bad_request`](/problems/bad_request), [`invalid_state`](/problems/invalid_state) |
+| **401 / 403** | Sign-in, permission, or plan | [`unauthenticated`](/problems/unauthenticated), [`invalid_credential`](/problems/invalid_credential), [`forbidden`](/problems/forbidden), [`entitlement_required`](/problems/entitlement_required) |
+| **404 / 409 / 410** | The resource moved, changed, or was deleted | [`not_found`](/problems/not_found), [`conflict`](/problems/conflict), [`gone`](/problems/gone) |
+| **413 / 415** | The payload is too big or the wrong type | [`payload_too_large`](/problems/payload_too_large), [`unsupported_media_type`](/problems/unsupported_media_type) |
+| **429** | Too fast, or out of plan quota | [`rate_limited`](/problems/rate_limited), [`quota_exceeded`](/problems/quota_exceeded), [`concurrency_limit_reached`](/problems/concurrency_limit_reached) |
+| **500–504** | Our side | [`internal`](/problems/internal), [`service_unavailable`](/problems/service_unavailable), [`no_capacity`](/problems/no_capacity), [`upstream_failure`](/problems/upstream_failure), [`upstream_timeout`](/problems/upstream_timeout) |
+
+**Retryable: yes** means the same request can succeed later. **Retryable: no** means retrying changes nothing — the request, the plan, or the state has to change first.
+
+## All codes
 
 | Code | HTTP | Retryable |
 | --- | --- | --- |
@@ -22,6 +34,9 @@ if a code is missing.
 | [`invalid_credential`](/problems/invalid_credential) | 401 | no |
 | [`forbidden`](/problems/forbidden) | 403 | no |
 | [`entitlement_required`](/problems/entitlement_required) | 403 | no |
+| [`safety_intervention`](/problems/safety_intervention) | 403 | no |
+| [`content_policy`](/problems/content_policy) | 403 | no |
+| [`jurisdiction_restricted`](/problems/jurisdiction_restricted) | 403 | no |
 | [`not_found`](/problems/not_found) | 404 | no |
 | [`conflict`](/problems/conflict) | 409 | yes |
 | [`gone`](/problems/gone) | 410 | no |
@@ -29,11 +44,18 @@ if a code is missing.
 | [`quota_exceeded`](/problems/quota_exceeded) | 429 | no |
 | [`rate_limited`](/problems/rate_limited) | 429 | yes |
 | [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | 429 | no |
-| [`safety_intervention`](/problems/safety_intervention) | 403 | no |
-| [`content_policy`](/problems/content_policy) | 403 | no |
-| [`jurisdiction_restricted`](/problems/jurisdiction_restricted) | 403 | no |
 | [`internal`](/problems/internal) | 500 | yes |
 | [`upstream_failure`](/problems/upstream_failure) | 502 | yes |
-| [`upstream_timeout`](/problems/upstream_timeout) | 504 | yes |
 | [`service_unavailable`](/problems/service_unavailable) | 503 | yes |
 | [`no_capacity`](/problems/no_capacity) | 503 | yes |
+| [`upstream_timeout`](/problems/upstream_timeout) | 504 | yes |
+
+## Two 429s that mean different things
+
+[`rate_limited`](/problems/rate_limited) is transport throttling — you are sending requests too fast, and waiting fixes it. [`quota_exceeded`](/problems/quota_exceeded) is a plan window running out — waiting for the reset or changing plan fixes it. Read the `code`, not the status.
+
+## Related
+
+- [Errors](/api/errors) — the shape of a problem document and which fields to render.
+- [Public API](/api/overview) — what this tab covers.
+- [Troubleshooting](/getting-started/troubleshooting) — what a message in the product means.

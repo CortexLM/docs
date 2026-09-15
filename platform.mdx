@@ -1,19 +1,43 @@
 ---
 title: "Platform API"
-description: "Coming soon. Not implemented in this repository."
+description: "Coming soon. There is no public inference API to document yet — no endpoints, SDKs, or API keys."
+keywords: ["inference API", "completions", "roadmap", "coming soon"]
 ---
 
-# Coming soon
+Cortex does not have a public inference API today. There is no completions
+endpoint, no SDK, and no API key to request. This page exists so the
+navigation does not grow a reference for something that is not there.
 
-A separate, credit-metered **inference Platform API** (model inference the
-way a completions API would work) is **out of scope** for this site and for
-the Cortex app repository.
+## What is available now
 
-This page is a navigation placeholder so the IA does not grow a fake
-reference. It documents **no endpoints**, because none exist here to
-document.
+| You want to… | Use |
+| --- | --- |
+| Ask questions, write, and research | [Cortex Chat](/chat) |
+| Change a repository | [Cortex Code](/code) |
+| Delegate ongoing work to an agent with a computer | [Cortex Bot](/bot) |
+| Drive Code from a terminal, a script, or CI | [Cortex CLI](/cli) |
+| Build a client against the app's error contract | [Public API](/api/overview) and the [problem catalog](/problems) |
 
-Until that product is explicitly in scope:
+## What is not available
 
-- Use Cortex Chat, Code, Bot, and Design in the [app](https://cortex.foundation).
-- Do not add Platform sections, SDKs, or API keys for inference metering.
+- **Model inference as a service.** No endpoint takes a prompt and returns a
+  completion.
+- **Platform API keys.** Metered inference keys are not issued, so there is
+  nothing to generate in Settings.
+- **An SDK.** No client library wraps a Platform API.
+
+The [API tab](/api/overview) documents the RFC 9457 problem format the apps
+and the CLI already use. That is the whole public API surface.
+
+## When this changes
+
+A Platform API would be announced on the [changelog](/changelog) and at
+[cortex.foundation](https://cortex.foundation) first. Until an announcement
+exists, treat any page or tool claiming to sell Platform API access as
+unofficial.
+
+## Related
+
+- [Public API](/api/overview) — what this site does document.
+- [Problem catalog](/problems) — the `type` URIs every error points at.
+- [Changelog](/changelog) — where a Platform launch would appear.

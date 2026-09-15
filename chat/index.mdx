@@ -1,10 +1,13 @@
 ---
-title: "Chat guides"
-description: "Everything for Cortex Chat — conversations, projects, Library, plans, models, tools, research, images, and how a turn actually runs."
+title: "Cortex Chat"
+description: "The conversation product at cortex.foundation — projects, Library, plans, models, tools, Deep Research, images, and how a turn runs."
 image: "/images/banners/chat.png"
+keywords: ["assistant", "conversations", "chat app"]
 ---
 
-Cortex Chat is the conversation product at [cortex.foundation](https://cortex.foundation). Ask questions, write, research with citations, work with documents and images, and keep related work together in projects. Chat works before you sign in; projects, files, memory, plans, and connections belong to a signed-in account.
+Cortex Chat is the assistant for research, writing, and everyday questions. It streams answers as they are written, keeps documents and threads together in projects, and hands off to Code or Bot when the job is a repository or a computer rather than a conversation.
+
+Chat works before you sign in. Projects, files, memory, plans, and connections belong to a signed-in account.
 
 <Frame caption="Chat home in the dark theme — the composer with its model chip and the four starting points: Code, Research, Docs, Agents. Theme is under Settings → General.">
   <img src="/images/product/chat-home-dark.png" alt="Cortex Chat home in the dark theme" />
@@ -16,13 +19,53 @@ Cortex Chat is the conversation product at [cortex.foundation](https://cortex.fo
   <Card title="Quickstart" img="/images/banners/chat.png" href="/chat/quickstart">
     First message, attach a file, pick a model, keep the thread in a project.
   </Card>
-  <Card title="Overview" icon="compass" href="/chat/overview">
-    What Chat is for, what lives where in the sidebar, and when to switch to Code or Bot.
+  <Card title="Projects" icon="folder" href="/chat/projects">
+    Standing instructions, chats, and files kept together.
   </Card>
-  <Card title="Accounts" icon="user" href="/getting-started/accounts">
-    Guest allowance versus a signed-in member, and what each can do.
+  <Card title="Tools and connectors" icon="plug" href="/chat/tools">
+    Built-in tools, connected apps, GitHub, and MCP servers.
   </Card>
 </CardGroup>
+
+## Finding your way around
+
+The sidebar holds everything Chat can open. Three of its entries are worth knowing before you start clicking.
+
+| Entry | What it opens |
+| --- | --- |
+| **Chat · Code · Bot** | The product switcher. Chat is the default; Code and Bot need a signed-in account. |
+| **Projects** | Standing instructions plus the chats and files that belong together. See [Projects](/chat/projects). |
+| **Artifacts** | Opens the [Library](/chat/library) — your uploads and everything the assistant produced. |
+| **Customize** | **Connectors**: connect apps and choose whether each reaches Chat, Bot, or both. See [Tools](/chat/tools). |
+| **Recents** | Your latest conversations. Guests see the current session only. |
+
+**New chat** is an action, not a selected row. **Pinned** collects the projects you use most.
+
+### The composer
+
+- **+** opens **Attach file**, **Image**, and **Check origin**.
+- The **model chip** — for example *Cortex 1 Mini · Preview · Thinking Low* — switches model, sets the Thinking level, and toggles **Deep Research**.
+- **Enter** sends, **Shift + Enter** adds a line, **Esc** stops a response.
+- While a turn runs the placeholder reads **Cortex is responding…** and the send button becomes a stop control.
+
+### The four cards on Chat home
+
+They are shortcuts, not separate products.
+
+| Card | What it does |
+| --- | --- |
+| **Code** — *The Cortex agent working inside your repos* | Opens Cortex Code |
+| **Research** — *Cited answers from live sources* | Prefills the composer and turns on Deep Research |
+| **Docs** — *Drafts that structure themselves* | Opens a new chat with a document canvas beside it |
+| **Agents** — *Background runs on schedules* | Opens Cortex Bot |
+
+### A thread
+
+Every reply carries **Copy**, **Listen** (when voice is available), and thumbs up or down. The thread header offers **Start a plan** and **Move to project**. Replies render markdown — headings, tables, and syntax-highlighted code blocks with their own **Copy** button.
+
+<Frame caption="A Chat thread. The reply carries Copy, Listen, and feedback controls; the header offers Start a plan and Move to project.">
+  <img src="/images/product/chat-session.png" alt="A Cortex Chat thread with a reply in the conversation pane" />
+</Frame>
 
 ## Core guides
 
@@ -66,11 +109,32 @@ Cortex Chat is the conversation product at [cortex.foundation](https://cortex.fo
 
 ## Context that carries over
 
-- [Memory](/chat/memory) — standing preferences and facts, reviewable and deletable one by one.
-- [Canvases](/chat/canvases) — a document sidecar beside the conversation, drafted by Cortex or by you.
+<CardGroup cols={2}>
+  <Card title="Memory" icon="brain" href="/chat/memory">
+    Standing preferences and facts, reviewable and deletable one by one.
+  </Card>
+  <Card title="Canvases" icon="file-text" href="/chat/canvases">
+    A document sidecar beside the conversation, drafted by Cortex or by you.
+  </Card>
+</CardGroup>
+
+## When to switch
+Chat does not run Code's workspace shell or Bot's computer. Chat's Python tool is a snippet sandbox with no workspace, and it cannot see a repository.
+
+| Stay in Chat | Open Code | Open Bot |
+| --- | --- | --- |
+| Questions, writing, research, pictures, origin checks, documents, plans | A repository, an isolated Cloud guest, diffs, a pull request | An always-on teammate with a computer, routines, approvals |
 
 ## Under the hood
 
 - [How Chat works](/chat/how-it-works) — the tool loop, compaction, and Chat's round budget.
 - [Streaming](/chat/streaming) — tokens, then tools, then the finished reply; what happens on a dropped connection.
 - [Settings](/getting-started/settings) — theme, language, shortcuts, defaults, privacy.
+- [Chat troubleshooting](/chat/troubleshooting) — messages that are not errors, and what to do next.
+
+## Next
+
+1. [Chat quickstart](/chat/quickstart) — from an open tab to a useful first conversation.
+2. [Projects](/chat/projects) — instructions your chats start from.
+3. [Models and thinking](/chat/models) — pick a model per conversation.
+4. [Tools and connectors](/chat/tools) — connect an app or an MCP server.

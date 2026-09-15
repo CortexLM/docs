@@ -1,12 +1,13 @@
 ---
 title: "Guides for Chat, Code, Bot, Design, and the CLI"
-description: "Product docs for the Cortex app — how to chat, ship code, run bots, design with your team, and drive Code from a terminal. Platform API lives elsewhere."
+description: "Product docs for the Cortex app — how to chat, ship code, run bots, design canvases, and drive Code from a terminal. Platform API lives elsewhere."
 image: "/images/banners/getting-started.png"
+keywords: ["Cortex docs", "documentation", "help", "guides"]
 ---
 
 <code>docs.cortex.foundation</code>
 
-Product docs for the Cortex app — how to chat, ship code, run bots, design with your team, and drive Code from a terminal. One account, one domain. **Platform API lives elsewhere.**
+Product docs for the Cortex app — how to chat, ship code, run bots, design canvases, and drive Code from a terminal. One account, one domain. **Platform API lives elsewhere.**
 
 <Frame caption="Cortex Chat home — Chat, Code, and Bot in the sidebar; recent conversations; the composer with its model chip; Code, Research, Docs, and Agents as starting points.">
   <img src="/images/product/chat-home-recents.png" alt="Cortex Chat home with recent conversations in the sidebar and the composer ready" />
@@ -16,6 +17,8 @@ Product docs for the Cortex app — how to chat, ship code, run bots, design wit
   <a className="ink-btn" href="/getting-started/quickstart">Quickstart</a>
   <a className="ink-btn ink-btn-quiet" href="/getting-started/downloads">Download Cortex</a>
 </p>
+
+## Start here
 
 <CardGroup cols={3}>
   <Card title="Getting started" img="/images/banners/getting-started.png" href="/getting-started/quickstart">
@@ -33,17 +36,19 @@ Product docs for the Cortex app — how to chat, ship code, run bots, design wit
   <Card title="Design" img="/images/banners/design.png" href="/design">
     Persistable canvases hosted from Chat or Code, edited in the Design desktop app.
   </Card>
-  <Card title="Security" img="/images/banners/security.png" href="/security/overview">
-    What Cortex stores, cookies and consent, where code runs, export and deletion.
-  </Card>
-</CardGroup>
-
-<CardGroup cols={3}>
   <Card title="CLI" icon="terminal" href="/cli">
     Cortex Code in the terminal — install, sign in, the TUI, slash commands, `/goal`, headless runs.
   </Card>
-  <Card title="Changelog" icon="history" href="/changelog">
-    What shipped in Chat, Code, Bot, Design, and the CLI — dated, with the surface it changed.
+</CardGroup>
+
+## Reference
+
+<CardGroup cols={3}>
+  <Card title="Troubleshooting" icon="life-buoy" href="/getting-started/troubleshooting">
+    What a message means across Chat, Code, and Bot — gates, quotas, reconnects.
+  </Card>
+  <Card title="Security and privacy" icon="shield-check" href="/security/overview">
+    What Cortex stores, cookies and consent, where code runs, export and deletion.
   </Card>
   <Card title="API" icon="braces" href="/api/overview">
     The problem-document format and the public catalog of error codes.
@@ -51,8 +56,26 @@ Product docs for the Cortex app — how to chat, ship code, run bots, design wit
   <Card title="System status" icon="activity" href="/status">
     Live availability for Web, API, Chat, Code, and Bot — incidents and maintenance.
   </Card>
+  <Card title="Changelog" icon="history" href="/changelog">
+    What shipped in Chat, Code, Bot, Design, and the CLI — dated, with the surface it changed.
+  </Card>
+  <Card title="Platform API" icon="clock" href="/platform">
+    Not available yet. No endpoints, SDKs, or keys — and what to use instead.
+  </Card>
 </CardGroup>
 
+## Which product do I want?
+
+| You want to… | Open |
+| --- | --- |
+| Ask questions, write, research with citations, work with documents and pictures | [Chat](/chat) |
+| Change a repository, run tests, open a pull request | [Code](/code) |
+| Delegate ongoing work to an agent that browses, clicks, and runs on a schedule | [Bot](/bot) |
+| Drive Code from your own terminal, a script, or CI | [CLI](/cli) |
+| Lay out frames, notes, and a component library on a board | [Design](/design) |
+
+Chat works before you sign in. Code, Bot, and Design need an account — see [Accounts](/getting-started/accounts).
+
 <Note>
-The inference **Platform API** (a public model-inference API) is not documented on this site and is not implemented in this repository. See [Coming soon](/platform).
+The inference **Platform API** (a public model-inference API) is not documented on this site and is not implemented in this repository. See [Platform API](/platform).
 </Note>

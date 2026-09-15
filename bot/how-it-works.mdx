@@ -1,6 +1,7 @@
 ---
 title: "How Bot works"
-description: "What you see is a few short bubbles, not the inner loop. No round counter; a 15-minute turn deadline; six identical tool calls stop a turn. An active turn wakes a hibernated guest first."
+description: "You see a few short bubbles, not the inner loop. No round counter; a 15-minute turn deadline; six identical tool calls stop a turn."
+keywords: ["loop", "deadline", "guard", "hibernation"]
 ---
 
 A bot's turn is a tool loop on a computer. Most of it is invisible by design: the conversation shows only the messages the bot chose to send you, the questions it asked, the notifications it raised, and the credentials it requested. The screen on the Computer rail shows the rest.
@@ -53,3 +54,10 @@ The planner describes the control it wants — *the Save button in the dialog* �
 | Machine | Snippet sandbox | Headless guest | Guest **with** a desktop |
 
 See [How Chat works](/chat/how-it-works) and [How Code works](/code/how-it-works).
+
+## Related
+
+- [Tools](/bot/tools) — the catalog behind the loop.
+- [Approvals](/bot/approvals) — what parks, and what does not.
+- [Computer](/bot/computer) — the guest the loop runs on.
+- [Bot troubleshooting](/bot/troubleshooting) — turns that stop, and why.

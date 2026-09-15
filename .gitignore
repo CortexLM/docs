@@ -2,9 +2,5 @@
 .mintlify/
 node_modules/
 
-# Python bytecode from scripts/tests
+# Python bytecode from scripts
 __pycache__/
-
-# FernDesk sync local caches (never commit API-derived IDs casually)
-.ferndesk-slug-cache*.json
-ferndesk-sync-summary.json

@@ -265,6 +265,70 @@ JSON
 must_fail "$missingnav" "missing-mintlify-page"
 must_fail "$missingnav" "also-missing-mintlify-page"
 
+# A group `root` is a page the sidebar title opens, and it is not repeated in
+# `pages`. Walking only `pages` would publish a dead group title.
+missingroot="$tmp/missing-root"
+seed "$missingroot"
+cat > "$missingroot/site/docs.json" <<'JSON'
+{
+  "name": "Cortex",
+  "logo": { "href": "https://docs.cortex.foundation" },
+  "navbar": {
+    "links": [
+      { "label": "Home", "href": "/" },
+      { "label": "Documentation", "href": "/problems/not_found" }
+    ]
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "API",
+        "groups": [
+          {
+            "group": "Problems",
+            "root": "missing-root-page",
+            "pages": ["problems/not_found", "problems/internal"]
+          }
+        ]
+      }
+    ]
+  }
+}
+JSON
+must_fail "$missingroot" "missing-root-page"
+
+# The same group with a root that does exist must pass.
+goodroot="$tmp/good-root"
+seed "$goodroot"
+cat > "$goodroot/site/docs.json" <<'JSON'
+{
+  "name": "Cortex",
+  "logo": { "href": "https://docs.cortex.foundation" },
+  "navbar": {
+    "links": [
+      { "label": "Home", "href": "/" },
+      { "label": "Documentation", "href": "/problems/not_found" }
+    ]
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "API",
+        "groups": [
+          {
+            "group": "Problems",
+            "root": "problems/not_found",
+            "pages": ["problems/internal"]
+          }
+        ]
+      }
+    ]
+  }
+}
+JSON
+out="$(CORTEX_CHECK_ROOT="$goodroot/site" node "$script" "$goodroot" 2>&1)" ||
+  fail "a group root backed by an MDX page should pass, got: $out"
+
 # Retired fake-app SVG plates must not appear in public MDX.
 frames="$tmp/fake-app-frame"
 seed "$frames"

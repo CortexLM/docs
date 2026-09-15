@@ -1,10 +1,30 @@
 ---
-title: "Code guides"
-description: "Cortex Code — a coding agent that works inside your repository on an isolated runtime. Sessions, Ask / Plan / Agent, GitHub, Cloud guests, desktop hosts, the CLI, and pull-request review."
+title: "Cortex Code"
+description: "A coding agent that works inside your repository on an isolated runtime — sessions, Ask / Plan / Agent, GitHub, Cloud guests, and review."
 image: "/images/banners/code.png"
+keywords: ["coding agent", "repository", "developer"]
 ---
 
 Cortex Code is a coding agent, not a chat with a different icon. You point it at a repository, describe the change, and it works through the task inside an isolated runtime — reading, editing, running your build and tests — while you watch a timeline of what it did and decide how much it may do on its own.
+
+It is available in the web app, the desktop app, and the CLI, with one account across all three.
+
+<Frame caption="The four commitments on the public Code page: one repository per runtime, reviews that stay failed when they fail, no pasted diff, the same account as Chat.">
+  <img src="/images/product/code-public-features.png" alt="Cortex Code feature grid — One repository per runtime, Reviews that stay failed when they fail, No pasted diff, The same account as Chat" />
+</Frame>
+
+## What Code is
+
+| Commitment | What it means for you |
+| --- | --- |
+| **One repository per runtime** | Each session gets an isolated guest on the same farm as Cortex Bot, without a desktop. The environment is installed by the agent, not guessed from a filename. |
+| **Reviews stay failed when they fail** | A Cortex Security review is one pass over a diff. A failed review is stored as failed — never rewritten as an approval. |
+| **No pasted diff** | Code writes the change in the repository; Cortex Security reads the pull request in place. Neither asks you to paste a patch into a box. |
+| **The same account as Chat** | Sign in on cortex.foundation. No second identity. |
+
+## Who can open it
+
+Code is a member surface. A guest visiting `/code` sees the public product page, and deep links show **This space is reserved** with **Continue in Chat** or **Sign in**. Once signed in, `/code` opens Code Home: connect GitHub, pick a repository, start a session. See [Accounts](/getting-started/accounts).
 
 <Frame caption="cortex.foundation/code — the public product page a guest sees. Sign in to open the working UI.">
   <img src="/images/product/code-public.png" alt="Cortex Code public page — a coding agent that works inside the repository" />
@@ -16,13 +36,25 @@ Cortex Code is a coding agent, not a chat with a different icon. You point it at
   <Card title="Quickstart" img="/images/banners/code.png" href="/code/quickstart">
     Sign in, connect GitHub, start a Cloud session, review the timeline.
   </Card>
-  <Card title="Overview" icon="compass" href="/code/overview">
-    What Code is, who can open it, and what it deliberately is not.
+  <Card title="Sessions" icon="list" href="/code/sessions">
+    A timeline of the work — files read, edits, commands, plans.
   </Card>
   <Card title="CLI" icon="terminal" href="/cli">
     The same Code sessions from your terminal, scripts, and CI.
   </Card>
 </CardGroup>
+
+## Where it runs
+
+| Surface | Host | Notes |
+| --- | --- | --- |
+| Web app | **Cloud** | Web Code is Cloud-only |
+| Desktop app | Cloud, **This PC**, **SSH** | [Code on desktop](/code/desktop) |
+| CLI | Cloud by default; This PC and SSH by opt-in | [Code in the terminal](/code/cli) |
+
+## Modes in one line
+
+**Ask** reads and explains. **Plan** proposes without changing anything. **Agent** edits files and runs commands. Pick per turn; the session row holds the default. See [Ask, Plan, Agent](/code/interactions).
 
 ## Core guides
 
@@ -52,8 +84,26 @@ Cortex Code is a coding agent, not a chat with a different icon. You point it at
   </Card>
 </CardGroup>
 
+## What Code is not
+
+| Not this | Use instead |
+| --- | --- |
+| A Chat transcript | A [session](/code/sessions) is a turn timeline — files read, edits, commands, plans |
+| Chat's Python sandbox | [Cloud runtimes](/code/cloud) — an isolated guest with your repository |
+| A Chat plugin | [Connect GitHub](/code/github) — the repository connection lives in Code |
+| The public `/security` page | [Cortex Security](/code/security) — the signed-in review inbox at `/code/security` |
+| A place to store secrets | There is no Secrets page. Environment for a guest belongs to that guest; `/code/secrets` sends you home. |
+
 ## Advanced
 
 - [Cortex Security](/code/security) — GitHub App pull-request review that stays failed when it fails.
 - [How Code works](/code/how-it-works) — workspace tools execute inside the attached guest; modes withhold mutating tools.
-- [Troubleshooting](/code/troubleshooting) — gates, Reconnect, Cloud availability, and what a failed review means.
+- [Code troubleshooting](/code/troubleshooting) — gates, Reconnect, Cloud availability, and what a failed review means.
+- [Security and privacy](/security/overview) — what Cortex stores and where code runs.
+
+## Next
+
+1. [Code quickstart](/code/quickstart) — sign in, connect GitHub, start a Cloud session.
+2. [Sessions](/code/sessions) — read the timeline.
+3. [Ask, Plan, Agent](/code/interactions) — decide how much a turn may change.
+4. [Code in the terminal](/code/cli) — the same sessions from the CLI.

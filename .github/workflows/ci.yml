@@ -21,7 +21,6 @@ jobs:
           node-version: 22
       - run: node scripts/check-docs-site.mjs
       - run: bash scripts/tests/check-docs-site.test.sh
-      - name: Check the FernDesk write-path retry policy
-        run: python3 scripts/tests/ferndesk-sync-retry.test.py
+      - run: node scripts/tests/docs-ui.test.mjs
       - name: Validate the Mintlify build
         run: npm exec --yes --package=mint@4.2.876 -- mint validate

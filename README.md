@@ -27,8 +27,8 @@ the content directory set to the repository root (not `apps/docs`).
 
 Every Cortex custom domain that CNAMEs to a third-party hostname is a
 **Direct CNAME (DNS only)** — `docs.cortex.foundation` (Mintlify),
-`status.cortex.foundation` (status page), the FernDesk **Connect domain**, and
-the `software.cortex.foundation` / `releases.cortex.foundation` R2 custom
+`status.cortex.foundation` (status page), and the
+`software.cortex.foundation` / `releases.cortex.foundation` R2 custom
 domains owned by
 [`CortexLM/backend`](https://github.com/CortexLM/backend)
 (`docs/software-cdn.md`).
@@ -36,11 +36,48 @@ domains owned by
 > **Use a Direct CNAME (DNS only). Do not enable orange-cloud Proxied** — that
 > causes Cloudflare **Cross-User Banned** (Error 1014).
 
+## Structure
+
+Mintlify is the single source of truth for the public docs. There is no
+downstream mirror to sync: the site publishes from this repository, branch
+`main`, and `docs.json` is the whole navigation.
+
+| Tab | Holds | Entry point |
+| --- | --- | --- |
+| Get started | Quickstart, what Cortex is, accounts, plans, settings, downloads, help | `getting-started/quickstart` |
+| Chat | The conversation product — projects, Library, plans, models, tools, research, media | `chat/index` |
+| Code | The coding agent — sessions, modes, GitHub, runtimes, review | `code/index` |
+| Bot | The computer-using agent — computer, tools, approvals, routines, skills | `bot/index` |
+| CLI | The terminal front-end to Code — install, TUI, slash commands, sessions, headless, extend | `cli/index` |
+| Design | Canvases and the Design library | `design/index` |
+| API | The RFC 9457 problem format and the catalog of error codes | `api/overview` |
+| Changelog | Dated release notes, and the deferred Platform API | `changelog` |
+
+Each product tab opens on a single hub page (`<product>/index.mdx`). Do not
+re-introduce a second overview page beside it — one entry point per product,
+with the task guides beneath it in the sidebar.
+
+Every page ends with a **Related** or **Next** section so a reader is never at
+a dead end, and every page carries a `title` and a `description` in its
+frontmatter. Product pages also carry an `image` for link previews.
+
+Keep `description` under 160 characters — longer text is truncated in search
+results and link previews. Titles are unique across the site; where two pages
+would otherwise collide (`Sessions` in Code and in the CLI, `Canvases` in Chat
+and in Design) the title carries the product and `sidebarTitle` keeps the
+sidebar short.
+
+Where the product's sidebar label differs from the page title, list the label
+in `keywords` so either term finds the page. The sidebar says **Artifacts**;
+the page is [Library](/chat/library). It says **Planning**; the page is
+[Plans](/chat/plans). It says **Agents**; the page is [Cortex Bot](/bot).
+
 ## Checks
 
 ```bash
 node scripts/check-docs-site.mjs
 bash scripts/tests/check-docs-site.test.sh
+node scripts/tests/docs-ui.test.mjs
 npm exec --yes --package=mint@4.2.876 -- mint validate
 ```
 
@@ -70,6 +107,10 @@ that adds the code. The full check fails when:
 
 Do not invent endpoints. There is no inference Platform API section here — see
 `platform.mdx`. Sign in via the app; this tree has no auth stack.
+
+`scripts/check-docs-site.mjs` enforces all of the above, including that every
+`docs.json` navigation slug resolves to a page. Run it before pushing; a
+sidebar link with no MDX behind it would otherwise publish as a 404.
 
 ## Visuals
 

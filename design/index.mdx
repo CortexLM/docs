@@ -1,25 +1,46 @@
 ---
-title: "Design guides"
-description: "Cortex Design — persistable canvases hosted from Chat or Code and edited in the Design desktop app. Frames, notes, options, and a Library of components, pages, and tokens."
+title: "Cortex Design"
+description: "Persistable canvases hosted from Chat or Code and edited in the Design desktop app. Frames, notes, options, and a Library of components, pages, and tokens."
 image: "/images/banners/design.png"
+keywords: ["canvas", "board", "UI design", "mockups"]
 ---
 
 Cortex Design is where visual work lives. A canvas is a board of frames, notes, and options that you host from a Chat conversation or a Code session and then open in the **Design desktop app** to work on. There is no Design mode in the web shell: the browser creates and lists canvases, the desktop app is where you edit them.
 
-<CardGroup cols={2}>
-  <Card title="Overview" img="/images/banners/design.png" href="/design/overview">
-    What a canvas is, who can create one, and what the web app does not host.
+<CardGroup cols={3}>
+  <Card title="Canvases" icon="layout-template" href="/design/canvases">
+    Frames, notes, options, and the host binding to Chat or Code. Default title Untitled canvas.
   </Card>
   <Card title="Design desktop" icon="monitor" href="/design/desktop">
     Install the working UI, open a board, edit frames and notes.
-  </Card>
-  <Card title="Canvases" icon="layout-template" href="/design/canvases">
-    Frames, notes, options, and the host binding to Chat or Code. Default title Untitled canvas.
   </Card>
   <Card title="Library" icon="library" href="/design/library">
     Components, pages, and tokens you reuse across canvases. Thumbnails are uploaded.
   </Card>
 </CardGroup>
+
+## The shape of the product
+
+| Fact | What it means |
+| --- | --- |
+| **Hosted from Chat or Code** | Both products have design tools that create and write to a canvas. Bot does not. |
+| **Edited on desktop** | The working UI is a separate desktop app. There is no `/design` route in the web app and no Design segment on the Chat · Code · Bot switcher. |
+| **Private to your account** | Sign in first. Another account's canvases are not visible. |
+| **Not a Chat sidecar** | A Chat canvas is a document beside a conversation. A Design canvas is a board of frames. Different objects. |
+
+## Start from Chat or Code
+
+<Steps>
+  <Step title="Sign in">
+    Canvases are member objects.
+  </Step>
+  <Step title="Host a canvas">
+    Ask Chat — *lay these three screens out on a canvas* — or ask a Code session to draw the architecture. The design tools create the board, titled **Untitled canvas**, and write frames to it.
+  </Step>
+  <Step title="Open it on desktop">
+    Install the [Design desktop app](/design/desktop), sign in, and open the board. Edit frames, notes, and the Library drawer there.
+  </Step>
+</Steps>
 
 ## Design and the other products
 
@@ -30,10 +51,15 @@ Cortex Design is where visual work lives. A canvas is a board of frames, notes, 
 | [Plan](/chat/plans) | Chat | A task list |
 | Code file | Code | A file inside a session's guest |
 
-Chat and Code can host a Design canvas through their design tools; Bot does not receive those tools.
+Chat and Code can host a Design canvas through their design tools; Bot does not receive those tools. A [Design library](/design/library) item and a file in Chat's [Library](/chat/library) are different objects that share a word.
 
-## Where to start
+## Related
 
-1. Sign in — canvases belong to a member account and are private to it.
-2. Ask Chat or Code to put something on a canvas. The object is created with the title **Untitled canvas**.
-3. Install the [Design desktop app](/design/desktop) and open the board there.
+- [Downloads](/getting-started/downloads) — every desktop app and the CLI in one place.
+- [Security and privacy](/security/overview) — what Cortex stores and where your work runs.
+
+## Next
+
+1. [Canvases](/design/canvases) — what lives on a board and how it is hosted.
+2. [Design desktop](/design/desktop) — install the app and open your first canvas.
+3. [Design library](/design/library) — components, pages, and tokens.
