@@ -210,6 +210,46 @@ const AUTH_INTERNALS = [
   { pattern: /client_secret/i, label: 'client secret' },
 ];
 
+/**
+ * Staging must never reach the public site again.
+ *
+ * `docs.cortex.foundation` is the public Mintlify site, and it once publicly
+ * served `/staging/*` pages plus a Staging collection. Deleting those files is
+ * not enough: a re-added `staging/…` page, a nav entry, or a redirect into one
+ * would put pre-prod copy back on the public domain. This holds the line
+ * mechanically, the same way the auth-internal check does.
+ */
+function assertNoStagingNav(docsJson) {
+  let parsed;
+  try {
+    parsed = JSON.parse(docsJson);
+  } catch {
+    return; // already reported as invalid JSON
+  }
+  const seen = new Set();
+  for (const slug of navPages(parsed)) {
+    if (!/(^|\/)staging(\/|$)/i.test(slug) || seen.has(slug)) continue;
+    seen.add(slug);
+    fail(`docs.json navigation must not publish a staging page (${slug})`);
+  }
+  const redirectSources = Array.isArray(parsed.redirects) ? parsed.redirects : [];
+  for (const rule of redirectSources) {
+    if (typeof rule?.destination === 'string' && /(^|\/)staging(\/|$)/i.test(rule.destination)) {
+      fail(`docs.json redirect ${rule.source} points at a staging page`);
+    }
+  }
+}
+
+function assertNoStagingContent(rel, text) {
+  if (!rel.endsWith('.mdx')) return;
+  if (/\/staging(\/|$)/.test(text)) {
+    fail(`${rel} links to a staging path (public docs have no staging mirror)`);
+  }
+  if (/\bstaging\b/i.test(text) && !/no staging|not staging|retired/i.test(text)) {
+    fail(`${rel} tells readers about staging (public docs are production only)`);
+  }
+}
+
 function assertNoAuthInternals(rel, text) {
   if (!rel.endsWith('.mdx')) return;
   for (const { pattern, label } of AUTH_INTERNALS) {
@@ -321,6 +361,7 @@ if (!existsSync(join(docsRoot, 'docs.json'))) {
     fail('docs.json still names docs.cortex.sh');
   }
   assertDocsChrome(docsJson);
+  assertNoStagingNav(docsJson);
 }
 
 for (const rel of FORBIDDEN_AUTH_PAGES) {
@@ -363,6 +404,7 @@ for (const file of docsFiles) {
     );
   }
   assertNoAuthInternals(rel, text);
+  assertNoStagingContent(rel, text);
   if (BACKEND === null) continue;
   for (const path of documentedV1Paths(text)) {
     const norm = normalizePath(path);
