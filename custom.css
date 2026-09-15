@@ -5,8 +5,7 @@
 
 #content img[src*="/images/product/"],
 #content img[src*="/images/cli/"],
-#content img[src*="/images/banners/"],
-#content img[src*="/images/frames/"] {
+#content img[src*="/images/banners/"] {
   width: 100%;
   height: auto;
   border-radius: 12px;

@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "name": "Cortex Docs",
   "theme": "willow",
-  "description": "Product docs for Cortex Chat, Code, Bot, Design, and the Cortex CLI. Platform API lives elsewhere.",
+  "description": "Product documentation for Cortex Chat, Cortex Code, Cortex Bot, and the Cortex CLI, plus the public API error reference.",
   "colors": {
     "primary": "#1F4945",
     "light": "#8AC5B9",
@@ -69,8 +69,8 @@
             "href": "/cli"
           },
           {
-            "label": "Design",
-            "href": "/design"
+            "label": "API",
+            "href": "/api/overview"
           }
         ]
       },
@@ -125,7 +125,7 @@
     "404": {
       "redirect": false,
       "title": "Page not found",
-      "description": "That path is not in Cortex Docs. Try [Get started](/getting-started/quickstart), [Chat](/chat), [Code](/code), [Bot](/bot), [CLI](/cli), or [Design](/design). The inference Platform API is not documented here."
+      "description": "That path is not in Cortex Docs. Try [Get started](/getting-started/quickstart), [Chat](/chat), [Code](/code), [Bot](/bot), [CLI](/cli), or the [API reference](/api/overview)."
     }
   },
   "seo": {
@@ -148,8 +148,56 @@
       "destination": "/chat/tools"
     },
     {
+      "source": "/chat/overview",
+      "destination": "/chat"
+    },
+    {
+      "source": "/chat/streaming",
+      "destination": "/chat/how-it-works"
+    },
+    {
+      "source": "/code/overview",
+      "destination": "/code"
+    },
+    {
+      "source": "/code/cli",
+      "destination": "/cli"
+    },
+    {
+      "source": "/bot/overview",
+      "destination": "/bot"
+    },
+    {
       "source": "/getting-started/cli",
       "destination": "/cli/install"
+    },
+    {
+      "source": "/getting-started/desktop",
+      "destination": "/getting-started/downloads"
+    },
+    {
+      "source": "/platform",
+      "destination": "/api/overview"
+    },
+    {
+      "source": "/design",
+      "destination": "/chat/canvases"
+    },
+    {
+      "source": "/design/overview",
+      "destination": "/chat/canvases"
+    },
+    {
+      "source": "/design/canvases",
+      "destination": "/chat/canvases"
+    },
+    {
+      "source": "/design/library",
+      "destination": "/chat/library"
+    },
+    {
+      "source": "/design/desktop",
+      "destination": "/getting-started/downloads"
     },
     {
       "source": "/api/authentication",
@@ -173,7 +221,7 @@
     },
     {
       "source": "/api/design",
-      "destination": "/design"
+      "destination": "/chat/canvases"
     },
     {
       "source": "/api/plugins",
@@ -181,7 +229,7 @@
     },
     {
       "source": "/api/streaming",
-      "destination": "/chat/streaming"
+      "destination": "/chat/how-it-works"
     },
     {
       "source": "/api/webhooks",
@@ -192,6 +240,7 @@
     "tabs": [
       {
         "tab": "Get started",
+        "icon": "rocket",
         "groups": [
           {
             "group": "Start here",
@@ -199,51 +248,51 @@
               "getting-started/quickstart",
               "getting-started/what-is-cortex",
               "getting-started/accounts",
-              "getting-started/plans",
-              "getting-started/settings"
+              "getting-started/plans"
             ],
-            "icon": "rocket"
+            "icon": "flag"
           },
           {
-            "group": "Downloads",
+            "group": "Install and settings",
             "pages": [
               "getting-started/downloads",
-              "getting-started/desktop"
+              "getting-started/settings"
             ],
             "icon": "download"
           },
           {
-            "group": "Help",
+            "group": "Operate",
             "pages": [
-              "getting-started/troubleshooting",
+              "security/overview",
               "status",
-              "security/overview"
+              "getting-started/troubleshooting"
             ],
-            "icon": "life-buoy"
+            "icon": "shield-check"
           }
         ]
       },
       {
         "tab": "Chat",
+        "icon": "message-circle",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Start here",
             "pages": [
               "chat/index",
-              "chat/overview",
               "chat/quickstart"
             ],
-            "icon": "rocket"
+            "icon": "flag"
           },
           {
-            "group": "Core guides",
+            "group": "Work in Chat",
             "pages": [
               "chat/projects",
               "chat/library",
+              "chat/canvases",
               "chat/plans",
+              "chat/memory",
               "chat/models",
-              "chat/tools",
-              "chat/sharing"
+              "chat/tools"
             ],
             "icon": "book-open"
           },
@@ -255,21 +304,13 @@
               "chat/origin-check",
               "chat/voice"
             ],
-            "icon": "search"
+            "icon": "telescope"
           },
           {
-            "group": "Context that carries over",
-            "pages": [
-              "chat/memory",
-              "chat/canvases"
-            ],
-            "icon": "brain"
-          },
-          {
-            "group": "Under the hood",
+            "group": "Reference",
             "pages": [
               "chat/how-it-works",
-              "chat/streaming"
+              "chat/sharing"
             ],
             "icon": "sliders-horizontal"
           }
@@ -277,18 +318,18 @@
       },
       {
         "tab": "Code",
+        "icon": "code",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Start here",
             "pages": [
               "code/index",
-              "code/overview",
               "code/quickstart"
             ],
-            "icon": "rocket"
+            "icon": "flag"
           },
           {
-            "group": "Core guides",
+            "group": "Work in Code",
             "pages": [
               "code/sessions",
               "code/interactions",
@@ -298,17 +339,16 @@
             "icon": "book-open"
           },
           {
-            "group": "Desktop and terminal",
+            "group": "Hosts and review",
             "pages": [
               "code/desktop",
-              "code/cli"
+              "code/security"
             ],
             "icon": "monitor"
           },
           {
-            "group": "Advanced",
+            "group": "Reference",
             "pages": [
-              "code/security",
               "code/how-it-works",
               "code/troubleshooting"
             ],
@@ -318,18 +358,18 @@
       },
       {
         "tab": "Bot",
+        "icon": "bot",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Start here",
             "pages": [
               "bot/index",
-              "bot/overview",
               "bot/quickstart"
             ],
-            "icon": "rocket"
+            "icon": "flag"
           },
           {
-            "group": "Core guides",
+            "group": "Work in Bot",
             "pages": [
               "bot/computer",
               "bot/tools",
@@ -340,14 +380,14 @@
             "icon": "book-open"
           },
           {
-            "group": "Desktop",
+            "group": "Apps",
             "pages": [
               "bot/desktop"
             ],
             "icon": "monitor"
           },
           {
-            "group": "Advanced",
+            "group": "Reference",
             "pages": [
               "bot/how-it-works",
               "bot/troubleshooting"
@@ -358,19 +398,20 @@
       },
       {
         "tab": "CLI",
+        "icon": "terminal",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Start here",
             "pages": [
               "cli/index",
               "cli/install",
               "cli/sign-in",
               "cli/quickstart"
             ],
-            "icon": "rocket"
+            "icon": "flag"
           },
           {
-            "group": "Working in the terminal",
+            "group": "Work in the terminal",
             "pages": [
               "cli/tui",
               "cli/slash-commands",
@@ -397,7 +438,7 @@
             "icon": "puzzle"
           },
           {
-            "group": "Help",
+            "group": "Reference",
             "pages": [
               "cli/troubleshooting"
             ],
@@ -406,32 +447,11 @@
         ]
       },
       {
-        "tab": "Design",
-        "groups": [
-          {
-            "group": "Getting started",
-            "pages": [
-              "design/index",
-              "design/overview",
-              "design/desktop"
-            ],
-            "icon": "rocket"
-          },
-          {
-            "group": "Core guides",
-            "pages": [
-              "design/canvases",
-              "design/library"
-            ],
-            "icon": "book-open"
-          }
-        ]
-      },
-      {
         "tab": "API",
+        "icon": "braces",
         "groups": [
           {
-            "group": "Public",
+            "group": "Public API",
             "pages": [
               "api/overview",
               "api/errors"
@@ -439,7 +459,7 @@
             "icon": "braces"
           },
           {
-            "group": "Problems",
+            "group": "Problem catalog",
             "pages": [
               "problems/index",
               "problems/validation_failed",
@@ -473,6 +493,7 @@
       },
       {
         "tab": "Changelog",
+        "icon": "history",
         "groups": [
           {
             "group": "Release notes",
@@ -480,13 +501,6 @@
               "changelog"
             ],
             "icon": "history"
-          },
-          {
-            "group": "Coming soon",
-            "pages": [
-              "platform"
-            ],
-            "icon": "clock"
           }
         ]
       }

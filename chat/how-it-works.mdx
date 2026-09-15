@@ -16,6 +16,21 @@ A Chat turn is a real tool loop. The model emits tool calls, Chat executes them,
 3. Tokens stream. Tools may run. Their results come back into the thread.
 4. The model stops, or Chat hits its budget of **eight tool rounds**. That budget is Chat's own — Code and Bot have different stopping rules.
 
+## Streaming
+
+Answers appear as they are written rather than as a block of text after the turn ends.
+
+| Phase | What you see |
+| --- | --- |
+| Thinking | A blinking caret while the model reasons; longer at higher [thinking levels](/chat/models) |
+| Tokens | The reply appearing word by word, markdown rendering as it lands |
+| Tools | Tool results entering the thread when the model uses one |
+| Finished | **Copy**, **Listen**, and feedback controls under the reply |
+
+Press **Esc**, or the stop control where the send button was, to stop a response. The partial reply stays in the thread.
+
+If your connection drops mid-reply, run state lives in the thread rather than the transport, so the reply that already started continues. **Do not resend** the same message to recover it — you would start a second turn. Sending while a reply is still streaming is not the intended path in the web app; wait for the reply or stop it first. The CLI queues follow-ups explicitly — see [The TUI](/cli/tui).
+
 ## What goes into a turn
 
 | Input | Source |
@@ -38,7 +53,6 @@ After assembly, Chat clamps generation so prompt plus output fit the model's con
 | Media | `generate_image`, `detect_image` |
 | Documents | canvas tools, `read_artifact`, `grep_artifact` |
 | Context | memory tools, `skill_view` |
-| Design | `design_write`, `design_read` — host a Design canvas from Chat |
 | Yours | Connected apps enabled for **Chat**, and the account's MCP servers |
 
 Chat's `python` runs a snippet in an untrusted sandbox with no workspace. It is not Code's shell inside a Cloud guest, and it cannot see a repository or a Bot's desktop. See [Security](/security/overview).
@@ -63,5 +77,5 @@ See [How Code works](/code/how-it-works) and [How Bot works](/bot/how-it-works).
 
 ## Related
 
-- [Streaming](/chat/streaming) — reconnects and run state.
 - [Models](/chat/models) — context windows and thinking levels.
+- [Troubleshooting](/getting-started/troubleshooting) — what a cut-short reply means.

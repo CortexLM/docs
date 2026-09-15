@@ -1,24 +1,19 @@
 ---
 title: "What is Cortex"
-description: "Four products and a CLI behind one account on cortex.foundation — Chat, Code, Bot, Design, and the Cortex CLI."
+description: "Three products and a CLI behind one account on cortex.foundation — Chat, Code, Bot, and the Cortex CLI."
 image: "/images/banners/getting-started.png"
 ---
 
-Cortex is built by the Cortex Foundation, a research-first lab. The products share one account, one domain, and one set of models. Use **Chat** for conversation and research, **Code** for a repository, **Bot** for an always-on teammate with its own computer, **Design** for persistable canvases, and the **CLI** to drive Code from a terminal.
-
-<Frame caption="cortex.foundation/about — the Foundation builds Cortex Chat, Cortex Code, and Cortex Bot.">
-  <img src="/images/product/about.png" alt="About Cortex — Making AI systems worthy of reliance; the Foundation builds Cortex Chat, Cortex Code, and Cortex Bot" />
-</Frame>
+Cortex is built by the Cortex Foundation, a research-first lab. The products share one account, one domain, and one set of models. Use **Chat** for conversation and research, **Code** for a repository, **Bot** for an always-on teammate with its own computer, and the **CLI** to drive Code from a terminal.
 
 ## The products
 
-| Product | What you open | Who can use it | Guide |
+| Product | Where you use it | Who can open it | Guide |
 | --- | --- | --- | --- |
-| **Cortex Chat** | `cortex.foundation` | Everyone, including before you sign in | [Chat](/chat) |
-| **Cortex Code** | `/code` in the web app, the desktop app, or the CLI | Signed-in members | [Code](/code) |
-| **Cortex Bot** | `/bot` in the web app, or the Bot desktop app | Signed-in members | [Bot](/bot) |
-| **Cortex CLI** | `cortex` in a terminal | Signed-in members | [CLI](/cli) |
-| **Cortex Design** | The Design desktop app | Signed-in members | [Design](/design) |
+| **Cortex Chat** | The web app, and the Cortex desktop app | Anyone — guests included | [Chat](/chat) |
+| **Cortex Code** | The web app, the Cortex desktop app, and the CLI | Signed-in members | [Code](/code) |
+| **Cortex Bot** | The web app and the Bot desktop app | Signed-in members | [Bot](/bot) |
+| **Cortex CLI** | Your terminal | Signed-in members | [CLI](/cli) |
 | **Cortex Security** | `/code/security` in the web app | Signed-in members with a GitHub repository | [Cortex Security](/code/security) |
 
 Chat works unsigned. Everything else needs an account, so that a guest session can never create a grant, a bot, or a session it could not come back to revoke.
@@ -31,10 +26,9 @@ Chat works unsigned. Everything else needs an account, so that a guest session c
 | Change a repository, run tests, open a pull request | **Code** |
 | Delegate ongoing work to an agent that browses, clicks, and runs on a schedule | **Bot** |
 | Work on code from your own terminal, in scripts, or in CI | **CLI** |
-| Lay out frames, notes, and a component library on a board | **Design** |
 | Review GitHub pull requests in place | **Cortex Security** |
 
-Chat does not run Code's workspace shell or Bot's computer. Code sessions are a timeline of work, not a chat transcript. Design canvases are not Chat markdown sidecars. Each product keeps its own shape on purpose — see [How Chat works](/chat/how-it-works), [How Code works](/code/how-it-works), and [How Bot works](/bot/how-it-works).
+Chat does not run Code's workspace shell or Bot's computer. Code sessions are a timeline of work, not a chat transcript. Each product keeps its own shape on purpose — see [How Chat works](/chat/how-it-works), [How Code works](/code/how-it-works), and [How Bot works](/bot/how-it-works).
 
 ## Models
 
@@ -64,6 +58,7 @@ English is the source of truth for interface copy. The web app is localized into
 | `software.cortex.foundation` | CLI installers and release manifests |
 | `releases.cortex.foundation` | Desktop app downloads and updater feed |
 | `api.cortex.foundation` | The API the apps and the CLI talk to |
+| `status.cortex.foundation` | Live component health and incidents |
 | `docs.cortex.foundation` | This site |
 
 ## Next

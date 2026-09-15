@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
-"""Sync CortexLM/docs (Mintlify MDX) → FernDesk help center.
+"""Sync CortexLM/docs (Mintlify MDX) → the FernDesk help center.
+
+**Production only.** `docs.cortex.foundation` is a public site, so this script
+writes to the FernDesk **Production** section and publishes there. A staging
+mirror is deliberately not supported: staging articles were reachable on the
+public domain, which is exactly the leak this repo must not repeat. Anything
+that is not ready to be public does not belong in this tree.
 
 Env:
   FERNDESK_API_KEY   required (Bearer). Never print/log the value.
-  FERNDESK_TARGET    production|staging (default: production)
+  FERNDESK_TARGET    must be `production` when set (default: production)
   FERNDESK_DRY_RUN   1 = plan only (still needs API unless FERNDESK_DRY_LOCAL=1)
   FERNDESK_DRY_LOCAL 1 = discover pages only, no API
   FERNDESK_FULL_SCAN 1 = rebuild slug cache by listing all articles
@@ -11,9 +17,11 @@ Env:
   FERNDESK_WRITE_RETRIES  attempts per article/collection write (default 12)
   FERNDESK_WRITE_DEADLINE seconds of retrying allowed per write (default 1800)
   FERNDESK_WRITE_BUDGET   seconds of retry time for the whole run (default 5400)
+  FERNDESK_RETIRE    1 = also unpublish articles that no longer exist here
   DOCS_ROOT          docs repo root (default: cwd)
 
-Idempotent upsert by slug. Never deletes FernDesk-only articles (safe migration).
+Idempotent upsert by slug. Never deletes FernDesk-only articles unless
+`FERNDESK_RETIRE=1` is set explicitly (see `scripts/FERNDESK.md`).
 """
 from __future__ import annotations
 
@@ -32,13 +40,16 @@ from pathlib import Path
 
 API = "https://api.ferndesk.com/v1"
 
+# The FernDesk section this repository publishes to. One section, one public
+# site: there is no staging mirror to keep in sync.
+SECTION_NAME = "Production"
+
 FOLDER_TO_COLLECTION = {
     "getting-started": "Getting Started",
     "chat": "Chat",
     "code": "Code",
     "bot": "Bot",
     "cli": "Cli",
-    "design": "Design",
     "api": "Api",
     "security": "Security",
     "problems": "Problems",
@@ -47,7 +58,6 @@ FOLDER_TO_COLLECTION = {
 
 ROOT_FILE_COLLECTION = {
     "index.mdx": "Index",
-    "platform.mdx": "Platform",
     "changelog.mdx": "Changelog",
     "status.mdx": "Getting Started",
 }
@@ -392,6 +402,70 @@ def content_fingerprint(md: str) -> str:
     return hashlib.sha256(md.encode()).hexdigest()[:16]
 
 
+# `path:<rel>` is the Mintlify page a FernDesk article came from. It is written
+# into `keywords` on every create and update, and it is the only stable identity
+# this sync has — see `index_articles`. Keywords are `;`-separated, so the value
+# stops at the next `;` (or whitespace) and not just at the next space.
+_PATH_KEYWORD = re.compile(r"path:([^;\s]+)")
+
+
+def keyword_path(keywords: str | None) -> str | None:
+    if not keywords:
+        return None
+    m = _PATH_KEYWORD.search(keywords)
+    return m.group(1) if m else None
+
+
+def article_entry(article: dict) -> dict:
+    return {
+        "id": article.get("id"),
+        "status": article.get("status"),
+        "keywords": article.get("keywords") or "",
+        "slug": article.get("slug"),
+    }
+
+
+def index_articles(articles: list) -> tuple[dict, dict, list]:
+    """Index FernDesk articles by slug, by Mintlify path, and collect duplicates.
+
+    A slug is not a stable identity here. FernDesk rewrites a slug it considers
+    taken — `chat` becomes `chat-8hul5` — so a run that loses its cache scans a
+    set of hashed slugs, finds no match for `chat`, and creates the page again
+    under a fresh hash. That is how the public site accumulated nine `index-*`
+    articles and a second copy of every hub.
+
+    The `path:<rel>` marker this script writes into `keywords` survives the
+    rewrite, so it is what identity is resolved against. Articles sharing a path
+    are copies of one page; the first is canonical and the rest are returned as
+    duplicates for the retire pass.
+    """
+    by_slug: dict = {}
+    by_path: dict = {}
+    duplicates: list = []
+    for article in articles:
+        slug = article.get("slug")
+        if not slug:
+            continue
+        entry = article_entry(article)
+        by_slug.setdefault(slug, entry)
+        path = keyword_path(entry["keywords"])
+        if not path:
+            continue
+        if path in by_path:
+            duplicates.append(entry)
+        else:
+            by_path[path] = entry
+    return by_slug, by_path, duplicates
+
+
+def resolve_existing(page: dict, by_slug: dict, by_path: dict) -> dict | None:
+    """Find the article that already carries this page, by path first."""
+    entry = by_path.get(page["path"])
+    if entry is not None:
+        return entry
+    return by_slug.get(page["slug"])
+
+
 def discover_pages(docs_root: Path) -> list[dict]:
     pages = []
     for path in sorted(docs_root.rglob("*")):
@@ -458,17 +532,113 @@ def ensure_collection(key: str, title: str, section_id: str, existing: list) -> 
     return c
 
 
+def write_cache(cache_path: Path, by_slug: dict, by_path: dict, duplicates: list) -> None:
+    cache_path.write_text(
+        json.dumps(
+            {"by_slug": by_slug, "by_path": by_path, "duplicates": duplicates},
+            indent=2,
+        )
+        + "\n"
+    )
+
+
+def retire_orphaned_articles(
+    key: str,
+    section: dict,
+    by_slug: dict,
+    by_path: dict,
+    duplicates: list,
+    live_paths: set,
+    dry: bool = False,
+) -> tuple[int, list]:
+    """Unpublish Production articles this repository no longer serves.
+
+    The upsert path never deletes, which is what kept FernDesk-only articles
+    safe during the migration. That same property let retired pages — the old
+    staging mirror, duplicate hub copies, every page renamed since — keep
+    serving on the public domain after their MDX was deleted. This is the
+    explicit, opt-in way to take them down: it unpublishes, it does not delete.
+
+    Two things are retired:
+
+    1. **Duplicates** — two or more articles carrying the same `path:<rel>`
+       marker. FernDesk rewrites a slug it considers taken, so a run that could
+       not find its article created a second copy under a fresh hash; the
+       canonical entry is kept and the extras are unpublished.
+    2. **Orphans** — an article whose `path:<rel>` no longer exists in this
+       tree, i.e. the page was deleted or moved.
+
+    Only articles carrying the Mintlify marker are touched. A hand-written
+    FernDesk article has no `path:` keyword and is never in scope.
+    """
+    retired = 0
+    failures: list[dict] = []
+
+    def unpublish(entry: dict, why: str) -> bool:
+        nonlocal retired
+        slug = entry.get("slug") or entry.get("id")
+        eid = entry.get("id")
+        if not eid:
+            return True
+        if dry:
+            log(f"DRY retire {slug} ({why}) -> {eid}")
+            retired += 1
+            return True
+        try:
+            api(key, f"/articles/{eid}/unpublish", "POST", {}, label=str(slug))
+        except RuntimeError as e:
+            failures.append({"slug": slug, "op": "retire", "error": str(e)})
+            log(f"ERROR retire {slug} failed after retries: {e}")
+            return False
+        retired += 1
+        log(f"retired {slug} ({why}) {eid}")
+        time.sleep(1.2)
+        return True
+
+    for entry in duplicates:
+        if "source:mintlify" not in (entry.get("keywords") or ""):
+            log(f"retire skip {entry.get('slug')}: not a Mintlify article")
+            continue
+        unpublish(entry, "duplicate path")
+
+    for slug, entry in sorted(by_slug.items()):
+        if not isinstance(entry, dict):
+            continue
+        keywords = entry.get("keywords") or ""
+        if "source:mintlify" not in keywords:
+            log(f"retire skip {slug}: not a Mintlify article")
+            continue
+        path = keyword_path(keywords)
+        if path is None:
+            # No path marker: nothing in this tree can claim it. Leave it alone
+            # rather than unpublishing something a person wrote by hand.
+            log(f"retire skip {slug}: no path marker")
+            continue
+        if path in live_paths:
+            continue
+        unpublish(entry, f"page gone ({path})")
+
+    if retired or failures:
+        log(f"retire: {retired} unpublished, {len(failures)} failed")
+    return retired, failures
+
+
 def main() -> int:
     key = os.environ.get("FERNDESK_API_KEY")
     target = os.environ.get("FERNDESK_TARGET", "production").strip().lower()
-    if target not in ("production", "staging"):
-        log("ERROR: FERNDESK_TARGET must be production|staging")
+    if target != "production":
+        log(
+            f"ERROR: FERNDESK_TARGET={target!r} is not supported. This repository "
+            "publishes to the public FernDesk Production section only; there is no "
+            "staging mirror, because staging articles were reachable on "
+            "docs.cortex.foundation."
+        )
         return 2
     dry = os.environ.get("FERNDESK_DRY_RUN") == "1"
     dry_local = os.environ.get("FERNDESK_DRY_LOCAL") == "1"
     docs_root = Path(os.environ.get("DOCS_ROOT") or Path.cwd()).resolve()
-    section_name = "Production" if target == "production" else "Staging"
-    publish = target == "production"
+    section_name = SECTION_NAME
+    publish = True
 
     log(f"docs_root={docs_root} target={target} section={section_name} dry={dry} dry_local={dry_local}")
     pages = discover_pages(docs_root)
@@ -492,17 +662,29 @@ def main() -> int:
     section = ensure_section(key, section_name)
     # Scope to section — unscoped /collections paginated forever in GHA (COR-444).
     colls = list_all(key, f"/collections?sectionId={urllib.parse.quote(str(section['id']))}")
-    cache_path = Path(os.environ.get("FERNDESK_SLUG_CACHE", f".ferndesk-slug-cache-{target}.json"))
+    cache_path = Path(os.environ.get("FERNDESK_SLUG_CACHE", ".ferndesk-slug-cache.json"))
     by_slug: dict = {}
-    cache_loaded = False
+    by_path: dict = {}
+    duplicates: list = []
+    # A cached slug map cannot resolve identity on its own: FernDesk rewrites a
+    # taken slug, so `chat` is stored as `chat-8hul5` and a cache keyed by the
+    # requested slug never matches. Scan the section unless the cache carries
+    # the path index too (written by this version of the script).
+    cache_usable = False
     if cache_path.exists() and os.environ.get("FERNDESK_FULL_SCAN") != "1":
         try:
-            by_slug = json.loads(cache_path.read_text())
-            cache_loaded = True
-            log(f"loaded slug cache {len(by_slug)} from {cache_path}")
+            cached = json.loads(cache_path.read_text())
+            if isinstance(cached, dict) and "by_path" in cached:
+                by_slug = cached.get("by_slug") or {}
+                by_path = cached.get("by_path") or {}
+                duplicates = cached.get("duplicates") or []
+                cache_usable = True
+                log(f"loaded slug cache {len(by_slug)} / {len(by_path)} paths from {cache_path}")
+            else:
+                log(f"ignoring legacy slug cache at {cache_path} (no path index)")
         except Exception:
-            by_slug = {}
-    if (not cache_loaded) or os.environ.get("FERNDESK_FULL_SCAN") == "1":
+            log(f"slug cache at {cache_path} is unreadable; rescanning")
+    if not cache_usable:
         log("scanning articles for section (set FERNDESK_FULL_SCAN=1 to force)…")
         articles = [
             a
@@ -513,24 +695,27 @@ def main() -> int:
             )
             if a.get("sectionId") == section["id"]
         ]
-        by_slug = {
-            a.get("slug"): {
-                "id": a["id"],
-                "status": a.get("status"),
-                "keywords": a.get("keywords") or "",
-            }
-            for a in articles
-            if a.get("slug")
-        }
-        cache_path.write_text(json.dumps(by_slug, indent=2) + "\n")
-        log(f"wrote slug cache {len(by_slug)}")
+        by_slug, by_path, duplicates = index_articles(articles)
+        write_cache(cache_path, by_slug, by_path, duplicates)
+        log(
+            f"wrote slug cache {len(by_slug)} articles, {len(by_path)} paths, "
+            f"{len(duplicates)} duplicates"
+        )
+        if duplicates:
+            log(
+                "DUPLICATES "
+                + json.dumps([d.get("slug") for d in duplicates])
+                + " (rerun with FERNDESK_RETIRE=1 to unpublish them)"
+            )
 
     created = updated = skipped = failed = 0
+    retired = 0
+    retire_orphans = os.environ.get("FERNDESK_RETIRE") == "1"
     failures: list[dict] = []
     for page in pages:
         page["keywords"] = page["keywords"].replace("{ENV}", target)
         coll = ensure_collection(key, page["collection"], section["id"], colls)
-        existing = by_slug.get(page["slug"])
+        existing = resolve_existing(page, by_slug, by_path)
         body_common = {
             "title": page["title"],
             "markdown": page["markdown"],
@@ -570,7 +755,8 @@ def main() -> int:
                 "status": "published" if publish else (estatus or "draft"),
                 "keywords": page["keywords"],
             }
-            cache_path.write_text(json.dumps(by_slug, indent=2) + "\n")
+            by_path[page["path"]] = by_slug[page["slug"]]
+            write_cache(cache_path, by_slug, by_path, duplicates)
             updated += 1
             log(f"updated {page['slug']}")
             time.sleep(1.2)
@@ -609,7 +795,8 @@ def main() -> int:
                 "status": looked.get("status") or "published",
                 "keywords": page["keywords"],
             }
-            cache_path.write_text(json.dumps(by_slug, indent=2) + "\n")
+            by_path[page["path"]] = by_slug[page["slug"]]
+            write_cache(cache_path, by_slug, by_path, duplicates)
             updated += 1
             log(f"lookup-update {page['slug']}")
             time.sleep(1.5)
@@ -646,8 +833,10 @@ def main() -> int:
                     by_slug[page["slug"]] = {
                         "id": art["id"],
                         "status": art.get("status") or "published",
+                        "keywords": page["keywords"],
                     }
-                    cache_path.write_text(json.dumps(by_slug, indent=2) + "\n")
+                    by_path[page["path"]] = by_slug[page["slug"]]
+                    write_cache(cache_path, by_slug, by_path, duplicates)
                     updated += 1
                     log(f"recovered-update {page['slug']}")
                     time.sleep(1.5)
@@ -658,14 +847,27 @@ def main() -> int:
             failures.append({"slug": page["slug"], "op": "create", "error": str(e)})
             log(f"ERROR create {page['slug']} failed after retries: {e}")
             continue
-        by_slug[page["slug"]] = {
+        # FernDesk may rewrite the slug it was given; record what it actually
+        # stored so a later run can find this article again.
+        stored_slug = art.get("slug") or page["slug"]
+        by_slug[stored_slug] = {
             "id": art.get("id"),
             "status": art.get("status") or ("published" if publish else "draft"),
+            "keywords": page["keywords"],
+            "slug": stored_slug,
         }
-        cache_path.write_text(json.dumps(by_slug, indent=2) + "\n")
+        by_path[page["path"]] = by_slug[stored_slug]
+        write_cache(cache_path, by_slug, by_path, duplicates)
         created += 1
-        log(f"created {page['slug']} {art.get('id')}")
+        log(f"created {stored_slug} {art.get('id')}")
         time.sleep(1.5)
+
+    if retire_orphans:
+        retired, retire_failures = retire_orphaned_articles(
+            key, section, by_slug, by_path, duplicates, {p["path"] for p in pages}, dry=dry
+        )
+        failed += len(retire_failures)
+        failures.extend(retire_failures)
 
     summary = {
         "target": target,
@@ -675,7 +877,10 @@ def main() -> int:
         "updated": updated,
         "skipped": skipped,
         "failed": failed,
+        "duplicates": len(duplicates),
     }
+    if retire_orphans:
+        summary["retired"] = retired
     if failures:
         summary["failed_slugs"] = [f["slug"] for f in failures]
         log("FAILURES " + json.dumps(failures))

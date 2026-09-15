@@ -1,58 +1,93 @@
 ---
-title: "Guides for Chat, Code, Bot, Design, and the CLI"
-description: "Product docs for the Cortex app — how to chat, ship code, run bots, design with your team, and drive Code from a terminal. Platform API lives elsewhere."
+title: "Cortex documentation"
+description: "Product docs for Cortex Chat, Cortex Code, Cortex Bot, and the Cortex CLI — quickstart, guides, and the public API error reference."
 image: "/images/banners/getting-started.png"
 ---
 
 <code>docs.cortex.foundation</code>
 
-Product docs for the Cortex app — how to chat, ship code, run bots, design with your team, and drive Code from a terminal. One account, one domain. **Platform API lives elsewhere.**
+Cortex is one account across three products and a terminal client: **Chat** for conversation and research, **Code** for work inside a repository, **Bot** for tasks on a computer, and the **CLI** to drive Code from a shell. This site documents all of them, plus the public API error reference.
 
-<Frame caption="Cortex Chat home — Chat, Code, and Bot in the sidebar; recent conversations; the composer with its model chip; Code, Research, Docs, and Agents as starting points.">
+<Frame caption="Cortex Chat home — the composer with its model chip, recent conversations in the sidebar, and Code, Research, Docs, and Agents as starting points.">
   <img src="/images/product/chat-home-recents.png" alt="Cortex Chat home with recent conversations in the sidebar and the composer ready" />
 </Frame>
 
 <p className="ink-cta-row">
   <a className="ink-btn" href="/getting-started/quickstart">Quickstart</a>
-  <a className="ink-btn ink-btn-quiet" href="/getting-started/downloads">Download Cortex</a>
+  <a className="ink-btn ink-btn-quiet" href="/cli/install">Install the CLI</a>
 </p>
 
+## Get started
+
 <CardGroup cols={3}>
-  <Card title="Getting started" img="/images/banners/getting-started.png" href="/getting-started/quickstart">
-    A first chat as a guest, then sign in for Code, Bot, and Design. Accounts, plans, settings.
+  <Card title="What is Cortex" icon="compass" href="/getting-started/what-is-cortex">
+    The three products, the CLI, one account, and the models behind them.
   </Card>
-  <Card title="Chat" img="/images/banners/chat.png" href="/chat">
-    Projects, Library, plans, models, tools, Deep Research, images, and how a turn runs.
+  <Card title="First steps" icon="rocket" href="/getting-started/quickstart">
+    A first answer in the browser, then the surface that fits your work.
   </Card>
-  <Card title="Code" img="/images/banners/code.png" href="/code">
-    A coding agent in an isolated Cloud guest — sessions, Ask / Plan / Agent, GitHub, review.
+  <Card title="Accounts and sign-in" icon="user" href="/getting-started/accounts">
+    What works before you sign in, and what a member account unlocks.
   </Card>
-  <Card title="Bot" img="/images/banners/bot.png" href="/bot">
-    Always-on agents with their own computer, approvals, routines, skills, and the Bot desktop app.
+  <Card title="Plans and quotas" icon="gauge" href="/getting-started/plans">
+    Free, Go, Plus, and Pro — and how limits fail closed.
   </Card>
-  <Card title="Design" img="/images/banners/design.png" href="/design">
-    Persistable canvases hosted from Chat or Code, edited in the Design desktop app.
+  <Card title="Downloads" icon="download" href="/getting-started/downloads">
+    The desktop apps, the CLI, and which host each one adds.
   </Card>
-  <Card title="Security" img="/images/banners/security.png" href="/security/overview">
-    What Cortex stores, cookies and consent, where code runs, export and deletion.
+  <Card title="Settings" icon="settings" href="/getting-started/settings">
+    Theme, language, models, integrations, and privacy controls.
   </Card>
 </CardGroup>
 
-<CardGroup cols={3}>
+## Build by product
+
+<CardGroup cols={2}>
+  <Card title="Chat" img="/images/banners/chat.png" href="/chat">
+    Projects, Library, canvases, plans, memory, models, tools, Deep Research, images, and voice.
+  </Card>
+  <Card title="Code" img="/images/banners/code.png" href="/code">
+    Sessions on a repository in an isolated runtime, Ask / Plan / Agent, GitHub, and pull-request review.
+  </Card>
+  <Card title="Bot" img="/images/banners/bot.png" href="/bot">
+    Always-on agents with their own computer, approvals, routines, skills, and a desktop app.
+  </Card>
   <Card title="CLI" icon="terminal" href="/cli">
-    Cortex Code in the terminal — install, sign in, the TUI, slash commands, `/goal`, headless runs.
+    Cortex Code in the terminal — the TUI, slash commands, `/goal`, headless runs, and extensions.
   </Card>
-  <Card title="Changelog" icon="history" href="/changelog">
-    What shipped in Chat, Code, Bot, Design, and the CLI — dated, with the surface it changed.
+</CardGroup>
+
+## API reference
+
+<CardGroup cols={2}>
+  <Card title="Public API" icon="braces" href="/api/overview">
+    What is documented here, and what is not.
   </Card>
-  <Card title="API" icon="braces" href="/api/overview">
-    The problem-document format and the public catalog of error codes.
+  <Card title="Errors" icon="triangle-alert" href="/api/errors">
+    The RFC 9457 problem-document format and how to branch on `code`.
+  </Card>
+  <Card title="Problem catalog" icon="circle-alert" href="/problems">
+    Every error code, its HTTP status, and whether it is retryable.
+  </Card>
+</CardGroup>
+
+## Operate
+
+<CardGroup cols={2}>
+  <Card title="Security and privacy" img="/images/banners/security.png" href="/security/overview">
+    What Cortex stores, which cookies run, where your code executes, and how to export or delete data.
   </Card>
   <Card title="System status" icon="activity" href="/status">
     Live availability for Web, API, Chat, Code, and Bot — incidents and maintenance.
   </Card>
+  <Card title="Troubleshooting" icon="life-buoy" href="/getting-started/troubleshooting">
+    What the product shows when something is off, and what to do next.
+  </Card>
+  <Card title="Changelog" icon="history" href="/changelog">
+    What shipped in Chat, Code, Bot, and the CLI — dated, with the surface it changed.
+  </Card>
 </CardGroup>
 
 <Note>
-The inference **Platform API** (a public model-inference API) is not documented on this site and is not implemented in this repository. See [Coming soon](/platform).
+Sign in at [cortex.foundation](https://cortex.foundation). This site documents end-user surfaces only — no authentication internals, no private routes, and no inference Platform API.
 </Note>
