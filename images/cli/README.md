@@ -9,7 +9,7 @@ exactly one page; no two files share a sha256.
 `docs/media/intro.gif` — the README demo: the signed lock TUI composited onto a
 photographed macOS desktop. Generated, not a live recording. Used on `cli/index`.
 
-## `runtime/` — Designer cli pack
+## `runtime/` — CLI runtime pack
 
 Headless `MockTerminal` renders of the live session chrome, vendored byte-for-byte
 from CortexLM/cli tip `4d41ef362481ec816ac395e0e64fe6a54327de14`
