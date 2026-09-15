@@ -136,7 +136,14 @@ The site is end-user visible. These are hard rules, and CI checks most of them:
 5. Run the checks in §8 before committing.
 
 Adding a navigation entry means the MDX must exist; CI fails a `docs.json` slug
-with no page, and a page that no navigation entry reaches is dead weight.
+with no page, and it fails an MDX page no navigation entry reaches. A page that
+no reader can navigate to still syncs to FernDesk and still gets indexed, so an
+orphan is not harmless — it is how the tree accumulated a second hub for every
+product. Put the page in the sidebar, or fold it into the page above it.
+
+The problem catalog index is checked against the pages beside it in both
+directions: every `problems/*.mdx` must be linked from `problems/index.mdx`, and
+every link there must have a page. Add the row in the same change as the page.
 
 ## 7. FernDesk sync rules
 
@@ -182,10 +189,11 @@ npm exec --yes --package=mint@4.2.876 -- mint validate
 ```
 
 `check-docs-site.mjs` fails on: a problem code without a page or with a wrong
-`type` URL; a nav slug or internal href with no MDX; a documented `/v1/…` path
-not registered in the backend router; a retired problem-docs host; auth
-internals; `/images/frames/` plates; **staging** in navigation, redirects, or
-copy; product chrome in the navbar; a brand-green `navbar.primary`; and home
+`type` URL; a catalog index that does not link every problem page; a nav slug or
+internal href with no MDX; an MDX page no navigation entry reaches; a documented
+`/v1/…` path not registered in the backend router; a retired problem-docs host;
+auth internals; `/images/frames/` plates; **staging** in navigation, redirects,
+or copy; product chrome in the navbar; a brand-green `navbar.primary`; and home
 CTAs that are not `.ink-btn`.
 
 Preview locally:
