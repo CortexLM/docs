@@ -1,0 +1,116 @@
+---
+title: "Environment variables"
+description: "The CORTEX_* variables Cortex CLI reads, what each one overrides, and where variables sit between config files and flags."
+icon: "list"
+---
+
+Every setting in a Cortex CLI config file can also be set as an environment variable, and a few things can only be set that way. Variables are the right tool when the value changes per shell, per machine or per CI job: which account to use, where the config lives, whether tools run in the cloud or on a connected computer.
+
+This page lists the variables the CLI reads, grouped the way the product groups them, and says what each one overrides. Values are never documented here: put secrets in your OS keyring or your CI secret store, not in a shell profile that gets committed or shared.
+
+## Precedence
+
+Environment variables sit between config files and command-line flags in precedence: a flag beats a variable, a variable beats a config file. So `--sandbox` on the command line wins over anything in your environment, and your environment wins over `~/.cortex/config.toml`.
+
+## Locations
+
+| Variable | Effect |
+| --- | --- |
+| `CORTEX_HOME` | Root for config and data. Default `~/.cortex`. Checked for writability at startup. |
+| `CORTEX_CONFIG_DIR` | Cortex home root. Checked before `CORTEX_HOME`, and it moves the whole root, not just the config file |
+| `CORTEX_CONFIG` | Path to a specific config file, overriding the file path outright |
+| `CORTEX_DATA_DIR` | Data directory for sessions and history |
+| `CORTEX_CACHE_DIR` | Cache directory |
+| `CORTEX_DIAGNOSTICS_DIR` | Where the diagnostic journal is written. Unset means no journal is created. |
+| `CORTEX_ORG_POLICY_DIR` | Directory holding a managed `policy.json` |
+
+The home directory resolves in the order `CORTEX_CONFIG_DIR`, then `CORTEX_HOME`, then `~/.cortex`. See [Data locations](/cli/data-locations) for what ends up in each directory.
+
+## Account
+
+| Variable | Effect |
+| --- | --- |
+| `CORTEX_API_KEY` | API key, for headless and CI use |
+| `CORTEX_AUTH_TOKEN` | Session or bearer token. Checked before `CORTEX_API_KEY`. |
+| `CORTEX_API_URL` | Base URL of the Cortex API. Defaults to `https://api.cortex.foundation`. Intended for operators and tests. |
+
+Interactive use should prefer `cortex login`, which stores the session in the OS keyring. See [Sign in to the CLI](/cli/sign-in).
+
+## Where tools run
+
+| Variable | Effect |
+| --- | --- |
+| `CORTEX_COMPUTER` | Where tools run. Unset, or `cloud`, uses Cortex Cloud. Set `this_pc` (aliases `this-pc`, `local`, `paired`, `connected`) or `ssh`. |
+| `CORTEX_SSH_HOST` | SSH target. Setting it selects the SSH runtime. |
+| `CORTEX_SSH_TARGET` | Alias of `CORTEX_SSH_HOST` |
+
+<Note>
+This PC and SSH require an already connected Code session. Cortex will not create one for you and will not quietly substitute Cortex Cloud. See [Cloud, This PC, and SSH](/cli/hosts).
+</Note>
+
+## Model selection
+
+| Variable | Effect |
+| --- | --- |
+| `CORTEX_MODEL` | Default model |
+| `CORTEX_DEFAULT_MODEL` | Fallback default model |
+| `CORTEX_PROVIDER` | Provider id. Defaults to `cortex`. |
+| `CORTEX_MAX_TOKENS` | Default response length cap |
+| `CORTEX_TEMPERATURE` | Default sampling temperature |
+| `CORTEX_PRICING_<MODEL>` | Per-model price used in cost reporting |
+
+## Logging and diagnostics
+
+| Variable | Effect |
+| --- | --- |
+| `CORTEX_LOG_LEVEL` | Log verbosity for a subcommand: `error`, `warn`, `info`, `debug`, `trace` |
+| `RUST_LOG` | Overrides the tracing filter entirely when set, for example `RUST_LOG=debug cortex plugin list` |
+| `RUST_BACKTRACE` | Standard backtrace control |
+| `NO_COLOR` | Disable colour. `--color never` sets this for child processes. |
+| `CORTEX_GIT_TIMEOUT_SECS` | Timeout for git operations |
+
+`CORTEX_DIAGNOSTICS_DIR` is the opt-in switch for writing diagnostic files at all. [CLI troubleshooting](/cli/troubleshooting) has the allowlist, the size caps and the retention window.
+
+## Set for you, not by you
+
+These are populated by Cortex for the processes it spawns. A plugin can read them; you should not set them yourself.
+
+| Variable | Available to |
+| --- | --- |
+| `CORTEX_PLUGIN_ARGS` | Plugin invocations: the arguments the call was made with, as JSON |
+
+Cortex also sets a small number of further variables for its own task routing. They are not a supported surface and setting them yourself is not meaningful.
+
+Hooks do not get an environment of their own. A hook belongs to a plugin and runs inside the plugin runtime rather than as a command Cortex spawns for it, so there are no hook-specific variables to read. See [Hooks](/cli/hooks).
+
+## Standard variables Cortex respects
+
+| Variable | Used for |
+| --- | --- |
+| `EDITOR`, `VISUAL` | Opening an editor for `cortex agent edit`, `cortex workspace edit` and similar |
+| `SHELL` | Shell completion setup and diagnostics |
+| `HTTPS_PROXY`, `HTTP_PROXY` (and the lowercase spellings) | Outbound HTTP from `cortex scrape` |
+| `SUDO_USER`, `SUDO_UID` | Resolving your real home directory when running under `sudo` |
+| `PATH`, `TERM`, `LANG`, `LC_ALL`, `USER` | Reported in diagnostics output |
+| `XDG_*` | Legacy path resolution |
+
+## Checking what is in effect
+
+```bash
+cortex config
+```
+
+That prints the effective configuration after every layer has been merged, which is the fastest way to find out whether a variable or a config file won. If the answer surprises you, check for a project `.cortex/config.toml`: it overrides your own config file, though not your environment. See [Configuration](/cli/configuration).
+
+<Tip>
+The CLI also reads a handful of capture and test variables that exist for people working on the CLI itself. They are not part of the supported surface. The only one a normal user tends to want is `CORTEX_CURSOR_BLINK`, which overrides blink behaviour in the composer.
+</Tip>
+
+## Related
+
+- [Configuration](/cli/configuration)
+- [Data locations](/cli/data-locations)
+- [Permission policy](/cli/policy)
+- [Headless and one-shot runs](/cli/headless)
+- [CI cookbook](/cli/ci)
+- [CLI troubleshooting](/cli/troubleshooting)

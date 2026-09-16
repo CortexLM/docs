@@ -1,0 +1,139 @@
+---
+title: "Permission policy"
+description: "Set allow, ask and deny rules for tools and commands in Cortex CLI, restrict the sandbox, and understand a managed organization policy."
+icon: "file-shield"
+---
+
+Permission policy is how you decide, in advance, what the agent may do without stopping to ask you. It has two layers that are easy to confuse. The first is yours: keys in a config file that set the approval policy, the sandbox and per-tool rules, which you can also commit to a repository. The second only exists if your organization pins settings on the machine, and it can restrict two specific behaviours no matter what your own config says.
+
+This page covers the rules you write yourself first, then the managed document separately. If you are looking for the interactive controls instead, the mode chip, the approval prompt and the presets are on [Modes and permissions](/cli/modes-and-permissions).
+
+## Your own rules
+
+Three keys do most of the work. They go in `~/.cortex/config.toml`, or in a project `.cortex/config.toml`.
+
+| Key | Values | Meaning |
+| --- | --- | --- |
+| `approval_policy` | `untrusted`, `on-failure`, `on-request`, `never` | When to ask before running a tool. `on-request` is the default. |
+| `sandbox_mode` | `read-only`, `workspace-write`, `danger-full-access` | What the sandbox permits. `workspace-write` is the default. |
+| `trusted_directories` | array of paths | Read from both layers and merged, but nothing in this build consults the merged list. Do not rely on it to skip a prompt. |
+
+`[sandbox_workspace_write]` refines the default sandbox mode:
+
+```toml
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+writable_roots = ["/tmp/scratch"]
+network_access = false
+exclude_tmpdir_env_var = false
+exclude_slash_tmp = false
+```
+
+## The permission table
+
+`[permission]` sets policy per capability and per command. Every value is `allow`, `ask` or `deny`.
+
+```toml
+[permission]
+edit = "ask"
+webfetch = "allow"
+doom_loop = "ask"
+external_directory = "deny"
+
+[permission.bash]
+"git *" = "allow"
+"rm *" = "deny"
+
+[permission.skill]
+"deploy" = "ask"
+
+[permission.mcp]
+"my-server" = "allow"
+```
+
+The sub-tables match on the thing being run: a glob over shell commands under `[permission.bash]`, a skill name under `[permission.skill]`, a server name under `[permission.mcp]`. This is the surface to reach for when you want one dangerous command family blocked outright rather than approved case by case.
+
+The same controls exist as flags for a single run, `-a` / `--ask-for-approval`, `-s` / `--sandbox`, `--full-auto` and `--dangerously-bypass-approvals-and-sandbox`, and as the slash commands `/approval <ask|session|always|never>`, `/sandbox [on|off|network]` and `/auto [on|off]` inside a session.
+
+## Project rules
+
+A project `.cortex/config.toml` can carry `approval_policy`, `sandbox_mode` and the whole `[permission]` table, and it beats your own config. A repository can also commit `.cortex/permissions.toml`, a rules file the session loads and evaluates rather than merely displays: `First matching rule wins; deny beats allow.` `/permissions rules` shows how many allow, ask and deny rules are in effect, and answers `No permission rules committed. Add .cortex/permissions.toml to pin allow / ask / deny.` when there are none. And a repository can commit `.cortex/sandbox.toml`, which restricts network egress for runs in that repository, so every run and every CI job inherits the same restriction.
+
+<Warning>
+Because the project layer wins, cloning a repository can loosen or tighten what the agent may do on your machine. Run `cortex config` in a fresh clone before you start a session in it. See [Configuration](/cli/configuration).
+</Warning>
+
+## A hook is never consent
+
+What a hook cannot do is stand in for your approval. A hook firing is not consent, and it does not remove the approval prompt that the policy above would otherwise raise. A hook cannot grant a permission either: every permission question starts at "ask", a hook may answer "deny", and a plugin that tries to answer "allow" is refused outright.
+
+Hooks are declared by a plugin, in that plugin's manifest, rather than in a file of their own, and they do not fire around the tool calls an interactive session makes. The policy above is what gates a session. [Hooks](/cli/hooks) covers the events and which of them actually fire.
+
+## If your organization pins settings
+
+A managed policy is a separate mechanism from everything above. It is one directory, named by `CORTEX_ORG_POLICY_DIR`, holding one file, `policy.json`:
+
+```bash
+export CORTEX_ORG_POLICY_DIR=/etc/cortex/policy
+```
+
+There are exactly two keys, both optional: `fast_mode` and `plugin_install`. A missing document, or a document without a key, leaves that key on the host default. Two keys is the whole surface today.
+
+Every key resolves fail-closed. A document that exists but cannot be read, cannot be parsed, or carries a value that is not recognized denies the restricted behavior. Policy failures never grant a permission.
+
+| Situation | `fast_mode` | `plugin_install` |
+| --- | --- | --- |
+| No directory, or no `policy.json` | host default | host default |
+| Key absent | host default | host default |
+| Key `true`, `"on"`, `"enabled"`, `"allowed"` | allowed | optional |
+| Key `false`, `"off"`, any other value | disabled | required |
+| Document unreadable or unparseable | disabled | required |
+
+### When fast mode is disabled
+
+A request to turn fast mode on is refused with this message, then a second line saying the session is staying where it is:
+
+```text
+Fast mode is disabled for your organization. Contact your admin.
+Staying on Standard.
+```
+
+The session keeps its current model and settings. Nothing is re-sent, and there is no client flag that bypasses the policy. Turning fast mode off is always allowed, so the policy only ever restricts in one direction. A remote session on Standard shows `Remote · Standard`; the Fast chip appears only while fast mode is actually on.
+
+### When plugin installs require a review
+
+With `plugin_install` set to require an accepted command, installing or updating a plugin refuses until you have reviewed what it would run and passed the hash back:
+
+```text
+This organization requires --accept-command for plugin installs.
+Run `cortex plugin install <id> --json` to review the commands,
+then pass --accept-command <sha256>.
+```
+
+The pin itself is enforced the same way for every organization, so a review that does not match the package fails closed whether or not a policy document exists. See [CLI plugins](/cli/plugins).
+
+### The audit journal
+
+Fail-closed decisions append one JSON object per line to `audit/events.jsonl` in the Cortex home directory.
+
+| Kind | Written when |
+| --- | --- |
+| `plugin_command_accepted` | A reviewed command hash was accepted for an install or update |
+| `instructions_omitted` | A subagent skipped user, project, or local instruction documents |
+| `managed_policy_never_omitted` | A request named managed policy; it loaded anyway |
+
+Records carry the plugin or source, the hashes, and the scope names. They never carry prompt text, file bodies, or secrets.
+
+<Note>
+How an organization puts `policy.json` on a machine is up to that organization, and there is no administration screen for it in the CLI. If you hit one of the refusals above and you do not manage the machine, the message is right: ask whoever does.
+</Note>
+
+## Related
+
+- [Modes and permissions](/cli/modes-and-permissions)
+- [Configuration](/cli/configuration)
+- [Environment variables](/cli/environment-variables)
+- [Hooks](/cli/hooks)
+- [CLI plugins](/cli/plugins)
+- [Data locations](/cli/data-locations)

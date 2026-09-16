@@ -1,61 +1,87 @@
 ---
 title: "Bot quickstart"
-description: "Sign in, create your first bot, open its computer, give it a task, and approve its first consequential step."
-image: "/images/banners/bot.png"
-keywords: ["tutorial", "first bot", "getting started", "create bot"]
+description: "Sign in, create your first bot, open its computer, give it a task, and approve its first consequential step"
+icon: "rocket"
 ---
 
-This quickstart uses the web app, where a bot's computer runs in the Cloud. The [Bot desktop app](/bot/desktop) adds **This PC**.
+This quickstart takes you from a signed-in account to a bot that has done a first piece of work on its own desktop, in under ten minutes. It uses the web app, where a bot's computer runs in the Cloud.
 
-<Frame caption="What a guest sees on a Bot deep link. Sign in to reach the setup form.">
-  <img src="/images/product/bot-home.png" alt="Cortex Bot guest gate — This space is reserved for signed-in accounts" />
-</Frame>
+You need a Cortex account and a browser. Nothing is installed. If you would rather read about the machinery first, see [How Bot works](/bot/how-it-works).
 
 <Steps>
   <Step title="Sign in and open Bot">
-    Sign in from the sidebar footer at [cortex.foundation](https://cortex.foundation), then choose **Bot** in the product switcher. Guests see **This space is reserved** — choose **Sign in**.
+    Sign in with your Cortex account at [cortex.foundation](https://cortex.foundation), then choose **Cortex Bot** in the sidebar. Bot is signed-in only: without an account you see the public product page and a **Sign in to Cortex Bot** button instead of a bot list.
   </Step>
   <Step title="Create a bot">
-    With no bots on the account you land on the **setup form**. Give the bot a name and a purpose, then create it. It appears in the sidebar; the pane opens on it.
+    Choose **New bot**. An account with no bots yet lands on **Create your first bot** rather than an empty list.
+
+    Give it a **Name** of 1 to 40 characters, then pick a **Look** and a **Face**. Everything else on the form is optional and can be changed later. Choose **Create bot**; you see `Creating…`, then the bot's first conversation.
+
+    Its computer is created with it. For the whole form, including descriptions, labels, skills and connected apps, see [Create a bot](/bot/create-a-bot).
   </Step>
   <Step title="Open its computer">
-    On the Computer rail choose **Open desktop**. The Cloud guest starts — the rail reads **Connecting** while it does — and the live desktop appears: screen, browser, files.
+    Switch to the **Computer** tab.
+
+    - If it reads **No computer yet**, choose **Start computer**. The hint says `Start a Cloud computer to open a live desktop.`
+    - If it reads **Computer is asleep**, choose **Wake the computer**.
+
+    You will see `Starting the computer…`, then `Connecting to the desktop stream…`, then the live desktop with **Live** on the rail. Confirm **Runs on** reads `Cloud`.
   </Step>
   <Step title="Give it a task">
-    Describe the job in the conversation.
+    Go back to **Messages**. A bot with no thread yet shows `{name} is idle.` and a row of **Suggested asks**. Those pills write the composer, they do not start a run, so you can edit one before sending.
+
+    Type into the composer, which reads `Message {name}…`, and choose **Send**.
 
     ```text
     Open our status page, check whether any component is degraded, and tell me what you find.
     ```
 
-    The bot works on its desktop while you watch. It reports back in short messages rather than a transcript of every click.
+    You will see `{name} is writing…` and then short bubbles as they arrive. A bot reports in a handful of messages rather than narrating every click, so watch the Computer tab if you want the detail.
   </Step>
-  <Step title="Approve — or decline — a parked step">
-    When the bot reaches a consequential action — changing something in a connected app, or a dangerous computer step — it parks and shows **Allow / Deny / Always**. Nothing runs until you choose. See [Approvals](/bot/approvals).
+  <Step title="Approve its first consequential step">
+    When the bot reaches something consequential, a command, a file write, or a click on its desktop, the turn parks and you get a widget that asks `Allow {tool}?`, naming the tool, with the reason and the arguments it stopped on.
+
+    - **Allow** runs that exact step and the turn continues from the real result.
+    - **Deny** does not run it, and the bot is told why.
+    - **Always** writes a rule so that tool stops asking on this bot.
+
+    Nothing runs while the request sits there. See [Approvals and tool policy](/bot/approvals).
   </Step>
-  <Step title="Put it on a schedule (optional)">
-    Add a **routine** for work you want repeated. Routines fire in your local weekday hours. See [Routines](/bot/routines).
+  <Step title="Drive the desktop yourself (optional)">
+    On the Computer tab choose **Take control** to use your own mouse and keyboard; **You have control** appears while you hold it. Choose **Hand back** when you are done. If the bot is holding the controls you see `{name} is still working.`
   </Step>
-  <Step title="Let it sleep">
-    Choose **Sleep** on the Computer rail when you are done. The next task wakes the guest before the bot is prompted.
+  <Step title="Let it rest">
+    Choose **Sleep** or **Hibernate** when you have finished, and the rail reads **Off**. An idle bot computer is put to sleep for you anyway, and the next task wakes it. To rebuild a computer that has gone wrong, choose **Recreate**.
   </Step>
 </Steps>
 
-## Give the bot tools
+## What you will and will not see
 
-Under **Customize → Connectors**, connect an app and make it available to **Cortex Bot** (or to both Chat and Bot). A bot never inherits a connection you did not assign. See [Tools and connectors](/chat/tools).
+A bot's conversation holds only four kinds of thing: your messages, the bubbles the bot chose to send you, questions it asks you, and requests for a secret. Everything else it produced while working, its own reasoning and its raw tool output, never reaches the conversation. A turn is capped at 8 bubbles, so a bot that has nothing to say says nothing.
+
+A turn has no round limit. It ends when the model is finished, when you cancel, when the 15-minute deadline expires, or when the same tool call repeats six times without progress.
 
 ## Good first tasks
 
 | Task | Why it suits a bot |
 | --- | --- |
-| Check a dashboard and summarise what changed | Browsing plus a short report |
-| Fill a recurring form from a document you attach | Desktop work with a clear stopping point |
-| Watch a page and notify you when something appears | A routine plus `notify` |
-| Pull a report from a connected app every Monday | A routine with an approved connection |
+| Check a dashboard and summarise what changed | Browsing, then a short report |
+| Fill a recurring form from a file you gave it | Desktop work with a clear stopping point |
+| Watch a page and tell you when something appears | A routine plus a notice bubble |
+| Pull a weekly report out of a connected app | A routine plus one approved connection |
+
+<Note>
+  In the web app a bot's computer runs on `Cloud` only. `This PC`, which needs a paired host on your own machine, and `SSH`, which uses a saved host and has no live desktop, are options in the [Bot desktop app](/bot/desktop).
+</Note>
+
+## Next steps
+
+Once the first task has landed, the three things most people want next are a schedule, a skill and a connected app. Add a routine from the bot's **Routines** panel with **Create routine**; by default it `Runs on weekdays at 9:00 in your local time, unless the prompt says otherwise.` Enable a skill from the **Skills** panel, where each recipe is scanned before it can be turned on. Assign a connected app on the **Plugins** page and then switch it on for this bot only.
 
 ## Related
 
-- [Computer](/bot/computer) — Open desktop, Sleep, and the hosts.
-- [Tools](/bot/tools) — everything a bot can call.
-- [Troubleshooting](/bot/troubleshooting)
+- [Create a bot](/bot/create-a-bot) - every field on the New bot form.
+- [Computer](/bot/computer) - the live desktop, recordings, sleep and wake.
+- [Approvals and tool policy](/bot/approvals) - what asks, what does not, and why.
+- [Routines](/bot/routines) - put repeated work on a schedule.
+- [Bot troubleshooting](/bot/troubleshooting) - when the desktop or the turn does not behave.

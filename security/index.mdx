@@ -1,0 +1,99 @@
+---
+title: "Cortex Security"
+description: "GitHub pull-request review that reads the change in the repository, posts a check run, and never turns a failed review green"
+icon: "shield-halved"
+---
+
+Cortex Security reviews GitHub pull requests where they already are. You install its GitHub App on the repositories you want reviewed, and each pull request opened in them gets a review: inline comments on the lines, a summary comment, and a check run named **Cortex Security**. The product page says it in one line: *GitHub pull-request review without pasting a diff. The change stays in the repository; Cortex reads it there.*
+
+Security is part of Cortex Code rather than a separate application, so you reach it from inside Code and sign in once for both. This page is the map of the Security tab: what the product guarantees, where each page takes you, and how it differs from the other ways Cortex can look at a repository.
+
+## What Cortex Security guarantees
+
+Three commitments shape every surface below, and they are worth reading before the feature list because they explain the shape of everything else.
+
+| Commitment | What it means for you |
+| --- | --- |
+| A review that could not run is recorded as failed, never as an approval | "We could not look" and "we looked and it is fine" are opposite answers. A check run that cannot tell them apart is worse than no check at all, so a review that fails reports **Failure** or **Neutral** with a reason, never **Success**. |
+| A finding the second pass rejects never reaches GitHub | Every candidate finding is checked a second time against the change itself. Rejections are counted and shown to you as discarded rather than quietly dropped. |
+| A person approves, not Cortex | Cortex Security never approves a pull request on your behalf. The policy page states it as fact: **Human approval required**, because *Cortex never approves a pull request automatically.* There is no setting that changes this. |
+
+<Note>
+The merge gate is GitHub's, not Cortex's. Whether a failing **Cortex Security** check blocks a merge depends on whether you made it a required status check in GitHub branch protection. See [Checks and comments](/security/checks).
+</Note>
+
+## Start here
+
+<CardGroup cols={2}>
+  <Card title="Security quickstart" icon="rocket" href="/security/quickstart">
+    Install the GitHub App, enable a repository, and read your first review end to end.
+  </Card>
+  <Card title="How a review works" icon="diagram-project" href="/security/how-a-review-works">
+    The stages a review moves through, the second pass, and why the verdict is arithmetic.
+  </Card>
+</CardGroup>
+
+## Reviews and scans
+
+<CardGroup cols={2}>
+  <Card title="Checks and comments" icon="circle-check" href="/security/checks">
+    The check run and its three conclusions, the summary comment, inline findings, and re-running a review.
+  </Card>
+  <Card title="Review policy" icon="scale-balanced" href="/security/review-policy">
+    When to review, what to look at, what to report, and how hard a finding lands.
+  </Card>
+  <Card title="Repository scans" icon="magnifying-glass" href="/security/scans">
+    On-demand and weekly scans of a repository you own, and what you can do with a finding.
+  </Card>
+  <Card title="Cortex Agent runs" icon="robot" href="/security/agent">
+    Evidence gathered by running the change in an isolated runtime, and why a run is never a pass.
+  </Card>
+</CardGroup>
+
+## Configure
+
+<CardGroup cols={2}>
+  <Card title="Installation and repositories" icon="github" href="/security/repositories">
+    The installation, the repositories list, what the App asks for, and how to stop reviews.
+  </Card>
+  <Card title="Security troubleshooting" icon="life-ring" href="/security/troubleshooting">
+    No check run, a review stuck, comments missing, or a finding that looks wrong.
+  </Card>
+</CardGroup>
+
+## How a review behaves
+
+| Behaviour | Why it works this way |
+| --- | --- |
+| One pass over the change | A review is a pass, not a conversation. Ask for another look and you get another pass over the current head. |
+| Failed stays failed | The result is stored with the status the pass earned. A red review is not turned green so a dashboard can look finished. |
+| Nothing is pasted | Pasting a patch into an assistant is how secrets and context leak. This surface deliberately has no such box, which is why the older paste-a-diff page was retired. |
+| The policy belongs to the owner | The review policy is set in the app, for the installation. Someone opening a pull request cannot reduce the scrutiny it receives. |
+
+## Three things called security
+
+The word does a lot of work across Cortex, so keep these apart.
+
+| Thing | What it is |
+| --- | --- |
+| [cortex.foundation/security](https://cortex.foundation/security) | The public product page for Cortex Security. |
+| The review inbox, inside Cortex Code | Every pull request Cortex Security has seen, what it found, and the evidence behind it. |
+| [Security and privacy](/reference/security-and-privacy) | How Cortex handles your data. A different subject entirely. |
+
+## How it fits with the other products
+
+Three GitHub-adjacent things exist, and reaching for the wrong one is the most common mistake.
+
+- The **Cortex Security GitHub App** reviews pull requests in place. It is installed from the Security surfaces and described in [Installation and repositories](/security/repositories).
+- **Connect GitHub** in Cortex Code is a separate connection, used for Code sessions. Neither install implies the other. See [Connect GitHub](/code/github).
+- The **Cortex CLI** can review a diff from within your own pipeline, which is a headless Code run rather than the Security App. Use whichever fits, or both. See [Headless and one-shot runs](/cli/headless).
+
+A scan finding that comes with a suggested patch hands off into a Code session for you to read; nothing is applied for you. That is the seam between the two products: Security decides what is wrong, Code is where a change gets made.
+
+## Related
+
+- [Security quickstart](/security/quickstart) - from nothing to a first reviewed pull request.
+- [How a review works](/security/how-a-review-works) - the stages, the verifier, the verdict.
+- [Checks and comments](/security/checks) - what lands on the pull request.
+- [Pull-request review](/code/security) - the same product, seen from the Cortex Code tab.
+- [CI cookbook](/cli/ci) - reviewing a diff from your own pipeline instead.

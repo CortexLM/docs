@@ -1,130 +1,178 @@
 ---
 title: "The TUI"
-description: "What is on screen when you run cortex — the timeline and its rows, the composer, the status line, queueing follow-ups, and the panels behind Ctrl+K."
-keywords: ["interface", "screen", "layout", "panels"]
+description: "What is on screen when you run cortex: the timeline, the composer and its chips, the footer hints, the panels, and the alternate screen"
+icon: "window-maximize"
 ---
 
-`cortex` with a terminal attached starts the interactive UI. It takes the full viewport by default (the alternate screen) and gives you three things: a **timeline** of the conversation and the agent's work, a **composer** at the bottom, and a **footer** with the model, the mode, and the most useful shortcut.
+Run `cortex` in a terminal and you get the interactive app: a **timeline** of the conversation and the agent's work, a **composer** at the bottom with a mode chip on its top border and a model chip on its bottom border, and a **footer** strip of the shortcuts that apply right now. It takes the whole viewport by default and gives your scrollback back when you leave.
 
-<Frame caption="The empty composer: > with a block caret, the placeholder “Plan, search, build anything”, the mode on the top border, the model chip Cortex Mini 1 (medium) on the bottom border, and the footer hints.">
-  <img src="/images/cli/runtime/120x40/composer-empty.png" alt="Cortex CLI empty Agent composer with the model chip on its border" />
-</Frame>
+This page covers how to start it, what each region of the screen shows, the timeline rows and tool tiles, the composer and its sigils, queueing a follow-up while a turn runs, the panels and overlays, and how to interrupt or quit. The controls that decide what the agent is allowed to do are on [Modes and permissions](/cli/modes-and-permissions).
 
-## Starting it
+## Start it
 
 ```bash
-cortex                          # current directory
-cortex "review the auth module" # start with a prompt already submitted
-cortex --cd /path/to/project    # another working root
-cortex --model <model-id>       # pick a model for this session
-cortex --profile work           # load a profile from config.toml
-cortex --no-alternate-screen    # stay inline in the host terminal
+cortex                            # the current directory
+cortex "review the login module"  # start with a prompt already submitted
+cortex --cwd /path/to/project     # use another directory as the working root
+cortex --model <model-id>         # pick a model for this session
+cortex --profile work             # load a named profile from config.toml
+cortex --no-alternate-screen      # stay inline in the host terminal
 ```
 
-The TUI needs a terminal on both stdin and stdout; if either is redirected it refuses to start and points you at [`cortex run` or `cortex exec`](/cli/headless).
+The TUI needs a real terminal on both standard input and standard output. If either is redirected it refuses to start and points you at [`cortex run` or `cortex exec`](/cli/headless) instead.
 
-## The welcome splash
+## The first screen
 
-Before the first turn the timeline shows two lines — *Welcome to Cortex, the coding agent CLI* and `v0.1.x · / commands · @ files · ! shell · & cloud` — plus a first-run tips panel. After your first turn the splash is dropped; an empty session is composer and footer only.
+Before your first turn the timeline shows a two-line welcome:
 
-## Timeline rows
+```
+Welcome to Cortex, the coding agent CLI
+v<version>  ·  / commands  ·  @ files  ·  ! shell  ·  & cloud
+```
 
-| Row | Looks like | Meaning |
+On a first run a tips panel appears with it. It points you at switching model and reasoning effort, adding `@` files for context, pressing `Shift+Tab` to cycle Agent / Plan / Ask, and opening Settings with `F2`. A narrow terminal gets a shorter variant of the same welcome.
+
+After your first turn the welcome is dropped: an empty session is composer and footer only. The TUI deliberately never paints a fake shell prompt, an echoed command, a working directory or a logo.
+
+## The screen, region by region
+
+| Region | What it holds |
+| --- | --- |
+| Header, left | Nothing. It is empty by design, so no path is echoed there |
+| Header, right | The token counter, drawn as a pair such as `0 / 500K` |
+| Timeline | Your prompts, the agent's prose, tool tiles, thinking rows, diagnostics and errors |
+| Status line | While a turn runs: a spinner, the stage it is in, and the elapsed time |
+| Composer | Two hairlines, the mode chip on the top border, the model chip on the bottom border, the `>` sigil at the start of your input |
+| Footer | The shortcut hints for the current context |
+
+The stage on the status line reads *Thinking*, *Executing* with the tool name, *Streaming* or *Delegation*.
+
+<Note>
+The token counter is a pair of numbers, not a promise. The real context window depends on the model you are using, and the counter can read zero until the first turn finishes. Treat the figure on screen as informational.
+</Note>
+
+## Timeline rows and tool tiles
+
+| Row | On screen | Meaning |
 | --- | --- | --- |
-| Your prompt | `> add ioredis and a mock for the tests` on a light bar, with the time | A message you submitted |
+| Your prompt | Your text on a light bar | A message you submitted |
 | Thinking | `♦ Thought for 1.4s` | The model reasoned before acting |
-| Agent prose | Rendered markdown — headings, lists, tables as an ASCII grid, code between hairlines with a language tag and line numbers | The model's reply, streamed |
-| Tool call | `● Shell  $ cargo test -p cortex-tui · ✓ 0 · 41s` | A tool the agent invoked, with a short summary and result |
-| Edit | A unified diff: dim gutter, red `-`, green `+`, a `+N -N` stat | A file change |
-| Worked for | `Worked for 4.6s` | The turn finished |
-| Stopped | `× Stopped` | You interrupted the turn |
-| Subagent task | `● Task <type>` with a todo list beneath | Work delegated to a subagent |
+| Agent prose | Rendered markdown, with code between hairlines | The reply, streamed as it arrives |
+| Read | `● Read   src/cortex-tui/src/composer.rs · 212 lines` | A file the agent read |
+| Grep | `● Grep   "alternate_screen" in src/ · 6 hits in 4 files` | A content search |
+| Edit | `● Edit   … · +12 −3` with a `▸ show diff` affordance | A file change, expandable to the diff |
+| Shell | `● Shell   $ cargo test -p cortex-tui` with the exit status and how long it took | A command the agent ran |
+| Running | `⠇ Shell … · running · 8s` | A tool still in flight |
+| Grouped calls | `▾ 3 tool calls  Read ×2 · Grep ×1` | Several calls folded into one row |
+| Diagnostics | `● Diagnostics  src/…/composer.rs · 2`, then one line per problem | Results from the language server |
+| Subagent | `● Task <type>` with a todo list beneath it | Work delegated to a subagent |
+| Turn end | `Worked for 12s · 4.1k tokens` | The turn finished |
+| Interrupted | `× Stopped` | You interrupted the turn |
+| Cloud hand-off | `↑ Handed off to Cortex Cloud` | The task went to [Cortex Cloud](/cli/hosts) |
 
-Tool rows collapse to a summary; with the timeline focused, press **e** to expand or collapse the selected one.
-
-<Frame caption="Tool tiles: a grouped “3 tool calls” header, Read and Grep rows with their summaries, and a Shell row whose failing test is quoted beneath it.">
-  <img src="/images/cli/runtime/120x40/tool-tiles.png" alt="Cortex CLI timeline with Read, Grep, and Shell tool rows and a failing test result" />
-</Frame>
-
-<Frame caption="An Edit tile: the unified diff with a dim gutter, red removals, green additions, and a +2 −1 stat.">
-  <img src="/images/cli/runtime/120x40/diff-hunk.png" alt="Cortex CLI edit tile showing a unified diff hunk" />
-</Frame>
-
-## The status line
-
-While a turn runs, a line above the composer shows a spinner, the stage — *Thinking*, *Executing &lt;tool&gt;*, *Streaming*, *Delegation* — the elapsed time, tokens used, and **esc to interrupt**.
+Tool rows collapse to a summary. With the timeline focused, press `e` to expand or collapse the selected one. The exact wording of the elapsed-time and token rows is still settling, so do not script against it.
 
 ## The composer
 
-- `> ` with a block caret; the dim placeholder *Plan, search, build anything* until you type.
-- **Enter** sends. **Shift+Enter** (or **Alt+Enter**) inserts a newline. **Up** / **Down** walk your prompt history.
-- Type `/` for [slash commands](/cli/slash-commands); type `@` to reference a file or symbol; both autocomplete in a popup. A line starting with `/` that is not a known command is sent to the agent as an ordinary message.
-- `!` runs a shell command directly. `&` prefixes a task to hand off to Cortex Cloud — the timeline shows *Handed off to Cortex Cloud* with the agent and branch, and `/jobs` follows it.
-- Submit while a turn is running and the message is **queued** — the composer reads *Add a follow-up — Enter to queue* and shows how many are waiting.
+- `Enter` sends. `Alt+Enter` inserts a newline. `↑` and `↓` walk your prompt history, and `↑` on an empty composer edits your last message.
+- The mode chip sits on the top border and the model chip on the bottom border, drawn as the model's name with its reasoning effort in brackets, for example `Cortex Mini 1 (medium)`.
+- A [goal](/cli/goal), if the session has one, adds a chip immediately after the mode chip.
 
-<Frame caption="Typing: the placeholder is gone, the caret follows the text, and the footer switches to Enter:send · Alt+Enter:newline.">
-  <img src="/images/cli/runtime/120x40/composer-typing.png" alt="Cortex CLI composer with a prompt being typed" />
-</Frame>
+Four characters at the start of a line open something instead of being sent as text:
 
-<Frame caption="Two follow-ups queued behind a running Shell command — sent when the current step finishes. ↑ edits a queued item.">
-  <img src="/images/cli/runtime/120x40/queue.png" alt="Cortex CLI with a running Shell tool and two queued follow-ups" />
-</Frame>
+| Sigil | Opens |
+| --- | --- |
+| `/` | The slash-command list. A line starting with `/` that is not a known command is sent to the agent as ordinary text |
+| `@` | The file picker, to add a file or symbol to the context |
+| `!` | Bash mode, where what you type runs in your shell. The sigil changes from `>` to `!` |
+| `&` | A hand-off of the task to Cortex Cloud |
 
-<Frame caption="A hand-off: & fix the flaky login redirect test and open a PR — the timeline shows the Cloud agent id, its branch, and where to follow it.">
-  <img src="/images/cli/runtime/120x40/cloud-handoff.png" alt="Cortex CLI showing Handed off to Cortex Cloud with agent, branch, and follow links" />
-</Frame>
+The placeholder tells you what the composer will do with what you type:
 
-## Footer
+| State | Placeholder |
+| --- | --- |
+| Default | `Plan, search, build anything` |
+| A turn is running | `Add a follow-up — Enter to queue` |
+| A prompt is waiting for you | `Choose an option above` |
+| Just after you stopped a turn | `Reply, or ↑ to edit your last message` |
+| Ask mode | `Ask about the codebase — read-only` |
+| Plan mode | `Describe what you want — Cortex drafts a plan first` |
+| Your quota is used up | `Add a follow-up — held until quota resets` |
 
-Left: the model, the mode, and remaining context — `Cortex Mini 1 · Agent · 92% context`. Right: one shortcut hint — `shift+tab to cycle modes`, or the palette's own keys while it is open. A token counter (`14K / 500K`) sits top right.
+## Queue a follow-up while a turn runs
 
-## Modes and autonomy
+You do not have to wait for a turn to end. Type while it runs and `Enter` **queues** the message instead of sending it; the composer shows how many are waiting, and `↑` edits a queued message. The queue is sent in order as the turn frees up.
 
-**Shift+Tab** cycles **Agent → Plan → Ask**. `/mode` opens the same picker; `/permissions` sets **Read-only**, **Smart**, or **Full access**; `/plan` drafts a plan before writing any code. Approvals appear inline as numbered choices. Everything about these controls is on [Modes and permissions](/cli/modes-and-permissions).
+`Esc` interrupts the turn instead. The timeline records `× Stopped`, and the composer invites you to reply or edit your last message.
 
-## Panels
+## Footer hints
 
-Most of the surface area is one key or one slash command away:
+The footer strip changes with what is on screen. Two examples, exactly as they are drawn:
+
+```
+ Shift+Tab:mode  |  Ctrl+x:shortcuts
+ Enter:send  |  Alt+Enter:newline  |  Shift+Tab:mode  |  Ctrl+x:shortcuts
+```
+
+Every context gets its own strip: idle, text typed, a narrow terminal, a turn running, the queue, the model and effort lists, an approval prompt, the MCP and plugins panels, the resume picker, Bash mode, the command palette, the undo sheet, a rate limit, a feature that is unavailable, and more besides. The strip shows the keys that apply at that moment; it is not the complete list of bindings. For that, use the shortcuts sheet, or see [CLI keyboard shortcuts](/cli/keyboard).
+
+## Panels and overlays
+
+Most of the surface area is one slash command away.
 
 | Panel | Open with |
 | --- | --- |
-| Command palette | **Ctrl+K** or **Ctrl+P**, or `/palette` |
-| Sessions | **Ctrl+S** or **Ctrl+O**, or `/sessions` |
-| Model picker | **Ctrl+M**, or `/model` |
-| MCP servers | **Ctrl+E**, or `/mcp` |
-| Transcript | **Ctrl+T**, or `/transcript` |
-| Shortcuts overlay | **Ctrl+X** |
-| Settings | **F2**, or `/settings` |
-| Help | **?** or **F1**, or `/help` |
-| Theme picker | `/theme` |
-| Background tasks | `/jobs` or `/tasks` |
-| Rewind overlay | **Esc** twice quickly |
+| Settings | `F2`, or `/settings` |
+| Shortcuts sheet | `/shortcuts` (alias `keys`) |
+| Model list, and the effort list behind `Tab` | `/models` |
+| MCP servers | `/mcp` |
+| Plugins | `/plugins` |
+| Sessions | `/sessions` |
+| Resume picker | `/resume` |
+| Rewind overlay | `Esc` twice in quick succession |
+| Command palette | `/palette`, or `Ctrl+p` |
+| Background tasks | `/tasks` |
+| Transcript | `/transcript` |
+| Search past sessions | `Ctrl+r` |
 
-## Interrupting and quitting
+Panels title themselves with a count, in the pattern `MCP servers · 2 of 4 connected`. A list longer than the panel ends with `… 87 more — keep typing to filter`, so filtering is always the way through a long list. Approval prompts are not a panel: they appear inline in the timeline and the composer waits for you. See [Modes and permissions](/cli/modes-and-permissions).
 
-- **Esc** interrupts the current turn. The timeline records `× Stopped`; the CLI aborts its stream and tells the runtime to cancel.
-- **Esc** twice quickly opens the rewind overlay to step back or fork. See [Sessions](/cli/sessions).
-- **Ctrl+Q** or `/quit` quits. **Ctrl+C** force-quits.
+Settings opens on categories, with `/ to search` inside it. `↑`/`↓` or `j`/`k` navigate, `g` and `G` jump to top and bottom, `Space` or `Enter` toggles a row, `→` expands a submenu, `d` resets a row, and `F2` or `Esc` closes. Appearance holds the display rows: `Compact mode`, `Default screen mode`, `Show timestamps`, `Show thinking blocks`, `Group tool calls`, `Collapsed edit blocks`, `Line numbers`, `Word wrap`, `Syntax highlight`, `Animations` and `Theme`. Themes are on [Themes](/cli/themes).
 
-<Frame caption="After Esc: the Shell row is marked stopped, the timeline records × Stopped with the time and tokens spent, and the composer offers ↑ to edit your last message.">
-  <img src="/images/cli/runtime/120x40/interrupt-stopped.png" alt="Cortex CLI after interrupting a turn — × Stopped" />
-</Frame>
+## Alternate screen and small terminals
 
-## When the service is unreachable
+The TUI enters the **alternate screen** by default, which is why your shell scrollback is intact when you exit. Three ways to change that:
 
-The TUI says **The coding service is temporarily unavailable** and offers to retry — *your work so far is saved in this session*. That is the whole message by design: Cortex does not surface provider, SDK, or transport names. See [Troubleshooting](/cli/troubleshooting).
+```bash
+cortex --no-alternate-screen   # inline, this run
+cortex --alternate-screen      # full screen, this run
+```
 
-## Display
+```toml
+[tui]
+alternate_screen = true
+```
 
-`/theme` switches between **Cortex Night** (default), **Cortex Day**, **Ocean Dark**, and **Monokai**. `/compact` toggles a denser layout. The accent is Cortex green `#1F4945` on the focused control; the rest of the chrome is grey. See [Extend → Themes](/cli/extend#themes).
+The Appearance row `Default screen mode` is the same setting in the UI, drawn as `Fullscreen` or `Inline`.
 
-The chrome holds its shape in a small terminal. At 40 columns by 12 rows the composer keeps its border, mode label, model chip, and footer hint:
+The chrome holds its shape when the window is small: at roughly 40 columns by 12 rows the composer keeps its border, its chips and one footer hint, and the welcome copy switches to its narrow variant. Below that the layout has nothing left to fold.
 
-<Frame caption="The empty composer at 40×12 — the same chrome, folded to a small window.">
-  <img src="/images/cli/runtime/40x12/composer-empty.png" alt="Cortex CLI empty composer rendered in a 40 by 12 terminal" />
-</Frame>
+A `▼` marker appears in the timeline when there is more content below.
+
+## Usage and quota
+
+A usage row names your plan and when it renews, in the pattern `Usage · Cortex Pro · renews Oct 1`. When the agent allowance is used up the row becomes `× Agent quota exhausted` and the composer holds new messages until it resets. Per-plan numbers are not published in the CLI itself; check your account for those.
+
+## Interrupt, quit, and failures
+
+- `Esc` interrupts the running turn. `Esc` twice in quick succession opens the rewind overlay, which steps back through the session or forks it. See [CLI sessions](/cli/sessions).
+- `Ctrl+Q` or `/quit` quits. `Ctrl+C` force-quits.
+- If the coding service cannot be reached, the timeline says `× The coding service is temporarily unavailable` and invites you to try again in a moment. That is the whole message on purpose: the CLI does not surface provider, library or transport names. Your work so far stays in the session. See [CLI troubleshooting](/cli/troubleshooting).
 
 ## Related
 
-- [Slash commands](/cli/slash-commands) · [Keyboard shortcuts](/cli/keyboard)
-- [Sessions](/cli/sessions) — what happens after you close the terminal.
+- [Modes and permissions](/cli/modes-and-permissions) - what the mode chip and the approval prompt control
+- [Slash commands](/cli/slash-commands) - everything behind `/`
+- [CLI keyboard shortcuts](/cli/keyboard) - bindings by context
+- [CLI sessions](/cli/sessions) - resume, rewind and fork
+- [Headless and one-shot runs](/cli/headless) - when there is no terminal to draw to

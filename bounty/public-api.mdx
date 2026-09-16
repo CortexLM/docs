@@ -1,0 +1,114 @@
+---
+title: "Transparency API"
+description: "Four unauthenticated endpoints that publish every adjudicated Cortex Bounty report, with windows, paging, and how to read a zero"
+icon: "globe"
+---
+
+The transparency API is how a Cortex Bounty verdict becomes checkable by anyone. It is four read-only endpoints that need no account, no credential and no cookie, and none is minted for the caller. A participant can verify their own row with it, and a third party can verify somebody else's claim without asking either side for access.
+
+The endpoints publish adjudicated reports only. Nothing pending appears, no conversation appears, and no account is identified. This page lists the four paths, then covers the three things that trip people up: time windows, paging, and what a zero actually means. Each path below is given relative, so prefix it with the Cortex API host for the deployment you are checking.
+
+## The four endpoints
+
+All four are `GET`, and all four are unauthenticated.
+
+| Path | Query parameters | What it answers |
+| --- | --- | --- |
+| `/v1/bounty/public/status` | none | Is this backend adjudicating at all? Counts, backlog, and whether an operator exists |
+| `/v1/bounty/public/leaderboard` | `since`, `until` | Hotkeys ranked by valid-report count, plus counts by status. No account ids |
+| `/v1/bounty/public/reports` | `hotkey`, `status`, `since`, `until`, `limit`, `cursor` | Adjudicated reports, completely enumerable |
+| `/v1/bounty/public/reports/{id}` | none | One adjudicated report, or 404 if it is pending or unknown |
+
+Every response from all four carries `api_version`, which is `1` today, and `generated_at`, the moment the response was built. Every response is sent with `cache-control: no-store`, so what you read is what the log says now rather than something a cache kept.
+
+## What a public row contains
+
+| Field | Meaning |
+| --- | --- |
+| `id` | The report id. A time-ordered id assigned when the report was filed |
+| `hotkey` | The SS58 address the report was credited to. Never an account id |
+| `status` | One of the four verdicts. See [Verdicts and scoring](/bounty/scoring) |
+| `problem_found` | What the defect was, as recorded by the adjudicator |
+| `justification` | The reasoning behind the status |
+| `adjudicator` | An agent or service identifier. Never a person, never an email address |
+| `adjudicated_at` | When the verdict was recorded |
+| `created_at` | When the report was filed |
+| `related_report_id` | Present on duplicates only, and the report it names is already public |
+
+Chat transcripts stay private. They are never on the public routes, and neither is the report body, your email address, your display name, a conversation id, a pairing code or a token of any kind. The full list is on [File a report](/bounty/report).
+
+## Windows
+
+`since` and `until` are RFC 3339 timestamps, and they behave the same way on the leaderboard and on the reports listing.
+
+- `since` is **inclusive**. `until` is **exclusive**. So consecutive windows can share a bound without double-counting a row.
+- Both filter on `adjudicated_at`, the moment the verdict was recorded. Neither filters on filing time. A report filed in one window and judged in the next belongs to the second.
+- `until <= since` is **refused**. It is not answered with an empty page, and the reason is worth understanding: an empty page reads exactly like "this hotkey earned nothing".
+- An `adjudicated_at` value taken from a response is reusable as a bound byte for byte. It is truncated to microseconds. A `+00:00` offset needs percent-encoding in a query string, though the un-encoded form is accepted too.
+
+## Paging the reports listing
+
+The reports endpoint is the one that enumerates completely, and it is cursor-paged.
+
+```text
+/v1/bounty/public/reports?hotkey=HOTKEY&since=FROM&until=TO&limit=100
+```
+
+- `limit` is clamped to **100**. Asking for more gets you 100.
+- The response reports `has_more`. While it is true, send `next_cursor` back verbatim as `cursor` and read the next page.
+- The cursor is opaque, and it is keyed on `adjudicated_at` and then `id`. Do not build one yourself and do not try to decode it.
+- `id` is assigned at filing time, not at verdict time, so ids are not in verdict order. That is exactly why the cursor exists: you cannot page this log by sorting ids.
+
+The leaderboard is **not** paged. It aggregates up to **1000** hotkeys and sets `has_more` when there are more than that. If you need a complete enumeration, walk the reports endpoint instead. The leaderboard is a summary, and the reports listing is the record.
+
+## Reading zero correctly
+
+This is the part to get right before you conclude anything from an empty result. A zero on the leaderboard has three different meanings, and the status endpoint is what tells them apart.
+
+| What the status endpoint says | What it means | Is it a real zero? |
+| --- | --- | --- |
+| `adjudication_available` is false | No operator is adjudicating | No. Nothing is being judged at all |
+| `awaiting_adjudication` above zero, nothing published | A queue exists but has not been worked | No. The verdicts have not happened yet |
+| `adjudication_available` true and `awaiting_adjudication` zero | Everything filed has been judged | Yes. This is a real zero |
+
+Two further facts make the reading safe. A backend that cannot answer at all fails the request; it never answers an empty list, so an empty list is always a real answer from a working backend. And `last_adjudicated_at` on the status response tells you how stale the log is, which is the difference between "nothing has happened" and "nothing has happened lately".
+
+| Status field | Meaning |
+| --- | --- |
+| `adjudication_available` | Whether an operator is adjudicating at all |
+| `awaiting_adjudication` | How large the backlog is |
+| `last_adjudicated_at` | How stale the log is |
+| `api_version` | The response contract version, `1` today |
+| `generated_at` | When this response was built |
+
+## Verify one bounty end to end
+
+<Steps>
+  <Step title="Check that the log is being kept">
+    Read `/v1/bounty/public/status`. Confirm that an operator exists and that the backlog is zero. If it is not, stop here: anything you count next is incomplete by definition.
+  </Step>
+  <Step title="Read the leaderboard for the window">
+    Call `/v1/bounty/public/leaderboard` with the `since` and `until` bounds of the window you care about. Note the valid-report count for the hotkey you are checking.
+  </Step>
+  <Step title="Walk the reports listing over the same window">
+    Call `/v1/bounty/public/reports` with the same `hotkey`, `since` and `until`, and follow `next_cursor` until `has_more` is false. Count the valid rows as you go.
+  </Step>
+  <Step title="Fetch one row on its own">
+    Take an id from the walk and read `/v1/bounty/public/reports/{id}`. You get the same row, which is the one you can quote to somebody else.
+  </Step>
+  <Step title="Compare the two counts">
+    The count from the leaderboard and the rows you walked must agree. A disagreement means the walk was truncated, so check `has_more` and page again. It does not mean the log is wrong.
+  </Step>
+</Steps>
+
+<Note>
+There is no public API for anything else in Cortex. These four endpoints exist because the bounty log has to be verifiable by outsiders; they are not a general platform API, and there is no inference endpoint, no API key and no client library. See [Platform API](/reference/platform-api).
+</Note>
+
+## Related
+
+- [Cortex Bounty](/bounty/index)
+- [Verdicts and scoring](/bounty/scoring)
+- [File a report](/bounty/report)
+- [Platform API](/reference/platform-api)
+- [Errors](/reference/errors)

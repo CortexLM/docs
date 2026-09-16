@@ -1,0 +1,187 @@
+---
+title: "Frequently asked questions"
+sidebarTitle: "FAQ"
+description: "Short answers about accounts, plans, quotas, privacy, languages and what is not built yet, each pointing at the page that owns it."
+icon: "circle-question"
+keywords: ["FAQ", "common questions"]
+---
+
+These are the questions people ask in their first week with Cortex, answered in a sentence or two.
+Every answer links to the page that covers the subject properly, so treat this as a switchboard
+rather than a reference.
+
+Where the honest answer is "not yet", it says so. Cortex is in beta, several controls are drawn
+before they are wired, and this page would be useless if it papered over that.
+
+## Accounts and access
+
+<AccordionGroup>
+  <Accordion title="Do I need an account to use Cortex?">
+    Not for Cortex Chat. A guest can ask questions straight away, within a message allowance shown
+    above the composer. Cortex Code, Cortex Bot, Cortex Design, the desktop apps and the Cortex CLI
+    all need a signed-in account. See [Accounts and sign-in](/getting-started/accounts).
+  </Accordion>
+  <Accordion title="What happens to my guest chats when I sign in?">
+    Signing in does not navigate away, and the conversation on screen is kept. Guest conversations
+    otherwise live in the browser session only, so sign in before you close the tab if you want to
+    keep them. See [Accounts and sign-in](/getting-started/accounts).
+  </Accordion>
+  <Accordion title="How do I sign in?">
+    In the dialog on `cortex.foundation`, choose **Continue with Google**, **Continue with Apple**,
+    **Continue with email** for a code sent to your address, or **Single sign-on (SSO)** if your
+    organisation uses one. See [Accounts and sign-in](/getting-started/accounts).
+  </Accordion>
+  <Accordion title="Why does Cortex Code or Cortex Bot show a dialog instead of opening?">
+    Two different gates. **This space is reserved** means you are a guest and these are member
+    surfaces, so sign in or continue in Chat. **In closed beta** means you are signed in but not
+    yet invited, and only **Continue in Chat** is offered. See
+    [Which product do I need?](/getting-started/choose-a-product).
+  </Accordion>
+  <Accordion title="Do I have to set up two-factor authentication?">
+    Only if you want to export or delete your data: both actions require an enrolled authenticator
+    app and a recent confirmation. Cortex uses an authenticator app, with no SMS option and no
+    security-key option. See [Two-factor authentication](/getting-started/two-factor).
+  </Accordion>
+</AccordionGroup>
+
+## Plans, quotas and billing
+
+<AccordionGroup>
+  <Accordion title="What do the plans cost?">
+    Free is $0 a month, Go is $8 a month, Plus is $20 a month, and Pro is quoted rather than priced
+    on the page. A guest has its own allowance while signed out. See
+    [Plans and quotas](/getting-started/plans).
+  </Accordion>
+  <Accordion title="What actually counts against my quota?">
+    Two windows are enforced: messages today and messages this month. Every turn charges both, and
+    whichever runs out first is the one that stops you. Tools, reasoning, web search and code runs
+    are not metered on any plan. See [Limits and quotas](/reference/limits).
+  </Accordion>
+  <Accordion title="How many messages do I get?">
+    A guest gets 100 a day and 500 a month, Free gets 500 a day and 3,000 a month, Go gets 1,000 a
+    day and 8,000 a month, and Plus and Pro have no message ceiling. See
+    [Plans and quotas](/getting-started/plans).
+  </Accordion>
+  <Accordion title="Does unused allowance roll over?">
+    No. Each window starts from zero when it rolls over, and a guest allowance does not carry into
+    the Free plan when you sign in. See [Plans and quotas](/getting-started/plans).
+  </Accordion>
+  <Accordion title="What do I see when I run out?">
+    A **Plan limit reached** notice saying you have used everything this plan allows in the current
+    window, with a **Resets in** line and, sometimes, the offer of a model that is still available
+    under the limit. It fails closed rather than quietly degrading the answer. See
+    [quota_exceeded](/problems/quota_exceeded).
+  </Accordion>
+  <Accordion title="Can I change plan or pay in the product?">
+    Not on this deployment. The plan cards are there and comparable, but the action carries a
+    **HOLD** badge instead of a payment form, and **Billing history** always reads that there are no
+    invoices yet. See [Plans and quotas](/getting-started/plans).
+  </Accordion>
+</AccordionGroup>
+
+## Privacy and your data
+
+<AccordionGroup>
+  <Accordion title="Are my conversations used to train models?">
+    No. The **Improve the model** control is off, and it is not available yet in any case, so
+    nothing is sampled for training without it. See
+    [Data and privacy](/getting-started/data-and-privacy).
+  </Accordion>
+  <Accordion title="Can I get a copy of everything?">
+    Yes, from **Settings** and then **Data & privacy**, under **Your data**. **Export my data**
+    downloads a JSON file with your account details, conversation metadata, memories and Library
+    file metadata. It does not contain message bodies or the file bytes themselves, and it needs an
+    authenticator confirmation. See [Data and privacy](/getting-started/data-and-privacy).
+  </Accordion>
+  <Accordion title="Can I delete my account for good?">
+    Yes. **Delete all data** schedules a real erasure of your account, conversations, memories,
+    files, bots and canvases after a 30-day grace period. Signing in again before that runs cancels
+    the request; afterwards nothing can be restored. See
+    [Data and privacy](/getting-started/data-and-privacy).
+  </Accordion>
+  <Accordion title="What does Cortex remember between chats?">
+    Standing preferences and facts you share, kept as memory so answers get more personal. You can
+    search, edit and delete individual memories, set how long they are kept, or turn memory off
+    entirely. Temporary chats never read or write memory. See [Memory](/chat/memory).
+  </Accordion>
+  <Accordion title="Does Cortex honour a Global Privacy Control signal?">
+    Yes. If your browser sends one, optional analytics stay off, the banner confirms the signal was
+    honoured instead of asking again, and the signal wins over an "allow" sent from the page. See
+    [Data and privacy](/getting-started/data-and-privacy).
+  </Accordion>
+</AccordionGroup>
+
+## Using the product
+
+<AccordionGroup>
+  <Accordion title="Which models can I use?">
+    Three are public: **Cortex 1 Mini**, **Cortex Teutonic-1**, and **Cortex-Image-1** for images in
+    Chat. All three are marked preview, and all three are available from the Free plan upwards.
+    No model is behind a paid plan today, and Cortex does not quietly answer with a different model
+    from the one you chose, because no fallback is configured. See [Models](/reference/models).
+  </Accordion>
+  <Accordion title="Can I use Cortex in my language?">
+    The interface comes in eight languages, chosen under **Settings** and then **General**. English
+    is unprefixed and every other language is a URL prefix. Model prompts stay in English and the
+    product names are never translated. See [Interface language](/getting-started/language).
+  </Accordion>
+  <Accordion title="Where are the settings?">
+    Settings is an overlay, not a page: it opens over Chat, Code or Bot and closing it returns you
+    to exactly where you were. Seven tabs sit in two groups, and the search field at the top of the
+    rail searches rows across every tab. See [Settings](/getting-started/settings).
+  </Accordion>
+  <Accordion title="What are the keyboard shortcuts?">
+    Press `⌘ /`, or `Ctrl /`, for the in-product sheet. The published set is short on purpose. See
+    [Keyboard shortcuts](/getting-started/keyboard-shortcuts).
+  </Accordion>
+  <Accordion title="How do I know whether Cortex is down?">
+    Check [System status](/reference/status). If everything fails at once rather than one action,
+    look there before filing anything.
+  </Accordion>
+  <Accordion title="How do I report a bug?">
+    From inside the product: the **Report a bug** control beside **Settings**, or the row in
+    **Settings** and then **General**. It needs an account. See
+    [Report a bug](/getting-started/report-a-bug).
+  </Accordion>
+</AccordionGroup>
+
+## Not available yet
+
+<AccordionGroup>
+  <Accordion title="Can I invite my team or share a workspace?">
+    Not yet. Cortex is per account today: there are no invitations and no shared workspace, and the
+    role and directory rows in Settings describe an organisation you cannot create yet.
+  </Accordion>
+  <Accordion title="Can I get an API key and call Cortex from my own code?">
+    Not yet. The **API keys** section is reserved rather than live, and create, rotate and revoke
+    stay disabled. See [Data and privacy](/getting-started/data-and-privacy).
+  </Accordion>
+  <Accordion title="Can I use a passkey, or keep recovery codes?">
+    Not on this deployment. Both controls are drawn and both say so when you choose them, so an
+    authenticator app is the only second factor today. See
+    [Two-factor authentication](/getting-started/two-factor).
+  </Accordion>
+  <Accordion title="Can I stop Cortex keeping my chat history?">
+    Not yet. **Save chat history** is on and cannot be changed, and it is marked as coming soon. You
+    can still delete individual chats, or everything, at any time. See
+    [Data and privacy](/getting-started/data-and-privacy).
+  </Accordion>
+  <Accordion title="Is Cortex certified against SOC 2, GDPR or HIPAA?">
+    No, and Cortex does not claim to be. The **Compliance** section lists each framework's real
+    status, and product copy never claims a certification until an attestation exists. See
+    [Security and privacy](/reference/security-and-privacy).
+  </Accordion>
+  <Accordion title="Why is my account activity list empty?">
+    The events are recorded, but on some deployments the list cannot be read back yet, and it says
+    so rather than showing you an empty table as though nothing happened. See
+    [Data and privacy](/getting-started/data-and-privacy).
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+- [Quickstart](/getting-started/quickstart) for a first answer in a few minutes.
+- [Which product do I need?](/getting-started/choose-a-product) for picking a surface.
+- [Plans and quotas](/getting-started/plans) for the ladder and the windows.
+- [Troubleshooting](/getting-started/troubleshooting) for what a message means.
+- [Glossary](/getting-started/glossary) for the words this site uses.

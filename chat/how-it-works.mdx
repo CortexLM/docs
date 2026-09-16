@@ -1,68 +1,115 @@
 ---
 title: "How Chat works"
-description: "A Chat turn is one tool-calling loop: the model asks for tools, Chat runs them, results flow back, and the loop ends when the model stops."
-keywords: ["tool loop", "context", "compaction", "rounds"]
+description: "A turn is one message plus everything Cortex does to answer it: tools, citations, compaction, what is stored, and where the limits sit"
+icon: "diagram-project"
 ---
 
-A Chat turn is a real tool loop. The model emits tool calls, Chat executes them, the results re-enter the context, and the loop continues until the model stops or Chat reaches its round budget. What you see is the streamed result of that loop: tokens, then tools, then the finished reply.
+A **turn** is one message from you plus everything Cortex does to answer it. Inside a turn the model can call tools, and every call and its result appear in the transcript as a row, so the work is visible rather than hidden behind a spinner. The loop is bounded, and knowing those bounds explains most of what you will see in a long or complicated answer.
 
-<Frame caption="A finished reply rendered from markdown — headings, emphasis, and math-style notation — after a turn with a High thinking level.">
-  <img src="/images/product/chat-reply-headings.png" alt="A Chat reply with headings and formatted prose explaining merge sort" />
-</Frame>
-
-## What you see
-
-1. You send a message, optionally with Library attachments.
-2. The composer reads **Cortex is responding…** and the send button becomes a stop control.
-3. Tokens stream. Tools may run. Their results come back into the thread.
-4. The model stops, or Chat hits its budget of **eight tool rounds**. That budget is Chat's own — Code and Bot have different stopping rules.
+This page is for readers who want to know what is actually happening between pressing Enter and reading an answer: what goes into a turn, in what order, what is kept afterwards, and what happens when a conversation grows too long to send.
 
 ## What goes into a turn
 
-| Input | Source |
+| Input | Where it comes from |
 | --- | --- |
 | Your message | The composer |
-| Attachments | [Library](/chat/library) files, never a pasted URL |
+| Attachments | Files you attach, which land in [Library](/chat/library) |
 | Standing instructions | The [project](/chat/projects) the chat belongs to |
-| Preferences | [Memory](/chat/memory) |
-| Model and thinking level | The [composer chip](/chat/models) |
-| Tools | Built-in tools, connected apps enabled for Chat, and your MCP servers |
+| Standing preferences | [Memory](/chat/memory), unless the chat is temporary |
+| Model and thinking level | The [model chip](/chat/models), fixed when the chat starts |
+| Tools | [Built-in tools](/chat/tools), your [connectors](/chat/plugins) and your [MCP servers](/chat/mcp-servers) |
 
-After assembly, Chat clamps generation so prompt plus output fit the model's context window.
+Once everything is assembled, Cortex clamps the answer so that the prompt and the output together fit inside the model's context window.
 
-## Tools the model can receive
+## The order of events
 
-| Group | Tools |
+<Steps>
+  <Step title="Your allowance is charged first">
+    The message is counted against your allowance and committed before a single word is written, which is why a request that gets refused costs you nothing. If generation then fails after being charged, the allowance comes back and you see **Generation failed. Your allowance for this message has been returned.**
+  </Step>
+  <Step title="The message is stored and the turn starts">
+    Your message is saved to the conversation, and the turn begins.
+  </Step>
+  <Step title="Cortex generates on its own side">
+    The answer is produced by Cortex and buffered as it is created, before any of it reaches your browser. That is the reason a dropped connection or a page reload does not lose an answer in progress.
+  </Step>
+  <Step title="The answer arrives in pieces">
+    Words, thinking, tool rows, citations and file cards arrive as they are ready rather than in one block. See [Streaming and reconnects](/chat/streaming).
+  </Step>
+  <Step title="The turn ends for a stated reason">
+    A turn ends because the model finished, because it hit its output ceiling, because you interrupted it, or because it failed. Each of those leaves a different card in the transcript.
+  </Step>
+</Steps>
+
+Only one live answer can exist in a conversation at a time. While a turn is running, regenerating an answer or editing an earlier message is refused with **Wait until the current answer finishes.**, because either one would put a second live answer into the same thread.
+
+## What you see while it runs
+
+| On screen | What it means |
 | --- | --- |
-| Information | `web_search`, `web_extract`, `current_time` |
-| Computation | `python` — a small snippet sandbox |
-| Media | `generate_image`, `detect_image` |
-| Documents | canvas tools, `read_artifact`, `grep_artifact` |
-| Context | memory tools, `skill_view` |
-| Design | `design_write`, `design_read` — host a Design canvas from Chat |
-| Yours | Connected apps enabled for **Chat**, and the account's MCP servers |
+| Words appearing a few at a time | The answer is being written now |
+| A **Thinking** block, collapsing to a line with a duration | The model reasoned before answering. Some turns record none, and the block says so |
+| A one-line row such as *Searched the web* | A tool ran. The row then shows how it ended |
+| A numbered citation with a source | The claim above it came from that source |
+| A file card | Cortex produced a file. It is in Library |
+| A short notice on the answer | Cortex added a safety or disclosure note |
+| A marker saying earlier messages were summarised | Compaction happened, see below |
+| **Reconnecting** | The connection dropped and is being re-established |
 
-Chat's `python` runs a snippet in an untrusted sandbox with no workspace. It is not Code's shell inside a Cloud guest, and it cannot see a repository or a Bot's desktop. See [Security](/security/overview).
+A tool row's label is deliberately short and human. A long tool result is shortened for display, and the row says how much was cut.
 
-## Compaction
+## The limits of one turn
 
-Long threads are compacted on the request path so they keep fitting the model. Compaction keeps the last user ask, the active research plan, open artifact ids, and research child ids. It **fails closed**: if the summariser is unavailable, the turn returns [`service_unavailable`](/problems/service_unavailable) rather than silently dropping old turns.
+| Limit | Value |
+| --- | --- |
+| Characters in one message | 50,000 |
+| Tool rounds in one turn | 8 |
+| Tool calls in one turn | 50 |
+| Identical repeated calls tolerated | 6 |
 
-## Deep Research is a different loop
+None of these fail silently.
 
-A research run plans questions and fans out to parallel children with its own caps. It does not use the eight-round budget and does not draw tool chrome for each fetch. See [Deep Research](/chat/deep-research).
+- When the round budget runs out, the model is told the budget is exhausted and asked to answer with what it already has, or to ask you how to proceed.
+- When the same call repeats six times without getting anywhere, the loop is broken with **The same tool call repeated without progress. Try a different action.**
+- A message over the character ceiling is refused with **The message is longer than the permitted maximum.** Split it, or attach the text as a file.
 
-## Compared with Code and Bot
+Eight rounds is Chat's own budget, chosen for a conversation. [Cortex Code](/code/how-it-works) allows 48, because working through a repository takes more steps than answering a question. [Deep Research](/chat/deep-research) runs its own loop with its own caps and does not spend Chat's eight rounds.
 
-| | Chat | Code | Bot |
-| --- | --- | --- | --- |
-| Loop stops when | The model stops, or 8 tool rounds | The model stops, or the turn is cancelled | The model stops, a 15-minute deadline, or six identical tool calls in a row |
-| Code runs in | A snippet sandbox | The session's Cloud guest (or This PC / SSH) | The bot's computer |
-| Transcript | Streamed reply with tool results | A turn timeline | User-visible bubbles only |
+## When a conversation outgrows the model
 
-See [How Code works](/code/how-it-works) and [How Bot works](/bot/how-it-works).
+A long thread eventually holds more than can be sent to the model. Rather than quietly dropping the beginning, Cortex summarises the earliest messages into a single summary and carries on. A marker appears in the transcript where that happened, saying how many earlier messages were summarised to make room. You keep seeing the original messages; the summary is what the model reads in their place.
+
+Compaction happens on whichever of these comes first, and also before a task returns a result and before a Deep Research synthesis:
+
+| Trigger | Threshold |
+| --- | --- |
+| Estimated context | 24,000 tokens |
+| Transcript size | 64,000 characters |
+| Turns in the conversation | 12 |
+
+Some things are never summarised away: your own messages, the last question you asked, the active plan, open tasks, open files and your memory profile. Compaction fails closed, so if that set cannot be preserved, nothing is compacted at all instead of something being lost. A conversation holds one summary at a time, and a later compaction replaces the earlier one.
+
+## What is kept
+
+| Kept | Not kept |
+| --- | --- |
+| Your messages and the answers, stored encrypted | A dictated clip, once it has been turned into text |
+| Attachments, in Library | The message text in any search index, so search reads titles only |
+| Canvases attached to the conversation | The title in the link, which always stays an identifier |
+| The conversation title | |
+
+Because message bodies are stored encrypted and never indexed, [Chat search](/chat/conversations) matches conversation titles rather than what was said inside them.
+
+Temporary chats are the exception to all of this: they are not listed in Recents, they neither read nor write memory, and they are deleted after 30 days.
+
+## Why an error can appear inside a good answer
+
+By the time something fails, the response has usually already started. The failure therefore arrives as part of the answer rather than as a refusal before it, which is why an answer can begin normally and then show an error card partway down. The card carries a code, and every code has a page under [Problems](/problems). If the answer stopped rather than failed, **Continue** picks it back up where it left off.
 
 ## Related
 
-- [Streaming](/chat/streaming) — reconnects and run state.
-- [Models](/chat/models) — context windows and thinking levels.
+- [Streaming and reconnects](/chat/streaming) - what a dropped connection does to a live answer.
+- [Conversations](/chat/conversations) - stop, edit, regenerate, branch and version an answer.
+- [Models and thinking](/chat/models) - the two models and the three thinking levels.
+- [Built-in tools](/chat/tools) - what the tool rows in a turn actually did.
+- [Chat troubleshooting](/chat/troubleshooting) - the messages a failed turn leaves behind.

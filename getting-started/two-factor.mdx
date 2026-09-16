@@ -1,0 +1,111 @@
+---
+title: "Two-factor authentication"
+description: "Link an authenticator app to your Cortex account. The second factor confirms data export and account deletion."
+icon: "lock"
+---
+
+Two-factor authentication in Cortex is a confirmation step in front of the two actions you cannot undo: exporting everything Cortex holds for your account, and deleting the account. It lives in **Settings → Data & privacy → Two-factor authentication** and uses an authenticator app that generates a six-digit code. There is no SMS option and no security-key option.
+
+This page covers what the second factor actually protects today, how to enrol an authenticator, how the confirmation behaves when you export or delete, what happens if you lose the device, and which parts of the surrounding screen are drawn but not available yet. Read it before you rely on two-factor as a sign-in defence, because that is not what it is here.
+
+<Warning>
+The sign-in dialog has no second-factor field. Enrolling an authenticator does not add a challenge to sign-in, and it does not stop someone signing in with your email code or your linked Google or Apple account. If your organisation requires a second factor at sign-in, it runs during the identity step, not in Cortex. See [Accounts and sign-in](/getting-started/accounts).
+</Warning>
+
+## What the second factor protects
+
+Both actions under **Your data** in **Settings → Data & privacy** are gated:
+
+| Action | What it needs |
+| --- | --- |
+| **Export my data** | An enrolled authenticator, plus a recent confirmation |
+| **Delete all data** | An enrolled authenticator, plus a recent confirmation |
+
+If either is missing, the action refuses rather than half-running, and the product says `Confirm two-factor authentication, then try again.` There is no way to skip the second factor on export or deletion.
+
+A confirmation lasts **fifteen minutes** and is bound to your account and to the session that asked for it. A code you confirmed in another tab on another machine does not unlock this one. Guests never meet the gate, because a guest has no account to export or delete, and the row reads `Two-factor authentication is available after you sign in.`
+
+## Enrol an authenticator
+
+You need an authenticator app on a phone or a computer. The enrolment challenge is valid for **ten minutes**, so finish it in one sitting.
+
+<Steps>
+  <Step title="Open the row">
+    Go to **Settings → Data & privacy → Two-factor authentication**. Before enrolment the row reads `Not set up yet. Add an authenticator app before you export or delete this account.`
+  </Step>
+  <Step title="Choose Add authenticator">
+    Select **Add authenticator**. Cortex draws an `Authenticator QR code`.
+  </Step>
+  <Step title="Scan, or type the key">
+    Scan the code in your authenticator app. The screen says `Scan this code in your authenticator app. Cortex never shows the secret as text.` If your device cannot scan, use `Cannot scan? Enter this key:` and type the key by hand.
+  </Step>
+  <Step title="Confirm the code">
+    Type the six digits your app shows into **Authenticator code** and choose **Confirm code**. The code refreshes every thirty seconds, so use the current one.
+  </Step>
+  <Step title="Check the result">
+    The row then reads `An authenticator app is already linked to this account.`
+  </Step>
+</Steps>
+
+## Confirm an export or a deletion
+
+Once an authenticator is linked, the two destructive actions ask for a code the first time you use them, and then stay unlocked for fifteen minutes.
+
+<Steps>
+  <Step title="Start the action">
+    Choose **Export my data** or **Delete all data** under **Your data**.
+  </Step>
+  <Step title="Confirm to continue">
+    When Cortex needs a fresh confirmation it shows **Confirm to continue** with an `Authenticator code` field. Enter the current code and choose `Confirm code`.
+  </Step>
+  <Step title="Finish the action">
+    Export assembles the file while you wait and confirms `Download started — a JSON copy of what we hold for this account.` Deletion asks once more in its own dialog, then reports `Deletion requested — your data will be permanently erased within 30 days. Signing in again during that time cancels it.`
+  </Step>
+</Steps>
+
+If the confirmation has expired or was never given, the action stops with `Confirm two-factor authentication, then try again.` Nothing is exported and nothing is scheduled. See [Data and privacy](/getting-started/data-and-privacy) for what the export contains and how the deletion grace period works.
+
+## If you lose the authenticator
+
+Losing the device does not lock you out of Cortex. Sign-in does not ask for a second factor, so you can still open Chat, Code and Bot exactly as before. What you lose is the ability to export or delete your data until you can produce a code again.
+
+Cortex has no self-service fallback for this today: **Show recovery codes** answers `Recovery codes are not available on this deployment.`, and there is no control that removes a linked authenticator. Practical consequence: use your authenticator app's own backup or device-transfer feature, and keep it working before you need it.
+
+## What is not available yet
+
+The two-factor row is drawn beside several controls that are not wired on this deployment. The product says so in place rather than failing when you press them.
+
+| Control | What you get instead |
+| --- | --- |
+| **Add a passkey** | `Passkeys are not available on this deployment.` |
+| **Show recovery codes** | `Recovery codes are not available on this deployment.` |
+| **Login alerts** (`Email when a new device or location signs in.`) | Toggle drawn on and disabled: `Login alerts are not available on this account yet.` |
+| **Lockdown mode** (`Ends all sessions and blocks new logins until you unlock with recovery codes or verified email.`) | A confirm dialog exists, but the account reports `Lockdown is not available on this account yet.` |
+| **API keys** | `Create, rotate and revoke stay disabled until the account API stores only hashes and can deny expired keys immediately.` There are no programmatic keys today. |
+
+SMS codes and hardware security keys are not offered at all. An authenticator app is the only second factor.
+
+## States you may see
+
+| State | What the row says |
+| --- | --- |
+| Loading | `Checking two-factor status…` |
+| Guest | `Two-factor authentication is available after you sign in.` |
+| Session expired | `Sign in again to manage two-factor authentication.` |
+| Not allowed for this session | `Two-factor authentication is not available for this session.` |
+| Server unreachable | `The server could not be reached. Try again in a moment.` |
+| Status could not be read | `Two-factor status could not be loaded.` |
+| Not enrolled | `Not set up yet. Add an authenticator app before you export or delete this account.` |
+| Enrolled | `An authenticator app is already linked to this account.` |
+| Confirmation needed | `Confirm to continue` |
+| Gate hit on export or deletion | `Confirm two-factor authentication, then try again.` |
+
+A status that could not be read is never treated as "enrolled": the gate stays closed and the action refuses.
+
+## Related
+
+- [Accounts and sign-in](/getting-started/accounts) - sign-in methods, and why the dialog has no code field.
+- [Data and privacy](/getting-started/data-and-privacy) - export, deletion, cookies, memory and retention.
+- [Settings](/getting-started/settings) - where the Data & privacy tab sits among the seven tabs.
+- [Security and privacy reference](/reference/security-and-privacy) - what Cortex stores and what it does not claim.
+- [Troubleshooting](/getting-started/troubleshooting) - other gates and refusals across the product.

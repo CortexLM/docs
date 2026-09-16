@@ -1,53 +1,85 @@
 ---
 title: "Design library"
-description: "Components, pages, and tokens you reuse across canvases. Thumbnails are uploaded, not rendered on this site. Not the same object as Chat's file Library."
-keywords: ["components", "tokens", "assets", "design system"]
+description: "The account-level set of components, pages, and tokens you reuse across every design canvas, and how it differs from the Chat Library."
+icon: "swatchbook"
 ---
 
-The Design library holds the reusable pieces of your visual work: **components** you place on frames, **pages** you build from them, and **tokens** — colours, spacing, type — that keep everything consistent. It lives in the Library drawer of a canvas in the Design desktop app and belongs to your signed-in account.
+The Design library holds the reusable pieces of your visual work: **components** you drop onto a frame, **pages** built out of them, and **tokens**, the colour, type, and radius values that keep everything looking like one product. It belongs to your Cortex account rather than to any single canvas, so an item you add once is available on every design you open.
 
-## Add an item
+This page covers the three kinds of item the library holds, how to find and place them in the Design desktop app, how thumbnails work, and why the Design library is a different thing from the Library in Cortex Chat. The library is edited in the Design desktop app; the web app does not draw it.
+
+## What the library holds
+
+A library item is exactly one of three kinds. There is no fourth.
+
+| Kind | What it is | Where you use it |
+| --- | --- | --- |
+| **Component** | A reusable piece, made of parts, that you place on a frame | Frames on any of your canvases |
+| **Page** | A screen assembled from components | The canvas you are working on |
+| **Token** | A named value, such as a colour, a type family, or a corner radius | Components and pages that reference it |
+
+Tokens are the reason two frames can look like the same product. You maintain the values; the components that reference them follow. Each item also carries a theme, which is **light**, **dark**, or **both**, so a component built for a dark surface is not offered where it does not belong.
+
+Items are named by you, up to 200 characters, and can be filed under a group name of up to 128 characters. The names you give library items are encrypted at rest.
+
+## Open the library
 
 <Steps>
-  <Step title="Open a canvas in the Design desktop app">
-    See [Design desktop](/design/desktop).
+  <Step title="Open Library in the Design desktop app">
+    It is a row in the sidebar. From inside the editor you can also use the **Library** button on the canvas overlay, which keeps the canvas in view.
   </Step>
-  <Step title="Create a component, page, or token">
-    From the Library drawer.
+  <Step title="Pick a tab">
+    The library screen is split into **Components**, **Tokens**, and **Pages**, each showing how many items it holds. The header repeats the three counts for the whole library.
   </Step>
-  <Step title="Add a thumbnail when you have one">
-    Thumbnails are **uploaded**. Nothing on this site rasterises them for you.
+  <Step title="Search">
+    **Search components, tokens** filters the list by name.
+  </Step>
+  <Step title="Place a component">
+    Drag it from the library onto a frame to insert it.
+  </Step>
+  <Step title="Refresh from your account">
+    **Sync** pulls the library again, which is what you want after adding items from another machine.
   </Step>
 </Steps>
 
-## What each kind of item is for
+Each item shows its name, its own identifier in the shape `dli_...`, and a line counting the canvases it is used in. Components are presented as a read-only mirror of your account's components: you place them, you do not edit the source from the canvas.
 
-| Item | What it is | Reused by |
-| --- | --- | --- |
-| **Component** | A piece you place on a frame | Frames on any of your canvases |
-| **Page** | A screen built from components | The board you are working on |
-| **Token** | A colour, spacing, or type value | Components and pages that reference it |
+<Note>
+  The app's library also lists saved design files under a fourth tab. Those are files, not library items, and they are not one of the three kinds above.
+</Note>
 
-Tokens are the reason two frames can look like one product: change the value once and the components that reference it follow. They are values you maintain, not a theme the app picks for you.
+## Thumbnails
 
-## Two libraries
+An item can carry a thumbnail, and a thumbnail is a picture you upload rather than a preview the app renders for you. Two rules apply, the same as for images placed on a canvas:
+
+- A thumbnail must be a raster image. `A library thumbnail must be an image.` if it is not.
+- `SVG is not stored as a Design asset.` Convert the artwork to PNG before uploading it as a thumbnail.
+
+An uploaded picture is stored once however many places it appears, so reusing the same thumbnail costs nothing extra.
+
+## Two libraries, same word
 
 | | Design library | [Chat Library](/chat/library) |
 | --- | --- | --- |
-| Holds | Components, pages, tokens | Files you uploaded and files the assistant produced |
-| Lives in | The Library drawer of a canvas, on desktop | **Artifacts** in the web app sidebar |
-| Used by | Frames on a Design canvas | Chat turns and projects |
+| Holds | Components, pages, and tokens | Files you uploaded and files Cortex produced |
+| Lives in | The Design desktop app | Cortex Chat, in the web app |
+| Used by | Frames on a design canvas | Chat turns and projects |
 
-Same word, different objects. Items in one do not appear in the other.
+They share no storage and no route. An item in one never shows up in the other.
 
-## Who can use it
+## Access and limits
 
-Library items are member objects, like the canvases they sit on: a guest cannot create one, and another account's items are never listed. See [Accounts](/getting-started/accounts).
+The library needs a signed-in Cortex account, like every other Design surface. A signed-out visitor is refused with `Design canvases need an account. Sign in to keep your work.` See [entitlement_required](/problems/entitlement_required). Another account's items are never listed to you.
 
-The drawer is on the desktop only. The web app lists canvases but has no Library drawer and no `/design` route — see [Design desktop](/design/desktop).
+If a kind, a name, or a theme is rejected, the message says which: `A library item is a component, a page, or a token.`, `A library item needs a name of at most 200 characters.`, `A library item theme is light, dark, or both.`, or `A library group name is at most 128 characters.`
+
+<Note>
+  A component you place on a frame is not yet linked back to its library item, so editing the item later does not update copies already on a canvas. That link is planned rather than available.
+</Note>
 
 ## Related
 
-- [Canvases](/design/canvases) — where components are placed.
-- [Design desktop](/design/desktop)
-- [Design troubleshooting](/design/troubleshooting) — a Library item that is not where you expected.
+- [Design canvases](/design/canvases) - the boards you place library items on.
+- [Generate and edit](/design/editor) - the editor, and the Library button on the canvas.
+- [Chat Library](/chat/library) - the separate file store in Cortex Chat.
+- [Design troubleshooting](/design/troubleshooting) - an item that is not where you expected it.

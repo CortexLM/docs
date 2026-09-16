@@ -1,53 +1,142 @@
 ---
 title: "Design canvases"
-sidebarTitle: "Canvases"
-description: "Boards you host from Chat or Code — frames, notes, options, and the host binding. Default title Untitled canvas; deleting hides it from the list."
-keywords: ["board", "frames", "notes", "options"]
+description: "What a design canvas holds, the thread that hosts it, the canvases rail, the Designs gallery, renaming, deleting and the 200-canvas cap."
+icon: "object-group"
 ---
 
-A Design canvas starts life as **Untitled canvas**, created the moment Chat or Code writes to it. It belongs to your account, remembers which conversation or session hosted it, and is edited in the [Design desktop app](/design/desktop).
+A **design canvas** is the unit of work in Cortex Design: a persistent board of frames, notes and images with a reference of its own, the one you paste between surfaces. Every canvas is created from, and stays linked to, one thread. That thread is the canvas's **host**, and a host is a Cortex Chat conversation or a Cortex Code session, never both at once.
 
-## What lives on the board
+This page covers what lives on a canvas, how a canvas is created and which thread it belongs to, the two places canvases are listed, and what happens when you rename or delete one. It ends with the limits that apply.
 
-| On the canvas | Not this object |
+## What a canvas holds
+
+| On the canvas | What it is |
 | --- | --- |
-| **Frames** — screens, diagrams, layouts | A Chat project |
-| **Notes** — annotations beside the frames | A Chat canvas (a document beside a conversation) |
-| **Options** — alternatives laid out side by side | A Code workspace file |
-| **Host binding** — the Chat conversation or Code session that created it | A Bot's computer — Bot does not receive design tools |
-| **Library drawer** — components, pages, tokens | Chat's file [Library](/chat/library) |
+| **Frames** | The boards Cortex draws on: a screen, a layout, a diagram. When Cortex answers one brief with alternatives, each alternative is a frame carrying a short option letter, A, B, C. In the product's vocabulary those frames are the options you pick between. A page, in the sense of a screen, is a frame. |
+| **Notes** | Text you or Cortex leave on the board, up to 16,384 characters each. |
+| **Library drops** | Components, tokens and pages you reuse from your [Design library](/design/library). |
+| **Images** | Picture fills placed on the board. They must be raster images: SVG is not accepted as a canvas asset. |
 
-## Create and open
+A new canvas is titled **Untitled canvas** until you rename it, and its host defaults to Chat.
+
+### Not the same as the other canvases
+
+Three things in Cortex are called a canvas or look like one, and they are separate objects that share no storage.
+
+| Thing | What it is | Where it opens |
+| --- | --- | --- |
+| A **design canvas** | The visual board described on this page, with a reference of the shape `dcn_…` | The Cortex Design desktop app |
+| A [Chat canvas](/chat/canvases) | A markdown document written beside one conversation, not a board of frames | Cortex Chat |
+| A [Chat project](/chat/projects) | A folder that groups conversations and files | Cortex Chat |
+
+## Create a canvas
+
+There are three ways in, and they produce the same object.
 
 <Steps>
-  <Step title="Sign in">
-    Another account's canvases are not visible; a guest cannot create one.
+  <Step title="Ask for it inside a Chat or Code turn">
+    Ask Cortex for the design in the thread. If it draws without naming an existing canvas, a new canvas is created and bound to the thread you are in. Cortex confirms in the transcript with a line naming the canvas, its revision and its counts, and says it can be opened in Cortex Design.
+
+    From a Code session, a mode that only answers or only plans can read a canvas but not write one. Use a mode that can act. See [Ask, Plan, Agent](/code/interactions).
   </Step>
-  <Step title="Host a canvas from Chat or Code">
-    The design tools create the board and write the first frames. The title is **Untitled canvas** until you rename it.
+  <Step title="Use New canvas in the rail">
+    The **CANVASES** rail beside a thread has a **New canvas** control, which creates an empty canvas hosted by that thread.
   </Step>
-  <Step title="Open the working UI on desktop">
-    Edit frames, notes, and options in the [Design desktop app](/design/desktop).
-  </Step>
-  <Step title="Delete when done">
-    Deleting a canvas hides it from the list.
+  <Step title="Use New design in the desktop app">
+    In the Design window, **New design** (`⌘N`) opens a sheet asking for a **NAME**, what to **START FROM**, a **BRIEF**, and a **MODEL**. The [Design quickstart](/design/quickstart) walks through it field by field.
   </Step>
 </Steps>
 
-## Who can open one
+## The host thread
 
-A canvas is a member object. Sign in first: a guest has no design tools to host a board with, and another account's canvases are never listed. That is the same rule as the rest of Cortex — a session that cannot be signed back into to revoke something never gets to create it. See [Accounts](/getting-started/accounts).
+A canvas remembers which thread produced it, and the binding can be changed after the fact:
 
-## Renaming
+- Attach a conversation and the canvas becomes Chat-hosted; any Code session binding is cleared.
+- Attach a Code session and the canvas becomes Code-hosted; any conversation binding is cleared.
+- Clear the binding and the canvas keeps its contents but shows no thread.
+- Attaching both kinds at once is refused: `A Design canvas binds a Chat conversation or a Code session, not both.`
+- You have to own the thread you are binding to. Another account's thread answers as not found.
 
-Rename the board from the desktop app. The host binding stays, so the Chat conversation or Code session that created it still points at the same canvas.
+Deleting the host thread does **not** delete the canvas. It only unbinds it, and the canvas then shows no thread.
 
-## Chat canvases are a different thing
+## The canvases rail, in the web app
 
-A Chat canvas is a document beside a conversation — see [Chat canvases](/chat/canvases). A Design canvas is a board of frames. Chat can host both; only the Design canvas opens in the desktop app.
+Beside an open Chat thread or Code session, the rail is headed **CANVASES** and lists only the canvases whose host matches that surface *and* that thread. A Chat thread never shows Code canvases.
+
+| What you see | What it means |
+| --- | --- |
+| Row title, then the host and thread title and a time | Which thread the canvas belongs to. The host reads `Chat`, `Code` or `Unknown`, and an unbound canvas reads `No thread`. |
+| Artifact counts, such as `3 frames`, `1 option`, `5 notes` | What is on the board. A board with nothing on it reads `Empty`. |
+| A status pill: **Idle**, **In flight**, **Ready** or **Failed** | Nothing on it yet, still being drawn, finished, or at least one thing failed. |
+| Day headings such as `TODAY` and `YESTERDAY` | Rows are grouped by when each canvas was last updated. |
+| **Search canvases** | Filters on the canvas title and on the host thread title. |
+| **Collapse** and **Expand** | On a wide window the rail is a right-hand column; on a narrow one it becomes a collapsed strip under the pane, so the transcript keeps its width until you ask for it. |
+| **Copy reference** | Copies the canvas id, which is the address the Design app accepts. A browser that blocks the clipboard says so. |
+| **Open in Design** | Drawn only when the app can be reached from the browser. Otherwise copy the reference and paste it in. |
+
+If the list is long the rail says that it is showing the first canvases and that older ones are not listed yet. If it cannot load, it says `Canvases could not be loaded.` and offers **Retry**. A signed-out visitor gets no rail at all: it draws nothing rather than showing a locked state.
+
+## The Designs gallery, in the desktop app
+
+The Design window opens on **Designs**, every canvas in your account rather than one thread's worth.
+
+| Control | Options |
+| --- | --- |
+| **View** | `Grid` or `List` |
+| Filter chips | `All`, `Mine`, `Bot-managed`, `From Chat`, `From Code` |
+| Sort | `Last edited` |
+| Grouping | Day headings such as `Today` and `Earlier this week` |
+
+Each tile carries a version badge such as `V7` and a source chip saying where the design came from: `Chat`, `Code`, `Bot`, `Library` or `Blank`. The header line under the title reports the state of the list: `Nothing here yet` before you have made anything, `Syncing your designs…` while it loads, and a count with the last sync time once it is loaded.
+
+When the service cannot be reached, the gallery does not pretend. It shows `Couldn't reach Cortex — showing last sync {time}`, or a banner headed `Couldn't load your designs` explaining that the list is your last sync, with **Work offline** and **Retry**. Canvases you already have open stay readable from the local cache, and edits queue and sync when you reconnect.
+
+<Note>
+  The `Bot-managed` filter belongs to a capability that is not available yet: a Cortex Bot cannot open or change a design canvas today, so nothing is bot-managed. See [Bot jobs](/design/bot-jobs).
+</Note>
+
+## Rename a design
+
+Rename a design from the Design window. The host binding is unaffected, so the thread that started it still points at the same canvas. A title is at most 200 characters; a longer one is refused with `A canvas title is at most 200 characters.`
+
+The names you give your canvases, and the thread titles shown beside them, are encrypted at rest. See [Security and privacy](/reference/security-and-privacy).
+
+## Delete a design
+
+Deleting a canvas **hides** it. Its versions and its images stay, so the canvas can come back.
+
+1. Choose delete on the design. The app confirms with a dialog naming the design, lists what goes with it, and offers **Keep it** or **Delete design**.
+2. A toast then offers **Undo** for ten seconds.
+3. After that window the canvas stays hidden until you restore it, permanently delete it, or erase the account. The general retention sweep does not remove design canvases you still hold.
+4. The thread the design came from is not affected.
+
+<Warning>
+  A hidden canvas still counts as yours until it is permanently deleted, so it still occupies one of your 200 canvases. If you are at the cap, permanently delete a hidden canvas rather than only hiding another one.
+</Warning>
+
+## Limits
+
+| Limit | Value |
+| --- | --- |
+| Design canvases per account | **200** |
+| Canvas title | 200 characters |
+| Host thread title | 200 characters |
+| Nodes on one canvas | 8,000 |
+| Canvas document, uncompressed | 8 MiB |
+| One image, thumbnail or tile | 8 MB |
+| A note | 16,384 characters |
+| A frame or note name | 200 characters |
+| **NAME** in the New design sheet | 48 characters |
+| Default page size | 1440 × 900 |
+
+Creating a canvas past the cap is refused with `This account already has the maximum number of Design canvases.` See [Quota exceeded](/problems/quota_exceeded). A canvas past the document limit is refused on save with `This canvas is too large to save.`, and one with too many pieces on it with `This canvas has too many nodes.` Split the work across canvases when you hit either.
+
+A signed-out visitor is refused on every Design surface with `Design canvases need an account. Sign in to keep your work.` See [Entitlement required](/problems/entitlement_required). A canvas that belongs to another account answers exactly as one that does not exist, because Cortex does not reveal whether a canvas exists outside your account. See [Not found](/problems/not_found).
 
 ## Related
 
-- [Library](/design/library) — reusable components, pages, and tokens.
-- [Design desktop](/design/desktop)
-- [Design troubleshooting](/design/troubleshooting) — a board that is missing, or will not rename.
+- [Generate and edit](/design/editor) - what the editor does with a canvas once you open it.
+- [Versions](/design/versions) - every save is a version, and how to go back to one.
+- [Design library](/design/library) - the components, tokens and pages you drop on a board.
+- [Export a design](/design/export) - get a PNG or the canvas document out.
+- [Design troubleshooting](/design/troubleshooting) - the refusals above, with what to do.

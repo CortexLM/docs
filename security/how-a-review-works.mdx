@@ -1,0 +1,171 @@
+---
+title: "How a review works"
+description: "The stages a review moves through, the second pass that checks every finding, and why the verdict is arithmetic rather than an opinion"
+icon: "diagram-project"
+---
+
+A Cortex Security review is one pass over one pull request, not a conversation. It starts from a GitHub event, moves through a fixed set of stages, checks every candidate finding a second time, and publishes what survived. The result is stored with the status that pass earned, so a review that could not run is recorded as failed rather than as an approval.
+
+This page follows that pass from the event to the check run. Read it when you want to know why a finding appeared, why one you expected did not, or what a **Neutral** check run is telling you. For the anatomy of what lands on the pull request, see [Checks and comments](/security/checks); for the settings each stage consults, see [Review policy](/security/review-policy).
+
+## What starts a review
+
+| Trigger | Behaviour |
+| --- | --- |
+| A pull request is opened | The default. Every pull request that passes your filters is reviewed. |
+| A commit is pushed to an open pull request | On by default. Switch **Review again on every push** off and the review stays the review of the pull request as opened. |
+| Somebody mentions the App in a pull-request comment | Always works, even when reviews are set to happen only when asked. |
+| **Review again** in the app | Opens a new review of the current head. |
+
+Draft pull requests are not reviewed by default. A mention overrides the settings whose job is to keep the reviewer quiet, such as a draft or a policy of reviewing only when asked. It does not override scope filters: an excluded branch stays excluded, and the reply says which setting declined.
+
+## The stages a review moves through
+
+While a review is in flight the app shows one line of progress. These are the words it uses, in order: **Queued**, **Reading the change**, **Summarising each file**, `Reviewing file X of Y` counting up through the files, **Verifying findings**, **Posting the review**, and finally **Done**. A review that gave up says **Could not review**, and a stage the app does not recognise shows the single word **Working** rather than nothing at all.
+
+In product terms, this is what sits behind those words.
+
+<Steps>
+  <Step title="The event arrives">
+    The App receives the pull-request event. A delivery that is not signed is refused.
+  </Step>
+  <Step title="The change is split up">
+    One piece per hunk or declaration. This is the point at which the check run appears, along with a reaction on the pull request saying the review has started.
+  </Step>
+  <Step title="Each piece is summarised">
+    A short description of every piece, so the reviewer of one file knows what the others do.
+  </Step>
+  <Step title="The repository is indexed">
+    Cortex reads the pull request's head tree, not just the diff, so it can answer "who calls this from a file the change did not touch". That is what makes a finding like "this function stopped accepting an empty value, and its caller in another file has always relied on it" expressible at all. The nearest files to the change are indexed first, up to a budget. The index is heuristic and line-oriented: a missed link costs context, and a spurious one costs an irrelevant caller being shown.
+  </Step>
+  <Step title="The change is reviewed">
+    A file at a time, then bug theories are tested against it, then the deterministic checks run. See the layers below.
+  </Step>
+  <Step title="Every finding is verified">
+    A separate second pass, described below, decides which candidates reach GitHub.
+  </Step>
+  <Step title="The change may be run">
+    Where the deployment has an isolated runtime, Cortex Agent can run the change to gather evidence. It is skipped when there is nothing to run. The setting for it is on by default, but the runtime it needs is absent on most deployments, so in practice the run is recorded as unavailable, with `This deployment has no isolated runtime for Cortex Agent to use, so this change was not run.` A run that could not happen is never a pass. See [Cortex Agent runs](/security/agent).
+  </Step>
+  <Step title="The review is published">
+    Inline comments, the summary comment, the review event and the check run's conclusion.
+  </Step>
+</Steps>
+
+Each stage records what it did, so a review survives the process that started it, and a redelivered event cannot start a second review of the same change.
+
+## What looks at your change
+
+Five things can produce a finding. All of them produce the same kind of finding, all of them go through the same second pass, and duplicates between them are collapsed into one comment. The pull-request page records which layer each finding came from.
+
+| Layer | What it sees |
+| --- | --- |
+| The reviewer | One file at a time, plus the summaries of related files. |
+| Bug theories | The diff plus the indexed repository's reach. Each theory is one agent, told one theory, what would count as proof of it, and what would count as it being absent. Only theories whose category your policy still allows are planned, so switching a criterion off removes its theories from the plan rather than filtering their findings afterwards. At most six run per review, four at a time. |
+| Rules | The changed lines only, matched by shape. No model is involved. |
+| Advisories | The dependency manifests the change touches. No model is involved. |
+| Cortex Agent | The change, actually running. It produces evidence rather than findings. |
+
+The rules and the advisories are the two layers with nothing to switch on: they cost nothing to run, so they always run. A raised severity floor cannot silence either of them when the finding is filed under security, on the reasoning that somebody who raised their floor asked for a quieter reviewer rather than to stop being told about injection. A security finding the reviewer itself wrote is filtered normally, which keeps the exemption predictable. When a rule and the reviewer catch the same weakness on the same line, you get the reviewer's prose with the rule's identity and severity, so the comment that names the variable is the one that cannot be silenced.
+
+Rule findings are titled plainly, and the title is what you read at the top of the comment: **SQL query built by string concatenation**, **Certificate verification switched off**, **A live credential written into the source**. Eleven such rules ship, they are Cortex's own, and each body names the fix rather than only the problem. Because they match on shape, with exclusions so that the fix is not reported as the bug, a rule can miss and never needs a model.
+
+Advisory findings are the ones no reviewer could make by reading the diff: the line is correct, the code using it is correct, and the defect is in the published package. They come from a built-in table of published advisories for npm, PyPI, Cargo and Go packages, so nothing is fetched while a review runs and two runs of the same review agree. Each advisory in that table carries its published identifier, a `CVE-…` or a `RUSTSEC-…` id, which is what lets you go and read the original advisory rather than take the finding's word for it.
+
+A finding is made only when the change touches the manifest, and only when **every** version your declaration permits is affected. A range that already allows the fixed version is not a finding, which is the rule you can check against your own lockfile and agree with. Where the comment lands follows what you did to the manifest:
+
+| What the change does | What is reported |
+| --- | --- |
+| Adds or edits the dependency's own line | An inline finding on that line |
+| Edits the manifest somewhere else | A file-level finding |
+| Does not touch the manifest | Nothing |
+
+At most twenty advisory findings are made per review, reading at most 512 KB from any one manifest.
+
+## What is never reviewed
+
+Generated and vendored content is recorded as touched and never reviewed: lockfiles, bundles, vendored trees. If every changed file falls in that set, the review ends as failed, with the reason *Every changed file is generated or vendored, so there was nothing to review.* It does not end as an approval, because nobody looked.
+
+## The second pass
+
+Every candidate finding is checked again by a separate pass, which is asked a closed question about it: is this specific claim supported by this specific text. That is a narrower question than "what is wrong with this file", and two of its four rejections need no model at all.
+
+| Why a finding is rejected | What it means |
+| --- | --- |
+| The path is not in this pull request | The finding pointed somewhere this change does not go. |
+| The line was not changed here | The path is in the pull request, but that line is not part of the change. |
+| The claim is not supported | The source shown does not back up what the finding says. This is the case that catches a confident sentence about code that does not do that. |
+| Another finding already says this | A duplicate. |
+
+Rejections are counted rather than quietly dropped. Open a review in the app and you get a disclosure reading **N findings the verifier rejected**, each carrying a `Not posted — {reason}.` line, so a second pass that rejects everything is visible instead of merely quiet. When nothing survives at all, the review says so: *Nothing survived verification. Every candidate finding either pointed at a line this pull request did not change or could not be supported by the change itself.*
+
+## Posted, discarded, filtered out
+
+A finding ends in one of three states, and the app keeps them apart on purpose.
+
+| State | Meaning |
+| --- | --- |
+| Posted | It reached GitHub. |
+| Discarded | The second pass rejected it. The finding was wrong. |
+| Filtered out | Your policy, or what this repository has dismissed before, did not want to hear it. Nobody said it was wrong. |
+
+The filtered ones appear under **N findings your review policy filtered out**, each with a reason: the finding was below the severity floor, below the confidence floor, filed under a criterion that is switched off, or silenced because this repository has dismissed that class of finding before.
+
+The first three are settings on the policy form. The fourth is not a setting: after the same class of finding has been dismissed three times, this repository stops being sent it, and there is no screen listing what has been silenced. Anything blocking or major, anything carrying a CWE, and anything filed under security is never silenced this way, however often it is dismissed. See [Review policy](/security/review-policy).
+
+## The verdict is arithmetic
+
+What the review concludes is derived from what survived verification, so it can never disagree with the findings printed beside it. A model is never asked for the verdict.
+
+| What survived | Run complete? | What is posted on the pull request | Check run |
+| --- | --- | --- | --- |
+| Any blocking or major finding | Either | Changes requested | **Failure** |
+| Only minor findings or notes | Yes | A comment | **Success** |
+| Nothing | Yes | No review event | **Success** |
+| Anything | No | A comment | **Neutral** |
+| The review failed | — | No review event | **Neutral** |
+
+"Complete" means every assigned file came back readable **and** the second pass ran. Without that condition, a review whose file stage died halfway would have no findings, and "no findings" would read as "approved".
+
+The first row is what a repository does before anybody changes a setting, and it is the one row a setting moves. **On a blocking finding** bends its last two columns together rather than just the check, so read them as a pair.
+
+<Warning>
+No row in that table is an approval. A clean review reports **Success** and stops there: Cortex Security does not approve a pull request, and the setting a reader would expect to find for it is not offered. The policy form states it as fact under **Human approval required**, because *Cortex never approves a pull request automatically. Quality findings remain for a person to review.*
+</Warning>
+
+Two policy settings bend that pair of columns. **On a blocking finding** decides whether a blocking finding only comments, requests changes, or requests changes and fails the check, and each of the three moves both columns: on the first, the review event stays a plain comment and the check never reports **Failure** at all; on the second, changes are requested but the check still reports **Success**; only the third, the default, gives you the row above. **Fail the check run at** decides which severity is serious enough to fail it, separately from which findings get reported, so you can comment on everything and still only block on the serious. Whether a failing check blocks a merge is GitHub branch protection rather than a Cortex setting: a reviewer that could block a merge on its own authority would be one nobody could switch off in a hurry.
+
+## A failed review stays failed
+
+When a review could not run, the row in the inbox reads **Not reviewed** and carries one sentence explaining which of seven things happened. Those sentences are the whole explanation. They are not platform error codes, and there is no error-code page to look them up in.
+
+| What went wrong | What to do |
+| --- | --- |
+| Every changed file was generated or vendored | Nothing in the change was reviewable. This is a failure, not an approval. |
+| No model was available to review with | Choose **Review again**, and ask whoever runs the deployment if it keeps happening. |
+| The deployment's model service is not configured | Ask whoever runs the deployment. Nothing you can change in the policy will fix this one. |
+| The GitHub App is not configured on this deployment | An operator has to supply its credentials before anything is reviewed. |
+| The change could not be read from GitHub | Ask for another look once GitHub is answering again. |
+| The installation is suspended on GitHub | Unsuspend it from the app's settings page. See [Installation and repositories](/security/repositories). |
+| The review did not finish | Choose **Review again**. |
+| Anything else | The row falls back to *Cortex Security could not review this change.* |
+
+On the pull request itself the check run concludes **Neutral**, and the app's verdict card says *No verdict was reached for this commit, so the check is not an approval.*
+
+## Skipped is not failed
+
+A pull request your policy declined also reads **Not reviewed** in the inbox. The pill is the same as a failed review's, and the difference is in the reason line on the row, so do not read the pill alone. Each reason names the setting you would go and change: that it is a draft and *this repository does not review drafts*, that reviews are switched off or happen only when asked, that a later push does not start a new review here, that the base branch or the author is not reviewed, that a required label is absent or a label suppresses review, or that the change is larger than the file limit. Anything else falls back to *This repository's review policy excludes it.* [Security troubleshooting](/security/troubleshooting) works through them symptom by symptom.
+
+## A pull request cannot talk the reviewer into anything
+
+A change can contain a comment shaped like an instruction to the reviewer, written by somebody who knows a bot reads it. Every piece of the change crosses a trust boundary before it reaches the reviewer, the second pass or the summariser, with Cortex's own delimiters neutralised inside it. It is handled the way a web page is handled: as text to be read, not as instructions to be followed.
+
+The same principle governs the settings a repository carries in its own files. A repository can keep instructions and rules on the branch under review, and they can make a review stricter or better informed. They cannot exclude a path, raise a threshold or switch the review off, because the author of a pull request would then have a say over the scrutiny it receives. A refused key is reported back in the review's summary, so a setting quietly dropped and a setting never read do not look the same.
+
+## Related
+
+- [Checks and comments](/security/checks) - the check run, the summary comment, and what an inline finding looks like.
+- [Review policy](/security/review-policy) - every setting the stages above consult.
+- [Cortex Agent runs](/security/agent) - the layer that runs the change instead of reading it.
+- [Repository scans](/security/scans) - the other question: what is wrong in this tree, rather than what this change introduced.
+- [Security troubleshooting](/security/troubleshooting) - symptom by symptom, when a review does not do what you expected.

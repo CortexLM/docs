@@ -1,78 +1,137 @@
 ---
-title: "Downloads"
-description: "Every way to run Cortex — the web app, the Cortex desktop app for Chat and Code, the Bot desktop app, the Design desktop app, and the CLI."
-keywords: ["install", "apps", "desktop", "releases"]
+title: "Ways to run Cortex"
+description: "Where each Cortex application runs, which ones you can run today, and how each one keeps itself up to date."
+icon: "download"
+keywords: ["Downloads", "Install", "Apps"]
 ---
 
-Cortex runs in the browser without installing anything. Download an app when you need a host the browser cannot offer: **This PC** and **SSH** for Code, a desktop home for your bots, or the Design working UI.
+Cortex runs in a browser without installing anything. A browser tab cannot touch the files, the
+terminal or the windows on your own machine, so Cortex also ships desktop applications and a
+command-line tool for the work that has to happen locally. One account covers all of them.
 
-## What to install
+This page is the map: which application carries which product, where work can run in each one,
+which ones are available today, and how each one updates. It deliberately carries no installer
+links, because Cortex does not publish a public download page yet.
 
-| You want to… | Install | Guide |
-| --- | --- | --- |
-| Chat, run Code in the Cloud, drive a Bot in the Cloud | Nothing — use [cortex.foundation](https://cortex.foundation) | [Quickstart](/getting-started/quickstart) |
-| Run Code sessions on **This PC** or over **SSH** | The **Cortex desktop app** (Chat + Code) | [Desktop app](/getting-started/desktop) |
-| Drive Code from a terminal, scripts, or CI | The **Cortex CLI** | [Install the CLI](/cli/install) |
-| Run bots from a desktop app built for agents, routines, and channels | The **Cortex Bot desktop app** | [Bot desktop](/bot/desktop) |
-| Edit Design canvases | The **Cortex Design desktop app** | [Design desktop](/design/desktop) |
+## The applications
 
-## Desktop apps
+| Application | What it carries | Where work can run | Available today |
+| --- | --- | --- | --- |
+| **Web app** at [cortex.foundation](https://cortex.foundation) | Cortex Chat, Cortex Code and Cortex Bot in a browser tab | Cloud runtimes only | Yes |
+| **Cortex desktop app** | Chat and Code in one window, with a switcher between the two | Cloud, a paired machine, a server over SSH, and **This PC** | Yes |
+| **Cortex Bot desktop app** | Agents, rooms, routines, plugins and the Inbox. No Chat and no Code. | Cloud, plus **Background computer** on your own machine | Yes |
+| **Cortex CLI**, also called the Cortex Code CLI | The same coding agent, in a terminal | Your machine | Yes |
+| **Cortex Design desktop app** | Designs, Library, Plugins and Bot jobs | Not applicable yet | No. The web app creates and lists canvases, but the editor is the window |
 
-Desktop builds are published at [releases.cortex.foundation](https://releases.cortex.foundation). Install the build for your platform, open it, and sign in when the app asks — it is the same account as the web app.
+<Note>
+There is no public download page for the desktop applications yet, and no installer link to give
+you. This page describes what each application does and how it behaves once it is installed.
+</Note>
 
-There are two desktop apps because the two jobs are different:
+## Pick an application
 
-| App | Sidebar | Adds |
-| --- | --- | --- |
-| **Cortex desktop** | Chat and Code | This PC and SSH hosts for Code sessions; the same Chat as the web |
-| **Cortex Bot desktop** | Agents, routines, channels — no Chat or Code sidebar | A desktop home for your bots |
+<CardGroup cols={2}>
+  <Card title="Cortex desktop app" icon="desktop" href="/getting-started/desktop">
+    Chat and Code in one window, and the only way to run Code on this machine.
+  </Card>
+  <Card title="Bot desktop app" icon="robot" href="/bot/desktop">
+    A window for your agents: the Inbox, routines, plugins and rooms.
+  </Card>
+  <Card title="Cortex CLI" icon="terminal" href="/cli/install">
+    The coding agent from a terminal, a script or a continuous-integration job.
+  </Card>
+  <Card title="Design desktop app" icon="pen-ruler" href="/design/desktop">
+    What the Design window will hold, and what to use in the meantime.
+  </Card>
+</CardGroup>
 
-Design's working UI is a third, separate desktop app; Chat and Code can still host a canvas that you then open there.
+## The web app
 
-<p className="ink-cta-row">
-  <a className="ink-btn" href="https://releases.cortex.foundation">Open releases.cortex.foundation</a>
-  <a className="ink-btn ink-btn-quiet" href="/getting-started/desktop">What desktop adds</a>
-</p>
+Nothing to install and nothing to update. Sign in with your Cortex account and use the product
+menu, headed **Switch product**, to move between **Cortex Chat** (`Ask, research and create.`),
+**Cortex Code** (`Agents in your repositories.`) and **Cortex Bot** (`A teammate with a
+computer.`). The same menu carries a **Desktop app** row and a **Documentation** row, both of which
+open in a new tab.
+
+Two limits are worth knowing before you choose the browser:
+
+- Cortex Code in a browser runs in the cloud. If something asks for **This PC** or **SSH** from a
+  tab, the answer is one fixed message: `This PC and SSH are available in the Cortex desktop app,
+  not in the browser. Use Cloud here.`
+- The double-tap capture chord belongs to the desktop app. In the web app the setting says
+  **This chord lives on the desktop app. The web has no global hotkey.**
+
+<Warning>
+The **Desktop app** row in the product menu is not a download link. It opens the page that hands a
+desktop application back to you after you sign in, which says **Finish signing in in the Cortex
+app**.
+</Warning>
+
+## The desktop applications
+
+Two desktop applications ship today, and they do different jobs.
+
+The **Cortex desktop app** is Chat and Code in one window. It draws its own title bar with the
+product switcher and the window controls, keeps your conversations and sessions on this machine, can
+open a folder through the system's folder picker, and can run a Code session on **This PC** with a
+local terminal and local Git. See [Cortex desktop app](/getting-started/desktop).
+
+The **Cortex Bot desktop app** is built only around agents. Its rail is **Inbox**, **Routines** and
+**Plugins**, with your **Agents** and **Rooms** listed below. It signs you in, runs approvals
+through the Inbox, and can be granted **Background computer**, which lets an agent work in windows
+that are not frontmost on your own machine. See [Bot desktop app](/bot/desktop).
+
+A third window, for **Cortex Design**, is not finished: it has no installer and no sign-in, so there
+is nothing to install. There is no browser editor to fall back on either: what the web app gives you
+today is the **CANVASES** rail, which asks for a design, creates and lists canvases and shows their
+status, while the editing itself belongs to the window. See
+[Design desktop app](/design/desktop) for what it will hold.
 
 ## The CLI
 
-The CLI is one binary, `cortex`, installed from [software.cortex.foundation](https://software.cortex.foundation). The installer verifies a SHA-256 checksum before it writes anything.
+The Cortex CLI is a single command-line tool. Its install scripts and its released archives are
+published on `software.cortex.foundation`, and the installer checks the published checksum before it
+writes anything. On macOS and Linux it installs into `~/.local/bin`, and Python 3.8 or newer must
+already be present. On Windows it installs under your local application data folder, in
+`Cortex\bin`, and it does not edit your PATH, so add that folder yourself.
 
-<CodeGroup>
-```bash macOS and Linux
-curl -fsSL https://software.cortex.foundation/install.sh | sh
-```
-
-```powershell Windows
-irm https://software.cortex.foundation/install.ps1 | iex
-```
-</CodeGroup>
-
-Then:
+Confirm the install with:
 
 ```bash
 cortex --version
-cortex login
-cd ~/code/my-project && cortex
 ```
 
-<Frame caption="What a fresh install shows, even in a 40-column terminal: Welcome to Cortex, the coding agent CLI, and the empty composer.">
-  <img src="/images/cli/runtime/40x12/welcome-cortex.png" alt="Cortex CLI welcome splash rendered in a 40 by 12 terminal" />
-</Frame>
+Three environment variables change what the installer does:
 
-Full steps, version pins, channels, and updates: [Install the CLI](/cli/install).
-
-## Updating
-
-| Surface | How it updates |
+| Variable | What it does |
 | --- | --- |
-| Web app | Always current |
-| Desktop apps | The updater feed on `releases.cortex.foundation` |
-| CLI | `cortex upgrade` (or `cortex upgrade --check` to report only) |
+| `CORTEX_VERSION` | Install a specific version |
+| `CORTEX_INSTALL_DIR` | Install somewhere else |
+| `CORTEX_CHANNEL` | Choose `stable`, `beta` or `nightly` |
 
-## Next
+The installer picks the right build for your processor and, on Linux, the right C library variant.
+An unrecognised system fails rather than guessing, and the installer refuses to overwrite unrelated
+commands. Native Windows ARM64 and 32-bit builds are not published. Full steps are in
+[Install the CLI](/cli/install).
 
-- [Desktop app](/getting-started/desktop) — what This PC and SSH add for Code.
-- [Bot desktop](/bot/desktop) — the app built around agents, routines, and channels.
-- [Design desktop](/design/desktop) — the working UI for canvases.
-- [Install the CLI](/cli/install) — checksums, version pins, and channels.
+## How each one updates
+
+| Application | How it updates |
+| --- | --- |
+| Web app | Always current. Nothing to do. |
+| Cortex desktop app | Checks at launch and then every four hours, downloads quietly, then offers **Restart now** or **Later**. Choosing **Later** installs the update the next time you quit. |
+| Cortex Bot desktop app | Checks at launch and then every four hours, but downloads nothing until you ask. You press **Check for updates**, **Download update**, then **Restart and install**. |
+| Cortex CLI | `cortex upgrade` moves you to the latest build on the stable channel. `cortex upgrade --check` only reports whether an update exists. |
+| Cortex Design desktop app | No updater yet. |
+
+The Cortex desktop app never moves you to an older version, and both desktop applications check
+that an update really came from Cortex before installing it. Mac builds are notarised and Windows
+builds are code-signed.
+
+## Related
+
+- [Cortex desktop app](/getting-started/desktop) for install, sign-in and This PC.
+- [Bot desktop app](/bot/desktop) for the agent window and Background computer.
+- [Design desktop app](/design/desktop) for the Design window and what to use today.
+- [Install the CLI](/cli/install) for the exact install commands and channels.
+- [Quickstart](/getting-started/quickstart) if you just want to start in the browser.

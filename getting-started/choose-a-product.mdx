@@ -1,0 +1,88 @@
+---
+title: "Which product do I need?"
+description: "A task table that maps what you want to do to the right Cortex application, plus what each one needs before it will open."
+icon: "signs-post"
+---
+
+Cortex has six applications and they overlap less than their names suggest. **Cortex Chat** is a conversation, **Cortex Code** is work inside a repository, **Cortex Bot** is an agent with a computer of its own, **Cortex CLI** is Code in a terminal, **Cortex Design** is a board, and **Cortex Security** is review on a pull request. Picking the wrong one usually feels like a missing feature rather than a wrong turn, which is why this page exists.
+
+Start from the task, not from the product. The first table maps what you want to do to the application that does it. The second says what each one needs before it will open, because some are member-only and two are still in closed beta. The last section covers the pairs that genuinely overlap.
+
+## Start from the task
+
+| You want to | Open | What it needs |
+| --- | --- | --- |
+| Ask a question, write something, work through an idea | **Cortex Chat** | Nothing. A browser is enough |
+| Summarize a document, or ask about a picture | **Cortex Chat** | An account, because attachments do |
+| Generate a picture | **Cortex Chat** | An account for anything beyond the guest allowance |
+| Keep standing instructions and files for a recurring topic | **Cortex Chat** projects | An account |
+| Have Cortex do something on a schedule and tell you the result | **Cortex Chat** scheduled tasks | An account |
+| Change files in a repository, run its tests, open a pull request | **Cortex Code** | An account and a closed-beta invitation |
+| Do that on your own machine, or on a server you own | **Cortex Code** on desktop, or the **CLI** | The desktop app or the CLI |
+| Script the same work, or run it in a pipeline | **Cortex CLI** | An account and a terminal |
+| Hand over ongoing work that needs a browser, clicks and patience | **Cortex Bot** | An account and a closed-beta invitation |
+| Get a pull request reviewed where it already lives | **Cortex Security** | An account and a repository |
+| Lay out frames, components and notes on a board | **Cortex Design** | An account and the Cortex Design desktop app |
+
+## What each one needs
+
+| Application | Account | Closed beta | Where the work happens | Install |
+| --- | --- | --- | --- | --- |
+| **Cortex Chat** | No, within the guest allowance | No | The browser, or the desktop app | None |
+| **Cortex Code** | Yes | Yes, invited accounts only | An isolated cloud runtime, or a host you own from desktop or the CLI | Only for a host you own |
+| **Cortex Bot** | Yes | Yes, invited accounts only | A cloud computer with a desktop you can watch | None |
+| **Cortex CLI** | Yes | Runs Code sessions | Your terminal, on your own checkout or a remote host | Yes |
+| **Cortex Design** | Yes | No | The Cortex Design desktop app, on a canvas hosted from Chat or Code | Yes |
+| **Cortex Security** | Yes | No | Your repository, on the pull request itself | A repository installation |
+
+<Note>
+The two gates read differently. As a guest, opening Code or Bot shows **This space is reserved**, with **Sign in** or **Continue in Chat**. Signed in but not yet invited, you get a closed-beta dialog with **Continue in Chat** only. Neither can be dismissed and neither redirects. Chat is never gated.
+</Note>
+
+## When two of them could work
+
+**Chat or Code?** If the answer is text, stay in Chat. If the answer is a commit, use Code. Chat can reason about a snippet you paste, but it has no workspace, no branch and no diff. A Code session is a timeline of work with approvals and a change set, not a transcript with a different icon.
+
+**Code in the browser, on the desktop, or the CLI?** All three run the same kind of session. The browser gives you an isolated cloud runtime with nothing to install. The desktop app and the CLI add a host you actually own, which is the only way to work against a checkout, a device or a server that Cortex cannot reach on its own. The CLI is also the one you can put in a script or a pipeline.
+
+**Code or Bot?** Code is scoped to a repository and produces changes you review. A Bot has a general-purpose computer: it browses, clicks and works through a task on a desktop you can watch, and it parks the consequential steps for your approval. If the job is mostly web work, filling things in, or something that runs again tomorrow, that is a Bot.
+
+**Code or Security?** Cortex Code is where you make a change. Cortex Security is where a change gets read: it reviews the pull request in place, with no diff to paste, and writes its verdict as a check run and a summary. Cortex never approves a pull request on your behalf.
+
+**Design or a Chat canvas?** A Design canvas is a board with components, versions and a reusable library, opened in its own desktop app. It is hosted from Chat or Code but it is not a markdown sidecar inside a conversation.
+
+## Still not sure
+
+Start in Chat. It is the only application you can open without an account, it is the one that is never gated, and it is the fastest way to find out whether your task actually needs a repository, a computer or a board. Signing in later does not lose the conversation on screen.
+
+<CardGroup cols={3}>
+  <Card title="Cortex Chat" icon="comments" href="/chat/index">
+    Conversation, research, documents, pictures, projects and scheduled work.
+  </Card>
+  <Card title="Cortex Code" icon="code" href="/code/index">
+    Sessions in a repository, with runtimes, approvals and a change set.
+  </Card>
+  <Card title="Cortex Bot" icon="robot" href="/bot/index">
+    An agent with its own computer, its own routines and its own inbox.
+  </Card>
+  <Card title="Cortex CLI" icon="terminal" href="/cli/index">
+    The same Code sessions from a terminal, a script or a pipeline.
+  </Card>
+  <Card title="Cortex Design" icon="pen-ruler" href="/design/index">
+    Canvases, versions, a component library and export.
+  </Card>
+  <Card title="Cortex Security" icon="shield-halved" href="/security/index">
+    Pull-request review in place, with check runs and findings.
+  </Card>
+</CardGroup>
+
+Your plan changes how much of any of these you get rather than which ones you can open: message windows, how many projects you can keep, and how much room the Library gives you. See [Plans and quotas](/getting-started/plans). **Cortex Bounty** is a programme rather than an application you open, and has [its own section](/bounty/index).
+
+## Related
+
+- [What is Cortex](/getting-started/what-is-cortex)
+- [Quickstart](/getting-started/quickstart)
+- [Accounts and sign-in](/getting-started/accounts)
+- [Plans and quotas](/getting-started/plans)
+- [Ways to run Cortex](/getting-started/downloads)
+- [Troubleshooting](/getting-started/troubleshooting)

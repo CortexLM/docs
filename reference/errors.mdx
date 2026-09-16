@@ -1,0 +1,206 @@
+---
+title: "Errors"
+description: "Every Cortex failure is an RFC 9457 problem document. Branch on code, quote the reference id, and know which fields are safe to show."
+icon: "triangle-exclamation"
+keywords: ["problem json", "error handling", "status codes"]
+---
+
+Every failure Cortex returns has the same shape: an RFC 9457 problem document, sent as `application/problem+json`. There is no second error format anywhere in the product, so one way of reading an error works on every surface, from Cortex Chat to Cortex Code to the Cortex CLI.
+
+This page explains the fields of a problem document, which of them are a contract and which are only prose, how to get from an error to the page that explains it, and what retrying does and does not fix. It then lists every code Cortex emits, with its HTTP status, whether retrying helps, and the message the product shows for it.
+
+## The shape of a problem document
+
+```json
+{
+  "type": "https://docs.cortex.foundation/problems/not_found",
+  "title": "Not found",
+  "status": 404,
+  "code": "not_found",
+  "detail": "No conversation with that id.",
+  "instance": "/v1/conversations",
+  "request_id": "req_…"
+}
+```
+
+| Field | Always present | What it is |
+| --- | --- | --- |
+| `code` | Yes | A stable, machine-readable snake_case identifier. **This is the contract.** Branch on this and nothing else. |
+| `type` | Yes | An absolute URL that resolves to the page for that code on this site. Stable, and safe to link. |
+| `status` | Yes | The HTTP status, repeated inside the body so a logged document explains itself. |
+| `title` | Yes | A short sentence in English. **Not part of the contract**, and it may change without notice. |
+| `detail` | Sometimes | A sentence about this one occurrence. Omitted when there is nothing to add. Never parse it. |
+| `instance` | Sometimes | The request path the failure happened on. |
+| `request_id` | Yes | The correlation identifier. Always safe to show or log, and the value to quote to support. |
+| `errors` | Only on `validation_failed` | One entry per rejected field. |
+| `extensions` | Depends on the code | Typed extra members, flattened to the top level of the document. |
+
+## How to read one
+
+Read the four always-present fields in this order, and you have everything you need.
+
+- **`code` tells you what happened.** The same code means the same thing on every surface and in every product, which is why it is the only field worth writing logic against.
+- **`type` tells you where it is explained.** The problem type base is `https://docs.cortex.foundation/problems`, and `type` is that base plus `/{code}`. So a `quota_exceeded` failure carries `type: "https://docs.cortex.foundation/problems/quota_exceeded"`, and following that URL lands on the page for it. Every code below has one.
+- **`status` tells you the class of the failure**, and is the fastest way to sort a pile of errors into "my request was wrong", "I am not allowed", "I am going too fast" and "Cortex broke". It is not precise enough to act on: two different 429s mean two different things.
+- **`request_id` tells you which request this was.** One id identifies one failed request.
+
+**`detail` is the part that varies.** The other fields are the same for every occurrence of a code, while `detail` describes this one occurrence, and it is written for a person reading raw output, not for a user interface. It may name a Cortex surface or a specific resource. Treat it as diagnostic text: log it, and do not build anything on its wording.
+
+## What is safe to show a user
+
+The web app never renders the wire `title` or `detail`. It looks the code up in its own message catalogue and shows that instead. Anything you build against these documents should do the same.
+
+- **Write your own copy per `code`.** The page for each code explains the situation in product language.
+- **Do not render `detail` as the primary message.** It is not the user's message.
+- **Exactly three codes may show `detail` as a secondary line**: `validation_failed`, `bad_request` and `invalid_state`. Even there it supplements the message rather than being it.
+- **`internal` deliberately carries nothing.** A 500 arrives with a status, the generic title and a `request_id`, and never a `detail`, field errors or extensions. The reference id is the only actionable thing in it, and the product's own copy says so.
+
+### Errors never name a vendor
+
+Before any message reaches a user, an internal service name is converted into product language. What you will see is a Cortex surface, in one of two sentences: "`<phrase>` is temporarily unavailable." or "`<phrase>` did not respond in time."
+
+The phrases are product-facing and stable enough to recognise: Sign-in, The assistant, The audio service, Connected apps, The plugin service, The payments service, The memory service, The bot computer, The Code runtime, The remote host, Cortex Security, The model catalogue, Image generation, Document export, Literature search, Origin detection, and This feature as a fallback. No subprocessor is ever named in an error.
+
+## The reference id
+
+`request_id` is always present, and it is the one value in a problem document that is designed to be shown to a user. In the product it appears at the bottom of an error card as **Reference** followed by the id. That string is the same value as `request_id` in the document behind the card.
+
+<Steps>
+  <Step title="Read the error card">
+    The line beginning **Reference** holds the id.
+  </Step>
+  <Step title="Copy it before you retry">
+    A retry produces a new id. The one that matters is the id from the request that failed.
+  </Step>
+  <Step title="Quote it when you get in touch">
+    One id identifies one request, which is what lets support find it. For an `internal` failure the copy already asks for this: "This was not your fault and it has been recorded. Quote the id below if you get in touch."
+  </Step>
+</Steps>
+
+## Rejected fields
+
+`validation_failed` is the only code that carries per-field detail, as an `errors` array. Each entry has three keys.
+
+| Key | What it holds |
+| --- | --- |
+| `pointer` | A JSON Pointer (RFC 6901) to the member of the request that was rejected. |
+| `code` | One of `too_long`, `required` or `not_one_of`. |
+| `message` | A sentence for that one field. |
+
+The product renders its own sentence per field code: "This is longer than allowed.", "This is required.", "This is not one of the accepted values.", and "This was not accepted." for anything it does not recognise. Showing the field errors next to the fields they point at is the whole value of this code, so prefer that over a single summary message.
+
+## Typed extras, by code
+
+Some codes carry extra members alongside the standard fields. They are typed, so you can rely on them where the code says they appear.
+
+| Code | Member | What it holds |
+| --- | --- | --- |
+| `quota_exceeded` | `resets_at` | An RFC 3339 timestamp: when the window rolls over on its own. |
+| `quota_exceeded` | `retry_after_seconds` | The same information in seconds. |
+| `quota_exceeded` | `quota_key` | Which limit was reached, for example `quick_messages_per_day`. |
+| `quota_exceeded` | `plan` | The plan the limit came from. |
+| `quota_exceeded` | `fallback_model` | A model still available under the limit, when there is one. |
+| `rate_limited` | `retry_after_seconds` | How long to wait. |
+| `entitlement_required` | `entitlement` | The capability key that is missing, for example `private_model_routing`. |
+| `entitlement_required` | `required_plan` | The plan that includes it. |
+| `safety_intervention` | `referral` | Support resources, as a name, a contact and a note. This code always carries them. |
+
+## Every code Cortex emits
+
+Twenty-four codes, each with its own page. The **What the product shows** column is the heading a user actually reads in the app, so it is the fastest way to match an error you were sent a screenshot of to the code behind it.
+
+| Code | HTTP | Retryable | What the product shows |
+| --- | --- | --- | --- |
+| [`validation_failed`](/problems/validation_failed) | 422 | no | Check the highlighted fields |
+| [`bad_request`](/problems/bad_request) | 400 | no | That request could not be understood |
+| [`idempotency_key_reuse`](/problems/idempotency_key_reuse) | 400 | no | This looks like a duplicate |
+| [`payload_too_large`](/problems/payload_too_large) | 413 | no | That is too large to send |
+| [`unsupported_media_type`](/problems/unsupported_media_type) | 415 | no | That file type is not supported |
+| [`unauthenticated`](/problems/unauthenticated) | 401 | no | Please sign in again |
+| [`invalid_credential`](/problems/invalid_credential) | 401 | no | Those credentials were not accepted |
+| [`forbidden`](/problems/forbidden) | 403 | no | You do not have access to this |
+| [`entitlement_required`](/problems/entitlement_required) | 403 | no | Not included in your plan |
+| [`not_found`](/problems/not_found) | 404 | no | Not found |
+| [`conflict`](/problems/conflict) | 409 | **yes** | Something changed while you were working |
+| [`gone`](/problems/gone) | 410 | no | This is no longer available |
+| [`invalid_state`](/problems/invalid_state) | 422 | no | Not possible right now |
+| [`quota_exceeded`](/problems/quota_exceeded) | 429 | no | You have used this plan limit |
+| [`rate_limited`](/problems/rate_limited) | 429 | **yes** | Too many requests |
+| [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | 429 | no | Too much running at once |
+| [`safety_intervention`](/problems/safety_intervention) | 403 | no | Support is available |
+| [`content_policy`](/problems/content_policy) | 403 | no | This request was declined |
+| [`jurisdiction_restricted`](/problems/jurisdiction_restricted) | 403 | no | Not available in your region |
+| [`internal`](/problems/internal) | 500 | **yes** | Something broke on our side |
+| [`upstream_failure`](/problems/upstream_failure) | 502 | **yes** | The assistant failed |
+| [`upstream_timeout`](/problems/upstream_timeout) | 504 | **yes** | The assistant took too long |
+| [`service_unavailable`](/problems/service_unavailable) | 503 | **yes** | Cortex is temporarily unavailable |
+| [`no_capacity`](/problems/no_capacity) | 503 | **yes** | No capacity for this model right now |
+
+Grouped by status, in the order you are most likely to meet them:
+
+| Status | Codes |
+| --- | --- |
+| 400 Bad request | `bad_request`, `idempotency_key_reuse` |
+| 401 Not signed in | `unauthenticated`, `invalid_credential` |
+| 403 Not permitted | `forbidden`, `entitlement_required`, `safety_intervention`, `content_policy`, `jurisdiction_restricted` |
+| 404 / 409 / 410 | `not_found`, `conflict`, `gone` |
+| 413 / 415 | `payload_too_large`, `unsupported_media_type` |
+| 422 Unprocessable | `validation_failed`, `invalid_state` |
+| 429 Too many | `quota_exceeded`, `rate_limited`, `concurrency_limit_reached` |
+| 500 / 502 / 504 | `internal`, `upstream_failure`, `upstream_timeout` |
+| 503 Unavailable | `service_unavailable`, `no_capacity` |
+
+A retired capability answers `gone` rather than pretending to work or disappearing into a 404, so `gone` is worth handling even if you have never seen it.
+
+## Retrying
+
+Seven codes are retryable: `conflict`, `rate_limited`, `internal`, `upstream_failure`, `upstream_timeout`, `service_unavailable` and `no_capacity`. For every other code the same request will fail the same way, and the request, the plan or the state has to change first.
+
+- **`rate_limited`** carries `retry_after_seconds`. Wait that long, then back off. The product shows either "You can try again in" a label, or "You can try again now."
+- **`conflict`** is the one retryable 4xx. Something changed underneath you, so reload to pick up the current version and apply your change again.
+- **`no_capacity`** is specific to one model. Try again shortly, or pick another model. When the document carries a `fallback_model`, the product offers **Continue with** that model as a button, which is a choice you make rather than a substitution made for you.
+- **`internal`, `upstream_failure`, `upstream_timeout` and `service_unavailable`** are ours. Retry, keep the reference id, and check [System status](/reference/status) if it repeats.
+
+<Warning>
+Two of the three 429s are **not** retryable, which is the most common mistake made against this contract.
+
+`quota_exceeded` means a plan window is used up. It carries `resets_at` and `retry_after_seconds`, but those say when the window rolls over, not when to retry the same call. Waiting for the reset or changing plan is what fixes it.
+
+`concurrency_limit_reached` means too much is already running on the account. The sensible action is to wait for a run to finish, which frees a slot, but retrying immediately does not help.
+</Warning>
+
+## When it was not your fault
+
+Three codes are always Cortex's own problem: `internal`, `upstream_failure` and `upstream_timeout`. The product says so in as many words, because a user who has just lost a turn deserves to know whether to keep trying. Nothing is expected of you beyond keeping the reference id. A request that reached the assistant and came back an error often succeeds on a retry; one that timed out was abandoned rather than left hanging, and a shorter prompt usually gets through.
+
+## When there is no problem document
+
+If the request never reached Cortex, there is nothing to read. The product says **You appear to be offline** with "Nothing was sent. This works again as soon as the connection is back.", or **The request could not be completed** with "Something went wrong before the request finished. Trying again usually works."
+
+<Note>
+A network failure is not a problem document. There is no `code` and no `request_id` to quote for one, so a report of "it just failed" with no reference id is usually this, not a Cortex error.
+</Note>
+
+## Codes that are not problem codes
+
+Cortex Security records its own reasons when a pull-request review cannot run: `upstream_unconfigured`, `no_model_available`, `app_not_configured`, `diff_unavailable`, `nothing_to_review`, `installation_suspended` and `review_incomplete`. These are stored with the review and rendered as a sentence on the review itself. They are not HTTP problem codes, they never appear in a problem document, and they have no page in the catalogue. [Security troubleshooting](/security/troubleshooting) covers each of these situations and what to do about it.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Problem catalog" icon="list" href="/problems">
+    Every code with its status and retry answer, and a page per code.
+  </Card>
+  <Card title="Limits and quotas" icon="gauge-high" href="/reference/limits">
+    The windows behind `quota_exceeded`, and what resets when.
+  </Card>
+  <Card title="Troubleshooting" icon="life-ring" href="/getting-started/troubleshooting">
+    What a message you see in the product means, by symptom.
+  </Card>
+  <Card title="System status" icon="chart-line" href="/reference/status">
+    Whether something is down right now, which this page cannot tell you.
+  </Card>
+</CardGroup>
+
+- [Models](/reference/models) for the model names behind `no_capacity` and `fallback_model`.
+- [Security and privacy](/reference/security-and-privacy) for what is kept in a log alongside a reference id.

@@ -1,46 +1,84 @@
 ---
 title: "Origin check"
-description: "Attach media and ask whether it is authentic. Cortex waits for a verdict, and says so plainly when the check cannot run."
-keywords: ["authenticity", "AI detection", "verify media"]
+description: "Attach a photo or a clip and ask whether it is authentic. Cortex answers with one of three verdicts, or says plainly that the check could not run."
+icon: "fingerprint"
 ---
 
-**Check origin** answers one question about a picture or a video you attach: does it look authentic, or does it carry the marks of generation or manipulation? It is an explicit ask on attached media — not something that runs silently on every image in a thread.
+**Check origin** answers one question about a photo or a clip you attach: does it read as something a camera took, or as something that was generated? It is always an explicit ask on media you attach in **Cortex Chat**. Nothing is checked silently, and a picture Cortex generated for you is not labelled automatically.
+
+This page covers running a check, reading the verdict and the figures beside it, what Content Credentials add, the file sizes and formats the check accepts, and the difference between a check that failed and one that could not run at all.
 
 ## Run a check
 
 <Steps>
-  <Step title="Attach the media">
-    Choose **+ → Check origin** on the composer, or attach the file with **Attach file**. iPhone HEIC/HEIF photos are accepted.
+  <Step title="Attach the photo or clip">
+    In the composer's attach menu choose **Check origin** and pick the file. Attaching the file the ordinary way and asking whether it is real, AI-generated or a deepfake works just as well.
   </Step>
-  <Step title="Ask">
-    *Is this photo authentic?* or *Was this generated?* The turn runs the origin check on the attachment.
+  <Step title="Wait for the tile">
+    The card shows `Checking origin…`. Cortex holds the rest of its reply until the verdict resolves, so you never get a confident paragraph followed by a result that contradicts it.
   </Step>
-  <Step title="Wait for the verdict">
-    Cortex holds its reply until a verdict paints. You will not get a confident paragraph followed by a result that contradicts it.
+  <Step title="Read the verdict">
+    The finished card carries the verdict, the figures behind it, whether the file arrived with Content Credentials, and a credit for the service that performed the check.
   </Step>
 </Steps>
 
+## Reading the verdict
+
+There are exactly three verdicts, and the middle ground is one of them rather than a rounded guess.
+
+| Verdict | What it means |
+| --- | --- |
+| `Likely a camera photo` | The detector did not call it AI, and its confidence sits below 0.40. |
+| `Likely AI-generated` | The detector called it AI, with confidence above 0.70. |
+| `Couldn't tell with confidence` | Everything else. The file was analysed, and the result is not strong enough to claim either way. |
+
+Under the verdict, the card prints the AI likelihood as a percentage and a similarity figure, as `AI likelihood {percent}% · Similarity {similarity}`.
+
+The card also reports whether the file carried **Content Credentials**, the provenance information some cameras and editing tools attach to a file. Where there are none, it says `No Content Credentials attached.`, which is not itself a verdict: plenty of genuine photos carry no credentials. Credentials are read from the original file you attached, before Cortex compresses it for the check.
+
+<Note>
+A verdict is about the file, not about the world. `Likely a camera photo` says the image looks camera-made; it does not vouch for what the picture claims to show, where it was taken, or when.
+</Note>
+
+## What the check accepts
+
+| Item | Limit |
+| --- | --- |
+| Maximum file size | 10 MB per file, the same ceiling that applies to any upload in Chat, whatever your plan. |
+| Photos | The usual image formats Chat accepts, plus HEIC and HEIF. |
+| Clips | Short video within the same 10 MB ceiling. |
+| Allowance | There is no origin-check allowance. A check spends neither your image allowance nor your web-search allowance. |
+
+iPhone HEIC and HEIF photos are a deliberate exception: the ordinary image picker in Chat does not take them, but **Check origin** does. If you meet the hint `HEIC photos can be checked for origin. Use Check origin, or convert to JPEG or PNG.`, that is the product telling you which path to use.
+
+A file larger than the ceiling is refused when it is attached, so there is never anything for the check to read. See [`payload_too_large`](/problems/payload_too_large) and [Attachments and files](/chat/attachments).
+
 ## When the check cannot run
 
-If origin check is unavailable on a deployment, the product says so instead of guessing. That is fail-closed behaviour, not a broken button: no verdict is still no verdict. Ask again later rather than reading silence as a result.
+The wording on the card tells you which of three different things happened, and all three mean no verdict rather than a weak one.
 
-## What it is not
+| Card | What it means | What to do |
+| --- | --- | --- |
+| `The origin check couldn't run.` with `Your image wasn't analyzed.` | The check was attempted and the file was rejected, for example because it was too large for the detector. A code and request id are printed beside it. | Use **Retry**, which re-sends the same file, or try a smaller or differently encoded copy. |
+| `Origin detection is temporarily unavailable.` | Origin detection is not set up on this deployment. Nothing was analysed. | Ask again later. There is nothing to fix on your side. |
+| `The origin check didn't finish.` | The request did not complete, typically a network problem between you and Cortex. | Retry the turn. |
+
+Cortex fails closed here on purpose. No verdict is still no verdict, and silence is never to be read as a result.
+
+## What origin check is not
 
 | It is | It is not |
 | --- | --- |
-| A check on media **you attach** | An automatic label on every generated picture |
-| A Chat turn | A Code tool or a Bot skill |
-| A verdict about the file's origin | A statement about the truth of what the picture shows |
+| A check on media **you** attach and ask about. | An automatic label on every generated picture. |
+| A Cortex Chat turn. | A Cortex Code tool or a Cortex Bot skill. |
+| A judgement about how the file was made. | A judgement about whether the scene in it is true. |
 
-Pictures generated with [Cortex-Image-1](/chat/images) are ordinary Library files. If you want to know whether one of them reads as generated, attach it and ask — the check does not run on its own after generation.
-
-## Sizes and formats
-
-An origin check runs on an attachment, so the same upload limits apply as anywhere else in Chat and [Library](/chat/library). A file that was rejected at upload is never attached, so there is nothing for the check to read — attach a supported file or a smaller one. See [`payload_too_large`](/problems/payload_too_large) for the ceilings and [Library](/chat/library) for the failure states.
+Pictures made with [image generation](/chat/image-generation) are ordinary Library files. To know whether one of them reads as generated, attach it and ask, the same as any other file.
 
 ## Related
 
-- [Library](/chat/library) — where attached and generated media live.
-- [Image generation](/chat/images) — Cortex-Image-1.
-- [Chat troubleshooting](/chat/troubleshooting) — what a check that cannot run means.
-- [Security](/security/overview) — how Cortex handles your files.
+- [Image generation](/chat/image-generation) creates pictures; origin check is the separate question.
+- [Attachments and files](/chat/attachments) covers what a turn accepts and the size ceiling.
+- [Library](/chat/library) is where attached and generated media are kept.
+- [Built-in tools](/chat/tools) lists the tools a Chat turn can call.
+- [Chat troubleshooting](/chat/troubleshooting) covers turns that end without a result.

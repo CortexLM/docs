@@ -1,0 +1,100 @@
+---
+title: "Pair a hotkey"
+description: "Accept the Cortex Bounty terms and link an SS58 mining hotkey to your Cortex account by signing the payload the CLI prints"
+icon: "key"
+---
+
+Pairing is the first thing you do in [Cortex Bounty](/bounty/index). It links a mining hotkey to a Cortex account, so that a report filed from that account can be credited to that hotkey on the public log. Nothing else in the programme works until a hotkey is paired: the Chat report tool is not offered, and a conversation cannot be marked as a miner session.
+
+Pairing happens entirely in the terminal, with the Cortex CLI. It proves two things at once, that you control the Cortex account and that you control the hotkey, by having you sign a string the CLI prints with your own wallet tool. This page covers what you need, the exact command, what you sign, and how many hotkeys one account may hold.
+
+## What you need
+
+- A **dedicated mining** Cortex account. Reports, conversations and logs on it may be read for research, to fix bugs, and to remunerate you, so do not use a private personal account. See [Accounts and sign-in](/getting-started/accounts).
+- The Cortex CLI installed. The binary is `cortex`. See [Install the CLI](/cli/install).
+- Your hotkey's SS58 address, and a wallet tool that can sign an arbitrary string with it. **btcli** and **polkadot-js** both do this.
+
+<Warning>
+Cortex never asks for a mnemonic. The CLI prints a string and asks for a signature over it. Nothing in this flow needs your seed phrase, your private key or a wallet file, and no Cortex surface will ever ask for one.
+</Warning>
+
+## Accept the terms
+
+The terms version in force is `bounty-research-v1`. It is shown to you at pairing, and your acceptance is stored as three things: your account id, that version, and a timestamp.
+
+Acceptance is blocking rather than advisory. Until the terms are accepted, pairing is refused and so is marking a conversation as a miner session. You accept them as part of the pairing command, with `--accept-terms`.
+
+## Pair the hotkey
+
+<Steps>
+  <Step title="Run the pairing command">
+    Pass the SS58 address of the hotkey you want to link.
+
+    ```bash
+    cortex bounty pair --hotkey <ss58> --accept-terms
+    ```
+  </Step>
+  <Step title="Sign in with your Cortex account">
+    The CLI signs you in. If you already have an access token you can supply it to the CLI with `--token` instead of signing in. See [Sign in to the CLI](/cli/sign-in).
+  </Step>
+  <Step title="Read the payload the CLI prints">
+    The CLI asks the challenge backend for a nonce, then prints the exact string to sign. It has four parts separated by a vertical bar: a fixed prefix, your account id, the nonce, and an expiry.
+
+    ```text
+    cortex-bounty-v1|{account_id}|{nonce}|{exp}
+    ```
+
+    Sign that string exactly as printed, byte for byte. Do not reformat it, do not trim it, and do not sign the address or a hash of your own making.
+  </Step>
+  <Step title="Sign it with your wallet tool">
+    Use **btcli** or **polkadot-js** to sign the string with the hotkey named in the command. The signature is produced entirely on your side.
+  </Step>
+  <Step title="Return the signature to the CLI">
+    Hand the signature back to the CLI. When it is accepted, the hotkey is linked to the account and pairing is done.
+  </Step>
+  <Step title="Keep what the CLI prints next">
+    Pairing prints two things you need in Chat: the command that marks a conversation as a miner session, and a one-time session code. Keep both. The command is a secret and must not be shared or posted anywhere.
+  </Step>
+</Steps>
+
+## What pairing gives you
+
+| What you get | What it is for |
+| --- | --- |
+| A linked hotkey | Reports filed from this account can be credited to this hotkey |
+| An accepted terms record | Unblocks pairing and the miner session marking |
+| The Chat command | Marks a conversation as a bounty-miner session. See [File a report](/bounty/report) |
+| A one-time session code | An optional argument, sent in Chat straight after that command |
+
+The Chat command is configured by an operator, which is why the CLI prints it for you rather than this page naming it. Treat it as a credential: anyone holding it can mark a conversation. `/miner` is not that command, is not a command at all, and never will be.
+
+## Many hotkeys per account, one account per hotkey
+
+One Cortex account can hold as many hotkeys as you pair to it. Run the command again with another SS58 for each one.
+
+The reverse does not hold. A hotkey belongs to exactly one account, and a second account cannot claim a hotkey that is already paired. The practical consequence is worth stating plainly: **you cannot move a hotkey between accounts by pairing it again elsewhere.** Decide which account is your mining account before you pair, because pairing is not a way to migrate one later.
+
+## If pairing does not go through
+
+<AccordionGroup>
+  <Accordion title="The command refuses before it prints anything to sign">
+    The usual cause is the terms. Pairing is refused until `bounty-research-v1` is accepted, which is what `--accept-terms` does. Run the command with that flag.
+  </Accordion>
+  <Accordion title="The hotkey is reported as already held">
+    That hotkey is paired to another Cortex account. Nothing you can do from this account changes that, and a second claim is refused by design. Use a hotkey that is not yet paired, or sign in to the account that holds it.
+  </Accordion>
+  <Accordion title="The signature is rejected">
+    The string has to be signed exactly as printed, and the payload carries an expiry as its last part. If that expiry has passed, run the pairing command again and sign the new payload without editing it. Check also that you signed with the hotkey named in the command rather than another key in your wallet.
+  </Accordion>
+  <Accordion title="An error card or a problem code comes back">
+    Every Cortex failure has one shape and a stable code, and it carries a reference id that is safe to quote. See [Errors](/reference/errors).
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+- [Cortex Bounty](/bounty/index)
+- [File a report](/bounty/report)
+- [Verdicts and scoring](/bounty/scoring)
+- [Install the CLI](/cli/install)
+- [Sign in to the CLI](/cli/sign-in)

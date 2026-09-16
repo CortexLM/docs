@@ -1,89 +1,118 @@
 ---
 title: "Modes and permissions"
-description: "Agent / Plan / Ask, the Spec lock, approval prompts, the sandbox, the permission table, and the model picker's effort radios."
-keywords: ["Agent", "Plan", "Ask", "sandbox", "approvals", "autonomy"]
+description: "The four composer modes, the approval prompt, the sandbox, the permission table, and the reasoning-effort options"
+icon: "sliders"
 ---
 
-Every CLI session runs under three controls: a **mode** that decides which tools the model is even offered, an **approval policy** that decides when you are asked, and a **sandbox** that decides what a tool may touch when it runs. Effort, on the model picker, decides how hard the model thinks.
+Every CLI session runs under three separate controls. A **mode** decides which tools the agent is offered at all. An **approval policy** decides when you are asked before a tool acts. A **sandbox** decides what a tool may touch once it does run. Reasoning **effort**, set beside the model, decides how hard the model thinks about the request.
 
-## Modes: Agent, Plan, Ask
+This page covers the four composer modes and how to switch them, what the approval prompt looks like and what each option commits you to, the sandbox and the prompt you get when it blocks something, the per-capability permission table in `config.toml`, the model and effort lists, and which control to reach for in a given situation.
 
-**Shift+Tab** cycles them; `/mode` opens the picker. The footer shows the current one.
+## The four modes
 
-| Mode | The agent may | Use it for |
-| --- | --- | --- |
-| **Agent** | Read, write, and run commands | The change you have decided on |
-| **Plan** | Read and propose. No writes, no commands. | Working out *what* to do before anything moves |
-| **Ask** | Read and explain | Understanding code |
+`Shift+Tab` cycles Agent, Plan and Ask. The mode chip on the top border of the composer always names the current one, verbatim:
 
-Plan and Ask are **harness locks**: the mutating tools are withheld, not merely discouraged. In Plan mode the composer border reads *Plan · no edits* and the agent drafts a plan first.
+| Mode | Chip | The agent may | Use it for |
+| --- | --- | --- | --- |
+| Agent | `Agent` | Read, write, and run commands | The change you have already decided on |
+| Plan | `Plan · no edits` | Read and propose, nothing else | Working out what to do before anything moves |
+| Ask | `Ask · read-only` | Read and explain | Understanding code |
+| Bash | `Bash · runs in your shell` | Nothing. You are the one running commands | A quick command without leaving the session |
 
-<Frame caption="Plan mode: a numbered plan — “no files change until you approve” — and a composer bordered Plan · no edits.">
-  <img src="/images/cli/runtime/120x40/mode-plan.png" alt="Cortex CLI in Plan mode showing a drafted plan and the Plan · no edits composer" />
-</Frame>
+Bash mode is not part of the cycle: type `!` at the start of the composer to enter it, and `Esc` to leave. While you are in it the composer sigil changes from `>` to `!`, and what you type runs in your shell rather than going to the agent.
 
-When a plan is ready, the TUI asks whether to implement it — **Yes, switch to Agent mode and implement**, or **No, keep planning**:
+Plan and Ask are **locks, not suggestions**. The mutating tools are withheld by the agent harness, so the agent cannot write a file or run a mutating command even if it decides it should. Plan mode has a page of its own: [Plan and Spec modes](/cli/plan-mode). The same three modes exist in the web app as Ask, Plan and Agent, see [Ask, Plan, Agent](/code/interactions).
 
-<Frame caption="Implement this plan? Enter confirms and switches to Agent; Esc keeps planning.">
-  <img src="/images/cli/runtime/120x40/plan-confirm.png" alt="Cortex CLI plan confirmation picker with two numbered options" />
-</Frame>
+## Approve or refuse a command
 
-The same three modes exist in web Code as Ask / Plan / Agent — see [Ask, Plan, Agent](/code/interactions).
+When the agent wants to do something consequential in Agent mode, the prompt appears inline in the timeline and the composer waits:
 
-## Spec mode
+```
+● Cortex wants to run
+  1 Yes, run once
+  2 Yes, always allow npm install in this project
+  3 Edit command
+  4 No — tell Cortex what to do instead
+```
 
-`/spec` goes a step further than Plan. The agent produces a **structured plan** — title, description, tasks with a complexity rating, architecture, risks, success criteria — and the mutating tools stay locked until you accept it. Leave with `/spec off`. Headless runs can start in it with `cortex exec --use-spec`, optionally with `--spec-model <id>` for the planning pass.
+`↑` and `↓` move the selection, `Enter` confirms, `1` to `9` pick a numbered option directly, `e` edits the command before it runs, and `Esc` cancels.
 
-Why it exists: you see the shape of the work while it is still cheap to redirect, the plan is an artefact you can paste into an issue, and the block on mutating tools is enforced by the harness rather than by asking the model nicely.
+Option 2 is the one to read carefully. It is templated on the **kind** of command, not on the exact string, so choosing *always allow ... in this project* remembers that family of command for this project rather than every command everywhere.
 
-## Approvals
+## When the sandbox blocks something
 
-When the agent wants to run something consequential, the prompt appears inline under the command and the composer waits. There is one approval path: numbered options — run once, always allow this kind of command in this project, edit the command first, or decline and say what to do instead.
+The sandbox is the second gate, and it applies whether or not you were asked for approval: it decides what an operation is physically allowed to touch. When it blocks one, the timeline says so and offers three ways forward: **Keep blocked**, **Allow once**, or **Allow for this session**.
 
-<Frame caption="Cortex wants to run $ npm install … — 1 Yes, run once · 2 Yes, always allow npm install in this project · 3 Edit command · 4 No — tell Cortex what to do instead.">
-  <img src="/images/cli/runtime/120x40/permission-prompt.png" alt="Cortex CLI inline approval prompt with four numbered options" />
-</Frame>
+Approval and sandboxing are independent. A command can be approved by you and still be refused by the sandbox, which is the point: approval is about intent, the sandbox is about reach.
 
-`/permissions` sets the policy for the session:
+## Set the policy for a session
 
-| Policy | Meaning |
+From the composer:
+
+- `/approval` takes one of `ask`, `session`, `always` or `never`.
+- `/sandbox` turns sandboxed execution on or off.
+- `/auto` turns auto-approval on or off.
+
+The same policy is also offered as three named presets in the session's autonomy picker:
+
+| Preset | What it means |
 | --- | --- |
-| **Smart** | Auto-approve safe reads, ask before edits and commands (the default) |
-| **Read-only** | Never edit files or run commands |
-| **Full access** | Only ask when leaving the sandbox |
+| **Smart** | Auto-approve safe reads, ask before edits and commands. The default |
+| **Read-only** | Never edit files, never run commands |
+| **Full access** | Only ask when something leaves the sandbox |
 
-<Frame caption="/permissions — how Cortex asks before acting: Smart (current), Read-only, Full access.">
-  <img src="/images/cli/runtime/120x40/permissions-picker.png" alt="Cortex CLI /permissions picker with Smart, Read-only, and Full access" />
-</Frame>
+## From the command line
 
-From the command line the same thing is `--ask-for-approval <untrusted|on-failure|on-request|never>`; `on-request` is the default. `/approval <ask|session|always|never>` sets it explicitly inside the TUI, and `/auto on` toggles auto-approval. Choosing *always allow … in this project* remembers that kind of command for the project, not every command.
+Two flags carry the same controls into any invocation, interactive or not. They have short forms, `-a` and `-s`:
 
-## Sandbox
+```bash
+cortex --ask-for-approval on-request
+cortex --sandbox workspace-write
+```
 
-The sandbox limits what a tool may touch when it does run.
+| `--ask-for-approval` | When you are asked |
+| --- | --- |
+| `untrusted` | Ask for anything not already trusted |
+| `on-failure` | Let it run, ask when something fails |
+| `on-request` | The agent asks when it judges it should. **The default** |
+| `never` | Never ask |
 
-| `--sandbox` | What it permits |
+| `--sandbox` | What a tool may touch |
 | --- | --- |
 | `read-only` | No writes at all |
-| `workspace-write` | Writes confined to the workspace (the default) |
+| `workspace-write` | Writes confined to the workspace. **The default** |
 | `danger-full-access` | Everything |
 
-`--full-auto` means automatic execution *inside* the sandbox. `--dangerously-bypass-approvals-and-sandbox` (alias `yolo`) turns both controls off — use it only in a disposable environment. `/sandbox on|off` toggles sandboxing from the TUI, and `sandbox_workspace_write` in `config.toml` refines the workspace policy (extra writable roots, network access).
+`--full-auto` means run without asking, but still inside the sandbox. `--add-dir` adds another directory that should be writable for one run. `trusted_directories` in `config.toml` looks like the persistent version of the same idea, but nothing in this build reads it.
 
-When the sandbox blocks something, the timeline says so and offers a way through — keep it blocked, allow once, or allow for this session:
+<Warning>
+`--dangerously-bypass-approvals-and-sandbox`, aliased `yolo`, turns off both gates at once: nothing asks and nothing is confined. Use it only in a throwaway environment you are willing to lose.
+</Warning>
 
-<Frame caption="× Sandbox denied — curl was blocked by the workspace sandbox; network is allowlisted. Keep blocked, Allow once, or Allow for this session.">
-  <img src="/images/cli/runtime/120x40/sandbox-deny.png" alt="Cortex CLI sandbox denial with three numbered options" />
-</Frame>
+## One idea, four vocabularies
+
+The same underlying control is named differently depending on where you meet it. This table is the map, not an equivalence:
+
+| Where you are | What it is called |
+| --- | --- |
+| The composer | Mode chips, the approval prompt, the three session presets |
+| `config.toml` | `approval_policy` and `sandbox_mode` |
+| Slash commands | `/approval`, `/sandbox`, `/auto` |
+| Headless runs | `--auto`, with levels `read-only` (the default), `low`, `medium` and `high`. `cortex exec` runs `read-only` and `high` only |
+
+<Note>
+`--auto read-only` asks unless the action is trusted, and holds the sandbox read-only. `--auto high` never asks, and allows workspace writes with network access. `low` and `medium` sit between them in the flag's value set, but `cortex exec` refuses both before submitting a turn, so there is no third and fourth behaviour to plan around. [Headless and one-shot runs](/cli/headless) has the refusal message.
+</Note>
 
 ## The permission table
 
-`config.toml` can set per-capability policy — `allow`, `ask`, or `deny` — including patterns for shell commands, individual skills, and MCP servers:
+`config.toml` can set policy per capability, and each value is `allow`, `ask` or `deny`. This is the control to reach for when you want one command family refused everywhere, regardless of mode:
 
 ```toml
 [permission]
 edit = "ask"
 webfetch = "allow"
+doom_loop = "ask"
 external_directory = "deny"
 
 [permission.bash]
@@ -97,15 +126,13 @@ external_directory = "deny"
 "my-server" = "allow"
 ```
 
-`cortex debug config --diff` shows what differs from the defaults. See [Configuration](/cli/configuration).
+A `deny` here wins over the mode and over any approval you give at the prompt. `[permission.bash]` matches shell commands by glob, `[permission.skill]` names a [skill](/cli/skills), and `[permission.mcp]` names a [connected server](/cli/mcp).
+
+`[sandbox_workspace_write]` refines what `workspace-write` allows, with four keys: `writable_roots` for extra directories, `network_access` for outbound network, and `exclude_tmpdir_env_var` and `exclude_slash_tmp` to keep temporary directories out of the writable set. See [Configuration](/cli/configuration), and [Permission policy](/cli/policy) for the rules an organization can set centrally.
 
 ## Model and effort
 
-`/model` (or **Ctrl+M**) lists the models under their product names — **Cortex Mini 1**, **Cortex 1**, **Cortex Max 1** — and lets you set reasoning effort with **Tab**: **Low** for quick edits and questions, **Medium** for everyday coding (the default), **High** for hard, multi-file changes. `/effort` opens the same radios directly.
-
-<Frame caption="Effort for Cortex Mini 1: High · Medium (default, selected) · Low. Enter applies; Tab goes back to the model list.">
-  <img src="/images/cli/runtime/120x40/model-effort-medium.png" alt="Cortex CLI /model effort picker with Medium Effort selected" />
-</Frame>
+`/models` lists the models under their product names and `Tab` moves from that list to the reasoning-effort options for the selected model.
 
 | Model | Role |
 | --- | --- |
@@ -113,24 +140,29 @@ external_directory = "deny"
 | **Cortex 1** | Deeper reasoning for hard changes |
 | **Cortex Max 1** | Longest context; bills by token instead of per request |
 
-Web Chat's picker shows the same family as Cortex 1 Mini and Cortex Teutonic-1 — see [Models](/chat/models).
+The three effort options carry their own one-line descriptions on screen:
 
-## Autonomy in headless runs
+- **Low Effort**: `Fastest responses for quick edits and questions`
+- **Medium Effort**: `Balanced reasoning for everyday coding · default`
+- **High Effort**: `Deepest reasoning — best for hard, multi-file changes`
 
-There is nobody to ask in `cortex exec`, so `--auto` is the control that matters: `read-only` (default), `low`, `medium`, `high`. See [Headless runs](/cli/headless).
+`Enter` applies an effort and `Tab` goes back to the model list. The current effort is part of the model chip on the composer, drawn as `Cortex Mini 1 (medium)`.
 
 ## Which control do I want?
 
-| I want to… | Use |
+| I want to | Use |
 | --- | --- |
-| Explore without any change | Mode **Ask**, or `--sandbox read-only` |
+| Explore without changing anything | Mode **Ask**, or `--sandbox read-only` |
 | See the approach first | Mode **Plan**, or `/spec` for a structured plan with a hard lock |
-| Let it work but confirm installs and deletes | Mode **Agent** with **Smart** permissions |
+| Let it work but confirm installs and deletes | Mode **Agent** with the **Smart** preset |
 | Never be interrupted, but stay inside the project | `--full-auto` |
-| Forbid one command family everywhere | `[permission.bash] "rm *" = "deny"` |
+| Forbid one command family everywhere | `[permission.bash]` with `"rm *" = "deny"` |
+| Run a task with nobody there to ask | `cortex exec --auto read-only`, raising the level only as far as you need |
 
 ## Related
 
-- [The TUI](/cli/tui) — where the indicators live.
-- [Configuration](/cli/configuration) — `approval_policy`, `sandbox_mode`, `permission`.
-- [Bot approvals](/bot/approvals) — the same idea in Bot.
+- [The TUI](/cli/tui) - where the chips, the prompt and the footer hints live
+- [Plan and Spec modes](/cli/plan-mode) - the read-first modes in detail
+- [Configuration](/cli/configuration) - `approval_policy`, `sandbox_mode` and the permission table
+- [Permission policy](/cli/policy) - organization-wide rules
+- [Headless and one-shot runs](/cli/headless) - autonomy when there is no prompt to answer

@@ -1,70 +1,103 @@
 ---
 title: "How Code works"
-description: "Workspace tools execute inside the attached guest — never in the API process or Chat sandbox. Modes withhold mutating tools; compaction fails closed."
-keywords: ["tool loop", "context", "compaction"]
+description: "Cause and effect in a Code turn: where tools run, how a mode locks the toolset, the two approval gates, compaction, and how a turn ends."
+icon: "diagram-project"
 ---
 
-A Code turn is a tool loop like Chat's, with two differences that define the product: the tools operate on a real repository inside an isolated guest, and the mode you choose decides which tools the model is offered at all.
+A Cortex Code turn is a loop. You describe a task, the agent calls tools, each result comes back, and it decides again until it has nothing left to call. Two things about that loop define the product: every tool runs inside the runtime the session attached, and the mode you chose decides which tools the turn was even built with.
 
-## The workspace catalog
+This page explains what happens between pressing **Start session** and reading a diff, so that the product's behaviour stops being surprising: why a mode change does not rescue a running turn, why a command asks permission in one place and a file write waits in another, and why a cancelled session says **Stopped** rather than **Failed**.
 
-| Tool | What it does |
-| --- | --- |
-| `read_file` | Read a file from the repository |
-| `write_file` | Create or replace a file |
-| `edit_file` | Make a targeted edit |
-| `glob` | Find files by pattern |
-| `grep` | Search file contents |
-| `bash` | Run a shell command in the guest — builds, tests, git |
-| `todo_read`, `todo_write` | Keep a task list for the turn |
-| plan tool | Write a plan — with a mermaid diagram — in Plan mode |
+## Where a turn runs
 
-All of these run **inside the attached guest**. `python` is a Chat tool; a Code turn runs the guest's own Python through `bash`.
+A session binds one runtime, once per turn. There is no fallback. If the runtime you chose cannot be used, the turn refuses and tells you what to do rather than quietly running somewhere else.
 
-## Attach before the first command
+| Where it runs | What it is | What tools touch |
+| --- | --- | --- |
+| **Cloud** | an isolated guest on Cortex Cloud, prepared from your repository | the clone inside that guest |
+| **This PC** | a machine you paired with the Cortex desktop app | the folder you picked |
+| **SSH** | a registered remote host | that machine |
+| nothing bound | no usable runtime | every call refuses, and says what to do |
 
-If the session names a repository and no runtime is attached, the harness starts one, attaches it, and prepares the environment before the first tool runs. An unattached runtime is never the first thing a turn does. See [Cloud runtimes](/code/cloud).
+Everything the agent does happens inside that runtime. Reads, searches, edits and shell commands all execute there. **Nothing runs in your browser**, and the browser never receives SSH keys or host keys. The browser offers Cloud, plus a registered team runner when the deployment has one; This PC and SSH belong to the desktop app and the CLI. See [Cloud runtimes](/code/runtimes) and [Code on desktop](/code/desktop).
 
-## Modes decide the tools
+## The turn loop, step by step
 
-| Mode | Tools offered |
-| --- | --- |
-| **Ask** | Read-only: `read_file`, `glob`, `grep` |
-| **Plan** | Read-only plus the plan tool |
-| **Agent** | The full catalog, including `write_file`, `edit_file`, `bash` |
+<Steps>
+  <Step title="You describe the task">
+    You write the ask and press **Start session**. Cortex creates the session and opens it. On a follow-up, the same thing happens without the navigation.
+  </Step>
+  <Step title="The runtime attaches">
+    The first turn attaches the runtime. A Cloud session gets its own isolated guest prepared from the repository you chose, which is why a first session on a repository spends time installing before any work shows up.
+  </Step>
+  <Step title="The agent works in rounds">
+    Each round the agent may call tools: read a file, list files by pattern, search by regular expression, edit a file, run a command. Each call appears in the transcript as a **Read**, **Edited**, **Ran** or **Worked** row with a duration, and long finished output is shortened so the column stays readable.
+  </Step>
+  <Step title="Something needs your decision">
+    A command that needs a decision stops the turn and raises a card above the transcript: **Allow once**, **Always allow**, **Deny**. A file write does not use that card at all: it appears in **Changes** waiting for a human **Approve**.
+  </Step>
+  <Step title="The turn ends">
+    A turn ends when the agent stops calling tools, when you press **Stop**, or when it reaches the round budget for a Code turn. A Code turn gets many more rounds than a chat turn, because a real coding task legitimately takes a lot of them.
+  </Step>
+  <Step title="What is left behind">
+    The session row and its title, the transcript, the plan if there is one, the worktree branch, the pull-request link and the recorded usage all survive the turn.
+  </Step>
+</Steps>
 
-Ask and Plan withhold the mutating tools in the harness. The model cannot edit or run anything in those modes because it is never offered the tools. See [Ask, Plan, Agent](/code/interactions).
+## A mode is a lock on the toolset
 
-## Stopping
+**Ask**, **Plan** and **Agent** are not instructions to the agent to behave differently. They decide which tools exist in the catalogue the turn is built with.
 
-A turn ends when the model stops calling tools or you press **Stop** (Esc in the CLI). Code does not copy Chat's eight-round budget; a coding task legitimately takes many tool rounds. Cancel aborts the stream and tells the runtime to stop the turn.
+- In **Ask** and **Plan**, the tools that change things are simply absent: writing a file, editing a file, running a command, updating the task list and dispatching the background worker. Nothing asks the agent to hold back, because there is nothing to hold back with. If a call is attempted anyway it is refused a second time when it is dispatched.
+- **Plan** adds the one tool that publishes a plan, which is the only thing that fills the **Plan** tab.
+- **Agent** has the full set, including edits, commands, a branch and a pull request.
 
-## Compaction
+Because the catalogue is fixed when the turn is built, **a mode change takes effect on the next turn, not on the turn already running**. Switching to Agent halfway through does not retroactively let the running turn edit anything. The **Changes** pane says the same thing in the other two modes: **Ask and Plan do not change files, so there is nothing to review here.** See [Ask, Plan, Agent](/code/interactions).
 
-Long sessions are compacted with Code's own keep-set — the current task, open files, recent diffs — so the model keeps fitting in context. Compaction **fails closed**: an unavailable summariser is an error, not a silent loss of history.
+## Two gates, two different words
 
-## The CLI on top
+Cortex asks for your consent in two distinct places, and they are not interchangeable.
 
-The CLI drives the same session API with streaming tokens and first-class tool rows. It adds harness-side locks — Plan and Spec keep mutating tools blocked until you switch back or accept the plan — plus approvals, a sandbox policy, and a persisted long-horizon `/goal`. See [Modes and permissions](/cli/modes-and-permissions) and [Goals](/cli/goal).
+| Gate | What it decides | What you press |
+| --- | --- | --- |
+| The prompt card above the transcript | whether a command may run | **Allow once**, **Always allow**, **Deny** |
+| The **Changes** pane | whether a file is written | **Approve**, **Approve all**, **Reject** |
 
-<Frame caption="A CLI session with an active goal: the composer border reads Agent — Goal · 2/8, and the agent keeps working toward it across turns.">
-  <img src="/images/cli/runtime/40x12/goal-chip-active.png" alt="Cortex CLI composer with the Goal chip, rendered in a 40 by 12 terminal" />
-</Frame>
+**Always allow** is a grant for that tool in this session only. It is not an account setting, it does not carry to another session, to Chat or to the CLI, and **it never covers a file write**. Every write, in every session, waits for a human **Approve**. Until then the tree is not written. **Deny** refuses a call and the turn continues with the agent told it was denied; a denial is not a crash.
 
-## Compared with Chat and Bot
+Running commands is allowed or withheld as a whole. There is no per-command and no per-directory allowlist to configure, so the decision in front of you is the whole decision.
 
-| | Chat | Code | Bot |
-| --- | --- | --- | --- |
-| Where tools run | Snippet sandbox | The session's guest | The bot's computer |
-| Mutations gated by | — | Mode (Ask / Plan / Agent) | Approvals (Allow / Deny / Always) |
-| Stops on | 8 tool rounds | Model stops or Stop | 15-minute deadline or six identical calls |
-| Transcript | Streamed reply | Turn timeline | User-visible bubbles |
+<Warning>
+There is no undo, no checkpoint and no revert anywhere in Code. Nothing rolls a turn's edits back. The moment to refuse a change is while it is still pending in **Changes**, with **Reject**, where you can also record why so the agent reads it.
+</Warning>
 
-See [How Chat works](/chat/how-it-works) and [How Bot works](/bot/how-it-works).
+See [Permissions and approvals](/code/approvals) and [Changes and diffs](/code/changes).
+
+## When the context fills up
+
+A long session eventually outgrows the model's context window. Cortex compacts the transcript and says so, with **Earlier turns were compacted**. When the window is already full it asks: **Context is full. Compact the session to continue.** On a draft that is too long to send, you choose **Keep in context** or **Compact anyway**.
+
+Compaction fails closed. If it cannot run the turn stops rather than silently dropping history, and you see **Compaction is not available on this deployment.** or **The session could not be compacted.** Long tool output is shortened in the transcript for the same reason: the turn keeps fitting.
+
+## Stopping a turn
+
+While a turn runs, the send disc in the follow-up box is a square. Pressing it posts a cancel on the session; it does not merely close the connection.
+
+The cancel is recorded once. Pressing **Stop** again while a cancel is already pending is refused as an invalid state rather than counted twice. The session then reads **Stopped** and offers **Continue**, which sends **Continue from where you stopped.** A turn that ended in error is a different thing: it reads **Failed** and offers **Try again**. Stopped is never drawn as a failure.
+
+Detaching is not stopping. **Detach** stops you watching and the turn carries on; you must **Attach** again to send a follow-up or to answer a decision. In **Focus** view, approvals still interrupt you.
+
+## What a Code session does not have
+
+- **No Chat tools.** Web search, web page extraction, the Python sandbox, skills and the clock are Chat's. A Code session runs the repository's own Python through a shell command instead.
+- **No tool servers, connectors or plugins.** A Code turn is built with an empty dynamic toolset, so a session may report **Off · this session has no MCP access.** and **Off · Chat and Bot access does not carry into Code.** Servers you configure for the workspace do not become a session's tools. See [Code integrations](/code/integrations).
+- **No nested agents in the browser.** The background worker a Cloud session can dispatch lists files and searches them; it is not a second agent with its own transcript. Nested transcripts belong to the Cortex desktop app.
+- **No screen.** A Cloud guest is headless, and the session's **Desktop** tab carries the badge **Soon**.
 
 ## Related
 
-- [Sessions](/code/sessions) — reading the timeline this loop produces.
-- [Ask, Plan, Agent](/code/interactions) — the modes that gate mutating tools.
-- [Cloud runtimes](/code/cloud) — the guest the tools execute in.
-- [Code troubleshooting](/code/troubleshooting) — when the agent will not edit.
+- [Code sessions](/code/sessions) for the board, the transcript and follow-ups.
+- [Ask, Plan, Agent](/code/interactions) for what each mode may reach.
+- [Permissions and approvals](/code/approvals) for both gates in detail.
+- [Cloud runtimes](/code/runtimes) for the guest a turn attaches.
+- [Code in the terminal](/code/cli) for the same loop from a terminal.

@@ -1,0 +1,80 @@
+---
+title: "SSH hosts"
+description: "SSH is one of three runtime kinds a Code session can bind. Hosts are registered in the Cortex desktop app, and keys never reach your browser."
+icon: "server"
+---
+
+A Cortex Code session runs in one of three kinds of place: **Cloud**, an isolated guest Cortex prepares for you; **This PC**, a machine you paired with the Cortex desktop app; or **SSH**, a registered remote host. This page is about the third one.
+
+Two things to settle before anything else. There is **no SSH hosts page in the browser**: the registration screen belongs to the Cortex desktop app, where it is labelled **Connect a server**. And the browser offers **Cloud** only, plus a registered team runner when the deployment has one, so nothing on this page changes how a session you start in a browser tab behaves.
+
+## Where SSH fits
+
+| Surface | Runtimes it offers |
+| --- | --- |
+| Browser | **Cloud** only, plus a registered team runner when the deployment has one |
+| Cortex desktop app | Cloud, **This PC**, **SSH** |
+| Cortex CLI | Cloud by default; This PC and SSH by opt-in |
+
+A session binds one runtime, **once per turn**, and there is no fallback. If the host you chose is not usable, the turn refuses and names an action to take. It does not quietly run your repository in the cloud instead, which is the behaviour you want from something that was supposed to touch a particular machine.
+
+In the desktop app's runtime picker, the **SSH** row carries its own one-line description: **A registered remote host. Tools run on that machine.** With nothing registered, the picker tells you so rather than showing an empty list: **No SSH hosts are registered yet.**
+
+## Register a host
+
+Registration happens in the Cortex desktop app, on the screen labelled **Connect a server**. You can also reach it from the command palette, where **Connect a server** is one of the listed actions. See [Code on desktop](/code/desktop) for the app's own layout and where its settings live.
+
+<Warning>
+**Keys stay server-side.** The browser never receives SSH keys or host keys. That is the whole of what Cortex documents about key handling, and it is deliberate: there is no place in Code to paste a key, and no page that will show one back to you.
+</Warning>
+
+Related to that: **Code stores no secrets.** There is no Secrets page on any Code surface, and nothing in Code asks you for a token to paste. Whatever a run needs, the agent arranges inside the runtime for that run.
+
+## Choose SSH for a session
+
+<Steps>
+  <Step title="Open the Cortex desktop app">
+    A browser tab cannot do this. **This PC** and **SSH** are desktop and CLI vocabulary, and the browser never offers either.
+  </Step>
+  <Step title="Pick SSH on Code Home">
+    Choose **SSH**, then **Choose an SSH host** and pick one you have registered.
+  </Step>
+  <Step title="Describe the task and start">
+    The rest of the session behaves as it does everywhere else: the same **Ask**, **Plan** and **Agent** modes, the same permission prompts, the same **Changes** gate on file writes.
+  </Step>
+</Steps>
+
+From the Cortex CLI, the same choice is made with environment variables: `CORTEX_COMPUTER=ssh` selects the SSH runtime and `CORTEX_SSH_HOST` names the host. Unsetting `CORTEX_COMPUTER` returns you to Cloud. Both This PC and SSH require an already connected Code session. The commands themselves, and the rest of the CLI's host handling, are on [Code in the terminal](/code/cli) and [Hosts](/cli/hosts).
+
+## Treat SSH as a registration surface today
+
+<Note>
+SSH is documented here as what it reliably is: a way to register a remote host in the Cortex desktop app and select it for a session. Cortex does not promise that a given turn will execute on that remote machine, and nothing on this page should be read as that promise. If you need a place where a turn is certain to run today, use **Cloud**, which is what the browser offers and what every surface falls back to by default.
+</Note>
+
+If a host cannot be used, you will see the refusal rather than a silent relocation. In the desktop app, a host that could not be woken reports **The remote Code host did not come back.**, a host still being attached reports **Connecting to the Code host…**, and a session waiting on a decision takes precedence over both, because a run waiting on **Allow**, **Always** or **Deny** matters more than whether a machine's shell is up.
+
+When a session was bound to your own machine and no host is connected, the composer is disabled and says what to do: **This session runs on This PC, and no host is connected. Pair one from the Host pane and the composer comes back.**
+
+## Vocabularies that do not mix
+
+- **An SSH host is not This PC.** SSH chrome never uses the name **This PC**, and the two are separate runtime kinds with separate registration.
+- **An SSH host is not a Cortex Bot host.** A bot's computer is a different machine for a different product, with a screen and a browser. A Code runtime is headless.
+- **A team runner is not an SSH host.** Team runners are the only non-Cloud compute the browser knows about, and they are listed on [Machines](/code/machines). A paired or registered desktop host is never listed there.
+
+## What choosing a host does not change
+
+- **There is no command allowlist and no per-directory allowlist anywhere in Cortex Code.** You cannot register a host and then scope it to one folder or one set of commands. The shell is allowed or withheld as a whole, per command, at the moment it is asked. See [Permissions and approvals](/code/approvals).
+- **A file write is approved under Changes**, not on the **Allow once** / **Always allow** / **Deny** rail. The two gates stay separate on every runtime. See [Changes and diffs](/code/changes).
+- **There is no undo, no checkpoint and no revert.** A write on a remote host is either rejected while it is still pending, or it lands on that machine. Review before approving.
+- **A Code session has no MCP servers, no connected apps and no plugins**, on a remote host as anywhere else.
+
+Some details about host registration are simply not documented: what the **Connect a server** screen asks for, how a host is verified, how many you may register, and whether a host can be shared with the rest of a workspace. If you need one of those answers, the desktop app is the place to look rather than a number quoted here.
+
+## Related
+
+- [Cloud runtimes](/code/runtimes) - the runtime the browser always has.
+- [Code on desktop](/code/desktop) - where **Connect a server** and **This PC** live.
+- [Machines](/code/machines) - Cloud occupancy and team runners, and why hosts are absent.
+- [Code in the terminal](/code/cli) - selecting a runtime from the Cortex CLI.
+- [Permissions and approvals](/code/approvals) - what a session asks before it runs a command.

@@ -1,0 +1,75 @@
+---
+title: "Editor integration"
+description: "What exists today: the CLI in your editor's terminal, and an Agent Client Protocol server over stdio. There is no packaged extension."
+icon: "pen-to-square"
+---
+
+If you want Cortex in your editor, read this page before you go looking for a plugin: there is no packaged or marketplace-tested editor extension for Cortex CLI. Two things do work today. You can run the CLI in your editor's built-in terminal, and you can connect an editor that speaks the **Agent Client Protocol** to a local server the CLI starts for exactly that purpose.
+
+This page covers both, what the protocol server implements and what it does not, why connecting an editor never changes the approval flow, and what an editor adapter is allowed to do. It is deliberately short on promises, because most of this surface is not built yet.
+
+<Warning>
+There is no packaged or marketplace-tested editor extension. Running Cortex inside an editor's terminal does not establish compatibility with any particular editor, editor fork, or protocol client, and the local client SDK is an integration building block rather than a supported product surface.
+</Warning>
+
+## Run the CLI in your editor's terminal
+
+This is the path that works everywhere, because there is nothing to integrate. Open your editor's terminal, run `cortex`, and you get the TUI exactly as you would in any other terminal: the timeline, the composer, the approval prompt, the panels. There is no separate extension UI, no side panel, and no editor commands.
+
+Everything else in the CLI documentation applies unchanged. The session runs in whatever directory the terminal is in, so start it at your project root, or pass `--cwd`.
+
+## Connect an editor over the Agent Client Protocol
+
+For editors that speak the Agent Client Protocol, the CLI can act as the agent side of that conversation:
+
+```bash
+cortex acp --stdio
+```
+
+Standard input and output is the only supported transport. The command also parses `--port`, `--host`, `--agent`, `--allow-tool` and `--deny-tool`, and then **rejects** them: they fail closed before the server starts rather than running with wider authority than was requested. Treat `cortex acp --stdio` as the whole command surface.
+
+### What the server implements
+
+Four methods, and no more:
+
+| Method | Purpose |
+| --- | --- |
+| `initialize` | Start the conversation with the client |
+| `session/new` | Open a session |
+| `session/prompt` | Send a prompt |
+| `session/cancel` | Cancel work in progress |
+
+`session/load`, `session/list`, `models/list` and `agents/list` are **not implemented**. Prompts are text-only. And the load-bearing one: approval requests are **denied** rather than auto-approved, because no permission round trip is advertised to the client. An editor connected this way cannot answer an approval prompt on your behalf, so a task that needs one will not proceed through it.
+
+## `/ide` inside a session
+
+The `/ide` slash command, described in the built-in list as managing IDE integration, is the in-session front end for the same protocol over standard input and output. The important half is that approvals are **unchanged**: connecting an editor does not widen the permission model, does not pre-approve anything, and does not bypass the prompt.
+
+Which editors can be paired, and what the pairing flow looks like, is not documented. If you need that, watch the [changelog](/changelog) rather than guessing from the command's presence.
+
+## What an editor adapter may do
+
+If you are the one building the integration, the client SDK gives you a small, deliberate surface. An adapter can start a session, render streamed text and tool observations, keep the returned session id, resume that session for a follow-up the user asked for, and await a cancellation. The SDK does **not** expose write approvals or arbitrary execution-policy settings, so an adapter cannot widen what a session is allowed to do.
+
+Two requirements from the same guide are worth stating because users can observe them:
+
+- An adapter must require workspace trust and explicit user initiation. It never starts on activation or because a file was opened.
+- The user selects the workspace root, and only explicitly selected context is sent.
+
+## Not available yet
+
+Say it plainly, so nobody builds a workflow on it:
+
+- No packaged editor extension, for any editor.
+- No session listing or loading, model listing, or agent listing over the protocol.
+- No transport other than standard input and output.
+- No editor-side file opening and no diff pane. You review changes in the CLI itself, through the approval prompt and the timeline. See [Modes and permissions](/cli/modes-and-permissions).
+- `Cortex pr --apply` remains unsupported. It fails before repository or account access rather than reporting that changes were applied.
+
+## Related
+
+- [The TUI](/cli/tui), the interface you get in an editor terminal
+- [Modes and permissions](/cli/modes-and-permissions), the approval flow an editor cannot bypass
+- [Slash commands](/cli/slash-commands), where `/ide` sits in the built-in list
+- [MCP servers in the CLI](/cli/mcp), the supported way to add capabilities
+- [Command reference](/cli/reference), the supported command and flag list

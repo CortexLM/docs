@@ -1,0 +1,103 @@
+---
+title: "Page tools"
+description: "Tools a web page offers to Cortex: how they are discovered, and the consent card where you deny, allow once, or always allow each one"
+icon: "globe"
+---
+
+Some web pages offer tools to an assistant: search this catalogue, add this to the cart, file this form. Cortex reads what a page declares about itself and then asks you before any of it is used. Nothing a page offers is available to the model until you have said yes to it.
+
+This page covers where the consent card appears, what Cortex does and does not read from a page, what each of the three answers means, how narrowly **Always** is remembered, why a card sometimes comes back, and what happens when a call is refused.
+
+## Where the card appears
+
+The same control serves two products. In Cortex Chat it appears as a card beside the execution consent in the conversation. In Cortex Bot it appears as an overlay on the bot's computer rail. See [The computer](/bot/computer).
+
+You will see the eyebrow **Page tools**, the page's own address in a monospaced line above the card, and, while something is waiting on you, a green dot with **Page tools · waiting for you**. The offer line names the page's origin and how many tools it wants to offer.
+
+## What Cortex reads from a page
+
+Only what is in the page's own HTML. If a page declares its tools in code that has to run first, Cortex does not see them, and the page simply offers nothing. That is deliberate: the detection is static and fails closed rather than executing a page to find out what it wants.
+
+An annotation Cortex does not recognise is treated as a **write**, never as a read. A page cannot get a quieter prompt by labelling something in a way Cortex has not seen before.
+
+In Chat, Cortex fetches the page from its own side. It does not use your browser and it does not carry your cookies to that page, so a page tool never acts as your signed-in self by accident.
+
+## Decide on a tool
+
+<Steps>
+  <Step title="Read the offer">
+    The card names the site that is asking and how many tools it has declared, with the page's address printed above.
+  </Step>
+  <Step title="Check each row's tag">
+    Every tool carries **Read** or **Write**. A read row says **This tool can read the current page.** A write row says **This tool can change the current page. Review it before allowing.**, and it is tinted and bordered with the warning colour so it does not read like the rest.
+  </Step>
+  <Step title="Answer">
+    **Deny** refuses it. **Allow once** permits this call and nothing more. **Always** is the standing grant, and it is the emphasised button.
+  </Step>
+</Steps>
+
+## What Always actually remembers
+
+**Always** is much narrower than it sounds. It remembers a combination of four things:
+
+| Part of the grant | Meaning |
+| --- | --- |
+| The site | The page's origin, not the whole web. |
+| The tool name | That tool, not its neighbours. |
+| The shape of the arguments | The arguments the site declared, as it declared them. |
+| Read or write | A read grant is not a write grant. |
+
+Change any one of those and the grant no longer matches. In particular, an **Always** for a read-only version of a tool does not carry over once that same tool starts writing: you get asked again.
+
+**Allow once** expires. **Always** does not.
+
+<Note>
+Cortex does not publish a screen for reviewing or withdrawing decisions you have already made, so treat **Always** as a standing grant for that exact combination.
+</Note>
+
+## When a card comes back
+
+If a site changes what it declares, the decision you made no longer describes what is being asked for, and the card returns with **These tools changed. Allow them again.** Read the rows again before you answer, because a tool that used to read may now write.
+
+## Nothing you have not granted reaches the model
+
+Denied tools, tools still waiting on you, and everything on a guest session are simply absent from the list of tools the model can see. The model is not told about a page tool it cannot use, so it cannot try to use one and cannot tell you about one you refused.
+
+## Signing in
+
+Allowing a page tool needs an account. A guest sees a single **Sign in** button in place of **Allow once** and **Always**, with the hint **Sign in to allow page tools. You can still deny them.**
+
+**Deny** still works for a guest. Refusing something never requires an account.
+
+## When you see nothing at all
+
+Most pages are ordinary pages, and an ordinary page renders no card and no chip. The card only ever shows rows that are waiting on you or that have changed. Once every row has been decided, the whole card disappears rather than sitting there listing settled decisions.
+
+The card re-checks the page every four seconds, so a page that declares its tools a moment after it loads still reaches you.
+
+## When a call is refused
+
+Arguments are checked before every call, including calls covered by an **Always** grant. A missing argument, one of the wrong type, one outside the range the site declared, or one the site never declared at all, is refused rather than sent.
+
+The refusal names which argument was wrong. It never repeats the value, so nothing you typed is echoed back into the conversation.
+
+## Limits
+
+| Limit | Value |
+| --- | --- |
+| Discovery | The page's static HTML only |
+| An unrecognised kind annotation | Treated as a write |
+| What **Always** keys on | Site, tool name, argument shape, read or write |
+| **Allow once** | Expires |
+| **Always** | Does not expire |
+| Guests | **Deny** works; **Allow once** and **Always** are refused |
+| Re-check interval | Four seconds |
+
+## Related
+
+- [Connectors](/chat/plugins)
+- [MCP servers](/chat/mcp-servers)
+- [Built-in tools](/chat/tools)
+- [The computer](/bot/computer)
+- [Approvals in Cortex Bot](/bot/approvals)
+- [Chat troubleshooting](/chat/troubleshooting)

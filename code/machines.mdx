@@ -1,0 +1,78 @@
+---
+title: "Machines"
+description: "What the Machines page shows: Cloud occupancy and team runners, why your paired desktop machine is not listed, and what to do instead."
+icon: "laptop"
+---
+
+**Machines** is a small page in Cortex Code, and its name promises more than it delivers. Its own lede is the honest summary: **Cloud occupancy and team runners. Offline stays on Cloud.** It answers one question, which is what compute this workspace can currently place a session on.
+
+It is not an inventory of every computer you own. If you paired your own machine with the Cortex desktop app, it will not appear here. This page explains what the list does contain, why your desktop host is absent, and the three states you are most likely to see instead of a populated list.
+
+## What the page lists
+
+The page lists Cloud occupancy and any **team runner** the deployment has registered, and nothing else. For each row it shows the machine class, the toolchain it carries, and the fact that the guest is headless: there is no screen, no desktop and no remote-desktop view in a Code runtime, wherever the code runs.
+
+Rows carry one of two states:
+
+| Row state | What it means |
+| --- | --- |
+| **Idle** | The machine is registered and available |
+| **Active** | The machine is in use |
+
+The page's one action is **Use Cloud**, which sends you back to starting a normal session.
+
+## Your own machine is not here
+
+**Desktop hosts are never listed on this page.** Pairing a machine in the Cortex desktop app makes **This PC** available as a runtime in that app, and it does not register a machine that the browser can see or attach to. Do not come here to check whether your laptop is connected: read the harness state in the desktop app instead, described on [Code on desktop](/code/desktop).
+
+This is also what **Offline stays on Cloud** means. Your own machine going offline does not move a Cloud session anywhere, and it does not stop one: a session that was placed on a Cloud guest keeps running on that guest regardless of what your laptop is doing. In the desktop app, a session that is alive in the cloud while the local harness is down reads **Cloud session running** for exactly this reason.
+
+## Choosing where a session runs
+
+You do not pick a machine on this page. You pick it in the composer, under **Run on**, before you press **Start session**:
+
+| Row | What it is |
+| --- | --- |
+| **Cloud** | **Isolated guest on Cortex Cloud.** The default, and the only runtime the browser always has |
+| **Team pool · live** | A registered team runner that is reachable now |
+| **Team pool · offline** | A registered team runner that is not reachable |
+| **Machines** | The picker's own row for this page |
+
+A session binds one runtime, once per turn, with no fallback. If the runtime you chose cannot be used, the turn refuses and names an action to take rather than quietly running your repository somewhere you did not choose. Nothing silently downgrades a team runner to Cloud, and nothing silently promotes a Cloud session onto a runner.
+
+## The three states you will usually see
+
+On most deployments there is no team runner at all, so an empty list is the normal, healthy state rather than a failure:
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| **No live machines** and **Use Cloud until a team runner is live.** | No runner is reachable. This is the usual state | Press **Use Cloud** and start the session normally |
+| **Machines are not on this deployment** and **This deployment has no runners route. Sessions still run on Cloud.** | The capability is not enabled here at all. This is not an upgrade prompt | Nothing. Cloud sessions are unaffected |
+| **Sign in to see machines** and **A guest cannot attach a runner.** | You are browsing signed out | Sign in with your Cortex account |
+
+<Note>
+If you were expecting a list and got **No live machines**, nothing is broken. Cloud is the runtime for browser sessions, and the page exists to tell you whether anything else is available, not to be filled.
+</Note>
+
+## What a machine does not change
+
+Where a session runs changes which files the tools touch. It does not change how Cortex asks for your consent, and it does not give you a rollback:
+
+- **A command is answered per command, as it is asked.** There is no command allowlist and no per-directory allowlist anywhere in Cortex Code, on any machine. You answer **Allow once**, **Always allow** or **Deny** for the call in front of you. See [Permissions and approvals](/code/approvals).
+- **A file write is approved somewhere else.** Writes never appear on that rail. They wait in **Changes** for a human **Approve**. See [Changes and diffs](/code/changes).
+- **There is no undo, no checkpoint and no revert.** A write is either rejected while it is still pending, or it lands. Moving a session to a different machine does not give you a state to go back to.
+- **A Code session has no MCP servers, no connected apps and no plugins**, on any machine. The session's **Tools** tab says so itself: **Off · Chat and Bot access does not carry into Code.**
+
+## Capacity, and what it is not
+
+When no machine can be placed, Cortex fails closed and says so: nothing was started, so nothing was lost. The codes behind that are [`no_capacity`](/problems/no_capacity) when nothing could be placed, [`concurrency_limit_reached`](/problems/concurrency_limit_reached) when too many sessions are active at once, and [`service_unavailable`](/problems/service_unavailable) when the fleet is not answering. None of these means your repository is at fault, and none of them leaves a half-started session behind.
+
+Occupancy figures on this page describe the deployment's compute, not your account's allowance. For what your account can keep placed, see the environment and image ceilings on [Environments and images](/code/environments); for what has been recorded against your workspace, see [Usage](/code/usage).
+
+## Related
+
+- [Cloud runtimes](/code/runtimes) - the guest a browser session actually runs in.
+- [Environments and images](/code/environments) - machines you keep, and the slot each one holds.
+- [SSH hosts](/code/ssh-hosts) - a remote host, registered in the desktop app.
+- [Code on desktop](/code/desktop) - where **This PC** lives, and how its state is shown.
+- [Code troubleshooting](/code/troubleshooting) - sessions that will not start.

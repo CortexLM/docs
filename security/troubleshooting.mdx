@@ -1,0 +1,153 @@
+---
+title: "Security troubleshooting"
+description: "What to check when no check run appears, a review reads Not reviewed, comments are missing, a finding looks wrong, or a scan will not start"
+icon: "life-ring"
+---
+
+Most Cortex Security surprises are a setting doing exactly what it says, somewhere you were not looking. This page is organised by what you actually see: on the pull request, in the review inbox, or on the **Scan** tab. Each entry names the sentence or the state you are looking at, what it means, and the one place to go and change it.
+
+Two things are worth knowing before you start. The review inbox is where a review explains itself: the row carries a reason line, and opening it shows the findings that were filtered out or rejected. And the review policy is set once for the whole installation, so every "check Policy" below points at the same form.
+
+## Nothing appeared on the pull request
+
+<AccordionGroup>
+  <Accordion title="No check run appears at all">
+    Three likely causes, in the order worth checking. The repository is switched off, so nothing runs and no check run is created: look at its switch on the **App** tab. **Review pull requests** is set to **Never** in Policy. Or the pull request was skipped by a filter, in which case its row in the inbox reads **Not reviewed** and carries the reason.
+
+    A skip reason always names the setting that declined, for example that it is a draft and this repository does not review drafts, that the repository reviews only when asked, that the base branch or the author is not reviewed, that a label is missing or suppresses review, or that the change is larger than the file limit. See [Installation and repositories](/security/repositories) and [Review policy](/security/review-policy).
+  </Accordion>
+  <Accordion title="The pull request is a draft and nothing happened">
+    Drafts are not reviewed by default. Either switch **Review drafts** on in Policy, or ask for one review by mentioning the App in a comment: a mention overrides the settings whose job is to keep the reviewer quiet.
+  </Accordion>
+  <Accordion title="Nothing happens when you mention the App">
+    Four possibilities. The comment was authored by a bot, which never triggers a review, because that is a loop. The mention sits inside a quote or a fenced code block, which is ignored on purpose, and is what stops GitHub's reply button re-triggering a review on every reply. You edited an existing comment to add the handle instead of posting a new one, and only a newly created comment counts. Or the installation is older than the App's comment event subscription, in which case ordinary reviews keep working and mentions silently do nothing; on a self-hosted deployment, whoever created the App needs to add the issue comment and pull request review thread events.
+
+    A mention does not override scope filters. An excluded branch stays excluded, and the reply tells you which setting declined.
+  </Accordion>
+  <Accordion title="A repository you added later is not being reviewed">
+    **Review new repositories automatically** is off, so the repository arrived switched off. Turn its switch on under **REPOSITORIES** on the **App** tab, and switch the auto-enable on if you want the next one to arrive enabled.
+  </Accordion>
+  <Accordion title="A review looks stuck">
+    While a review is in flight the app shows one line of progress, moving through **Queued**, **Reading the change**, **Summarising each file**, **Reviewing file X of Y**, **Verifying findings** and **Posting the review** to **Done**. If it has stopped, the line reads **Could not review** and the row carries the reason. Open the pull request in the app and choose **Review again**, which opens a fresh review of the current head; a toast confirms with **Review queued**, or **Could not queue the review**.
+  </Accordion>
+</AccordionGroup>
+
+## The check run is not what you expected
+
+<AccordionGroup>
+  <Accordion title="The check run says Neutral">
+    **Neutral** means exactly what the Checks tab says: *The review could not run, or did not finish. The summary says why. This is never an approval — a change nobody reviewed must not report as one.* In the app, the verdict card reads *No verdict was reached for this commit, so the check is not an approval.*
+
+    The reason is a sentence on the inbox row, and there are seven of them: nothing was available to review with on this deployment, the deployment's model service is not configured, the GitHub App is not configured here, the change could not be read from GitHub, the installation is suspended on GitHub, the review did not finish, or *Every changed file is generated or vendored, so there was nothing to review.* When none of those applies, the fallback is *Cortex Security could not review this change.*
+  </Accordion>
+  <Accordion title="The check is green and you expected red">
+    Reporting a finding and failing the check are two different settings. **On a blocking finding** may be set to **Comment only**, which never concludes failure, or to **Request changes**, which requests changes and still concludes success. **Fail the check run at** may be set above the severity of what was found. Or the findings were only minor findings and notes, which never fail the check.
+  </Accordion>
+  <Accordion title="The check is red but the merge button still works">
+    The merge gate is GitHub's, not Cortex's. A failing check only blocks a merge once it is a **required** status check in GitHub branch protection. The **Checks** tab has the workflow for that under **REQUIRING IT**, behind **Copy workflow**. See [Checks and comments](/security/checks).
+  </Accordion>
+  <Accordion title="A review found nothing on a change you know is risky">
+    Check the row's reason first. If every changed file was generated or vendored, the review is recorded as **failed**, not as passed, and nothing was read. Otherwise a filter is doing it: a path or language filter under **What to look at**, or a severity or confidence floor under **What to report**. Open the review and read the disclosure counting the findings your review policy filtered out, which tells you how many were held back and why.
+  </Accordion>
+</AccordionGroup>
+
+## Comments and the summary
+
+<AccordionGroup>
+  <Accordion title="Inline comments are missing but the summary is there">
+    Either **Post the summary only, with no inline comments** is on, or **Comments per review** is set low. Inline comments are posted worst first, and the default ceiling is 25, so a very noisy review can run out of room before it reaches the minor findings.
+  </Accordion>
+  <Accordion title="The summary is missing but the comments are there">
+    **Post a summary comment** is off, or **Write the summary into the pull request description** is on, in which case the summary is in the description rather than in a comment of its own.
+  </Accordion>
+  <Accordion title="A finding's suggested fix is missing">
+    A committable suggestion is dropped rather than approximated. A fix that is empty, longer than twelve lines, or that contains a code fence of its own is not rendered, because a **Commit suggestion** button reads as something that was checked and one broken suggestion costs the trust of every correct one after it.
+  </Accordion>
+  <Accordion title="A second comment appeared instead of the first one being updated">
+    Each comment carries an invisible fingerprint and the next review edits it in place. That is the **Edit comments on a new push instead of adding more** setting, on by default; with it off you get a new comment each time.
+  </Accordion>
+</AccordionGroup>
+
+## A finding looks wrong
+
+<AccordionGroup>
+  <Accordion title="A comment is not useful and you want fewer like it">
+    Add a thumbs-down reaction to the comment, or resolve its thread. Both are attributed to the **class** of finding, its category plus its normalised title without the path, so the same nit on nine files is one preference stated nine times. After three dismissals, and only when it has been dismissed more often than it has been endorsed and more often than not, that class stops being posted in that repository.
+
+    Three things can never be silenced however often they are dismissed: anything blocking or major, anything carrying a weakness class, and anything filed under security. Those dismissals are still counted, so an owner can see that a real finding is being ignored.
+
+    Reactions are read from the comment list the next time Cortex publishes a review, and only an increase counts, so removing a thumbs-up and putting it back does not train twice. There is no screen listing what a repository has silenced.
+  </Accordion>
+  <Accordion title="A finding points at a line the pull request did not change">
+    It should not have been posted, and that is precisely what the second pass rejects. Open the review and read the disclosure counting the findings the verifier rejected: each carries a `Not posted — {reason}.` line, and the two commonest reasons are that the path is not in this pull request, or that it is but the line was not changed here. If one still reached GitHub, add a thumbs-down reaction so the class is counted.
+  </Accordion>
+  <Accordion title="A setting in the repository's own config file had no effect">
+    A file in the repository can only make a review stricter or better informed. It cannot exclude a path, raise a threshold, or switch the review off, because anyone who can open a pull request can edit it. A key that was refused is reported back in the review's summary, so a setting that was dropped and a setting that was never read do not look the same. See [Review policy](/security/review-policy).
+  </Accordion>
+</AccordionGroup>
+
+## Cortex Agent
+
+<AccordionGroup>
+  <Accordion title="The run says Nothing was run">
+    The run page always names the reason: nothing was available to write a program with, this deployment has no isolated runtime for Cortex Agent to use, there was nothing in the change a program could demonstrate, or the runtime could not be reached. The second is the common one, because an isolated runtime is off by default on a deployment.
+
+    In every case the page adds *A run that could not happen is never a pass, and nothing here counts towards the review's verdict.* See [Cortex Agent runs](/security/agent).
+  </Accordion>
+  <Accordion title="An artifact will not open">
+    A file that cannot be read shows *This file could not be read.* A long one shows only its beginning, and says so. A run that kept nothing says the programs it wrote printed their results rather than writing them out, and the step list is then the evidence.
+  </Accordion>
+</AccordionGroup>
+
+## Scans
+
+<AccordionGroup>
+  <Accordion title="Scans do not run">
+    **Cortex Security mode** is off, the GitHub App is not installed, or the installation is suspended on GitHub. The **Scan** tab shows which: the mode switch, and a card reading either **App connected** or *Connect the Cortex Security GitHub App to scan a repository this account owns.*
+  </Accordion>
+  <Accordion title="A pasted repository URL is refused">
+    By design. The refusal card reads **This repository is not owned by this GitHub App.** Scans only cover repositories the App is installed on and this account owns, and a pasted URL is never a scan target. See [Repository scans](/security/scans).
+  </Accordion>
+  <Accordion title="A completed scan says its validation is a stub">
+    That is accurate, not a fault: *Validation on this scan is a stub. Findings were not independently verified.* A scan finding is a lead to check. A pull-request review is the surface with a real second pass over every finding.
+  </Accordion>
+  <Accordion title="Security mode will not turn on for the organisation">
+    An organisation-wide enable needs an owner or an admin and an Enterprise plan. A personal enable needs neither, so turn it on for yourself and ask an owner about the organisation. See [Plans](/getting-started/plans).
+  </Accordion>
+</AccordionGroup>
+
+## Installation and access
+
+<AccordionGroup>
+  <Accordion title="The whole Security area says it is not configured">
+    **Cortex Security is not configured on this deployment** means the deployment has no GitHub App set up. Nothing a user can change fixes it; an operator supplies the App's credentials, and **Installation details** says what is missing.
+  </Accordion>
+  <Accordion title="Nothing is being reviewed and the App tab mentions a suspension">
+    *This installation is suspended on GitHub, so no pull request is being reviewed.* Unsuspend it from the App's settings page on GitHub, and reviews resume.
+  </Accordion>
+  <Accordion title="Security refuses you outright">
+    Cortex Security is not available to guest accounts, and a guest trying to install the App is refused with the reason. Sign in with a full account. GitHub Enterprise Server is also not available yet, so a repository that is not on GitHub.com cannot be reviewed or scanned.
+  </Accordion>
+</AccordionGroup>
+
+## About error codes
+
+<Note>
+The seven sentences a failed review can carry are not platform error codes. They are stored with the review and rendered as prose, so there is no error-code page to look one up in: the sentence on the row is the whole explanation.
+</Note>
+
+Three platform codes can legitimately show up around Security, and those do have pages:
+
+- [entitlement_required](/problems/entitlement_required) - a guest account, or an organisation-wide mode enable without the plan for it.
+- [validation_failed](/problems/validation_failed) - a policy saved outside its numeric limits, or a scan asked for by URL.
+- [service_unavailable](/problems/service_unavailable) - the deployment has no GitHub App configured.
+
+If a problem survives all of the above, check [status.cortex.foundation](https://status.cortex.foundation) and then [report a bug](/getting-started/report-a-bug) with the pull request and the commit the review names.
+
+## Related
+
+- [How a review works](/security/how-a-review-works) - the stages, the second pass, and how the verdict is decided.
+- [Review policy](/security/review-policy) - every setting named on this page.
+- [Installation and repositories](/security/repositories) - the repository switches and the states the App tab shows.
+- [Checks and comments](/security/checks) - the check run, and making it required.
+- [Repository scans](/security/scans) - what a scan needs before it will start.

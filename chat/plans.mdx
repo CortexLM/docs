@@ -1,57 +1,110 @@
 ---
-title: "Plans"
-description: "A plan is a task list the model can build and keep up to date while you work. Start one from any chat, or from Planning."
-keywords: ["Planning", "task list", "checklist", "steps"]
+title: "Planning"
+description: "The task-list surface in Cortex Chat: start a plan from the Planning page or from a chat, then tick steps off as the work moves."
+icon: "list-check"
+keywords: ["Plans", "task plans"]
 ---
 
-A plan turns a long answer into steps you can tick off. Start one from a thread with **Start a plan**, or from the **Planning** page with **New plan**. Plans are kept up to date as the work moves, and a plan started from a chat outlives that chat if you delete it.
+**Planning** is the task-list surface inside Cortex Chat. A plan is a list of steps that you or the model can keep up to date while the work moves: you open it on the **Planning** page, tick steps off, and add new ones as they appear. This page is about that surface only. It is not about subscriptions, allowances or billing, so if you arrived looking for what your account includes and what it costs, read [Plans and quotas](/getting-started/plans) instead and come back here when you want task lists.
 
-<Frame caption="Planning, with the All / Draft / In progress / Done filters.">
-  <img src="/images/product/chat-planning.png" alt="Planning — No plans yet. A plan turns a long answer into steps you can tick off." />
-</Frame>
+This page covers what a plan is and what it deliberately is not, the two ways a plan gets created, how steps and statuses behave, the status filter, and the messages you see when an action fails.
 
-## Start a plan from a chat
+## What a plan is
 
-Open the thread and choose **Start a plan** in the header. The title is prefilled from the conversation; add steps if you already know them — one per line, and a pasted numbered list works as is.
+The Planning page states it in one line: `A plan is a task list the model can build and keep up to date while you work. Start one here, or ask for one in any chat.`
 
-<Frame caption="Start a plan from this chat. The plan stays linked to the conversation.">
-  <img src="/images/product/chat-start-plan.png" alt="Start a plan from this chat dialog with Title and optional Steps" />
-</Frame>
+A plan is **not a calendar**. It carries no dates, because what it tracks is what is left to do, not when it happens. Two nearby things are often mistaken for it:
 
-## Start a plan from Planning
-
-Choose **New plan**. Give it a title and, optionally, steps. Bullets and numbers are stripped, so a list can be pasted straight in.
-
-<Frame caption="New plan: a title and one step per line.">
-  <img src="/images/product/chat-new-plan.png" alt="New plan dialog with Title and optional Steps, one step per line" />
-</Frame>
-
-## States
-
-| Filter | Meaning |
+| You want | Use |
 | --- | --- |
-| **Draft** | Created, not started |
-| **In progress** | Steps are being worked through |
-| **Done** | Every step is ticked |
+| Something to run at a time, on a cadence | [Scheduled tasks](/chat/scheduled-tasks) |
+| The set of questions a research run will answer | the research plan in [Deep Research](/chat/deep-research), which is a brief, not a task list |
+| Standing instructions and files that apply to many chats | [Projects](/chat/projects) |
 
-## How plans relate to other things
+## Start a plan
 
-| Object | What it is |
+<Tabs>
+  <Tab title="From the Planning page">
+    <Steps>
+      <Step title="Open Planning and choose New plan">
+        The dialog explains itself: `A title, and one step per line. Bullets and numbers are stripped, so a list can be pasted straight in.`
+      </Step>
+      <Step title="Enter a Title">
+        Up to 200 characters. The placeholder shows the shape it expects, for example `Ship the pricing page`.
+      </Step>
+      <Step title="Optionally fill Steps">
+        One step per line. Pasting a bulleted or numbered list works as is, because the bullets and the numbers are stripped for you.
+      </Step>
+      <Step title="Choose Create plan">
+        The plan opens. If it cannot be saved you see `The plan could not be created`.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="From a chat">
+    <Steps>
+      <Step title="Choose Start plan in the thread header">
+        The conversation hands its work to a new plan.
+      </Step>
+      <Step title="Find it under Planning">
+        A plan that came from a conversation is marked **From a chat** and carries a link, **Open the chat this came from**, so you can always get back to the thread that produced it.
+      </Step>
+      <Step title="Or just ask">
+        You do not have to use the menu. Ask a chat to plan the work and the plan appears on the Planning page.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+Open the Planning page from the product navigation.
+
+## Work through the steps
+
+Open a plan from the list. **All plans** takes you back.
+
+- **Tick a step** to move it from `To do` to `Done`. Ticking it again moves it back. Clicking only ever cycles between those two.
+- **Add a step** with the field at the bottom, up to 500 characters, then **Add**.
+- The progress bar reads how many of the plan's steps are done.
+- **Delete plan** removes the plan. It does not touch the conversation it came from.
+
+An empty plan says so, and tells you the second way to fill it: `No steps yet. Add the first one below, or ask in a chat and the model will fill it in.`
+
+## Statuses
+
+A plan has a status, but you rarely set it. The status is derived from the steps, and ticking the last box closes the plan on its own. The **Plan status** control is there when you want to override it.
+
+| Plan status | Meaning |
 | --- | --- |
-| **Plan** | A task list, linked to the chat it came from |
-| [Project](/chat/projects) | Instructions plus chats and files |
-| [Canvas](/chat/canvases) | A document beside one conversation |
-| [Deep Research plan](/chat/deep-research) | The set of questions a research run will answer — a research block on the thread, not a task list |
-| [Code Plan mode](/code/interactions) | A read-only mode of a Code session that proposes changes before making them |
-| [CLI `/goal`](/cli/goal) | A long-horizon objective the terminal agent keeps working toward |
+| `Draft` | Created, nothing worked yet |
+| `In progress` | Some steps are done, some are not |
+| `Done` | Every step is accounted for |
 
-## Guests and members
+| Step status | Who sets it |
+| --- | --- |
+| `To do` | you, or the model |
+| `Doing` | the model, while it is working on that step. This is the only step status that draws a badge |
+| `Done` | you, by ticking; or the model |
+| `Skipped` | the model, when it decided the step was not needed |
 
-Plans persist on a signed-in account. A guest can open the dialog, but a plan needs somewhere to live once the tab closes — sign in first. See [Accounts](/getting-started/accounts).
+<Note>
+`Doing` and `Skipped` exist because the model sets them as it works. You cannot reach them by clicking a step.
+</Note>
+
+## Filter the list
+
+The list carries a status filter with four options: `All`, `Draft`, `In progress` and `Done`. The filter is applied in your browser, so it is instant, and the list itself shows at most fifty plans.
+
+Each row shows how many of its steps are done, a relative timestamp, and the **From a chat** marker when the plan was spawned from a conversation.
+
+Two empty states tell you which situation you are in. With no plans at all: `No plans yet`, followed by `A plan turns a long answer into steps you can tick off. Create one, or ask a chat to plan the work and it will appear here.` With a filter that matches nothing: `Nothing in this status`, followed by `Try another status, or start a plan.`
+
+## When an action fails
+
+Every failure is a short sentence and nothing is half-applied. You will see one of `The plan could not be created`, `The step could not be added`, `The step could not be updated`, `The step could not be deleted`, `The status could not be changed`, or `The plan could not be deleted`. Retry the same action; if it keeps failing, check [status.cortex.foundation](https://status.cortex.foundation).
 
 ## Related
 
-- [Projects](/chat/projects) — instructions that apply to every chat in them.
-- [Canvases](/chat/canvases) — a document beside one conversation.
-- [Deep Research](/chat/deep-research) — the research plan, which is not a task list.
-- [CLI goals](/cli/goal) — a long-horizon objective in the terminal.
+- [Scheduled tasks](/chat/scheduled-tasks) - run a prompt on a cadence, which is the time-based surface Planning is not.
+- [Projects](/chat/projects) - standing instructions and files behind a group of chats.
+- [Deep Research](/chat/deep-research) - the research plan, a brief rather than a task list.
+- [Conversations](/chat/conversations) - the thread header where **Start plan** lives.
+- [Built-in tools](/chat/tools) - what the model can reach while it works a plan.

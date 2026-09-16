@@ -1,75 +1,113 @@
 ---
 title: "What is Cortex"
-description: "Four products and a CLI behind one account on cortex.foundation — Chat, Code, Bot, Design, and the Cortex CLI."
-image: "/images/banners/getting-started.png"
-keywords: ["overview", "products", "comparison"]
+description: "One account on cortex.foundation behind Chat, Code, Bot, the CLI, Design and Security, running on the Cortex models."
+icon: "circle-info"
 ---
 
-Cortex is built by the Cortex Foundation, a research-first lab. The products share one account, one domain, and one set of models. Use **Chat** for conversation and research, **Code** for a repository, **Bot** for an always-on teammate with its own computer, **Design** for persistable canvases, and the **CLI** to drive Code from a terminal.
+Cortex is built by the Cortex Foundation. It is not a single app but a small family of applications that share one account, one domain and one set of models: **Cortex Chat** for conversation and research, **Cortex Code** for work inside a repository, **Cortex Bot** for an agent with a computer of its own, **Cortex CLI** for the terminal, **Cortex Design** for canvases, and **Cortex Security** for reviewing pull requests where they already live.
 
-<Frame caption="cortex.foundation/about — the Foundation builds Cortex Chat, Cortex Code, and Cortex Bot.">
-  <img src="/images/product/about.png" alt="About Cortex — Making AI systems worthy of reliance; the Foundation builds Cortex Chat, Cortex Code, and Cortex Bot" />
-</Frame>
+This page is the map: the applications and where each opens, what one account means in practice, the models behind them, how the browser differs from the desktop app and the terminal, the hostnames you will meet, and what Cortex does not do yet.
 
-## The products
+## The applications
 
-| Product | What you open | Who can use it | Guide |
+| Application | Where you open it | Who can use it | Guide |
 | --- | --- | --- | --- |
-| **Cortex Chat** | `cortex.foundation` | Everyone, including before you sign in | [Chat](/chat) |
-| **Cortex Code** | `/code` in the web app, the desktop app, or the CLI | Signed-in members | [Code](/code) |
-| **Cortex Bot** | `/bot` in the web app, or the Bot desktop app | Signed-in members | [Bot](/bot) |
-| **Cortex CLI** | `cortex` in a terminal | Signed-in members | [CLI](/cli) |
-| **Cortex Design** | The Design desktop app | Signed-in members | [Design](/design) |
-| **Cortex Security** | `/code/security` in the web app | Signed-in members with a GitHub repository | [Cortex Security](/code/security) |
+| **Cortex Chat** | `cortex.foundation` | Everyone, including before you sign in | [Chat](/chat/index) |
+| **Cortex Code** | The web app, the desktop app, or the CLI | Invited, signed-in accounts | [Code](/code/index) |
+| **Cortex Bot** | The web app | Invited, signed-in accounts | [Bot](/bot/index) |
+| **Cortex CLI** | `cortex` in a terminal | Signed-in accounts | [CLI](/cli/index) |
+| **Cortex Design** | The Cortex Design desktop app | Signed-in accounts | [Design](/design/index) |
+| **Cortex Security** | The security pages inside Cortex Code | Signed-in accounts with a repository | [Security](/security/index) |
 
-Chat works unsigned. Everything else needs an account, so that a guest session can never create a grant, a bot, or a session it could not come back to revoke.
+Chat, Code and Bot sit inside one shell. The sidebar, the notification bell and Settings are the same objects in all three, and **Switch product** moves between them without reloading or losing what is on screen.
 
-## When to use which
+They are deliberately not the same shape. Chat is a transcript. A Code session is a timeline of work with approvals and a diff, not a chat with a different icon. A Bot has a desktop you can watch. A Design canvas is a board, not a markdown sidecar. Read [How Chat works](/chat/how-it-works), [How Code works](/code/how-it-works) and [How Bot works](/bot/how-it-works) for the shape of each one.
 
-| You want to… | Use |
-| --- | --- |
-| Ask questions, write, research with citations, generate or check images | **Chat** |
-| Change a repository, run tests, open a pull request | **Code** |
-| Delegate ongoing work to an agent that browses, clicks, and runs on a schedule | **Bot** |
-| Work on code from your own terminal, in scripts, or in CI | **CLI** |
-| Lay out frames, notes, and a component library on a board | **Design** |
-| Review GitHub pull requests in place | **Cortex Security** |
+**Cortex Bounty** is a programme rather than an application you open. It has its own section covering how to pair a hotkey, how to file a report and how verdicts are scored: see [Cortex Bounty](/bounty/index).
 
-Chat does not run Code's workspace shell or Bot's computer. Code sessions are a timeline of work, not a chat transcript. Design canvases are not Chat markdown sidecars. Each product keeps its own shape on purpose — see [How Chat works](/chat/how-it-works), [How Code works](/code/how-it-works), and [How Bot works](/bot/how-it-works).
+## One account, several surfaces
 
-## Models
+One sign-in on `cortex.foundation` opens everything: Chat, Code, Bot, Security, the desktop apps and the CLI. There are no separate logins and nothing to link.
 
-Every product runs on Cortex models. In Chat you pick per conversation from the composer chip:
+Chat is the only application that works before you sign in. Everything else is for signed-in accounts, and the rule behind that is worth knowing because it explains most of the differences you will run into: a guest session cannot be signed back into later to withdraw a grant, so it is never allowed to make one.
 
-| Model | Status | Notes |
+| | Guest | Signed-in account |
 | --- | --- | --- |
-| **Cortex 1 Mini** | Preview | Default for new chats. 262K context, reasoning, tools. |
-| **Cortex Teutonic-1** | Preview | Second public preview, under active training. 32.8K context, reasoning, tools. |
-| **Cortex-Image-1** | Preview | Image generation for Chat. Built on NVIDIA Cosmos. |
+| Chat conversations | Yes, within the guest allowance | Yes |
+| Projects, Library, memory, a plan | No | Yes |
+| Connected apps and MCP servers | No | Yes |
+| Cortex Code and Cortex Bot | No | Yes, once invited |
+| Cortex Design canvases | No | Yes |
+| The CLI and the desktop apps | No | Yes |
+| Two-factor authentication, export, deletion | No | Yes |
 
-The CLI shows models under English product names — **Cortex Mini 1**, **Cortex 1**, **Cortex Max 1** — and lets you tune reasoning effort per session. Details: [Chat models](/chat/models) and [CLI modes](/cli/modes-and-permissions).
+Guest conversations live in the browser session, so sign in before closing the tab if you want to keep one. [Accounts and sign-in](/getting-started/accounts) has the full comparison and the exact wording of every gate.
 
-## Language
+<Note>
+Cortex is per account today. There are no teams, no organisations, no invitations to a shared workspace and nothing to administer for other people. Role and directory controls you may see in Settings describe an organisation you cannot create yet.
+</Note>
 
-English is the source of truth for interface copy. The web app is localized into French, Spanish, German, Japanese, Simplified Chinese, Brazilian Portuguese, and Korean; switch under **Settings → General → Language**. Model prompts stay in English. Product names are never translated.
+## The models
 
-<Frame caption="The same Chat home in French. Product names — Chat, Code, Bot — stay untranslated.">
-  <img src="/images/product/chat-home-fr.png" alt="Cortex Chat home in French — Bonjour, Nouveau chat, Projets, Artefacts, Personnaliser" />
-</Frame>
+Every application runs on Cortex models. In Chat you choose per conversation from the composer, and you set the default under **Settings** then **Models**.
+
+| Model | Status | What it is for |
+| --- | --- | --- |
+| **Cortex 1 Mini** | Preview | The general model Cortex serves today, and the default for new chats. A 262,144-token context and up to 32,768 tokens of output. |
+| **Cortex Teutonic-1** | Preview | A second public model, under active training. A 32,768-token context and up to 16,384 tokens of output. |
+| **Cortex-Image-1** | Preview | Image generation inside Cortex Chat. |
+
+All three are previews, and all three are available from the Free plan upwards, so no published model is plan-gated today. Earlier model names were withdrawn from the public catalogue and are no longer served. [Models](/reference/models) is the current list.
+
+## Browser, desktop and terminal
+
+| Surface | What it gives you |
+| --- | --- |
+| The browser | Chat, and the cloud runtimes behind Code and Bot. Nothing to install. |
+| The desktop app | Everything the browser does, plus a host on your own machine or on a server you own, a floating companion with a global **Quick Chat**, **Appshots** capture, and optional **Computer history** recording. |
+| The Cortex Design desktop app | Editing canvases, their versions and the reusable library. |
+| The CLI | The same Code sessions from a terminal, a script or a pipeline. |
+
+A local host is not a missing browser feature: it exists only where the code can actually run. **Computer history** is off by default, records times only and never screenshots or audio, and never logs private browsing. [Ways to run Cortex](/getting-started/downloads) compares the surfaces.
+
+## Plans
+
+There are five plan names: **Guest** for browsing without an account, then **Free**, **Go**, **Plus** and **Pro**. A plan is a named ceiling on a fixed window, and the two windows Cortex enforces on every turn are messages today and messages this month. When one runs out, Cortex says so and shows when it resets rather than quietly degrading the answer.
+
+Plan details, the exact numbers and how a limit reads on screen are on [Plans and quotas](/getting-started/plans). Note that **Settings** then **Plan & billing** lists the plans and marks the one you are on, but this deployment cannot complete a plan change in the app yet: there is no checkout, no customer portal and no invoice to download, and **Billing history** stays empty.
+
+## Interface language
+
+The interface is available in eight languages: English, French, Spanish, German, Japanese, Simplified Chinese, Brazilian Portuguese and Korean. The picker lists each one in its own language. Switch under **Settings** then **General** then **Language**.
+
+English is the source of truth and is unprefixed. Every other language is a path prefix, so the French site lives under `/fr`. Your first visit reads the browser's language once, and after that the choice you saved wins and is remembered for a year. Model prompts stay in English, and the product names are never translated. See [Interface language](/getting-started/language).
 
 ## Hostnames
 
 | Host | What it serves |
 | --- | --- |
-| `cortex.foundation` | Web app, public product pages, news, legal |
+| `cortex.foundation` | The web app, the public product pages, news and legal |
 | `software.cortex.foundation` | CLI installers and release manifests |
-| `releases.cortex.foundation` | Desktop app downloads and updater feed |
-| `api.cortex.foundation` | The API the apps and the CLI talk to |
-| `docs.cortex.foundation` | This site |
+| `releases.cortex.foundation` | Desktop app downloads and the updater feed |
+| `api.cortex.foundation` | The interface the apps and the CLI talk to |
+| `docs.cortex.foundation` | This documentation site |
+| `status.cortex.foundation` | Live availability, incidents and maintenance |
 
-## Next
+## What Cortex does not do yet
 
-1. [Quickstart](/getting-started/quickstart) — a first Chat, then the other surfaces.
-2. [Accounts](/getting-started/accounts) — guest versus member.
-3. [Plans](/getting-started/plans) — what each plan includes and how quotas behave.
-4. [Settings](/getting-started/settings) — theme, language, shortcuts, models, privacy.
+Being clear about the gaps saves you looking for controls that are not there.
+
+- There is no public model-inference API, no endpoints, no software development kits and no programmatic keys. See [Platform API](/reference/platform-api).
+- There are no teams or shared workspaces, as above.
+- Plan changes cannot be completed in the app on this deployment.
+- Passkeys and recovery codes are drawn in Settings but report that they are not available on this deployment. An authenticator app is the second factor that works. See [Two-factor authentication](/getting-started/two-factor).
+- Cortex claims no certification. The **Compliance** section inside **Settings** then **Data & privacy** lists each framework with its honest status, and a status is not a certificate. See [Security and privacy](/reference/security-and-privacy).
+
+## Related
+
+- [Quickstart](/getting-started/quickstart)
+- [Which product do I need?](/getting-started/choose-a-product)
+- [Accounts and sign-in](/getting-started/accounts)
+- [Plans and quotas](/getting-started/plans)
+- [Ways to run Cortex](/getting-started/downloads)
+- [Glossary](/getting-started/glossary)

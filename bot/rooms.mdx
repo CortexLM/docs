@@ -1,0 +1,80 @@
+---
+title: "Channels"
+description: "Group threads for the bots you own: create a channel, add members, address one bot with an at-mention, and what rooms would have added"
+icon: "comments"
+keywords: ["Rooms", "Channels", "Multi-bot"]
+---
+
+Most work with a bot happens in a direct message: one bot, one thread. A channel is the other shape. It is a group thread that holds you and several of the bots you own, described in the product as `Group threads for the bots you own.`, and it is useful when a piece of work touches more than one of them and you would rather keep the history in one place than copy it between threads.
+
+This page covers where channels live, how to create one and add members, how to address a single bot inside a thread, what a channel does not do, and why the multi-bot **rooms** you may have heard about are not available yet.
+
+<Note>
+  A channel holds you and bots you own. It is not a way to add other people to a conversation, and a bot's face does not appear on a channel thread. Faces stay on a bot's own transcript.
+</Note>
+
+## Where channels live
+
+Channels sit in the Bot sidebar under the **CHANNELS** heading, one row per channel, below the list of your bots. An account with none reads `No channels yet.`, and a list that failed to load says `Your channels could not be loaded.` rather than pretending you have none.
+
+The command palette has a **Channels** group too, so you can jump to one by name from anywhere in Bot without walking the sidebar.
+
+## Create a channel and add members
+
+<Steps>
+  <Step title="Choose New channel">
+    From the channels area of the sidebar. The empty state points the same way: `Create a channel, then @ a bot from the thread.`
+  </Step>
+  <Step title="Give it a Name">
+    One field. **Create** makes it, **Cancel** backs out.
+  </Step>
+  <Step title="Add members">
+    Open **Members** and pick from the bots you own. The header counts them, and the thread's own line is `Members on the thread. @ a bot in the composer.` With no bots to add you get `No bots to add yet.`, so create a bot first. See [Create a bot](/bot/create-a-bot).
+  </Step>
+  <Step title="Write to the channel">
+    The composer reads `Message the channel. Use @bot to address one.` **Send** posts it.
+  </Step>
+</Steps>
+
+If a change to the channel does not go through you get `The channel could not be updated.` Nothing partial is saved, so retry the same change.
+
+## Address one bot
+
+A channel message is addressed with an at-mention: type `@` followed by the bot's name in the composer to put the message to that bot. Members are shown as chips on the thread, so you can see who is in the room before you write.
+
+A channel does not pass a turn from one bot to another. You address the bot you want, and that bot answers. If a second bot should pick the work up, address it in the same thread, where it can read what has already been said.
+
+A bot can create a channel itself, as one of the tools it holds: it creates a group channel with bots you own as members, which is how a bot that decides it needs a second bot's help can set the thread up rather than asking you to. The tool catalog is on [Bot tools](/bot/tools).
+
+## When a channel is not there
+
+A channel you cannot open reads `This channel is not available`, with the honest explanation `It may have been removed, or this deployment does not serve channels.` Both cases are real: a channel can be removed, and a deployment can be configured without channels at all. Check whether the **CHANNELS** heading lists anything before assuming a single channel is broken.
+
+<Info>
+  A copy of a bot does not bring its channels with it. Channel membership belongs to the bot you built, not to its identity. See [Share a bot](/bot/sharing).
+</Info>
+
+## Rooms are not available yet
+
+Rooms are not available yet. The interface carries the surface, and the sidebar still offers **Launch room**, but the deployment does not host them: choosing it answers `This deployment does not host bot rooms yet. Nothing was started.` Nothing is created and nothing is charged against your bots.
+
+A room was designed to do something a channel does not, which is worth knowing so you can tell whether you are missing it:
+
+| Room idea | What it would have added |
+| --- | --- |
+| One owner per turn | exactly one bot in the room holds the turn at a time |
+| **Handoff** | that bot passes the turn to another bot in the room |
+| **Escalate** | the room asks you to take it, with **Allow**, **Deny** or **Always** |
+| **Take over** | you take the turn yourself |
+
+Room sharing and the co-approval flow that went with it, where two people both have to allow a step, are part of the same unbuilt surface and are not available either.
+
+Until rooms ship, a channel plus at-mentions covers the multi-bot case: the thread is shared, the history is shared, and you decide which bot answers next. Passing a piece of work to a person instead of a bot is a different thing, and that is covered on [Share a bot](/bot/sharing).
+
+## Related
+
+- [Talking to a bot](/bot/conversations) - the direct message, which is still the normal case.
+- [Bot tools](/bot/tools) - including the tool a bot uses to create a channel.
+- [Share a bot](/bot/sharing) - handing a bot's setup to someone else.
+- [Inbox](/bot/inbox) - where a bot's questions and parked tools collect.
+- [Cortex Bot](/bot) - the map of every Bot page.

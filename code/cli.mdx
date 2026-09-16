@@ -1,73 +1,92 @@
 ---
 title: "Code in the terminal"
-description: "The Cortex CLI drives the same Code sessions from a terminal — interactive, one-shot, or headless in CI. Same account, Cloud by default."
-keywords: ["terminal", "command line"]
+description: "The Cortex CLI drives the same Code sessions from a shell: what carries across, how the words map, and which CLI pages answer the rest."
+icon: "terminal"
 ---
 
-The Cortex CLI is Cortex Code for the terminal. One binary, `cortex`, gives you an interactive session view, one-shot runs from your shell, and a headless mode for scripts and CI. It talks to the same Code sessions as the web and desktop apps and signs in with the same account. The full documentation lives in the [CLI tab](/cli); this page is the map from Code concepts to CLI commands.
+The Cortex CLI is Cortex Code in a terminal. It signs in with the same Cortex account and drives the same sessions, so a run you start from a shell is the same piece of work you can open in your browser: it appears on the sessions board marked **· Started from CLI**, with its transcript, its worklog and its approvals exactly where they would be if you had typed the task into the composer. The terminal is another front end onto Code, not a second product with its own history.
 
-## Code concepts, CLI names
+This page is the bridge between the two. It covers when the terminal is the better surface, how CLI vocabulary maps onto the words used throughout the Code tab, what does not carry across, and which pages of the [Cortex CLI](/cli/index) tab answer everything else. Installers, commands, flags and exit codes live there on purpose. A command list copied onto a Code page drifts out of date, so this page links instead of repeating.
+
+## When to reach for the terminal
+
+The terminal is the right surface when the work starts where you already are. You are in a project directory, you want to describe a change without leaving the shell, and you want the result as a branch and a pull request like any other Code session. It is also the only way to drive Code from a script or a pipeline, which the CLI has a dedicated headless mode for.
+
+Stay in the browser when the work is about reading rather than typing. The **Changes** pane, the live diff of the attached runtime, the **Plan** tab and the pull-request link are browser surfaces, and a pending file write is answered there with **Approve** whichever surface started the session. Approvals belong to the session, not to the window you happen to have open: attach to the session in the browser and you can answer them there.
+
+## Code words, CLI words
+
+The concepts are the same on both sides. Only the names differ, and this is the map.
 
 | In Code | In the CLI |
 | --- | --- |
-| A session on a repository | `cd` into the project and run `cortex`; the CLI reuses the workspace's Code session id so turns continue the same session |
-| Ask / Plan / Agent | `/mode`, or **Shift+Tab** to cycle Agent → Plan → Ask. `/plan` drafts a plan before writing code. |
-| Stop | **Esc** — the timeline shows `× Stopped` |
-| Cloud host | The default for the TUI and `cortex exec` |
-| This PC / SSH | `CORTEX_COMPUTER=this_pc` or `CORTEX_COMPUTER=ssh`, with an already connected session |
-| Approvals | Numbered prompts before consequential commands; `/permissions` sets Read-only, Smart, or Full access |
-| Model | `/model` — Cortex Mini 1, Cortex 1, Cortex Max 1, with Low / Medium / High effort |
-| Timeline | Tool rows — `● Shell`, `● Read`, `● Grep` — with results indented beneath |
+| a session | a run |
+| the interaction mode, **Ask**, **Plan** or **Agent** | the auto level |
+| the runtime a turn binds to | the executor, or the computer |
+| the **Changes** pane | `--git-diff` |
 
-## Install and first session
+When you are describing something to a colleague looking at the browser, use the Code words. When you are reading CLI help output, expect the CLI words.
 
-<CodeGroup>
-```bash macOS and Linux
-curl -fsSL https://software.cortex.foundation/install.sh | sh
-```
+## Where a run executes
 
-```powershell Windows
-irm https://software.cortex.foundation/install.ps1 | iex
-```
-</CodeGroup>
+The CLI makes the same runtime choice Code makes everywhere else, and it makes it the same way: **Cloud** is the default, and **This PC** and **SSH** are opt-in. Both of those need an already connected Code session. The CLI will not create one for you on the fly, and it will not quietly substitute Cloud without saying so, because a turn binds one runtime and there is no silent fallback.
 
-```bash
-cortex login
-cd ~/code/my-project
-cortex
-```
+The switches that select a host from your shell are the CLI's own, and they are documented with it in [environment variables](/cli/environment-variables) and [Cloud, This PC, and SSH](/cli/hosts). If a run refuses This PC or SSH, clearing that override returns you to Cloud, which is the usual fix.
 
-Type what you want changed and press **Enter**:
+<Warning>
+Treat local and SSH execution as unfinished. The choice and the screens exist, but Cortex does not promise a complete run of the tools on This PC or on an SSH host today. When you need a run you can rely on end to end, use Cloud. See [Cloud runtimes](/code/runtimes).
+</Warning>
 
-```text
-> add a /healthz endpoint and cover it with a test
-```
+## What the terminal does not change
 
-<Frame caption="A prompt typed into the CLI composer. The footer switches to Enter:send · Alt+Enter:newline while you type.">
-  <img src="/images/cli/runtime/40x12/composer-typing.png" alt="Cortex CLI composer with a prompt being typed, rendered in a 40 by 12 terminal" />
-</Frame>
+- **The two gates stay separate.** A command that needs a decision is answered with **Allow once**, **Always allow** and **Deny**; a file write is never on that rail and waits in **Changes** for a human **Approve**. What the prompt looks like in a shell is on [Modes and permissions](/cli/modes-and-permissions); what the gates mean is on [Permissions and approvals](/code/approvals).
+- **There is still no undo, no checkpoint and no revert.** Refusing a write while it is pending is the moment that matters, in a terminal exactly as in a browser.
+- **A mode is a lock on the next turn.** Switching between Ask, Plan and Agent changes the tools the turn is built with, so the change applies to the turn after it, never to the one already running. See [Ask, Plan, Agent](/code/interactions).
+- **Extension points belong to the CLI.** The CLI has its own tool servers, skills, agents, hooks and plugins, all documented in its tab. Those are the CLI's, not a Code session's: a Code session in the browser is given no tool servers, no connectors and no plugins of its own, and can say so under its **Tools** tab.
 
-Details: [Install](/cli/install), [Sign in](/cli/sign-in), [CLI quickstart](/cli/quickstart).
+<Note>
+Do not assume the two surfaces are feature-for-feature identical. Cortex does not specify parity between Cloud and the terminal, and the tool names differ between them. Before you plan around something, check the CLI page that owns it.
+</Note>
 
-## One-shot and headless
+## One control that is browser-only
 
-```bash
-cortex run "explain the release process"
-cortex exec --auto read-only --git-diff "review my uncommitted changes"
-```
+The command palette has an **Initialise the repository** row, reached by opening the palette and typing `init` or `/init`. It writes an `AGENTS.md` file inside a Cloud guest, and its dialog explains the choice plainly: **Writes AGENTS.md in this Cloud guest. Keep leaves an existing file. Replace overwrites it.** If no session is attached it says **Open a Cloud session first.**, and where the deployment does not offer it, **Initialise is not available on this deployment.**
 
-`cortex run` streams a formatted answer into your shell and understands sessions. `cortex exec` is for CI: autonomy levels, JSON output, turn and time limits. See [Headless runs](/cli/headless).
+That row is a control in the browser, not a CLI command. Do not go looking for it in help output.
 
-## What the CLI is — and is not
+## What the CLI tab documents
 
-| The CLI does | The CLI does not |
-| --- | --- |
-| Drive Code sessions from a terminal | Run the model on your laptop |
-| Work in a project directory | Replace Cortex Chat |
-| Offer This PC and SSH | Put those hosts in the browser |
-| Extend with MCP servers, skills, agents, hooks, plugins | Manage Bot or Design |
+<CardGroup cols={2}>
+  <Card title="Cortex CLI" icon="terminal" href="/cli/index">
+    The map of the whole tab: the three ways to run it, and what the CLI does and does not do.
+  </Card>
+  <Card title="Install the CLI" icon="download" href="/cli/install">
+    Getting the binary on macOS, Linux and Windows, pinning a version, and upgrading.
+  </Card>
+  <Card title="Sign in" icon="right-to-bracket" href="/cli/sign-in">
+    Signing in with your Cortex account, including machines without a browser.
+  </Card>
+  <Card title="CLI quickstart" icon="rocket" href="/cli/quickstart">
+    A first turn in a real project, and how much autonomy to grant on day one.
+  </Card>
+  <Card title="Cloud, This PC, and SSH" icon="server" href="/cli/hosts">
+    Where a run actually executes, opting in to the other hosts, and why they fail closed.
+  </Card>
+  <Card title="Modes and permissions" icon="sliders" href="/cli/modes-and-permissions">
+    The auto level, the approval prompt, and the permission rules the CLI reads.
+  </Card>
+  <Card title="Headless and one-shot runs" icon="gears" href="/cli/headless">
+    Driving a run from a script or a pipeline, with machine-readable output.
+  </Card>
+  <Card title="CLI troubleshooting" icon="life-ring" href="/cli/troubleshooting">
+    The diagnostics first, then the messages a terminal run can print.
+  </Card>
+</CardGroup>
 
-## Next
+## Related
 
-- [CLI overview](/cli) — the full tab.
-- [Code on desktop](/code/desktop) — the same hosts in the desktop app.
+- [Cortex Code](/code/index) for what Code is and how a session is put together.
+- [Code sessions](/code/sessions) for the board, attach and detach, stop and continue.
+- [Code on desktop](/code/desktop) for the other surface that offers This PC and SSH.
+- [Permissions and approvals](/code/approvals) for the two gates in full.
+- [Code troubleshooting](/code/troubleshooting) when a run refuses a host.

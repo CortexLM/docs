@@ -1,0 +1,83 @@
+---
+title: "Versions"
+description: "Every save of a design canvas is a numbered version you can view, restore, or compare from the Versions rail in the Design desktop app."
+icon: "clock-rotate-left"
+---
+
+Every time a design canvas is saved, Cortex Design keeps the result as a numbered version. Nothing is overwritten. Version 7 of a canvas is its seventh save, and the six saves before it are all still there to open. Versions are how you go back after a change you did not want, and how you check what a canvas looked like before a round of edits.
+
+This page covers how a save becomes a version, how to open the **Versions** rail in the editor, how to read an older version without changing anything, what restoring actually does, and what is worth knowing about comparing. Versions live in the Design desktop app: the canvases rail in the web app lists a canvas and its counts, but the history is in the editor.
+
+## How a save becomes a version
+
+Each save creates the next version, numbered from 1 upwards, and the canvas records which version is current. When a save lands, the thread rail beside the canvas confirms it with a line naming the new version, the time, and how many frames and notes the canvas now holds.
+
+You never choose how a save is stored. Cortex writes a complete snapshot of the canvas at intervals on its own, so the history stays quick to replay however many small edits sit between snapshots.
+
+Saving is protected against two windows fighting over the same canvas. If a second window saves starting from a version that is no longer current, that save is refused with `This canvas was saved from another tab. Reload and try again.` Reload the canvas and redo the change. See [conflict](/problems/conflict).
+
+## Open the Versions rail
+
+The editor header carries a **Versions** button with the number of saved versions on it. Opening it shows the rail:
+
+- Versions newest first, grouped by day under headings such as **TODAY** and **YESTERDAY**.
+- Each row names the version, who saved it, and the time.
+- The current version carries a **CURRENT** chip.
+- The version you are reading carries a **VIEWING** chip.
+
+## View an older version
+
+<Steps>
+  <Step title="Open Versions in the editor header">
+    The rail opens beside the canvas.
+  </Step>
+  <Step title="Select the version you want to read">
+    The header pill switches to a read-only viewing state, for example **Viewing v4 · read-only**, and a banner across the canvas repeats the version and when it was saved.
+  </Step>
+  <Step title="Return to the current version">
+    Choose the control that names the current version, for example **Back to v7**.
+  </Step>
+</Steps>
+
+Viewing is read-only in the literal sense: you are reading an older version of the canvas, and nothing you do while the banner is up changes the current one.
+
+## Restore an older version
+
+Restoring does not rewind the canvas and does not throw away the work you did since. It takes the older version and saves it again as a brand new version at the top of the list.
+
+<Steps>
+  <Step title="Select the older version in the rail">
+    Its row is highlighted and the canvas shows it read-only.
+  </Step>
+  <Step title="Choose the restore control">
+    It names the version you picked, for example **Restore v4**.
+  </Step>
+  <Step title="Carry on from the new version">
+    The restored content becomes the newest version and the current one. Its row is labelled as restored from the version it came from.
+  </Step>
+</Steps>
+
+<Note>
+  Nothing is deleted by a restore. The version you were on before stays in the list, in its place, and you can restore that one in turn if you change your mind.
+</Note>
+
+## Compare with the current version
+
+Beside each older version the rail offers a compare control, which names the current version, for example **Compare with v7**, and sets that version against the one you are working on. What the comparison itself draws is not documented, so expect the control before you expect a particular view.
+
+## What versions do not do
+
+- A single version cannot be removed from the list on its own. The list only grows, including when you restore.
+- There is no clock running against your history. As long as you keep the canvas, its earlier versions stay with it.
+- Versions belong to one canvas. They are not shared between canvases, and a library item has no version list of its own.
+
+<Note>
+  Deleting a design hides it rather than erasing it. Its versions and images stay with it and it can come back, and the Design desktop app offers an undo for ten seconds immediately after the delete. See [Design canvases](/design/canvases).
+</Note>
+
+## Related
+
+- [Generate and edit](/design/editor) - where saves happen and where the Versions button lives.
+- [Design canvases](/design/canvases) - what a canvas is, and what deleting one does.
+- [Export a design](/design/export) - take a version out as a file.
+- [Design troubleshooting](/design/troubleshooting) - a save that was refused, or a canvas that will not open.

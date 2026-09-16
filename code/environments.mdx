@@ -1,0 +1,110 @@
+---
+title: "Environments and images"
+description: "Start an environment for a repository, save it as an image so the next session skips the install, then launch, rebuild or delete it."
+icon: "box"
+---
+
+**Environments** is the one page in Cortex Code that exists for this subject, and its own description is the clearest definition available: **An environment is a headless machine of its own: Cortex clones a repository into it and the harness installs what the repository declares. Saving one lets the next session skip the install.**
+
+That last sentence is the whole point. A plain Cloud session installs your toolchain every time it starts. An environment you have saved as an **image** is already installed, so the next session on the same repository and ref resumes from it instead of waiting. This page covers starting one, saving it, launching it again, rebuilding it, deleting it, and the three situations in which the feature is not available to you at all.
+
+## The three sections of the page
+
+| Section | What it holds |
+| --- | --- |
+| **START ONE** | The form that places a new environment: **Repository** and **Ref** |
+| **MACHINES** | The environments running right now, each with a delete control |
+| **SAVED IMAGES** | The snapshots you kept, each with **Launch**, **Rebuild** and delete |
+
+When nothing is running, **MACHINES** reads **No environments running** and explains where to start one and what it costs you: **Start one from a repository above, or from a session's Host tab. Each one occupies a host slot while it is placed.** The panel that copy calls the Host tab is the **Runtime** tab in an open session, described on [Cloud runtimes](/code/runtimes).
+
+## Start an environment
+
+<Steps>
+  <Step title="Fill in the repository">
+    Under **START ONE**, put a repository in the **Repository** field. The hint tells you what it accepts: **A clone URL, or owner/name for GitHub.**
+  </Step>
+  <Step title="Choose a ref, or do not">
+    **Ref** takes a branch or tag. **Empty uses the repository default.**
+  </Step>
+  <Step title="Watch it be placed">
+    The new machine appears under **MACHINES** while it is placed. It occupies a host slot for as long as it is there, which is exactly why the page gives you a delete control.
+  </Step>
+  <Step title="Let the install finish">
+    Cortex clones the repository and the harness installs what the repository declares. A session's **Runtime** tab shows the same work as **Install progress**.
+  </Step>
+</Steps>
+
+You can also start an environment from inside a session, on its **Runtime** tab, without coming to this page at all.
+
+## Save an image
+
+An image is saved from a session's **Runtime** tab with **Save image**. The confirmation states the benefit precisely: **Environment saved** and **The next session on this repository and ref resumes from it.**
+
+An image is keyed by **repository and ref**. That pair is what a later session is matched against, so a saved image for one branch does nothing for a session started on a different one. Once saved, the snapshot appears under **SAVED IMAGES**.
+
+## Launch, rebuild, delete
+
+| Action | What it does |
+| --- | --- |
+| **Launch** | Starts an environment from the snapshot with no install. You do not retype the repository. The toast reads **Launching from the saved image** and **No install: the environment resumes from the snapshot.** |
+| **Rebuild** | Deletes the image, then installs a fresh environment from scratch for the same repository and ref |
+| Delete an image | Removes the snapshot. Its control is labelled **Delete the saved image for** the repository in question |
+| Delete an environment | Frees the host slot the running machine occupies. Its control is labelled **Delete the environment for** the repository in question |
+
+Image actions are serialised, so two quick presses cannot race the same row. If you press twice, the second press waits rather than starting a second operation on the same image.
+
+### Rebuild is destructive, in that order
+
+**Rebuild** deletes the image first and then installs. The dialog says so before you commit, and it is worth reading in full:
+
+> **Rebuild this image?**
+>
+> **The saved image for** that repository and ref **is deleted, and a fresh environment starts for the same repository and ref. Nothing resumes from the old snapshot: the new environment installs what the repository declares, which takes as long as the first install did.**
+
+The buttons are **Cancel** and **Delete and rebuild**. After it runs, the toast repeats the consequence and tells you what to do next: **Rebuilding from scratch** and **The saved image is gone and a fresh environment is installing. Save it again from its Host tab once the install finishes.** Rebuild when the repository's dependencies have moved on and the snapshot has gone stale. Do not rebuild as a way to get the old snapshot back, because there is no way back.
+
+<Warning>
+**There is no undo, no checkpoint and no revert anywhere in Code**, and that includes an environment. A deleted image is gone, a rebuild cannot be reversed, and a file write inside a running environment is either rejected while it is still pending or it lands. Review writes under **Changes** before they are applied rather than counting on rolling a machine back. See [Changes and diffs](/code/changes).
+</Warning>
+
+## What can go wrong
+
+Every failure here is reported as a toast, and each one tells you whether anything changed:
+
+| Toast | What it means |
+| --- | --- |
+| **No environment capacity right now** | Nothing was placed. Try again later |
+| **The environment could not be started** | The placement did not complete |
+| **The image could not be launched** | The snapshot exists but did not start |
+| **The image could not be rebuilt** | The rebuild did not complete |
+| **The image was deleted, but no environment started** | The destructive half succeeded and the constructive half did not. Start one again from **START ONE** |
+| **The environment could not be deleted** | The machine is still placed and still occupying its slot |
+
+If an environment is stopped and you bring it back, Cortex takes a capacity seat before it starts anything. When you are already at your ceiling it answers [`conflict`](/problems/conflict) instead of half-starting, and it refuses outright while the environment is still shutting down. Elsewhere a ceiling is reported as [`quota_exceeded`](/problems/quota_exceeded), nothing placeable as [`no_capacity`](/problems/no_capacity), and another attach racing yours as [`invalid_state`](/problems/invalid_state).
+
+## Ceilings
+
+Each account can hold **8** registered environments and **40** saved images. Deleting a machine you are no longer using frees a slot for the next one, and deleting an image you no longer launch frees one of the forty. No other number about an environment is worth planning around: whether one can be resized after it is placed, and how long a saved image is kept, are not documented, and an image is not something you can hand to a teammate today.
+
+## When environments are not available
+
+The page distinguishes three states, and only one of them is something you can act on:
+
+| What you see | What it means | Action |
+| --- | --- | --- |
+| **Sign in to use an isolated environment** and **An environment holds a clone of your repository and outlives the browser session that started it, so a guest could never come back to find or delete one.** | You are not signed in | **Sign in** |
+| **Isolated environments are not enabled here** and **This deployment has no runtime fleet. Cloud sessions still run.** | The capability is not enabled on this deployment. This is not a plan prompt | none |
+| **No environment capacity is available: the fleet is scaled to zero. Nothing was started, so nothing was lost.** | Capacity is momentarily at zero | **Try again** |
+
+<Note>
+There is no offline or mock environment to develop against. Without a runtime fleet the feature cannot be tried at all, so the second row above is a genuine dead end rather than a slow path.
+</Note>
+
+## Related
+
+- [Cloud runtimes](/code/runtimes) - what a session runs in, and the **Runtime** tab.
+- [Repositories and branches](/code/repositories) - the repository and ref an image is keyed by.
+- [Machines](/code/machines) - Cloud occupancy and team runners.
+- [Changes and diffs](/code/changes) - the gate a write passes through inside an environment.
+- [Code troubleshooting](/code/troubleshooting) - installs that do not finish.

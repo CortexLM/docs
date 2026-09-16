@@ -1,71 +1,132 @@
 ---
 title: "Plans and quotas"
-description: "Guest, Free, Go, Plus, and Pro as listed in Settings → Plan & billing. Quotas fail closed and tell you when they reset."
-keywords: ["pricing", "quotas", "limits", "billing", "Free", "Go", "Plus", "Pro"]
+description: "Guest, Free, Go, Plus and Pro: the message windows each plan allows, what the app draws as a meter, and how a limit fails."
+icon: "credit-card"
 ---
 
-Your plan, today's usage, and the reset timers live under **Settings → Plan & billing**. The product is the source of truth for numbers; this page explains what each plan is for and how limits behave.
+A plan in Cortex is a named ceiling on a fixed window. Two windows are counted on every turn you send: **messages today** and **messages this month**. A turn charges both, and whichever runs out first is the one that stops you. Your plan, your usage and the reset countdowns live in **Settings → Plan & billing**.
 
-<Frame caption="Settings → Plan & billing. The plan ladder as shown in the product; the Change plan buttons are marked Coming soon while checkout is being finished.">
-  <img src="/images/product/settings-plans.png" alt="Plan & billing — Free, Go, Plus, and Pro plan cards with their features" />
-</Frame>
+This page lists the five plans as the product lists them, the message ceilings on each, the other entitlements that exist behind the scenes, what the app actually draws as a meter, and what a limit looks like when you reach it. The product is always the source of truth for a number you are about to rely on.
 
 ## The plans
 
-| Plan | Price | Who it is for | Includes |
-| --- | --- | --- | --- |
-| **Guest** | — | Anyone before signing in | A daily and monthly message allowance; conversations live in the browser session |
-| **Free** | $0 / month | Everyday tasks | Limited messages each day and month · Cortex 1 Mini · web search and code runs · image generation with Cortex-Image-1 · written conversations, subject to abuse protection |
-| **Go** | $8 / month | Everyday work | Everything in Free · more messages each day and month · priority when the fleet is busy · extended memory and context |
-| **Plus** | $20 / month | Advanced intelligence | Everything in Go · more messages and higher ceilings · projects and saved work · extended memory and context · early access to new features |
-| **Pro** | Custom | People who live in Cortex | Everything in Plus · unlimited messages · SSO, audit export, and private routing · team workspace and admin controls · preview access to new features |
-
-**Plus** is the recommended plan in the product. Switching takes effect at the next billing cycle. At the time of writing the **Get Free / Go / Plus / Pro** buttons and **Billing history** are marked **Coming soon**; the ladder above is what the product lists.
-
-## Usage and reset timers
-
-**Settings → Plan & billing** shows today's and this month's message counts with a reset countdown for each window.
-
-<Frame caption="A guest's usage: 100 messages today and 500 this month, each with its own reset timer.">
-  <img src="/images/product/settings-plan-usage.png" alt="Guest plan usage — messages today 0 of 100, messages this month 0 of 500, with reset timers" />
-</Frame>
-
-## How limits fail
-
-Cortex quotas **fail closed**: when a window is used up, the product says so and tells you when it resets. Nothing is silently downgraded, and there is no paywall pretending to be a quota.
-
-| What happened | Error code | What to do |
+| Plan | Price | What the product says it is for |
 | --- | --- | --- |
-| You used the window for today or this month | [`quota_exceeded`](/problems/quota_exceeded) | Wait for the reset shown in the product, or move to a plan with higher ceilings |
-| The plan does not include the capability at all | [`entitlement_required`](/problems/entitlement_required) | That capability is not on this plan |
-| Too many requests in a short burst | [`rate_limited`](/problems/rate_limited) | Retry after the pause the product suggests |
-| The fleet is at capacity | [`no_capacity`](/problems/no_capacity) | Try again shortly; Go and above get priority when the fleet is busy |
+| **Guest** | Not sold | `Try Cortex without an account.` |
+| **Free** | $0 / month | `Intelligence for everyday tasks.` |
+| **Go** | $8 / month | `Extended access for everyday work.` |
+| **Plus** | $20 / month | `Go further with advanced intelligence.` |
+| **Pro** | Quote only, shown as `Custom` | `Maximum access for people who live in Cortex.` |
 
-Image generation on Free and Guest is metered as `images_per_day`. Running out is `quota_exceeded`, not a paywall. See [Image generation](/chat/images).
+**Plus** is marked `RECOMMENDED` in the product. Guest is not listed on the pricing cards: it is the allowance you get before you sign in, and the card simply reads `Guest allowance while signed out.` **Pro** is quote-only, so its price shows as `Custom` rather than an amount.
 
-The CLI shows the same thing in the terminal: when the agent quota is exhausted the composer is held with the reset time, and `/usage` shows the details. See [CLI troubleshooting](/cli/troubleshooting).
+Three capabilities are reserved for **Pro**: single sign-on, audit log export and private model routing. When a plan does not include something at all, Cortex answers `Not included in your plan` rather than metering you down to zero.
 
-## Model availability
+## Message quotas
 
-Model availability depends on your plan. During peak hours new chats may fall back to a faster model; the composer chip always shows which model is serving the conversation. See [Models](/chat/models).
+| Plan | Messages today | Messages this month |
+| --- | --- | --- |
+| Guest | 100 | 500 |
+| Free | 500 | 3,000 |
+| Go | 1,000 | 8,000 |
+| Plus | Unlimited | Unlimited |
+| Pro | Unlimited | Unlimited |
+
+The daily window is 24 hours and the monthly window is 30 days. Both are fixed rather than rolling: each window has a start, and the counter returns to zero when the window rolls over. The product never prints a wall-clock reset time; it shows `Resets in {label}` instead. Unused allowance does not roll over into the next window.
+
+**Unlimited** here means there is no ceiling to hit, not a very large number. Quotas **fail closed**: when a window is used up Cortex says so and shows when it resets, rather than quietly shortening the answer.
+
+<Note>
+The guest allowance belongs to the browser session, not to an account. It ends when you sign in and does not carry over, and the Free plan's windows start fresh on the account. See [Accounts and sign-in](/getting-started/accounts).
+</Note>
+
+## Other ceilings
+
+These entitlements exist on the plans and shape what Cortex lets you do, even though most of them are not drawn as meters.
+
+| Ceiling | Guest | Free | Go | Plus | Pro |
+| --- | --- | --- | --- | --- | --- |
+| Projects | None | 3 | 5 | Unlimited | Unlimited |
+| Attachment size (`File storage`) | None | 10 MB | Not published | 10 MB | 10 MB |
+| Library storage | 200 MB | 500 MB | Not published | 20 GB | Unlimited |
+| `Images today` | 2 | 15 | Not published | 100 | Unlimited |
+| `Exports today` | 2 | 15 | Not published | 100 | Unlimited |
+| `Parallel agents` | Not published | 1 | Not published | 10 | 50 |
+
+Reading the table:
+
+- **None** means forbidden, not unlimited. A guest has no projects and cannot upload files.
+- **Attachment size hardly varies.** Paying more does not raise it: where a plan can attach at all, the ceiling on a single file is 10 MB, which is why the plans that can upload all show the same number. A larger plan buys you more room in the Library, not bigger files. Go is the one plan this page will not print a figure for.
+- **Not published** means this page has no figure it can responsibly print for the Go plan, so it will not invent one. Check **Settings → Plan & billing** on a Go account for what it actually allows.
+- **Parallel agents** is a plan attribute that the product displays but does not currently enforce, so read those numbers as what the plan records rather than as what will stop you. The matching error code exists regardless, so handle it rather than assuming it can never arrive.
+
+## What is not metered
+
+Reasoning, code runs in the sandbox and web searches are **not metered on any plan**, Guest included. If you read older copy promising "five reasoning runs a day" or "fifty web searches a day", that copy is stale. Those counters were retired.
+
+No plan carries a file-retention window either. Conversations, Chat Library files and Design canvases you still hold are not deleted on a plan timer; they stay until you delete them. See [Data and privacy](/getting-started/data-and-privacy) for what Cortex does prune, and on what schedule.
+
+## What you can actually see
+
+Three things are drawn as meters on the plan cards, in the form `{used} / {limit}` with `Resets in {label}` underneath: **Messages today**, **Messages this month** and **Projects**. Every other entitlement is suppressed from the cards, so do not go looking for an images meter or a web-search meter. The tab notes this itself: `Quota bars on this tab come from the plan, not a certificate.`
+
+Elsewhere in **Settings → Plan & billing** you also get:
+
+| Section | What it shows |
+| --- | --- |
+| `STORAGE` | Library usage, with a `Manage` link that opens Library. Failure shows `Storage usage could not be loaded` and a `Retry`. |
+| Current plan | `{name} plan`, the price, and a `CURRENT PLAN` badge |
+| `Usage` | Tokens this account used, split across Cortex Chat, Cortex Code, Cortex Bot and `Unattributed`, over a `7 days`, `30 days` or `90 days` window, `Per day` or `PER MODEL`. Empty windows stay zeros. |
+| `Billing history` | Columns `DATE`, `DESCRIPTION`, `AMOUNT`, `STATUS` |
+
+The sidebar carries the same information in miniature: a plan chip reading `{name} plan` and a quota chip reading `{used} of {limit} {quota}`.
+
+## When you reach a limit
+
+Cortex has a dedicated notice for this, separate from a generic error card. It reads **Plan limit reached** with `You have used everything this plan allows in the current window.`, then `Resets in {label}`, `Current plan: {plan}`, and where a model is still available under the limit, `Continue with {model}`. The heading is specific to the window you exhausted, for example `You have used today's messages`, `You have used this month's messages` or `You have reached your project limit`.
+
+| What happened | Problem code | What to do |
+| --- | --- | --- |
+| The window for today or this month is used up | [`quota_exceeded`](/problems/quota_exceeded) | Wait for the reset shown in the product, or move to a plan with higher ceilings |
+| The plan does not include the capability at all | [`entitlement_required`](/problems/entitlement_required) | Compare plans under **Settings → Plan & billing** |
+| Requests arrived faster than the limit allows | [`rate_limited`](/problems/rate_limited) | Pause, then retry. This clears by itself. |
+| Too many runs in parallel on the account | [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | Let a session or a run finish to free a slot |
+| An attachment is larger than Cortex accepts | [`payload_too_large`](/problems/payload_too_large) | `Files can be at most 10 MB. Remove or shrink the attachment and try again.` |
+
+There is a second notice for the plan side of the same check, headed `That attachment is over your plan's size limit`. That one is raised against what your plan allows you to attach at all rather than against the 10 MB ceiling, which is why a plan that permits no attachments refuses every upload with it.
+
+## Changing plan
+
+**Settings → Plan & billing → Change plan** lists the ladder with `Switch anytime — changes take effect at the next billing cycle.` The plan you are on reads `Current plan`; the others read `Get {plan}` or `Downgrade`. A guest sees `Sign in to change plan`.
+
+<Warning>
+There is no checkout in the product today. When billing is not configured, the plan actions and `Manage billing` carry a `HOLD` badge instead of opening a payment form, `Billing history` always reads `No invoices yet — your receipts will appear here.`, and `Usage credits`, `Spend cap` and `Add credit` resolve to `Not available on this deployment` or `Not reported`. Expect to arrange a plan change outside the app for now.
+</Warning>
 
 ## Frequently asked
 
 <AccordionGroup>
   <Accordion title="Do guest messages and Free messages share a quota?">
-    No. The guest allowance belongs to the browser session and ends when you sign in. Free has its own daily and monthly limits on the account.
+    No. The guest allowance belongs to the browser session and ends when you sign in. Free has its own daily and monthly windows on the account, and they start fresh.
   </Accordion>
   <Accordion title="Does unused quota roll over?">
-    No. Daily and monthly windows reset on the timers shown in Plan & billing.
+    No. Each window has a start and a length, and the counter returns to zero when it rolls over. What you did not use is not banked.
   </Accordion>
-  <Accordion title="Was there a Pro trial?">
-    Through 7 September 2026 a signed-in member could claim one month of Cortex Pro from the product. That window has closed; claiming twice never stacked.
+  <Accordion title="Which models does my plan serve?">
+    Every published chat model is available from the Free plan up, so in practice no Chat model is plan-gated today and you will not meet a locked row in the picker. When a model is unavailable or a limit is reached, Cortex says so and offers what is still available rather than quietly substituting something else, and the composer always shows which model is answering. See [Models](/chat/models).
+  </Accordion>
+  <Accordion title="Is there a file-retention window on my plan?">
+    No plan carries one, so the retention line never appears on the plan card. Files stay until you delete them.
+  </Accordion>
+  <Accordion title="Was there a free month during the beta?">
+    Yes, and it has closed. During the beta a banner offered signed-in accounts one free month of a paid plan, one grant per account, and claiming twice never stacked months. The offer window ended on 7 September 2026. The banner and its `Claim a free month` button are still in the build, so treat anything you see there as expired until the product says otherwise.
   </Accordion>
 </AccordionGroup>
 
-## Next
+## Related
 
-- [Accounts](/getting-started/accounts) — guest versus member, and what each unlocks.
-- [Models and thinking](/chat/models) — which models a plan can serve.
-- [Image generation](/chat/images) — the `images_per_day` window.
-- [CLI troubleshooting](/cli/troubleshooting) — quota messages in the terminal.
+- [Accounts and sign-in](/getting-started/accounts) - guest versus member, and what an account lifts.
+- [Settings](/getting-started/settings) - the Plan & billing tab among the seven tabs.
+- [Limits reference](/reference/limits) - the hard numbers in one table.
+- [Models](/chat/models) - the published chat models, and what Cortex does when one is unavailable.
+- [`quota_exceeded`](/problems/quota_exceeded) - the problem code behind a used-up window.

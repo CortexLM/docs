@@ -1,0 +1,110 @@
+---
+title: "Data locations"
+description: "Where Cortex CLI keeps config, sessions, agents, skills, plugins, caches and logs on each platform, and how to reclaim the space."
+icon: "folder-tree"
+---
+
+Cortex CLI keeps almost everything it needs in one directory, the Cortex home. Sessions, personal agents and skills, installed plugins, caches and logs all live under it, which makes the whole install easy to back up, move or delete. A few subsystems use the conventional per-platform application directory instead, and sign-in material deliberately lives outside the filesystem entirely.
+
+This page lists what Cortex writes and where, on macOS, Linux and Windows, and the commands that show you how much of it has accumulated and remove what you no longer need. It covers only the files on your own machine.
+
+## The Cortex home directory
+
+The root is resolved in this order:
+
+1. `CORTEX_CONFIG_DIR`
+2. `CORTEX_HOME`
+3. `~/.cortex`
+
+Under that root:
+
+| Path under the root | Contents |
+| --- | --- |
+| `config.toml` | Global configuration |
+| `sessions/` | Session transcripts |
+| `code-sessions.json` | Workspace to Code session id cache |
+| `agents/` | Personal agents |
+| `skills/` | Personal skills |
+| `plugins/` | Installed plugins |
+| `mcp/` | MCP server state |
+| `snapshots/` | Workspace snapshots |
+| `cache/` | Model, response and update caches |
+| `cache/logs/` | Application logs |
+| `auth/` | Sign-in bookkeeping. The credentials themselves live in the OS credential store, not here |
+| `feedback/` | Queued feedback submissions |
+| `aliases.toml` | Command aliases |
+| `session_locks.json` | Sessions protected from cleanup |
+
+Two more appear only under some conditions. A `diagnostics/` directory exists once diagnostics are switched on, and `audit/events.jsonl` is written when a managed organization policy makes a fail-closed decision, as described on [Permission policy](/cli/policy).
+
+Individual directories can be moved with `CORTEX_DATA_DIR` and `CORTEX_CACHE_DIR`, so you can keep the config in your home directory and put the bulky parts on another volume.
+
+## Inside a project
+
+These are the files Cortex reads and writes inside a repository. They are ordinary files: commit the ones that belong to the project.
+
+| Path | Contents |
+| --- | --- |
+| `AGENTS.md` | Project instructions, created by `cortex init` |
+| `.cortex/config.toml` | Project configuration |
+| `.cortex/agents/` | Project agents |
+| `.cortex/skills/` | Project skills |
+| `.cortex/plugins/` | Project plugins |
+| `.cortex/commands/` | Project slash commands |
+| `.agents/`, `.agent/` | Alternative agent and skill locations that are also scanned |
+
+Project files take priority over personal ones with the same name. If a repository ships a skill called `deploy` and you have one of your own, the repository's wins inside that repository.
+
+## Platform directories
+
+Some subsystems use the conventional per-platform application directory rather than `~/.cortex`:
+
+| Platform | Path |
+| --- | --- |
+| Linux | `~/.local/share/Cortex/` |
+| macOS | `~/Library/Application Support/Cortex/` |
+| Windows | `%APPDATA%\Cortex\` |
+
+The maintenance commands also read the platform cache directory, `~/.cache/cortex/` on Linux, for logs and caches. Both of these honour `CORTEX_DATA_DIR` and `CORTEX_CACHE_DIR`. A legacy `~/.config/cortex` location is still read for configuration, agents and skills so that older installs keep working.
+
+<Note>
+On Windows the split is worth knowing: configuration and data sit under `%APPDATA%\Cortex\`, while a 64-bit install puts the executable in `%LOCALAPPDATA%\Cortex\bin`. Add that folder to your user `PATH` yourself. The installer does not edit your profile or your `PATH`.
+</Note>
+
+## Credentials
+
+Sign-in material lives in the OS keyring, under the service `cortex-cli` with the account `auth`: Keychain on macOS, Secret Service on Linux, Credential Manager on Windows. It is deliberately not a file in your home directory, so copying your Cortex home to another machine does not copy your session. Run `cortex login` there instead. See [Sign in to the CLI](/cli/sign-in).
+
+## Diagnostics
+
+`cortex --debug` records private, content-free events in the Cortex home `diagnostics/` directory, and `CORTEX_DIAGNOSTICS_DIR` overrides that location. It does not create or overwrite project `debug.txt` files, so running with `--debug` in a repository leaves the repository alone. [CLI troubleshooting](/cli/troubleshooting) describes what the journal may contain.
+
+## Managing what accumulates
+
+```bash
+cortex compact status        # what could be reclaimed
+cortex compact run          # compact logs, sessions and history
+cortex cache size
+cortex cache clear
+cortex logs --paths         # where the logs are
+cortex logs --clear
+```
+
+`cortex debug config` prints the configuration in effect and the files it was merged from, which is the quickest check when you are not sure which root Cortex resolved. `cortex debug paths` lists every path at once.
+
+## Removing everything
+
+`cortex uninstall` removes the binary and, unless you pass `--keep-config` or `--keep-data`, the directories above. `--dry-run` shows what it would delete, and `--backup` archives the data first.
+
+<Warning>
+Sessions, snapshots and personal agents are files, and uninstalling without `--keep-data` deletes them. Take a `--backup` first if there is anything in `sessions/` you may want later.
+</Warning>
+
+## Related
+
+- [Configuration](/cli/configuration)
+- [Environment variables](/cli/environment-variables)
+- [Permission policy](/cli/policy)
+- [CLI sessions](/cli/sessions)
+- [Sign in to the CLI](/cli/sign-in)
+- [CLI troubleshooting](/cli/troubleshooting)

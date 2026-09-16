@@ -1,89 +1,123 @@
 ---
 title: "Troubleshooting"
-description: "What the web app shows when something is off, what it means, and what to do — gates, quotas, reconnects, and product-facing errors."
-keywords: ["errors", "problems", "fixes", "not working", "support"]
+description: "The messages Cortex shows when something will not run, what each one means, and what to do, grouped by what you were trying to do"
+icon: "life-ring"
 ---
 
-Cortex prefers a clear message over a spinner. When something cannot run, the product says so in plain words and, where it can, tells you what to do next. This page collects those messages across Chat, Code, and Bot. The CLI has [its own page](/cli/troubleshooting).
+Cortex prefers a clear message over a spinner. When something cannot run, the product says so in plain words and, where it can, tells you what to do next. Quotas and permission checks fail closed: you get told the window is used up, rather than a quietly worse answer.
 
-## Sign-in and access
+This page collects those messages across Cortex Chat, Cortex Code and Cortex Bot, grouped by what you were trying to do when you met one. Every failure that came from the server also carries a stable problem code with its own page, linked where it applies.
 
-| What you see | Meaning | Do this |
+## Signing in
+
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| **This space is reserved** on `/code` or `/bot` | You are a guest. Code and Bot are member surfaces. | **Sign in**, or **Continue in Chat**. |
-| **Sign in to continue** in the composer banner | Today's or this month's guest allowance is used up. | Sign in to continue on Free, or wait for the reset shown under **Settings → Plan & billing**. |
-| A dialog asking for an authenticator code | You asked to export or delete data. | Confirm with your authenticator app. |
-| No **Connect** control for an app or for GitHub | That connection is not available on this deployment, or you are a guest. | Sign in; if the control is still missing, it is not offered here. |
+| `The server could not be reached. Try again.` | The sign-in request did not land | Choose **Retry**. It only ever re-fires on a click, because retrying sends another email |
+| `That sign-in was not completed. Choose another option.` | The sign-in step was cancelled before it finished | Start again, or pick a different method |
+| `The sign-in window could not be opened. Allow pop-ups and try again.` | Your browser blocked the sign-in window | Allow pop-ups for `cortex.foundation`, then retry |
+| `This address does not look valid. Check the domain after the @.` | The email address was rejected before anything was sent | Fix the address |
+| `Enter a work email or company domain.` | Single sign-on needs a work address, not a personal one | Use your organization's address |
+| `{email} does not have access to this Cortex space (403).` | The account exists but is not in this space | `Ask your administrator for an invitation, or try another account.` |
+| `This sign-in attempt has expired. Start again.` | The emailed code or the attempt behind it timed out | Start the sign-in again from the dialog |
+| `Please sign in again` | Your session expired while you were working | Sign in. You return to where you were. See [`unauthenticated`](/problems/unauthenticated) |
 
-## Quotas and plans
+There is no second-factor field in the sign-in dialog. If your organization requires a second factor it runs during the identity step, not here. Two-factor inside Cortex is only used to confirm sensitive actions, described under [Two-factor authentication](/getting-started/two-factor).
 
-| What you see | Meaning | Do this |
+## Opening Cortex Code or Cortex Bot
+
+Both are member surfaces, and you meet one of two dialogs. Neither redirects: the address bar keeps the URL, and neither can be dismissed with Escape or by clicking outside.
+
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| [`quota_exceeded`](/problems/quota_exceeded) | The daily or monthly window is used up. | Wait for the reset, or move to a plan with higher ceilings. |
-| [`entitlement_required`](/problems/entitlement_required) | The plan does not include that capability. | Compare plans under **Settings → Plan & billing**. |
-| [`rate_limited`](/problems/rate_limited) | Too many requests in a burst. | Pause, then retry. |
-| [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | Too many things running at once on the account. | Let a session or run finish first. |
+| `This space is reserved` | You are a guest. The body reads that the product `is a reserved space for signed-in accounts. Chat stays available without an account.` | Choose **Sign in**, or **Continue in Chat** |
+| `{product} is in closed beta` | You are signed in but not invited: `{product} is available to invited accounts. Chat stays open for everyone.` | Only **Continue in Chat** is offered. Ask for an invitation |
+| `You do not have access to this` | A permission check refused the action | `If you expected to, whoever administers the workspace can grant it.` See [`forbidden`](/problems/forbidden) |
+| No **Connect** control for an app or for GitHub | Not offered on this deployment, or you are a guest | Sign in. If it is still missing, it is not offered here |
 
-See [Plans and quotas](/getting-started/plans).
+Cortex Chat is never gated. See [Accounts and sign-in](/getting-started/accounts) for what a guest can and cannot do.
 
-## Chat
+## Running out of what your plan allows
 
-| What you see | Meaning | Do this |
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| **Cortex is responding…** with a spinner on the send button | A turn is in flight. | Wait, or press **Esc** to stop it. |
-| An error square where an image should be | The Library fetch or the generation failed. It is never a spinner. | Retry the request. |
-| **Improving prompt…** on an image card | The picture is queued; Chat is turning your ask into a complete scene first. | Wait — the card becomes a skeleton, then the image. |
-| No mic in the composer, no **Listen** under an answer | Voice is not available on this deployment. | Nothing to configure — the capability is off, not broken. |
-| Origin check says it cannot run | The check is unavailable here. Cortex says so rather than guessing. | Ask again later; do not treat silence as a verdict. |
-| A reply cut short, then the thread reconnects | The connection dropped. Run state lives in the thread. | Do not resend; the reply that started continues. |
-| **Deep Research** is missing | Deep Research is a Chat feature. | You are in Code or Bot; switch to Chat. |
+| `Plan limit reached` / `You have used everything this plan allows in the current window.` | A quota window is spent | Wait for the reset shown as `Resets in {label}`, or choose **Upgrade for unlimited**. A `Continue with {model}` action may also be offered |
+| `You have used this plan limit` | The same thing, from the generic error card | `The limit resets on its own. Upgrading lifts it immediately.` See [`quota_exceeded`](/problems/quota_exceeded) |
+| `{left} of {limit} free messages left` above the composer | You are a guest and the allowance is counting down | Sign in before it runs out to keep going |
+| `Sign in to continue` in the composer banner | The guest allowance is used up | Sign in. The Free plan's windows start fresh on the account |
+| `Not included in your plan` | The plan does not include that capability | Compare plans under **Settings → Plan & billing**. See [`entitlement_required`](/problems/entitlement_required) |
+| `Too many requests` | Requests arrived faster than the limit allows | `This clears by itself.` Pause, then retry. See [`rate_limited`](/problems/rate_limited) |
+| `Too much running at once` | Too many runs in parallel on the account | `One finishing frees a slot.` See [`concurrency_limit_reached`](/problems/concurrency_limit_reached) |
+| `That is too large to send` | The attachment is over the limit | `Files can be at most 10 MB. Remove or shrink the attachment and try again.` See [`payload_too_large`](/problems/payload_too_large) |
+| `That file type is not supported` | The format is not accepted | `Attach a different format, or paste the contents into the message instead.` |
 
-## Code
+The two windows the product actually enforces are messages today and messages this month. A turn charges both, and whichever runs out first is the one that stops you. See [Plans and quotas](/getting-started/plans).
 
-| What you see | Meaning | Do this |
+## Getting an answer in Chat
+
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| **Reconnect** next to GitHub | The GitHub connection lapsed. | Choose **Reconnect** in Code Home or **Settings → Integrations**. |
-| Code says Cloud compute is unavailable | The deployment has no Cloud runtime right now. Code never runs your repository on the API instead. | Try again later, or use **This PC** on the desktop app or CLI. |
-| `/code/secrets` sends you home | There is no Secrets page. Environment for a guest belongs to that guest. | Set environment inside the session. |
-| A review shows **failed**, not approved | A Cortex Security review that could not run is stored as failed. | Read the check run; fix and push. |
+| A spinner on the send button | A turn is in flight | Wait, or press `Esc` to stop it |
+| A reply cut short, then the thread reconnects | The connection dropped. Run state lives in the thread | Do not resend. The reply that started continues |
+| An error square where an image should be | The fetch or the generation failed. It is never a spinner | Retry the request |
+| `Improving prompt…` on an image card | The picture is queued while Chat completes the scene | Wait. The card becomes a skeleton, then the image |
+| No mic in the composer and no **Listen** under an answer | Voice is not available on this deployment | Nothing to configure. The capability is off, not broken |
+| Origin check says it cannot run | The check is unavailable here | Ask again later. Silence is not a verdict |
+| **Deep Research** is missing | It is a Chat feature | You are in Code or Bot. Switch to Chat |
+| `This request was declined` | The request falls outside what Cortex will help with | `Rewording it may be enough.` Retrying the same words will not. See [`content_policy`](/problems/content_policy) |
+| `Support is available` | The conversation was paused so you could see support resources | Read the resources shown. See [`safety_intervention`](/problems/safety_intervention) |
 
-More: [Code troubleshooting](/code/troubleshooting).
+More in [Chat troubleshooting](/chat/troubleshooting).
 
-## Bot
+## Running a session in Cortex Code
 
-| What you see | Meaning | Do this |
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| **Connecting** on the Computer rail | The Cloud guest is starting. | Wait a moment. |
-| **Stream Unavailable** | The guest is running but its live desktop is not reachable. | Use **Open desktop** again, or **Sleep** and wake it. |
-| An **Allow / Deny / Always** widget | The bot parked a consequential step for you. Nothing runs until you choose. | Read the step, then decide. |
-| The setup form instead of a bot list | The account has no bots yet. That is a setup, not an empty list. | Create a bot. |
+| **Reconnect** next to GitHub | The GitHub connection lapsed | Reconnect from Code Home or **Settings → Integrations** |
+| Cloud compute is unavailable | The deployment has no Cloud runtime right now | Try again later, or use a local host from the desktop app or the Cortex CLI |
+| A Secrets URL sends you home | There is no Secrets page | Set environment inside the session |
+| A review shows `failed` rather than approved | A review that could not run is stored as failed | Read the check run, then fix and push |
 
-More: [Bot troubleshooting](/bot/troubleshooting).
+More in [Code troubleshooting](/code/troubleshooting) and [CLI troubleshooting](/cli/troubleshooting).
 
-## Service errors
+## Driving a bot's computer
 
-Every API failure is a problem document with a stable `code`, and the web app renders catalogue copy for it. Three codes may show a secondary `detail` line: `validation_failed`, `bad_request`, `invalid_state`. User-facing text names a product surface, never a vendor. Full list: [Problem catalog](/problems).
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| `Connecting` on the Computer rail | The computer is starting | Wait a moment |
+| `Stream Unavailable` | The computer is running but its live desktop is not reachable | Open the desktop again, or sleep and wake it |
+| An **Allow** / **Deny** / **Always** widget | The bot parked a consequential step. Nothing runs until you choose | Read the step, then decide |
+| `computer could not start` in your notifications | A bot's computer failed to wake | Open the bot and try the computer again |
+| The setup form instead of a bot list | The account has no bots yet. That is a setup, not an empty list | Create a bot |
 
-| Code | Retry? |
-| --- | --- |
-| [`service_unavailable`](/problems/service_unavailable) | Yes, after a pause |
-| [`upstream_failure`](/problems/upstream_failure), [`upstream_timeout`](/problems/upstream_timeout) | Yes |
-| [`no_capacity`](/problems/no_capacity) | Yes; higher plans get priority when the fleet is busy |
-| [`internal`](/problems/internal) | Yes; keep the `request_id` if you report it |
-| [`safety_intervention`](/problems/safety_intervention), [`content_policy`](/problems/content_policy) | No — change the request |
+More in [Bot troubleshooting](/bot/troubleshooting).
 
-## System-wide outages
+## When Cortex itself is unavailable
 
-If Chat, Code, Bot, or the API are all failing at once, check **[status.cortex.foundation](https://status.cortex.foundation)** before filing a bug. Fleet incidents and maintenance windows are posted there — see [System status](/status).
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| `Cortex is temporarily unavailable` | Something upstream is down and is being worked on | Retry after a pause. See [`service_unavailable`](/problems/service_unavailable) |
+| `No capacity right now` | Every backend that can serve the model is saturated | `A moment usually clears it.` See [`no_capacity`](/problems/no_capacity) |
+| `The assistant failed` | The request reached the assistant and came back an error | `Retrying often works.` See [`upstream_failure`](/problems/upstream_failure) |
+| `The assistant took too long` | The request was abandoned rather than left hanging | A shorter prompt or a faster model usually gets through. See [`upstream_timeout`](/problems/upstream_timeout) |
+| `Something broke on our side` | A Cortex fault, already recorded | Retry, and quote the reference id if you get in touch. See [`internal`](/problems/internal) |
+| `You are offline. Messages wait here until you are back.` | Nothing was sent | It resumes when the connection returns. The banner clears itself |
+| `Cortex is taking a short break` with `We'll be right back` | A maintenance window | The screen shows `Time remaining` and ends on `Coming back now`. Check the status page for the real window |
 
-## Reporting a problem
+<Note>
+If Chat, Code and Bot are all failing at once, check [status.cortex.foundation](https://status.cortex.foundation) before filing anything. Planned windows and incidents are posted there. See [System status](/reference/status).
+</Note>
 
-Keep the `request_id` from the error, the time, and the surface you were on. From the CLI, `cortex feedback bug "what happened" --include-logs` attaches diagnostics.
+## Reporting it
+
+Three codes may add a second detail line under the message: `validation_failed`, `bad_request` and `invalid_state`. Field-level messages are short and specific, such as `This is required.`, `This is longer than allowed.` and `This is not one of the accepted values.`
+
+When you report something, keep the reference id from the error, the time, and the surface you were on. Signed-in members file a bug from inside Cortex with **Report a bug**, next to **Settings** in the sidebar footer. Guests cannot: reporting needs an account. Screenshots must be PNG, JPEG or WebP, up to five, 4 MB each, and going over that answers `Each screenshot can be at most 4 MB.` or `Screenshots must be PNG, JPEG or WebP.` More than five reports, or more than fifteen screenshot uploads, in an hour is refused with `Too many requests`.
 
 ## Related
 
-- [Chat troubleshooting](/chat/troubleshooting) — turns, files, models, and connections.
-- [Code troubleshooting](/code/troubleshooting) — gates, Reconnect, and runtimes.
-- [Bot troubleshooting](/bot/troubleshooting) — computers, parked steps, and routines.
-- [CLI troubleshooting](/cli/troubleshooting) — the terminal.
-- [Problem catalog](/problems) — every code, its status, and whether retrying helps.
+- [Problem catalog](/problems)
+- [Report a bug](/getting-started/report-a-bug)
+- [Plans and quotas](/getting-started/plans)
+- [Accounts and sign-in](/getting-started/accounts)
+- [System status](/reference/status)
+- [Frequently asked questions](/getting-started/faq)

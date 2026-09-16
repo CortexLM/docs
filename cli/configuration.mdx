@@ -1,64 +1,71 @@
 ---
 title: "Configuration"
-description: "config.toml keys, profiles, precedence, the environment variables the CLI reads, where data lives on disk, and how to select the Cloud, This PC, or SSH host."
-keywords: ["config.toml", "settings", "environment variables", "profiles"]
+description: "How Cortex CLI reads config.toml, the keys you can set, named profiles, and which layer wins when two files disagree."
+icon: "gear"
 ---
 
-Cortex reads a **global** config file, an optional **project** config file, and any overrides you pass on the command line — in that order, later sources winning. Environment variables sit between the files and the flags.
+Cortex CLI keeps its settings in a TOML file. There is one for you, an optional one per repository, and a set of overrides you can pass on the command line. Between them they decide which model a session starts on, how much the agent may do without asking, how the terminal app looks, and how long a command may run before it is killed.
 
-## Where the files live
+This page covers where the files live, the order in which they are merged, the keys you can set in each section, and how named profiles let you keep several setups side by side. Permission and sandbox rules have their own page, and so do the environment variables that sit above the files in precedence.
+
+## Where the config file lives
 
 | Scope | Location |
 | --- | --- |
-| Global | `~/.cortex/config.toml` — or `CORTEX_CONFIG_DIR`, `CORTEX_HOME`, or `CORTEX_CONFIG` if set. TOML, JSON, and JSONC are accepted by extension. |
-| Project | The first of `.cortex/config.toml`, `.cortex/config.json`, `.cortex/config.jsonc`, `cortex.toml`, `cortex.json`, `cortex.jsonc`, walking up from the working directory to the project or git root |
-| Command line | `-c key=value` / `--config key=value`, repeatable. Values parse as TOML scalars. |
+| Yours, macOS and Linux | `~/.cortex/config.toml` |
+| Yours, Windows | `%USERPROFILE%\.cortex\config.toml` |
+| Project | `.cortex/config.toml` in the repository root |
 
-Commit the project file when the settings belong to the repository rather than to you.
+The Cortex home directory is resolved in this order: `CORTEX_CONFIG_DIR`, then `CORTEX_HOME`, then `~/.cortex`. `CORTEX_CONFIG` overrides the config file path outright, wherever the home directory ends up.
+
+Inside a project, Cortex looks for `.cortex/config.toml`, then `.cortex/config.json`, then `.cortex/config.jsonc`, then `cortex.toml`, `cortex.json` and `cortex.jsonc`. The first one it finds is the project config. Commit the project file when the settings belong to the repository rather than to you.
 
 ## Precedence
 
-From strongest to weakest:
+Five layers, weakest first. A later layer overrides a key set by an earlier one.
 
-1. `-c` / `--config` overrides and other command-line flags
-2. Environment variables
-3. Project config file
-4. Global config file
-5. Built-in defaults
+1. Built-in defaults
+2. Your own config, `~/.cortex/config.toml`
+3. The profile selected with `-p` / `--profile`, or by `profile = "<name>"`
+4. The project config, `.cortex/config.toml`
+5. The command line: `-c` / `--config KEY=VALUE`, repeatable, then the dedicated flags
+
+Environment variables sit between config files and command-line flags in precedence: a flag beats a variable, a variable beats a config file. See [Environment variables](/cli/environment-variables) for the full list.
+
+<Warning>
+A project `.cortex/config.toml` beats your own `~/.cortex/config.toml`. Cloning a repository can therefore change your model, your sandbox mode and your approval policy without you touching anything. Run `cortex config` in a new clone to see the values that are actually in effect.
+</Warning>
 
 ## Inspect and edit
 
 ```bash
-cortex config              # the resolved configuration
-cortex config --json
-cortex config --edit
-cortex config get <key>
-cortex config set <key> <value>
-cortex config unset <key>
-
-cortex debug config --env  # which environment variables influence the result
-cortex debug config --diff # what differs from the defaults
+cortex config                # the effective configuration
+cortex config get <KEY>
+cortex config set <KEY> <VALUE>
+cortex config unset <KEY>
+cortex config --json         # the same, machine-readable
+cortex config --edit         # edit it interactively
+cortex debug config          # what is in effect, and which files it came from
+cortex debug doctor          # check configuration, storage and required tools
 ```
 
-`/config` and `/reload-config` do the reading from inside the TUI.
-
-<Frame caption="/config: a read-only view of the effective configuration — model, effort, permissions, sandbox, TUI settings, and the configured MCP servers. Edit with your editor.">
-  <img src="/images/cli/runtime/120x40/config-tree.png" alt="Cortex CLI /config tree view of the effective configuration" />
-</Frame>
+From inside the terminal app, `/config` opens the same file and `/reload-config` re-reads configuration from disk.
 
 ## Keys
 
 ### Model
 
-| Key | Notes |
-| --- | --- |
-| `model` | Default model |
-| `model_reasoning_effort` | `low` · `medium` · `high` |
-| `model_reasoning_summary` | `none` · `brief` · `detailed` · `auto` |
-| `model_context_window` | Override the assumed context window |
-| `model_auto_compact_token_limit` | When to auto-compact the conversation |
-| `model_aliases` | Map your own short names to model ids |
-| `small_model` | Used for cheap background work such as titles and summaries |
+| Key | Type | Notes |
+| --- | --- | --- |
+| `model` | string | Default model |
+| `model_provider` | string | Provider id |
+| `model_context_window` | integer | Override the assumed context window |
+| `model_auto_compact_token_limit` | integer | When to auto-compact the conversation |
+| `model_reasoning_effort` | `low`, `medium`, `high` | Reasoning effort |
+| `model_reasoning_summary` | `none`, `brief`, `detailed`, `auto` | How much reasoning is summarised |
+| `model_aliases` | table | Map your own short names to model ids |
+| `small_model` | string | Model used for cheap background work such as titles and summaries |
+| `providers` | table | Custom provider definitions |
 
 ### Permissions and sandboxing
 
@@ -66,74 +73,83 @@ cortex debug config --diff # what differs from the defaults
 | --- | --- | --- |
 | `approval_policy` | `untrusted`, `on-failure`, `on-request`, `never` | When to ask before running a tool. `on-request` is the default. |
 | `sandbox_mode` | `read-only`, `workspace-write`, `danger-full-access` | What the sandbox permits. `workspace-write` is the default. |
-| `trusted_directories` | array of paths | Directories that do not prompt on entry |
+| `trusted_directories` | array of paths | Read from both layers and merged, but nothing in this build consults the merged list. Do not rely on it to skip a prompt. |
 
-```toml
-sandbox_mode = "workspace-write"
-
-[sandbox_workspace_write]
-writable_roots = ["/tmp/scratch"]
-network_access = false
-```
-
-The `permission` table sets per-capability policy — see [Modes and permissions](/cli/modes-and-permissions#the-permission-table).
+`[sandbox_workspace_write]` refines `workspace-write` with `writable_roots`, `network_access`, `exclude_tmpdir_env_var` and `exclude_slash_tmp`. The `[permission]` table sets per-capability and per-command policy. Both are documented on [Permission policy](/cli/policy).
 
 ### Behaviour
 
-| Key | Meaning |
-| --- | --- |
-| `instructions` | Extra instructions prepended to every session |
-| `current_agent` | The agent used by default |
-| `hide_agent_reasoning` / `show_raw_agent_reasoning` | Reasoning display |
-| `check_for_update_on_startup` | Look for a new release on launch |
-| `disable_paste_burst` | Turn off paste-burst detection in the composer |
+| Key | Type | Meaning |
+| --- | --- | --- |
+| `instructions` | string | Extra instructions prepended to every session |
+| `current_agent` | string | Agent used by default |
+| `hide_agent_reasoning` | bool | Hide reasoning output |
+| `show_raw_agent_reasoning` | bool | Show reasoning verbatim |
+| `check_for_update_on_startup` | bool | Look for a new release on launch |
+| `disable_paste_burst` | bool | Turn off paste-burst detection in the composer |
 
-### TUI
+### History
+
+```toml
+[history]
+persistence = "save-all"   # or "none"
+max_bytes = 10000000
+```
+
+### Terminal app
 
 ```toml
 [tui]
 animations = true
 notifications = true
-alternate_screen = true   # false stays inline in the host terminal
+# Enter the alternate screen buffer. Set false to stay inline in the host
+# terminal. Equivalent flag: --no-alternate-screen
+alternate_screen = true
 
 [tui.theme]
-name = "dark"             # dark, light, ocean_dark, monokai
+name = "dark"              # dark, light, ocean_dark, monokai
 ```
 
-The same options are interactive under `/settings` (or **F2**) — Appearance, Mouse, Behavior, AI, Git, Cloud, Privacy — with a search box at the top.
+The theme ids stay lowercase in config even though the picker shows friendlier names. See [Themes](/cli/themes).
 
-<Frame caption="/settings → Appearance: compact mode, screen mode, timestamps, thinking blocks, grouped tool calls, line numbers, word wrap, syntax highlight, animations, theme.">
-  <img src="/images/cli/runtime/120x40/settings-appearance.png" alt="Cortex CLI settings modal open on the Appearance section" />
-</Frame>
-
-### History and execution
+### Execution
 
 ```toml
-[history]
-persistence = "save-all"  # or "none"
-max_bytes = 10000000
-
 [execution]
 max_agent_threads = 4
 max_tool_threads = 8
 command_timeout_seconds = 120
 http_timeout_seconds = 60
+max_retries = 3
+retry_delay_ms = 1000
 streaming = true
+max_file_size_bytes = 10485760
+max_batch_files = 100
+verbose = false
 ```
 
-Each `execution` key has a flag: `--max-agent-threads`, `--max-tool-threads`, `--command-timeout`, `--http-timeout`, `--no-streaming`.
+Each of these has a flag: `--max-agent-threads`, `--max-tool-threads`, `--command-timeout`, `--http-timeout`, `--no-streaming`.
 
-### Extensions
+### Plugins
 
-| Key | Points at |
-| --- | --- |
-| `mcp_servers` | [MCP servers](/cli/extend#mcp-servers) |
-| `plugins`, `plugin_dirs`, `plugin_settings` | [Plugins](/cli/extend#plugins) |
-| `commands` | Custom slash commands |
+Plugins are configured in the same file:
 
-### Profiles
+```toml
+[[plugins]]
+name = "my-plugin"
+path = "~/.cortex/plugins/my-plugin"
+enabled = true
+priority = 0
+granted_permissions = ["read_files", "network"]
 
-A profile is a named bundle you select with `-p` / `--profile`:
+[plugins.config]
+api_key = "your-api-key"
+max_items = 20
+```
+
+## Profiles
+
+A profile is a named block that overrides top-level keys. Anything you can set at the top level you can set in a profile.
 
 ```toml
 [profiles.review]
@@ -142,99 +158,17 @@ approval_policy = "never"
 sandbox_mode = "read-only"
 ```
 
-```bash
-cortex --profile review "review the last three commits"
-```
+Select it for one invocation with `-p review`, or set `profile = "review"` at the top level to make it your default. A profile sits below the project config, so a repository can still override it.
 
-## Environment variables
-
-Values are never documented here — keep secrets in your keyring or CI secret store.
-
-### Locations
-
-| Variable | Effect |
-| --- | --- |
-| `CORTEX_HOME` | Root for config and data. Default `~/.cortex`. |
-| `CORTEX_CONFIG_DIR` | Config directory, taking priority over `CORTEX_HOME` |
-| `CORTEX_CONFIG` | Path to a specific config file |
-| `CORTEX_DATA_DIR` · `CORTEX_CACHE_DIR` | Data and cache directories |
-
-### Account
-
-| Variable | Effect |
-| --- | --- |
-| `CORTEX_API_KEY` | API key for headless and CI use |
-| `CORTEX_AUTH_TOKEN` | Session or bearer token |
-| `CORTEX_API_URL` | API base URL. Defaults to `https://api.cortex.foundation`. |
-
-Interactive use should prefer `cortex login`. See [Sign in](/cli/sign-in).
-
-### Host for Code
-
-The TUI and `cortex exec` create a **Cloud** Code session unless you select another host.
-
-| Variable | Effect |
-| --- | --- |
-| `CORTEX_COMPUTER` | Unset or `cloud` uses the Cloud. `this_pc` (aliases `this-pc`, `local`, `paired`, `connected`) or `ssh` selects those hosts. |
-| `CORTEX_SSH_HOST` (alias `CORTEX_SSH_TARGET`) | SSH target; setting it selects SSH |
-
-This PC and SSH require an **already connected** Code session. Cortex will not create one on the fly and will not substitute the Cloud silently. See [Code on desktop](/code/desktop).
-
-### Model, logging, diagnostics
-
-| Variable | Effect |
-| --- | --- |
-| `CORTEX_MODEL` · `CORTEX_DEFAULT_MODEL` | Default model and fallback |
-| `CORTEX_MAX_TOKENS` · `CORTEX_TEMPERATURE` | Response cap and sampling default |
-| `CORTEX_LOG_LEVEL` | `error`, `warn`, `info`, `debug`, `trace` |
-| `RUST_LOG` · `RUST_BACKTRACE` | Standard Rust logging controls |
-| `NO_COLOR` | Disable colour; `--color never` sets it for child processes |
-| `CORTEX_DIAGNOSTICS_DIR` | Where `--debug` writes bounded, content-free diagnostics |
-
-### Set for you, not by you
-
-Hook scripts and plugins can read `CORTEX_FILE`, `CORTEX_SESSION_ID`, `CORTEX_MESSAGE_ID`, and `CORTEX_PLUGIN_ARGS`. Cortex populates them for the processes it spawns.
-
-### Standard variables Cortex respects
-
-`EDITOR` / `VISUAL` for `cortex agent edit` and similar; `SHELL` for completions; `HTTPS_PROXY` / `HTTP_PROXY` for `cortex scrape`; `PATH`, `TERM`, `LANG`, `LC_ALL`, `USER` in `cortex debug system`.
-
-## Data locations
-
-```bash
-cortex debug paths
-```
-
-```text
-~/.cortex/
-├── config.toml          Global configuration
-├── sessions/            Session transcripts (and goal.json beside a goal)
-├── code-sessions.json   Workspace → Code session id
-├── agents/              Personal agents
-├── skills/              Personal skills
-├── plugins/             Installed plugins
-├── mcp/                 MCP server state
-├── snapshots/           Workspace snapshots
-├── cache/               Model, response, and update caches; logs/ inside
-├── feedback/            Queued feedback submissions
-├── aliases.toml         Command aliases
-└── session_locks.json   Sessions protected from cleanup
-```
-
-Inside a project: `AGENTS.md` (from `cortex init`), `.cortex/config.toml`, `.cortex/agents/`, `.cortex/skills/`, `.cortex/plugins/`, `.cortex/commands/`. `.agents/` and `.agent/` are also scanned. Project files take priority over personal ones with the same name.
-
-Some subsystems use the platform application directory — `~/.local/share/Cortex/` on Linux, `~/Library/Application Support/Cortex/` on macOS, `%APPDATA%\Cortex\` on Windows — and the platform cache directory. A legacy `~/.config/cortex` is still read so older installs keep working.
-
-**Credentials** live in the OS keyring, not in any of these directories. See [Sign in](/cli/sign-in).
-
-## Shell completions
-
-```bash
-cortex completion bash --install    # also zsh, fish, powershell, elvish
-```
+<Note>
+Nothing in the CLI documentation states whether Cortex prompts you before honouring a repository's `.cortex/config.toml`. Treat an unfamiliar repository's config as something to read before you run a session in it.
+</Note>
 
 ## Related
 
+- [Environment variables](/cli/environment-variables)
+- [Data locations](/cli/data-locations)
+- [Permission policy](/cli/policy)
 - [Modes and permissions](/cli/modes-and-permissions)
-- [Extend](/cli/extend) — `mcp_servers`, agents, skills, hooks, plugins.
-- [Troubleshooting](/cli/troubleshooting)
+- [Themes](/cli/themes)
+- [CLI troubleshooting](/cli/troubleshooting)

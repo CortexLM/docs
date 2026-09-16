@@ -1,0 +1,153 @@
+---
+title: "Tools the agent uses"
+description: "The tools a CLI agent can call: reading, searching, editing, shell, language server, web, delegation, and how each call passes the sandbox and approval gates"
+icon: "screwdriver-wrench"
+---
+
+Everything the agent does beyond talking is a **tool call**: reading a file, searching the repository, editing, running a command, asking a language server, fetching a page, delegating to a subagent. Each call shows up in the timeline as its own tile with the tool name, what it acted on and a result summary, so a session is auditable after the fact by scrolling back through it.
+
+This page is the inventory: what each tool does, what it takes, and the limits that apply. It also covers the two gates every call passes before it can change anything, how the available set narrows by context, and the tools that arrive from MCP servers and plugins. Tool names are **case-sensitive**: they are what you pass to `--enabled-tools` and `--disabled-tools`, and what you list in an agent's `tools` field. To see what a given run actually has, use `cortex exec --list-tools`.
+
+<Note>
+These names belong to the CLI. Other Cortex products have their own tool sets, and a name here does not necessarily exist, or mean the same thing, on another surface.
+</Note>
+
+## Two gates before anything changes
+
+When the agent calls a tool that could change your machine, two checks apply, in this order:
+
+1. The **sandbox** decides whether the operation is possible at all. Its modes run from read-only, through a workspace-write default, to full access.
+2. The **approval policy** decides whether you are asked first. When it asks, a numbered prompt appears inline in the timeline and the turn waits for you.
+
+A `permission` table in your configuration overrides either one per capability, with `allow`, `ask` or `deny`, and it can be narrowed to a command pattern, a skill or a named MCP server. `Execute` is the tool these policies mainly exist for, because it is the one that runs commands in your shell.
+
+Where the tools run is a separate question from what they are allowed to do. Cloud is the default; This PC and SSH are opt-in and fail closed rather than silently falling back. See [Cloud, This PC, and SSH](/cli/hosts) and [Modes and permissions](/cli/modes-and-permissions).
+
+## Reading and searching
+
+| Tool | Parameters | What it does |
+| --- | --- | --- |
+| `Read` | `file_path`, `offset`, `limit` | Read a file. `limit` defaults to 2400 lines |
+| `LS` | `directory_path`, `ignorePatterns` | List a directory |
+| `Grep` | `pattern`, `path`, `case_insensitive`, `line_numbers`, `context`, `context_before`, `context_after`, `glob_pattern`, `output_mode`, `head_limit` | Regex content search. `output_mode` is `file_paths` or `content` |
+| `Glob` | `patterns`, `folder`, `exclude_patterns` | Find files by glob pattern |
+| `SearchFiles` | `pattern`, `path`, `content_pattern` | Fuzzy file search |
+
+## Writing
+
+| Tool | Parameters | What it does |
+| --- | --- | --- |
+| `Create` | `file_path`, `content` | Create a file, or overwrite one |
+| `Edit` | `file_path`, `old_str`, `new_str`, `change_all` | Replace text in a file |
+| `MultiEdit` | `edits` | Apply several edits atomically |
+| `ApplyPatch` | `patch`, `dry_run` | Apply a unified diff |
+
+An edit tile in the timeline carries the line counts, in the form `● Edit   … · +12 −3`, and expands to the diff so you can read the change rather than take it on trust.
+
+## Running commands
+
+| Tool | Parameters | What it does |
+| --- | --- | --- |
+| `Execute` | `command`, `workdir`, `timeout` | Run a shell command. `command` is an argument array, not a string for a shell to parse |
+
+The default tool timeout is 900 seconds, and the configured command timeout defaults to 120 seconds. Both are settable; see [Configuration](/cli/configuration).
+
+## The web
+
+| Tool | Parameters | What it does |
+| --- | --- | --- |
+| `WebSearch` | `query`, `num_results`, `category`, `include_domains`, `exclude_domains`, `use_neural`, `livecrawl`, `type`, `context_max_characters` | Search the web |
+| `WebFetch` | `url`, `format`, `timeout` | Fetch a page. `format` is `text`, `markdown` or `html` |
+| `FetchUrl` | `url`, `format`, `timeout` | Fetch a URL |
+
+Web search is enabled with `--search`. Search and deep research belong mainly to the chat surface, so do not assume they are in a CLI run's tool list; `cortex exec --list-tools` is the answer for a given run.
+
+## Language intelligence
+
+| Tool | Parameters | What it does |
+| --- | --- | --- |
+| `LspDiagnostics` | `path`, `severity` | Diagnostics from the language server. `severity` is `error`, `warning` or `all` |
+| `LspHover` | `file`, `line`, `column` | Hover information. Positions are 1-based |
+| `LspSymbols` | `query`, `path` | Workspace symbol search |
+
+Diagnostics also arrive unprompted after an edit, as a tile such as `● Diagnostics  src/…/composer.rs · 2` with one line per problem.
+
+## Planning, delegation and questions
+
+| Tool | Parameters | What it does |
+| --- | --- | --- |
+| `Plan` | see [Plan and Spec modes](/cli/plan-mode) | Submit a structured plan for your approval |
+| `UpdateGoal` | see [Goals](/cli/goal) | Record evidence-based progress against a goal |
+| `ExitSpecMode` | `reason` | Leave specification mode, which unlocks the mutating tools |
+| `Task` | `mode` (`explore`, `plan`, `worker`), `prompt`, `description`, `context`, `await_result` | Delegate to a subagent |
+| `ListSubagents` | `include_custom` | List the available subagent types |
+| `Questions` | `title`, `questions` | Ask you a structured question. Question types are `single`, `multiple`, `text` and `number` |
+
+## Task tracking
+
+| Tool | Parameters | What it does |
+| --- | --- | --- |
+| `TodoWrite` | `todos` | Update the session todo list. Each item has an `id`, `content`, a `status` of `pending`, `in_progress` or `completed`, and a `priority` of `high`, `medium` or `low` |
+| `TodoRead` | none | Read the current todo list |
+
+The list is visible in the timeline under delegated work, which is the quickest way to see what a long turn thinks it still has to do.
+
+## Skills and batching
+
+| Tool | Parameters | What it does |
+| --- | --- | --- |
+| `UseSkill` | `skill` | Load a skill into the context |
+| `Batch` | `calls`, `timeout_secs`, `tool_timeout_secs` | Run between 1 and 10 tool calls in parallel. A `Batch` cannot nest another `Batch` or call the agent tools |
+
+Writing a skill of your own is on [Skills in the CLI](/cli/skills).
+
+## Tools from MCP servers and plugins
+
+Extensions add tools, and their names say where they came from:
+
+| Source | Naming |
+| --- | --- |
+| An MCP server | `mcp__<server>__<tool>` |
+| A plugin | `plugin_<slug>` |
+
+An extension tool is not a privileged tool. It passes the same two gates as a built-in one, and the `permission` table can require approval for a named server or deny it outright.
+
+<Warning>
+Nothing here is signed. Where Cortex verifies a download it compares a SHA-256 checksum taken from the same distribution origin as the file, which detects corruption, not independent publisher identity. Checksums are not signatures. Treat an extension as code you are choosing to run, and read what it does before enabling it.
+</Warning>
+
+See [MCP servers in the CLI](/cli/mcp) and [CLI plugins](/cli/plugins).
+
+## What is available when
+
+The set is not fixed. It narrows with the context:
+
+- **Plan and Ask** withhold the mutating tools, and read-only agents are restricted to the reading tools. That block is enforced by the harness, not by asking the model to behave.
+- **Specification mode** keeps the mutating tools locked until the plan is accepted and the agent calls `ExitSpecMode`.
+- **A child task** cannot delegate further or put a question to you directly. Delegated work reports back through the parent that started it.
+- **A headless run** can be narrowed with `--enabled-tools` and `--disabled-tools`.
+- **The `permission` table** can require approval for, or deny, individual capabilities for everyone in a project.
+
+## Hooks can stop a tool call
+
+Hooks are declared by a plugin, in that plugin's manifest, and run around a plugin invocation. They do not fire around the tool calls an interactive session makes, so a hook is not the way to stop one. To forbid a tool call outright, use the `permission` deny list described above.
+
+<Warning>
+A hook is never consent. A hook firing does not stand in for an approval, and it cannot grant one: the approval prompt still happens. A plugin hook may refuse an action, but it can never permit one.
+</Warning>
+
+The events, the patterns that narrow them and which of them actually fire are on [Hooks](/cli/hooks).
+
+## There is no built-in browser or desktop automation
+
+Cortex ships no built-in browser tool and no desktop-automation tool. Browser work is done by connecting an MCP server that provides those tools, and they then pass the same authority boundary as any other call: the sandbox, the approval prompt and the `permission` deny list. `/browser` reports whether such a server is connected and names it; it never claims a capability the CLI does not have.
+
+The `Computer` concept is a different thing entirely. It selects *where* tools run, Cloud or This PC or SSH, and has nothing to do with controlling a browser or a desktop. See [Cloud, This PC, and SSH](/cli/hosts).
+
+## Related
+
+- [Modes and permissions](/cli/modes-and-permissions): the sandbox, the approval policy and the permission table
+- [The TUI](/cli/tui): how tool tiles are drawn and how to expand one
+- [Agents and subagents](/cli/agents): declaring a `tools` list for an agent of your own
+- [Hooks](/cli/hooks): what a plugin hook may refuse, and which events fire
+- [Headless and one-shot runs](/cli/headless): narrowing the tool set for an unattended run

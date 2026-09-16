@@ -1,60 +1,112 @@
 ---
 title: "Routines"
-description: "Scheduled work on a bot you own. Routines fire in your local weekday hours, pause and resume from the Computer rail."
-keywords: ["schedule", "recurring", "cron", "automation", "timers"]
+description: "Recurring work on one bot: create a routine, the local weekday schedule, pause and resume, the run record, and sharing a schedule"
+icon: "calendar-days"
 ---
 
-A routine is work a bot repeats on a schedule: every weekday morning, pull the report; on Fridays, check the release page; every hour during business hours, watch the queue. Routines belong to a bot you own and fire in **your** local weekday hours.
+A routine is work a bot repeats on a schedule: every weekday morning, pull the report; during business hours, watch the queue; on Friday, check the release page. Routines belong to a bot you own, and the panel describes them as `Recurring tasks this bot runs in your local weekday hours.`
 
-## Set one up
+The important thing about a routine is that it is not a canned action. Each run is a complete bot turn, with the bot's full set of tools, its memory, its skills and its computer. This page covers creating one, how the schedule is interpreted, what a run actually does, pausing and deleting, seeing every bot's routines together, and sharing a schedule with someone else.
+
+## Create a routine
+
+Open the bot and go to its **Routines** panel. An empty panel reads `No routines yet.`
 
 <Steps>
-  <Step title="Sign in and open a bot you own">
-    Guests cannot create routines; a routine has to belong to an account that can come back and stop it.
+  <Step title="Choose Create routine">
+    The form is short on purpose. While the list loads you see `Loading routines…`.
   </Step>
-  <Step title="Add a routine">
-    Describe the repeated work and when it should run. The bot can also create one for you from the conversation — *do this every weekday at nine* — through its `routine` tool.
+  <Step title="Give it a Name">
+    This is the label you will recognise in the list and on the week grid.
   </Step>
-  <Step title="Choose how it reports back">
-    Ask for a `notify` when something changes, or a short message each run.
+  <Step title="Answer What should it do?">
+    Write plain intent, the way you would write a message to the bot. This text becomes the instruction the run starts from, so it should stand on its own without the context of a conversation you had last week.
   </Step>
-  <Step title="Pause and resume from the Computer rail">
-    Routines are listed on the rail with their state.
+  <Step title="Set From (hour) and Until (hour)">
+    Whole hours from 0 to 23. Anything else is refused with `Weekday hours must be whole hours from 0 to 23.`
+  </Step>
+  <Step title="Save routine">
+    **Cancel** backs out. If the routine cannot be created you get `The routine could not be created.` and nothing is scheduled.
   </Step>
 </Steps>
 
-## Timing
-
-| Rule | Detail |
-| --- | --- |
-| Clock | The **owner's local** clock |
-| Days | Weekdays |
-| Not | UTC on the guest, and not a Chat reminder |
-
-A run wakes the bot's computer if it is asleep, does the work, and reports through the user-visible tools. Consequential steps inside a routine still park behind [approvals](/bot/approvals) unless you chose **Always** for that kind of step earlier.
-
-## Routines follow your account
-
-Your chats, projects, and **Bot routines** follow a signed-in account across devices — the web app and the [Bot desktop app](/bot/desktop) show the same routines.
+The bot can also create a routine for itself. Asking it in the conversation to do something every weekday morning is enough: scheduling is one of its own tools, and it passes your intent rather than a schedule written in code. It is one of the tools that never stops to ask for approval, so it can set one up mid-turn.
 
 ## When a routine runs
 
-A routine is not a turn you started, so it has to be able to run without you watching. Two things follow from that:
-
-- **The computer wakes first.** A routine on a bot whose guest is asleep resumes the guest before the model is prompted, the same way a turn does. The bot starts with its shell and desktop available. See [Computer](/bot/computer).
-- **Approvals still apply.** A consequential step inside a routine parks behind [Allow / Deny / Always](/bot/approvals) unless you already chose **Always** for that kind of step. A routine does not silently gain permission because you are not there to watch it.
-
-A routine that hits the 15-minute turn deadline ends there; the work it already did stays. Long jobs belong in a background `task` inside the routine. See [How Bot works](/bot/how-it-works).
-
-## Routines are not…
-
-| Object | What it is |
+| Rule | Detail |
 | --- | --- |
-| [Plans](/chat/plans) | A task list in Chat |
-| [Skills](/bot/skills) | Instructions on *how* to do a job, not *when* |
-| [CLI `/goal`](/cli/goal) | A long-horizon objective for the terminal coding agent |
+| Clock | Your local time, not a shared server clock. Your time zone is sent with the schedule. |
+| Days | Weekdays, by default |
+| Default | `Runs on weekdays at 9:00 in your local time, unless the prompt says otherwise.` |
+| Hours | The **From (hour)** and **Until (hour)** window, whole hours 0 to 23 |
+| Checked | Cortex sweeps for due routines about once a minute |
+
+A routine that runs on a **set date** rather than on weekdays is handled separately: it is listed under **Scheduled by date** rather than drawn on the weekday grid, because `These run on a set date, not a weekday, so they are not on the grid above.`
+
+A routine can also be triggered by an event instead of by the clock. Cortex supports event routines driven by Slack and GitHub activity, so a run can start when something happens rather than at a fixed hour.
+
+## What a run actually does
+
+A run is a full turn, started by the schedule rather than by you, and Cortex marks it as such so you can tell a scheduled run from something you asked for. Four things follow from that.
+
+- **The bot has everything.** Its memory, its enabled skills, its connected apps and its computer. If the computer is asleep, the run brings it back before the work starts. See [Computer](/bot/computer).
+- **Approvals still apply.** A consequential step inside a run parks behind **Allow**, **Deny** or **Always**, exactly as it would in a conversation. A routine does not quietly gain permission because you were not watching. If a run parks while you are away it waits for you, and the bot's row in the sidebar shows the pending marker. See [Approvals and tool policy](/bot/approvals).
+- **The turn rules are the same.** There is no round limit, but the fifteen-minute turn deadline holds. A run that hits the deadline ends there and the work it already did stays. Long jobs belong in a background task inside the run: see [Tasks and subagents](/bot/tasks).
+- **You hear about it if you asked to.** Cortex tells you when a run finishes, when it needs a decision, and when an automation ran, and a bot's **Notify me** setting decides whether that reaches you. See [Notifications](/getting-started/notifications).
+
+Each routine keeps a record of its runs, so you can check whether a schedule has actually been firing rather than guessing from the conversation.
+
+## Pause, resume and delete
+
+| Action | What it does |
+| --- | --- |
+| **Pause** | Stops the schedule firing. The routine stays in the list, marked `paused`. |
+| **Resume** | Puts it back on the schedule, unchanged. |
+| **Delete** | Removes the routine. |
+| **Share** | Offers the schedule to someone else, covered below. |
+
+If a change does not stick you get `That change could not be saved.`, and a failed removal reads `The routine could not be deleted.` In both cases the routine is left as it was.
+
+Your routines follow the account rather than the device, so the web app and the [Bot desktop app](/bot/desktop) show the same list.
+
+## See every routine at once
+
+The **Routines** action at the top of the Bot sidebar opens an account-wide week grid: `This week's routines in your local timezone. Pause, resume, or add one. The Computer rail still lists the open bot's routines.`
+
+- **Previous week**, **This week** and **Next week** move the grid.
+- **New** creates a routine from here. The form asks for the **Bot**, a **Name** and an **Instruction**, then **Create**.
+- **Pause** and **Resume** work on the grid as they do in the panel. A failure reads `The routine could not be updated.`
+- Date-bound routines are listed below the grid under **Scheduled by date**.
+- With nothing scheduled you get `No routines this week` and `Create a routine for a bot you own. Sharing a schedule is a different surface.`
+
+## Share a schedule
+
+A routine can be handed to someone else with **Share**, which is offered as **Share this schedule**. The recipient sees **Shared schedule** and chooses **Add to my bot**, which puts a copy of the schedule on a bot of theirs.
+
+<Note>
+`Copied schedules start paused.` A copy never begins running on its own, so the recipient chooses **Resume** when they are ready. Sharing a schedule is a separate surface from sharing a bot: see [Share a bot](/bot/sharing).
+</Note>
+
+## Routines, tasks and scheduled prompts
+
+Three different things, easily confused, each on its own surface.
+
+| | Routine | Task | Chat scheduled task |
+| --- | --- | --- | --- |
+| What it is | Recurring work on one bot | A nested subagent inside one turn | A prompt re-run in a chat you already have |
+| Lives on | The bot's **Routines** panel, and the account week grid | Inside a turn, with no page of its own | The Cortex Chat scheduled tasks page |
+| Each run is | A full bot turn | A child loop inside the parent's turn | A Chat turn |
+| Created by | You, or the bot | Only the bot | You |
+| Schedule | A local weekday window, a set date, or an event | None, it is immediate | A cadence you pick |
+| Can be paused | Yes | No, only cancelled | Yes |
+| Can be shared | Yes | No | Not from Chat, `Sharing a schedule is a different surface.` |
 
 ## Related
 
-- [Computer](/bot/computer) — where routines run.
-- [Tools](/bot/tools) — `routine`, `notify`, `send_to_user`.
+- [Tasks and subagents](/bot/tasks) - the delegation that happens inside a single run.
+- [Bot skills](/bot/skills) - the recipe a scheduled run can follow.
+- [Approvals and tool policy](/bot/approvals) - why an unattended run can still stop and wait for you.
+- [Computer](/bot/computer) - the desktop a run wakes and works on.
+- [How Bot works](/bot/how-it-works) - the turn, the deadline and the cue that marks a scheduled run.
+- [Chat scheduled tasks](/chat/scheduled-tasks) - the Chat equivalent, and why it is not the same thing.

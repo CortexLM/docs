@@ -1,0 +1,127 @@
+---
+title: "Skills in the CLI"
+sidebarTitle: "Skills"
+description: "Teach the CLI a procedure once: what a skill file contains, where the CLI looks for it, how the agent loads it, and how to gate one"
+icon: "graduation-cap"
+---
+
+A skill is a bundle of instructions the agent can load on demand. Where an agent defines *who* is working, a skill defines *how* a particular job is done: your deployment checklist, your migration procedure, the way your team writes commit messages. Writing one is how you stop repeating the same briefing at the start of every session.
+
+Skills are loaded through the `UseSkill` tool, so the agent pulls one in when it decides the task calls for it, rather than carrying every procedure in its context all the time. This page covers the skills the CLI ships with, how to write your own, the order the CLI searches for them, the commands for listing and invoking one, and how to require approval before a skill runs.
+
+## The skills that ship with the CLI
+
+| Skill | Covers |
+| --- | --- |
+| `git` | Git operations |
+| `code-quality` | Quality and style checks |
+| `file-operations` | Working with files safely |
+| `debugging` | Systematic debugging |
+| `security` | Security review |
+| `planning` | Planning work |
+
+## Write a skill
+
+A skill is a directory containing `SKILL.md`: YAML frontmatter, then the instructions as markdown.
+
+```markdown
+---
+name: release-checklist
+description: Use when cutting a release. Runs the pre-release checks in order and stops at the first failure.
+args:
+  - name: version
+    description: The version being released
+    required: true
+  - name: channel
+    description: Release channel
+    default: stable
+tools:
+  - Read
+  - Grep
+  - Execute
+---
+
+1. Confirm the working tree is clean.
+2. Run the test suite and stop at the first failure.
+3. Check that the changelog has an entry for the version being released.
+4. Tag the release on the requested channel.
+```
+
+The frontmatter fields:
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `name` | string | Lowercase letters, digits and hyphens, up to 64 characters |
+| `description` | string | Up to 1024 characters. This is what the agent matches against |
+| `args` | list | Each entry has `name`, `description`, and optionally `required` and `default` |
+| `tools` | list | Restrict the agent to these tools while the skill is active |
+| `version`, `author`, `tags` | | Metadata |
+
+`description` is the field that decides whether a skill ever gets used. Write it as the situation it applies to, not as a title. The tool names in `tools` are the case-sensitive ones from [Tools the agent uses](/cli/tools); an explicit list is exact, so a skill that only reads and greps cannot edit a file while it is active.
+
+<Note>
+Nothing verifies who wrote a skill, and a skill shapes what the agent does with your repository. Read one before you drop it into a project. The CLI checks a SHA-256 checksum for its own release downloads, and even there a checksum detects corruption rather than independent publisher identity: checksums are not signatures.
+</Note>
+
+## Where the CLI looks
+
+Skills are searched in this order, so a project can override a personal skill of the same name:
+
+1. Built-in skills
+2. `./SKILL.md` in the working directory
+3. `<project>/.agents/<name>/SKILL.md`
+4. `<project>/.agent/<name>/SKILL.md`
+5. `<project>/.cortex/skills/<name>/SKILL.md`
+6. `~/.cortex/skills/<name>/SKILL.md`
+
+A `<dir>/<name>.md` file is also accepted, and subdirectories are scanned for `SKILL.md`. When the same name exists at more than one level, project files take priority.
+
+The picker labels each skill with the level it came from, and there are only two words for it: **project** and **user**. A skill you want a teammate to have should be committed to the repository, so it resolves as a project skill on their machine too.
+
+## Use a skill
+
+The agent invokes skills itself through the `UseSkill` tool; the slash commands are for when you want to force the issue.
+
+| Command | Effect |
+| --- | --- |
+| `/skills` | List the available skills |
+| `/skill <name> [args...]` | Invoke one directly |
+| `/skill-reload` | Re-read skills from disk after editing one |
+
+`/skills` opens a filter-as-you-type panel. It prompts with `Type to search skills`, and each row is the skill name, its one-line description, and its level:
+
+```
+> release-notes     Draft release notes from the git log · project
+  pdf-report        Render a PDF from a markdown report · user
+  db-migrate        Write and verify a schema migration · project
+```
+
+Those three are shapes, not skills you will find on a fresh install. The footer of that panel is:
+
+```
+ Enter:run  |  r:reload  |  Esc:close
+```
+
+So `r` picks up a `SKILL.md` you have just edited without restarting the session, which is the loop you want while you are writing one.
+
+From a shell, `cortex debug skill <name>` shows how a skill resolves, which is the quickest way to find out why the wrong copy of a skill is winning.
+
+## Require approval before a skill runs
+
+Skills go through the permission table like any other capability:
+
+```toml
+[permission.skill]
+"release-checklist" = "ask"
+"*" = "allow"
+```
+
+`ask` prompts you before that skill is loaded, which is worth setting on anything that touches a release or a migration. See [Permission policy](/cli/policy) for where that table lives and how a project file overrides your own.
+
+## Related
+
+- [Agents and subagents](/cli/agents)
+- [Tools the agent uses](/cli/tools)
+- [Permission policy](/cli/policy)
+- [Slash commands](/cli/slash-commands)
+- [CLI plugins](/cli/plugins)

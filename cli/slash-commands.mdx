@@ -1,107 +1,45 @@
 ---
 title: "Slash commands"
-description: "Everything you can type after / in the Cortex CLI composer — model, mode, permissions, plan, goal, sessions, files, MCP, diagnostics — and how to add your own."
-keywords: ["commands", "/help", "/model", "/goal", "palette"]
+description: "Every built-in command you can type after / in the Cortex CLI composer, grouped by purpose, plus aliases and your own project commands"
+icon: "bolt"
 ---
 
-Type `/` in the composer to open the command list. It shows the most-used commands first and filters as you type; the trailer *N more — keep typing to filter* means there is more below. A line beginning with `/` that is not a known command is sent to the agent as an ordinary message.
+Type `/` in the composer and the command list opens, filtering as you type. Slash commands are how you reach everything the terminal app does that is not a message to the agent: sessions, model and policy, files, MCP servers, diagnostics, your account. A line beginning with `/` that is **not** a known command is not an error; it is sent to the agent as an ordinary message.
 
-<Frame caption="The slash palette after typing /: model, mode, permissions, plan, goal, effort, mcp, sandbox — and “13 more — keep typing to filter”.">
-  <img src="/images/cli/runtime/120x40/slash-palette.png" alt="Cortex CLI slash command palette showing /model, /mode, /permissions, /plan, /goal, /effort, /mcp, /sandbox" />
-</Frame>
+This page lists the built-in commands, grouped the way the in-app list groups them, with their aliases and their arguments. Most of them are also reachable another way, and several are usually reached by their alias rather than their full name: `/tasks` as `bg`, `/models` as `m`, `/shortcuts` as `keys`. At the end are the rules for adding commands of your own to a project.
 
-## The palette home
+<Note>
+Arguments in angle brackets are required and arguments in square brackets are optional, exactly as the in-app list shows them. A long list ends with a trailer such as `… 87 more — keep typing to filter`, so filtering is always the way through it.
+</Note>
 
-These are the commands the palette shows first:
-
-| Command | What it does |
-| --- | --- |
-| `/model` | Choose the model for this session and its reasoning effort — Low, Medium, High |
-| `/mode` | Switch between **Agent**, **Plan**, and **Ask** |
-| `/permissions` | Set the approval policy — **Read-only**, **Smart**, or **Full access** |
-| `/plan` | Draft a plan before writing any code |
-| `/effort` | Tune reasoning effort for the current model |
-| `/goal` | Set, show, pause, resume, or clear a persisted long-horizon objective. See [Goals](/cli/goal) |
-| `/mcp` | View and manage MCP servers |
-| `/sandbox` | Configure sandboxed command execution |
-| `/usage` | Plan usage, quota, and limits |
-| `/resume` | Resume a previous session |
-| `/jobs` | Background work — Cloud hand-offs, subagents, and queued follow-ups (`/tasks` is the older name) |
-| `/skills` | List and manage skills |
-| `/btw` | Ask a side question while a turn runs — answered without touching the running turn |
-| `/compact` | Toggle the compact display |
-| `/clear` | Clear the current conversation |
-| `/diff` | Show a file diff |
-| `/copy` | How to copy text out |
-| `/config` | Show configuration |
-| `/login` · `/logout` | Sign in, or clear stored credentials |
-| `/settings` | Open the settings panel |
-| `/interrupt` | Stop the running turn (same as **Esc**) |
-
-Keep typing to filter — `/model` narrows the list to the commands that match:
-
-<Frame caption="Filtering the palette: /model matches /model, /mode, /mcp-reload, and /custom-commands.">
-  <img src="/images/cli/runtime/120x40/slash-model-typed.png" alt="Cortex CLI slash palette filtered by typing /model" />
-</Frame>
-
-## Session
+## App, help and display
 
 | Command | Aliases | Usage |
 | --- | --- | --- |
-| `/session` | `info` | Current session details |
-| `/new` | `n` | Start a new session |
-| `/clear` | `cls` | Clear the conversation, keep the session |
-| `/resume` | `r`, `load` | `/resume [session-id]` |
-| `/sessions` | `list` | List sessions |
-| `/fork` | `branch` | `/fork [name]` |
-| `/rename` | `mv` | `/rename <name>` |
-| `/favorite` · `/unfavorite` | `fav`, `star` | Mark or unmark a favourite |
-| `/export` | `save` | `/export [format]` — Markdown, JSON, or text |
-| `/share` | | `/share [duration]` — `30d`, `24h`, `60m`, or `never` |
-| `/timeline` | `tl` | The session timeline |
-| `/rewind` | `rw` | `/rewind [steps]` |
-| `/undo` · `/redo` | `u` | Undo or redo the last action |
-| `/delete` | `rm` | `/delete [session-id]` |
+| `/help` | `h`, `?` | `/help [topic]` |
+| `/shortcuts` | `keys` | Open the shortcuts sheet |
+| `/settings` | `config`, `prefs` | Open the settings panel |
+| `/reload-config` | `reload` | Re-read configuration from disk |
+| `/theme` | | `/theme [name]` |
+| `/compact` | | Toggle the compact display |
+| `/palette` | `cmd` | Open the command palette |
+| `/copy` | `cp` | How to copy text out |
+| `/version` | `v` | Show version information |
+| `/upgrade` | `update` | Check for and install updates |
+| `/experimental` | `exp`, `features` | `/experimental [feature] [--enable\|--disable]` |
+| `/cost` | | Token usage and cost |
+| `/ratelimits` | `limits`, `quota` | Rate limits and usage |
+| `/bug` | | `/bug [description]` |
+| `/quit` | `q`, `exit` | Quit |
 
-Details: [Sessions](/cli/sessions).
-
-## Files and context
-
-| Command | Aliases | Usage |
-| --- | --- | --- |
-| `/add` | `a`, `include` | `/add <file>...` |
-| `/remove` | `exclude` | `/remove <file>...` |
-| `/search` | `find`, `grep` | `/search <pattern>` |
-| `/ls` | `dir`, `files` | `/ls [path]` |
-| `/tree` | | `/tree [path]` |
-| `/mention` | `@`, `ref` | `/mention <file\|symbol>` |
-| `/images` | `img` | `/images <file>...` |
-| `/context` | `ctx` | Show the current context files |
-| `/init` | | `/init [--force]` — write `AGENTS.md` |
-
-## Model and policy
-
-| Command | Usage |
-| --- | --- |
-| `/model [name]` | Pick a model; **Tab** cycles effort in the picker |
-| `/effort` | The same effort radios |
-| `/mode` | Agent, Plan, Ask |
-| `/permissions` | Read-only, Smart, Full access |
-| `/approval <ask\|session\|always\|never>` | Set the approval behaviour explicitly |
-| `/sandbox [on\|off]` | Toggle sandboxed execution |
-| `/auto [on\|off]` | Toggle auto-approval |
-| `/spec [off]` | Toggle specification mode |
-| `/temperature <0.0-2.0>` · `/tokens <n>` | Sampling controls |
-
-Details: [Modes and permissions](/cli/modes-and-permissions).
-
-## Agents, skills, tasks
+## Agents, skills, plugins and hooks
 
 | Command | Aliases | Usage |
 | --- | --- | --- |
 | `/agents` | `subagents` | List and manage agents |
-| `/delegates` | | `/delegates [action]` — manage subagents |
-| `/jobs` | `tasks` | Background tasks and agents |
+| `/delegates` | | `/delegates [action]` |
+| `/tasks` | `bg`, `background` | Background tasks and agents |
+| `/bg-process` | | `/bg-process [action] [target]` |
 | `/skills` | `sk` | List and manage skills |
 | `/skill` | `invoke` | `/skill <name> [args...]` |
 | `/skill-reload` | `sr` | Reload skills from disk |
@@ -110,7 +48,100 @@ Details: [Modes and permissions](/cli/modes-and-permissions).
 | `/commands` | `cmds` | List custom commands |
 | `/custom-commands` | `cc` | `/custom-commands [action]` |
 
-Details: [Extend](/cli/extend).
+Details are on [MCP servers in the CLI](/cli/mcp), [Skills in the CLI](/cli/skills), [Agents and subagents](/cli/agents), [Hooks](/cli/hooks) and [CLI plugins](/cli/plugins).
+
+`/hooks` is the exception in this group. It is accepted and its actions are validated, but nothing handles it in this build: it answers `Unsupported command in this session` and does nothing. Use `cortex plugin list` instead, and see [Hooks](/cli/hooks) for how a hook reaches a session at all.
+
+## Code and workflow
+
+| Command | Aliases | Usage |
+| --- | --- | --- |
+| `/init` | | `/init [--force]`, writes `AGENTS.md` |
+| `/review` | | `/review [target] [--base=branch]` |
+| `/multiedit` | `sed`, `replace` | `/multiedit <pattern> <replacement> [--glob=pattern]` |
+| `/ghost` | | `/ghost [action]`, ghost commits for undo |
+| `/spec` | | `/spec [off]`, toggle specification mode |
+| `/goal` | | `/goal [objective\|status\|pause\|resume\|clear]` |
+| `/ide` | | Manage IDE integration |
+| `/install-github-app` | | Install the Cortex GitHub App |
+
+`/spec` is on [Plan and Spec modes](/cli/plan-mode) and `/goal` is on [Goals](/cli/goal).
+
+## Account, billing and usage
+
+| Command | Aliases | Usage |
+| --- | --- | --- |
+| `/login` | `signin` | Sign in |
+| `/logout` | `signout` | Clear stored credentials |
+| `/account` | `whoami`, `me` | Account information |
+| `/billing` | `plan`, `subscription` | Billing status and credits |
+| `/usage` | `stats`, `credits` | `/usage [--from YYYY-MM-DD] [--to YYYY-MM-DD]` |
+| `/refresh` | `retry` | Refresh billing after adding a payment method |
+
+Signing in from the terminal, including on a machine with no browser, is covered on [Sign in to the CLI](/cli/sign-in).
+
+## Session
+
+| Command | Aliases | Usage |
+| --- | --- | --- |
+| `/session` | `info` | Current session details |
+| `/clear` | `cls` | Clear the conversation |
+| `/new` | `n` | Start a new session |
+| `/resume` | `r`, `load` | `/resume [session-id]` |
+| `/sessions` | `list`, `ls-sessions` | List sessions |
+| `/fork` | `branch` | `/fork [name]` |
+| `/rename` | `mv` | `/rename <name>` |
+| `/favorite` | `fav`, `star` | Mark as favourite |
+| `/unfavorite` | `unfav`, `unstar` | Remove the favourite mark |
+| `/export` | `save` | `/export [format]`, Markdown, JSON or text |
+| `/share` | | `/share [duration]`, for example `30d`, `24h`, `60m` or `never` |
+| `/timeline` | `tl` | View the session timeline |
+| `/rewind` | `rw` | `/rewind [steps]` |
+| `/undo` | `u` | Undo the last action |
+| `/redo` | | Redo |
+| `/delete` | `rm` | `/delete [session-id]` |
+
+<Warning>
+`/share`, `/fork` and `/rewind` exist only inside a session. There is no `cortex share`, `cortex fork` or `cortex rewind` command on the command line; the one non-interactive equivalent is the `--share` flag on `cortex run`. The commands that do exist outside a session are listed on [Command reference](/cli/reference).
+</Warning>
+
+## Navigation
+
+| Command | Aliases | Usage |
+| --- | --- | --- |
+| `/diff` | `d` | `/diff [file]` |
+| `/transcript` | `tr` | View the transcript |
+| `/history` | `hist` | Command history |
+| `/scroll` | | `/scroll <top\|bottom\|n>` |
+| `/goto` | `g` | `/goto <n>` |
+
+## Files and context
+
+| Command | Aliases | Usage |
+| --- | --- | --- |
+| `/add` | `a`, `include` | `/add <file>...` |
+| `/remove` | `rm-file`, `exclude` | `/remove <file>...` |
+| `/search` | `find`, `grep` | `/search <pattern>` |
+| `/ls` | `dir`, `files` | `/ls [path]` |
+| `/tree` | | `/tree [path]` |
+| `/mention` | `@`, `ref` | `/mention <file\|symbol>` |
+| `/images` | `img`, `pics` | `/images <file>...` |
+| `/context` | `ctx` | Show the current context files |
+
+Typing `@` in the composer opens the file picker directly, which is the quicker path for adding context mid-sentence.
+
+## Model and policy
+
+| Command | Aliases | Usage |
+| --- | --- | --- |
+| `/model` | `models`, `m`, `lm`, `list-models` | `/model [name]` |
+| `/approval` | `approve` | `/approval <ask\|session\|always\|never>` |
+| `/sandbox` | `sb` | `/sandbox [on\|off]` |
+| `/auto` | `autopilot` | `/auto [on\|off]` |
+| `/temperature` | `temp` | `/temperature <0.0-2.0>` |
+| `/tokens` | `max-tokens` | `/tokens <n>` |
+
+`/model` and `/models` are the same command, so either spelling works, and `m` is the alias most people end up using. In the model list, `Tab` moves to the reasoning-effort controls and back; `/effort` is an alias that goes straight to them. Switching between Agent, Plan and Ask is `Shift+Tab` in the composer. What these controls actually permit is on [Modes and permissions](/cli/modes-and-permissions).
 
 ## MCP
 
@@ -121,61 +152,40 @@ Details: [Extend](/cli/extend).
 | `/mcp-auth` | `auth` | MCP authentication |
 | `/mcp-reload` | | Reload MCP server configuration |
 
-## Account and usage
+## Diagnostics
 
 | Command | Aliases | Usage |
 | --- | --- | --- |
-| `/login` · `/logout` | `signin`, `signout` | Sign in, or clear stored credentials |
-| `/account` | `whoami`, `me` | Account information |
-| `/billing` | `plan`, `subscription` | Billing status and credits |
-| `/usage` | `stats`, `credits` | `/usage [--from YYYY-MM-DD] [--to YYYY-MM-DD]` |
-| `/cost` | | Token usage and cost |
-| `/ratelimits` | `limits`, `quota` | API rate limits and usage |
-| `/refresh` | `retry` | Refresh billing after adding payment |
-
-<Frame caption="/usage: agent requests, tokens this month, and Cloud agent minutes against the plan's ceilings, with the renewal date.">
-  <img src="/images/cli/runtime/120x40/usage.png" alt="Cortex CLI /usage panel showing agent requests, tokens, and Cloud agent minutes" />
-</Frame>
-
-## Working with code
-
-| Command | Usage |
-| --- | --- |
-| `/diff [file]` | Show a diff |
-| `/review [target] [--base=branch]` | Review changes |
-| `/multiedit <pattern> <replacement> [--glob=pattern]` | Multi-file replace |
-| `/ghost [action]` | Ghost commits for undo |
-| `/bg-process [action] [target]` | Background processes |
-| `/install-github-app` | Install the Cortex GitHub App |
-| `/ide` | Manage IDE integration |
-
-## General and diagnostics
-
-| Command | Aliases | Usage |
-| --- | --- | --- |
-| `/help` | `h`, `?` | `/help [topic]` |
-| `/version` | `v` | Version information |
-| `/upgrade` | `update` | Check for and install updates |
-| `/settings` | `prefs` | Open the settings panel |
-| `/reload-config` | `reload` | Re-read configuration from disk |
-| `/theme` | | `/theme [name]` |
-| `/palette` | `cmd` | Open the command palette |
-| `/experimental` | `exp`, `features` | `/experimental [feature] [--enable\|--disable]` |
+| `/debug` | `dbg` | `/debug [on\|off]` |
 | `/status` | `stat` | Application status |
 | `/config` | `cfg` | `/config [key]` |
 | `/logs` | `log` | `/logs [level]` |
-| `/debug` | `dbg` | `/debug [on\|off]` |
-| `/diagnostics` | `diag`, `lint` | `/diagnostics [file]` |
-| `/metrics` | `perf` | Performance metrics |
 | `/dump` | | `/dump [file]` |
-| `/bug` | | `/bug [description]` — report a problem |
-| `/quit` | `q`, `exit` | Quit |
+| `/metrics` | `perf` | Performance metrics |
+| `/diagnostics` | `diag`, `lint` | `/diagnostics [file]` |
 
 ## Your own commands
 
-Add markdown files under `.cortex/commands/` in the project; `/commands` lists them. The file name is the command and the body is the prompt it sends. Project commands travel with the repository.
+A project can carry its own commands. Put a markdown file in `.cortex/commands/` in the repository: the file name becomes the command and the body is the prompt it sends, so a command travels with the project and everyone working in it gets the same one.
+
+- `/commands` (alias `cmds`) lists the custom commands it found.
+- `/custom-commands [action]` (alias `cc`) manages them.
+
+## If a command you read about is not there
+
+The list that opens when you type `/` is the built-in set for the version you are running. Guides, blog posts and older notes sometimes name commands that the current build does not have, and because an unknown `/` line is sent to the agent as a message, typing one looks like nothing happened except an odd prompt. Three cases worth knowing:
+
+- Switching mode is `Shift+Tab` in the composer.
+- Specification mode is `/spec`.
+- Approval behaviour is `/approval`, `/sandbox` and `/auto`.
+- The model and its reasoning effort are both on the `/model` form, with `Tab` between them.
+
+When in doubt, type `/` and read the list, or open `cortex --help` outside the app.
 
 ## Related
 
-- [The TUI](/cli/tui) · [Keyboard shortcuts](/cli/keyboard)
-- The equivalents outside the TUI: `cortex --help` and `cortex <command> --help`
+- [The TUI](/cli/tui): the composer, its sigils and the panels these commands open
+- [CLI keyboard shortcuts](/cli/keyboard): what you can do without a command
+- [CLI sessions](/cli/sessions): resume, fork, rewind, export and share in practice
+- [Modes and permissions](/cli/modes-and-permissions): what the policy commands change
+- [Command reference](/cli/reference): the commands and flags you type in your shell

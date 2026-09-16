@@ -1,0 +1,65 @@
+---
+title: "Tickets"
+description: "A ticket is a unit of asynchronous work with a title, a body and a status. Tickets have no screen in Cortex Code yet."
+icon: "ticket"
+---
+
+A ticket is Cortex Code's unit of asynchronous work: a small record with a title, a body and a status, which can point at the session that is doing the work. It exists so that a piece of work can outlive the turn that raised it, and so that a status can be tracked without keeping a transcript open.
+
+This page is deliberately short, because tickets are honest about what they are today. **There is no Tickets screen anywhere in Cortex Code**, in the browser, in the Cortex desktop app or in the Cortex CLI. What follows is what a ticket is made of, the statuses it can hold, and where to track work in the meantime.
+
+<Note>
+Tickets are an API level concept today. Nothing in the app opens them, lists them or files them, so there is no page to go to, no sidebar entry and no inbox of tickets to read. See [Platform API](/reference/platform-api) for the surface they belong to.
+</Note>
+
+## What a ticket holds
+
+| Field | What it is |
+| --- | --- |
+| Title | A short name for the work. |
+| Body | The detail. A ticket body is stored sealed on the server. |
+| Status | One of five values, listed below. |
+| Session reference | Optional. The Code session working on the ticket, when there is one. |
+
+## The five statuses
+
+A ticket's status is one of exactly five values, lower-case on the wire:
+
+| Status | What it means |
+| --- | --- |
+| `open` | Raised, not started. |
+| `in_progress` | Work is under way. |
+| `blocked` | Work cannot continue until something else changes. |
+| `done` | Finished. |
+| `cancelled` | Abandoned on purpose, rather than finished or failed. |
+
+Any other value is refused as a validation failure rather than stored as an unknown state, so a ticket can never sit in a status nothing understands. See [validation_failed](/problems/validation_failed) for what that refusal looks like.
+
+## A ticket outlives the session it points at
+
+A ticket that references a session keeps existing when that session is deleted. The reference is cleared, and the ticket itself, with its title, body and status, stays exactly as it was. Deleting a session is not a way to close a ticket, and losing a session does not lose the record of the work.
+
+## What is not available yet
+
+<Warning>
+Do not plan a workflow around tickets today. There is no screen that creates, lists, assigns or closes one, and a ticket does not start a Code session by itself. If you need work to happen, send a turn in a session.
+</Warning>
+
+Also not documented, because no source establishes it: where a ticket will appear to you when a surface arrives, who will be able to raise one, whether raising one will ever start a session, and whether a ticket will produce a notification.
+
+## How to track work in Code today
+
+Until tickets have a surface, the things Cortex Code actually shows you are the honest place to track work:
+
+- **The sessions board.** Every session your account has run is listed and grouped by **Today**, **Yesterday**, **This week** and **Earlier**, with a **Status** filter offering **All**, **Running**, **Needs review** and **Failed**. **Needs review** is the one that means a human is holding something up, either a pull request waiting to be read or a decision waiting to be answered. See [Code sessions](/code/sessions).
+- **Notifications.** The inbox tells you when a session finished, when it needs a decision, and when an automation ran, newest first. See [Code notifications](/code/notifications).
+- **Automations.** A saved instruction keeps the text of a recurring job in one place, with a trigger and a repository, although nothing runs unattended yet: **Schedules and events do not execute yet.** See [Automations](/code/automations).
+- **Pull requests.** A finished change lands as a branch and a pull request on the **Git** tab, which is where review and closure genuinely happen today. See [Changes and diffs](/code/changes).
+
+## Related
+
+- [Code sessions](/code/sessions) for the board, the filters and what survives a turn.
+- [Code notifications](/code/notifications) for what Cortex tells you about.
+- [Automations](/code/automations) for saved instructions and what a run does today.
+- [Changes and diffs](/code/changes) for the branch and the pull request a session produces.
+- [Platform API](/reference/platform-api) for the API surface tickets belong to.

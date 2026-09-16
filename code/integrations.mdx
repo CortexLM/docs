@@ -1,0 +1,87 @@
+---
+title: "Code integrations"
+sidebarTitle: "Integrations"
+description: "The Integrations page: connected apps, repositories, MCP servers and API keys, and the important limit on what a Code session can actually reach."
+icon: "puzzle-piece"
+---
+
+**Integrations** is the page where you connect outside services to Cortex. It invites you in with **Connect the tools your sessions need to reach.**, and it is the right place to connect GitHub and to register an MCP server for your workspace.
+
+Read the next paragraph before you connect anything, because the page's invitation is broader than what a Cortex Code session can use today.
+
+<Warning>
+**Tools connected here do not reach a Code session today.** A Code turn is built with an empty tool catalog for outside tools, so a Code session is given no MCP servers, no connected apps and no plugins. The session will tell you so itself: its **Tools** tab can read **Off · this session has no MCP access.** and **Off · Chat and Bot access does not carry into Code.** Connected apps do work elsewhere, in [Connectors](/chat/plugins) for Cortex Chat and in [Connected apps and secrets](/bot/plugins) for a bot. Treat this page as workspace configuration, and never plan a Code session around a tool you connected here.
+</Warning>
+
+The one thing on this page that genuinely changes what a Code session can do is the GitHub connection, because that is what gives Code repositories to work in and the ability to open a pull request. Everything else is configuration held for the workspace.
+
+## The sections of the page
+
+| Section | What it holds |
+| --- | --- |
+| **CONNECTED APPS** | Apps from the connector marketplace that Cortex can sign you in to. |
+| **REPOSITORIES** | The repositories your GitHub connection exposes. |
+| **MCP SERVERS** | Servers you register for the workspace by name and URL. |
+| **API keys** | Programmatic access for your account. |
+
+## Connected apps
+
+An app on this page is in one of two states, and there are only two. Either Cortex can connect it, or it renders **Not connectable**, which means its tools exist but Cortex has no sign-in for it yet. There is no third option, and in particular **there is no token method for a connected app**: you cannot make an app connectable by pasting a credential.
+
+At least one app in the list is not connectable yet. That row is doing what it should, so do not read it as a fault or an outage on your side.
+
+<Note>
+An MCP server's optional bearer token is a different thing entirely and stays. Aside from that one field, no Code surface asks you to paste a credential: there is no personal access token field anywhere, and Code has no Secrets page.
+</Note>
+
+## Repositories
+
+The **REPOSITORIES** section is a view of your GitHub connection rather than a separate setting, and its empty copy tells you which of three situations you are in.
+
+| What you read | What it means |
+| --- | --- |
+| **GitHub returned no repositories for this account.** | GitHub is connected, and it reported nothing. Check what the connection was granted on GitHub's side. |
+| **No repositories to show yet.** | GitHub is not available to connect on this deployment. |
+| **Connect GitHub and your repositories appear here.** | You have not connected GitHub yet. |
+
+**Connect GitHub** is a single control with a single label, and it appears here, in the composer's repository picker, in the dashboard checklist and in Settings. If the connection has lapsed it reads **Reconnect GitHub** instead and says so. When GitHub is connected there is no control and no note, and on a deployment without GitHub the control is simply absent rather than greyed out. For the whole flow, including what to do when a connection attempt does not finish, see [Connect GitHub](/code/github).
+
+<Info>
+The connection Code uses is not the only GitHub install Cortex offers. Cortex Security's GitHub App is a separate install that lets it read pull requests and post checks, and the Cortex CLI has its own install command. Connecting one does not connect the others. See [Pull-request review](/code/security) and [Code in the terminal](/code/cli).
+</Info>
+
+## MCP servers
+
+You register an MCP server with three fields.
+
+<Steps>
+  <Step title="Name it">
+    **Name** is the label you will recognise the server by.
+  </Step>
+  <Step title="Give it a URL">
+    **URL** is the server's address.
+  </Step>
+  <Step title="Add a token if it needs one">
+    **Auth token** is optional. Its own hint is the guarantee worth reading: **Sent as a bearer token on every call. Sealed on the server.** Once saved it is never read back into the form, so keep your own copy if you need it again.
+  </Step>
+</Steps>
+
+A registered server is configuration held for the workspace. Whether a given surface can reach it is decided by that surface, and a Code session reports its own answer on its **Tools** tab, where rows read **On**, **Off** or **Organization denied**. A session with nothing available shows **No tool servers on this session.** For MCP in a surface where it is used today, see [MCP servers](/chat/mcp-servers).
+
+## API keys
+
+The **API keys** section exists on this page for programmatic access to your account. How a key is created, shown or revoked here is not documented, so work from the section in the app rather than from an expectation set here.
+
+## What is not available
+
+- **MCP servers, connected apps and plugins in a Code session.** Configured here, not given to a Code turn. This is the limit to plan around.
+- **Scoping a server to one repository**, and any per-workspace server limit shown to you, are not documented. No number is shown on this page.
+- The full list of connectable apps changes with the connector marketplace, so read the page rather than a list in the docs.
+
+## Related
+
+- [Connect GitHub](/code/github)
+- [Repositories and branches](/code/repositories)
+- [Code settings](/code/settings)
+- [Connectors](/chat/plugins)
+- [Connected apps and secrets](/bot/plugins)

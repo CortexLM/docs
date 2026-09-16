@@ -1,64 +1,222 @@
 ---
-title: "Bot desktop"
-description: "The Cortex Bot desktop app — a home for your agents, routines, and channels, with This PC as a host for a bot's computer. It has no Chat or Code sidebar."
-keywords: ["app", "download", "channels"]
+title: "Bot desktop app"
+description: "Sign in to the Cortex Bot desktop app, work its Inbox, Routines and Plugins rail, grant Background computer, and update it."
+icon: "desktop"
 ---
 
-Cortex ships two desktop apps because the two jobs are different. The [Cortex desktop app](/getting-started/desktop) carries **Chat and Code**. The **Cortex Bot desktop app** is built around bots: its sidebar is **agents, routines, and channels**, and it adds **This PC** as a host for a bot's computer. It does not carry Chat or Code.
+The **Cortex Bot** desktop app is a window built around agents and nothing else. Its rail is
+**Inbox**, **Routines** and **Plugins**, with your **Agents** and **Rooms** listed underneath. It
+carries no Chat and no Code sidebar, so for those use the web app or the
+[Cortex desktop app](/getting-started/desktop).
 
-## What it is for
+This page covers signing in, the rail, working the Inbox, where an agent runs, the **Background
+computer** permission, the settings panes, updates and the keyboard shortcuts the app handles.
 
-| You want to… | Bot desktop |
+<Note>
+Cortex does not publish a public download page yet, so there is no installer link here. See
+[Ways to run Cortex](/getting-started/downloads).
+</Note>
+
+## Sign in first
+
+Cortex Bot has no guest mode that does anything useful. The sign-in dialog says **Sign in to run
+your agents**, with `Agents, routines and rooms follow you across devices. Cortex Bot needs an
+account — nothing runs as a guest.`
+
+**Continue with Google** and **Continue with Apple** open your browser, and the window waits.
+**Continue with email** sends you a link and becomes **Check your inbox…**. **Single sign-on (SSO)**
+is on the same dialog. While it waits the app says **Finish signing in in your browser — this window
+updates on its own.** and offers **Cancel**.
+
+Opened without an account, the app shows a banner: `You're viewing Cortex Bot as a guest. Agents,
+rooms, routines and plugins need an account — sign in to keep agents running in the cloud.`
+
+## The rail
+
+| Zone | What is there |
 | --- | --- |
-| Run a bot's computer on your own machine | **This PC** — the bot works on your desktop, with your apps and files |
-| Keep an eye on several agents at once | The agents list is the sidebar; the pane is the open bot |
-| Manage schedules | Routines, the same ones you see in the web app |
-| Organise how bots talk to you and to each other | Channels |
+| Wordmark | **Cortex Bot**, with **New agent** beside it |
+| Search | **Search agents and rooms**, with a **⌘K** badge |
+| **Inbox** | Approvals, questions and mentions, with a count |
+| **Routines** | Scheduled and event-driven work, with a count |
+| **Plugins** | The tools your agents can use, with a count |
+| **Agents** | Your agents. When you have none: **Create your first agent** |
+| **Rooms** | Rooms you have joined, with **Browse rooms** beside the heading |
+| Footer | Your name, your plan and how many agents you are using, and **Settings** |
 
-## Install and sign in
+When no rooms exist at all, the section reads **Rooms appear once two agents can talk to each
+other.** When some exist but you have joined none, it reads **No rooms joined yet · Browse rooms**.
+The title bar carries **Collapse sidebar**.
+
+## Work the Inbox
+
+The Inbox is where an agent comes back to you. Its header shows **Nothing waiting** or a count of
+items that need you, and it has three tabs: **Needs you**, **Mentions** and **Done**.
 
 <Steps>
-  <Step title="Download">
-    Desktop builds are published at [releases.cortex.foundation](https://releases.cortex.foundation). Pick the Bot desktop app for your platform.
+  <Step title="Open Inbox">
+    Select **Inbox** in the rail, or use the command palette action **Open Inbox**.
   </Step>
-  <Step title="Sign in">
-    Same account as the web app. Bots are member objects, so the app expects a signed-in account.
+  <Step title="Decide on the Needs you tab">
+    Each row offers **Approve**, **Edit first** and **Deny**. Pressing **↵** approves the row you
+    are on, and `⌘.` approves the focused approval. Secret values are masked in the row.
   </Step>
-  <Step title="Open a bot">
-    Your bots, routines, and channels follow your account — what you set up in the browser is already here.
+  <Step title="Stop being asked, if you want">
+    Tick the always-allow box on the row to skip the question next time. You get the toast
+    **Approved** with `Future posts here won't ask.` The other toasts are **Denied**, **Answer
+    sent** and **Saved to vault**.
   </Step>
 </Steps>
 
-## Hosts
+Decided items move to **Done**, grouped under **Today** and **Done · earlier**, and are kept for 90
+days. An empty **Needs you** tab reads **Nothing needs you right now**; an empty **Mentions** tab
+reads **No new mentions**. Mention read status is a known gap: the app says so in a tooltip rather
+than guessing.
 
-| Host | Web app | Bot desktop |
-| --- | --- | --- |
-| **Cloud** | Yes | Yes |
-| **This PC** | No | Yes |
-| **SSH** | No | Shell only, no desktop |
+## Where an agent runs
 
-The browser is Cloud-only for the same reason web Code is: a browser tab cannot drive your desktop. See [Computer](/bot/computer).
+When you create an agent, **Runs on** offers exactly two choices:
 
-## Sidebar: agents, routines, channels
-
-| Section | What is there |
+| Choice | What it means |
 | --- | --- |
-| **Agents** | Your bots, listed once. The pane is the open bot — conversation in the centre, its computer on the right. |
-| **Routines** | Scheduled work across your bots, on your local weekday hours. See [Routines](/bot/routines). |
-| **Channels** | Where bots deliver messages and notifications, and where agents coordinate through `create_channel` and `send_to_agent`. See [Tools](/bot/tools). |
+| **Cloud** | `Keeps running when this Mac sleeps` |
+| **This Mac** | `Uses local files and apps` |
 
-There is no Chat or Code entry in this sidebar. For those, use the web app or the Cortex desktop app.
+Afterwards, an agent's details rail shows **Runs on** as a read-only row with the value and a
+location, beside **Machine**, **Memory**, **Routines** and **In rooms**. There is no host picker
+there.
 
-## Which desktop app do I want?
+<Warning>
+No shipped Cortex client offers a **This PC** or **SSH** picker for an agent's computer. If you have
+read otherwise, that guidance is out of date. **This PC** is a Cortex Code runtime in the
+[Cortex desktop app](/getting-started/desktop), not an agent placement.
+</Warning>
 
-| Need | App |
+An agent's computer has one state at a time and the states never stack. **Open desktop inside
+Cortex Bot** starts one, **Sleep this session** ends one, and **No desktop session** means nothing
+is running. While it starts you see the app's only spinner, **Starting · Loading desktop…**, and
+chat stays usable throughout. If the computer is running but the picture is not arriving, the status
+reads **Running · Cloud** with **Retry stream**. The rail preview is view-only, a chip says
+**Computer running · your desktop is free** while an agent works somewhere that is not your screen,
+and an idle computer hibernates after 30 minutes.
+
+## Background computer
+
+**Background computer** is the real "use my own machine" feature: it lets an agent click and type in
+windows that are not frontmost on your machine. It is off by default, with
+`Off by default — agents do not use this Mac until turned on.`
+
+<Steps>
+  <Step title="Turn it on">
+    Open **Settings → Privacy & terms → Background computer**. The prompt asks **Let agents work in
+    other windows?**; confirm with **Turn on background computer**.
+  </Step>
+  <Step title="Allow each app the first time">
+    The first time an agent wants a particular app you are asked
+    `Allow {agent} to use {app} in the background?`; confirm with the button naming that app.
+  </Step>
+  <Step title="Answer the irreversible ones every time">
+    Spending money, sending and deleting can never be remembered: you are asked
+    `{agent} wants to {action} in {app}` and can only **Allow once**. Granting full control of the
+    machine lasts for that session only.
+  </Step>
+</Steps>
+
+A refused action shows **Not allowed** and a one-off grant shows **Allowed for this action**, each
+with a plain reason, such as `Another host prompt is already open`, `You declined` or
+`Money, send and delete cannot be remembered`. The audit log keeps the most recent 200 entries.
+
+## Routines, plugins and rooms
+
+**Routines** run an agent on a schedule or an event and post the result to you or to a room. A
+routine is made of a **Trigger** and **Instructions**, with **Recent runs** underneath and **Run
+log** to open the logs in the transcript.
+
+**Plugins** are the tools your agents work in, grouped into **Installed**, **Verified** and
+**Popular with teams like yours**. **Add custom connector** and **Custom MCP server** cover anything
+the catalogue does not. Agents only get the plugins you hand them on their profile.
+
+**Rooms** sit in the same rail, with **Browse rooms**, **Create a room**, and, once you pick two
+agents, **Add to room**. The window describes them as letting two or more agents work on one thing
+while you watch and step in, and a room composer reminds you:
+`Mention an agent with @ · ↵ to send · ⇧↵ for a new line`. The controls are drawn, but nothing
+behind them is served on this deployment: starting a room reports `This deployment does not host
+bot rooms yet. Nothing was started.` **Channels** are the multi-bot surface that works today. See
+[Channels](/bot/rooms).
+
+## Settings
+
+| Group | Panes |
 | --- | --- |
-| Chat, plus Code on This PC or SSH | [Cortex desktop](/getting-started/desktop) |
-| Bots on This PC; agents, routines, channels in one window | **Cortex Bot desktop** |
-| Edit Design canvases | [Design desktop](/design/desktop) |
-| Code from a terminal or CI | [CLI](/cli) |
+| **You** | **Account**, **Appearance**, **Notifications** |
+| **Agents** | **Connectors & vault** |
+| **Cortex** | **Privacy & terms**, **About** |
+
+**Appearance** holds **Theme** (**Light**, **Dark** or **System**), **Window controls**, **Accent**,
+**Density**, **Text size**, **Animated icons** and **Show last message in sidebar**. On macOS the
+native window buttons are hidden by default and can be turned back on here.
+
+**Privacy & terms** holds Background computer, where agent memory lives, how long conversations are
+kept (**30 days**, **90 days**, **1 year** or **Forever**), whether you share anonymous usage (off
+by default), and **Your rights · GDPR** with **Export my data** and a type-to-confirm account
+deletion.
+
+<Warning>
+The **Notifications** pane is complete, but Cortex Bot does not deliver operating-system
+notifications yet, and it has no tray icon and no dock badge. Treat **Notify me on this Mac**,
+**Sound**, **Quiet hours**, **Daily digest** and **Dock badge** as preferences waiting for
+delivery, and use the **Inbox** as your notification centre.
+</Warning>
+
+## Updates
+
+Cortex Bot checks for updates at launch and then every four hours, but it installs nothing behind
+your back and nothing on quit.
+
+<Steps>
+  <Step title="Check">
+    Open **Settings → About** and select **Check for updates**. The status moves through
+    **Checking signed release…** to either **You're up to date** or an available version.
+  </Step>
+  <Step title="Download">
+    Select **Download update**. The status reads **Downloading verified update…**, then **Verified
+    update ready to install**. Cortex verifies that the release really came from Cortex first; if
+    that fails you see **Update check or verification failed**.
+  </Step>
+  <Step title="Install">
+    Select **Restart and install** and confirm **Restart to update?** The confirmation warns you:
+    `Save your work first. Unsaved drafts will be lost when Cortex Bot restarts.`
+  </Step>
+</Steps>
+
+Tick **Download updates automatically** to skip the download step in future. **Update channel**
+offers **Production** and **Staging**: `Staging is for testing. Production receives only promoted
+releases. Channel changes never downgrade the app.` On Linux, updates apply only to the portable
+application-image build, and some builds have no update feed at all and say **Signed updates
+unavailable in this build**. The same pane carries **Release notes**, **Keyboard shortcuts** and
+**Diagnostics**, with **Copy diagnostics** and **Open logs folder**.
+
+## Keyboard shortcuts
+
+| Shortcut | Action |
+| --- | --- |
+| `⌘K` / `Ctrl+K` | Open or close the command palette |
+| `⌘N` / `Ctrl+N` | New agent |
+| `⌘⇧R` / `Ctrl+Shift+R` | New routine |
+| `⌘,` / `Ctrl+,` | Open Settings |
+| `⌘\` / `Ctrl+\` | Toggle the sidebar |
+| `⌘[` / `Ctrl+[` | Back |
+| `⌘.` | Approve the focused approval |
+| `⌘↵` | Advance the create-agent flow |
+| `Esc` | Close whatever is open, innermost first |
+
+The palette searches agents, rooms, routines and the last 90 days of messages, and carries the
+actions **New agent**, **New routine**, **Open Settings**, **Open Inbox** and **Background computer**.
 
 ## Related
 
-- [Cortex Bot](/bot) — what a bot is and how to create your first one.
-- [Downloads](/getting-started/downloads) — every way to run Cortex.
+- [Cortex Bot](/bot) for what a bot is and how to make your first one.
+- [Inbox](/bot/inbox) and [Approvals and tool policy](/bot/approvals) for deciding what an agent may do.
+- [Computer](/bot/computer) for where an agent's computer runs.
+- [Routines](/bot/routines) and [Connected apps and secrets](/bot/plugins).
+- [Ways to run Cortex](/getting-started/downloads) for every application and how each updates.

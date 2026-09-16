@@ -1,55 +1,96 @@
 ---
 title: "Code on desktop"
-description: "This PC and SSH hosts for Code sessions exist on the desktop app and the CLI. The browser stays Cloud-only — host placement, not a missing feature."
-keywords: ["This PC", "SSH", "local", "app"]
+description: "What the Cortex desktop app adds to Code: This PC and SSH next to Cloud, its own screens, and the host status it reports."
+icon: "desktop"
 ---
 
-In the browser, a Code session runs in the Cloud. Install the [Cortex desktop app](/getting-started/desktop) or the [CLI](/cli) and two more hosts appear: **This PC**, which runs the workspace tools on your own machine, and **SSH**, which runs them over the shell of a host you register.
+Cortex Code runs in your browser, in the Cortex desktop app and in the Cortex CLI. The desktop app is the surface that can put a session on a machine you own: next to **Cloud** it offers **This PC**, which is the app's label for your own computer, and **SSH**, which is a remote host you have registered. In the browser a session runs on Cloud, plus a registered team runner when the deployment has one, and nothing else.
 
-## Where each host lives
+Two things in Code are called Desktop, and this page is about one of them. The **Cortex desktop app** is the application you install and sign into. A session's **Desktop** tab is something else entirely: it carries the badge **Soon** and there is nothing behind it, because a Cloud guest is headless and there is no screen inside a Code runtime. Everything below is about the application.
 
-| Host | Browser | Desktop app | CLI | Desktop for the agent |
-| --- | --- | --- | --- | --- |
-| **Cloud** | Yes | Yes | Yes (default) | No — headless guest |
-| **This PC** | No | Yes | Yes, opt-in | Your machine |
-| **SSH** | No | Yes | Yes, opt-in | Shell only |
+## Where each runtime is offered
 
-Web Code is Cloud-only by design: the browser has no way to run tools on your disk. That is host placement, not a missing catalog entry.
+| Surface | Runtimes offered |
+| --- | --- |
+| Browser | **Cloud**, plus a registered team runner when the deployment has one |
+| Desktop app | Cloud, **This PC**, **SSH** |
+| Cortex CLI | Cloud by default; This PC and SSH by opt-in |
 
-## This PC
+Web Code is Cloud-only on purpose: the browser has no way to run tools on your disk. For the same reason, the browser's **Machines** page lists Cloud occupancy and team runners only, and never your desktop hosts. A session binds one runtime per turn and there is no quiet fallback: if the runtime you chose is not usable, the turn refuses and tells you what to do rather than running somewhere else.
 
-The agent works in a project directory on your machine, using your toolchains, your network, and your hardware. Approvals and sandbox policy apply exactly as they do elsewhere — see [Modes and permissions](/cli/modes-and-permissions) for the CLI's controls.
+## Screens in the desktop app
 
-Good for: private dependencies, local databases, GPU work, anything the Cloud guest cannot reach.
+The app is not a wrapper around this site. It has its own screens, and they are the same vocabulary you already know from the browser:
 
-## SSH
+- A first-launch splash, then Code **Home** with the composer.
+- An **Inbox** of your sessions, and a session detail with its plan, its permission prompts, its terminal and its changes.
+- **Automations**, **Review**, **Usage** and **Notifications**.
+- **Settings**, which holds **Providers**, workspace defaults and a remote host, with **Integrations** under it.
+- **Connect a server**, which is where a remote host is registered.
 
-The agent runs shell tools on a host you register, over SSH. There is no desktop on that host; it is a shell. Good for: build boxes and servers you already operate.
+Those are screens inside the application, not pages on this site. Downloading and updating the app is covered under [the desktop app](/getting-started/desktop).
 
-## Choosing a host
+## Run a session on This PC
 
-**Desktop app:** pick the host when you start the session.
+<Steps>
+  <Step title="Choose This PC on Code Home">
+    The runtime row on the desktop app offers Cloud, **This PC** and **SSH**. Picking This PC means the tools a turn calls act on a folder you nominate.
+  </Step>
+  <Step title="Pick the folder in the native folder picker">
+    The app opens your operating system's own folder picker. There is no workspace-name field to fill in, and pressing **Cancel** leaves no session behind and invents no path: nothing falls back to whatever directory the app happens to be running in.
+  </Step>
+  <Step title="Work from the folder's name">
+    Afterwards the session identifies the folder by its name rather than its full path, and it uses that name exactly as it is, trailing spaces included.
+  </Step>
+</Steps>
 
-**CLI:** the TUI and `cortex exec` use the Cloud unless you opt in:
+A This PC start never silently becomes a Cloud session. If the host behind a session goes away, the follow-up box is disabled and says so: **This session runs on This PC, and no host is connected. Pair one from the Host pane and the composer comes back.**
 
-```bash
-CORTEX_COMPUTER=this_pc cortex          # run tools on this machine
-CORTEX_COMPUTER=ssh cortex              # run tools over SSH
-CORTEX_SSH_HOST=build-box cortex        # naming an SSH host also selects SSH
-```
+**This PC is not a Cortex Bot host.** It is Code's own local runtime, and the SSH screens never borrow that name either: SSH stays SSH.
 
-This PC and SSH need an **already connected Code session**. Cortex will not create one on the fly and will not substitute the Cloud silently; if you select a host without a connected session, the CLI tells you so in plain words. Either resume a session that already has the host, or unset `CORTEX_COMPUTER` to use the Cloud. See [CLI configuration](/cli/configuration).
+## Run a session over SSH
 
-<Frame caption="The CLI composer once a host is connected. Whichever host runs the tools, the session looks the same from here.">
-  <img src="/images/cli/runtime/40x12/composer-hover.png" alt="Cortex CLI composer with the pointer over it, rendered in a 40 by 12 terminal" />
-</Frame>
+SSH runs the tools on a machine you already operate. There is no screen on that host, it is a shell, which makes it a good fit for a build box or a server with access your laptop does not have. Register one with **Connect a server** in the desktop app: keys stay server-side, and the browser never receives SSH keys or host keys. See [SSH hosts](/code/ssh-hosts) for the rest.
 
-## Bot has the same shape
+<Warning>
+Treat local and SSH execution as unfinished. The desktop app offers the choice and the screens described here, but Cortex does not promise a complete run of the tools on This PC or on an SSH host today. When you need a run you can rely on end to end, use Cloud. See [Cloud runtimes](/code/runtimes).
+</Warning>
 
-Bot's Computer rail follows the same rule: **Cloud** in the browser, **This PC** on the Bot desktop app, **SSH** as shell only. See [Bot computer](/bot/computer).
+## Approvals on a desktop session
+
+Nothing about the desktop app makes a turn quieter. A command that needs a decision stops the turn and asks, with **Allow**, **Always** and **Deny**, and file writes and shell commands are never silent.
+
+The two gates stay separate here exactly as they do in the browser. A command is decided on the prompt; a file write is not on that rail at all, it waits under **Changes** for a person to approve it, and a session-level always never covers a write. There is no undo, no checkpoint and no revert anywhere in Code, so a pending change is the moment to refuse. See [Permissions and approvals](/code/approvals) and [Changes and diffs](/code/changes).
+
+## Signed out, and where credentials live
+
+Signed out, desktop Code Home stays visible: This PC, SSH and Cloud are still shown, and so are **Ask**, **Plan** and **Agent**. Pressing start raises the sign-in dialog instead of failing. Automations, Review, Usage, Cloud and SSH also stay visible, and stay locked.
+
+Provider credentials are entered under **Settings → Providers**, and the form never reads a key back to you. Code has no Secrets destination on any surface, and nothing in Code asks you to paste a token.
+
+## The host status the app reports
+
+The app shows one status for the host behind your work, and it is worth knowing what each one means.
+
+| Status | What it tells you | The line it shows |
+| --- | --- | --- |
+| **Permission blocked** | a session is blocked on a decision | **A session is waiting on Allow, Always, or Deny.** |
+| **Cloud session running** | work is alive in Cortex cloud | **A Cloud session is running.** |
+| **Failed wake** | a remote host did not come back | **The remote Code host did not come back.** |
+| **Connecting** | a host is being attached | **Connecting to the Code host…** |
+| **Connected** | a host is attached and named | the machine itself, as **this Mac**, **this PC**, **this machine** or **this device**, or the name of the remote host you configured |
+| **Cloud only** | no local host, so Cloud is the runtime | **The browser cannot run the local harness.** signed out, or **Cloud-only on the web, or connect a Cortex Code host.** signed in |
+
+The order is deliberate. A session waiting on Allow, Always or Deny is shown ahead of whether your own machine is up, then a running Cloud session, then a failed wake, then connecting, and only then connected or Cloud only. That is why a session running in Cortex cloud reads **Cloud session running** even while the local side is down: what matters is the work, not the laptop.
+
+## The same choice from the terminal
+
+The Cortex CLI drives the same sessions and makes the same runtime choice, on Cloud by default with This PC and SSH by opt-in. Both of those need an already connected Code session; the CLI will not create one on the fly and will not substitute Cloud without telling you. The switches themselves are documented with the CLI, in [environment variables](/cli/environment-variables), and the vocabulary map between Code words and CLI words is on [Code in the terminal](/code/cli).
 
 ## Related
 
-- [Desktop app](/getting-started/desktop) — download and sign in.
-- [Cloud runtimes](/code/cloud) — the default host.
-- [Code in the terminal](/code/cli)
+- [Cloud runtimes](/code/runtimes) for the default runtime and how a guest is prepared.
+- [SSH hosts](/code/ssh-hosts) for registering and choosing a remote host.
+- [Machines](/code/machines) for Cloud occupancy and team runners in the browser.
+- [The desktop app](/getting-started/desktop) for downloading it and signing in.
+- [Code in the terminal](/code/cli) for the same sessions from a shell.

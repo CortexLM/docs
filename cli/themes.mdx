@@ -1,0 +1,117 @@
+---
+title: "Themes"
+description: "The four built-in CLI themes, the picker with live preview, and the configuration keys that control colour and the rest of the display."
+icon: "palette"
+---
+
+The Cortex CLI ships four themes. A theme sets every colour the interface uses: timeline text, tool rows, borders, status lines and accents. Switching one is instant and reversible, so you can try all four in a live session before you decide.
+
+This page lists the four themes, shows the two ways to switch, gives the configuration keys for a theme and the related display settings, and prints the default palette in case you want a terminal profile that matches. Going beyond the four is covered under [Custom themes](#custom-themes) at the end.
+
+## The four themes
+
+The picker shows a display name, the configuration file uses a shorter id. Both refer to the same theme.
+
+| Theme | Config id | What it looks like |
+| --- | --- | --- |
+| **Cortex Night** | `dark` | `Default inky chrome · banner green on focus only`. The default. |
+| **Cortex Day** | `light` | `Light chrome for bright rooms` |
+| **Ocean Dark** | `ocean_dark` | `Deep blue and cyan accents`. `ocean` is accepted as a short form. |
+| **Monokai** | `monokai` | `Classic code-editor colors` |
+
+There are exactly four, and none of them follows your terminal's light or dark setting: you pick a theme explicitly. If you move between a bright room and a dark one, switching is one command.
+
+## Switch a theme in a session
+
+| Command | Effect |
+| --- | --- |
+| `/theme` | Open the picker |
+| `/theme monokai` | Switch straight to a theme by its config id |
+
+In the picker, `↑`/`↓` (or `k`/`j`) previews a theme live, so the whole interface repaints as you move down the list. `Enter` accepts the highlighted theme and `Esc` reverts to what you had, which makes trying one out free.
+
+The same control is in Settings. Press `F2` (or run `/settings`), open **Appearance** and expand the **Theme** row to reach `Appearance › Theme`. The selected theme carries a filled marker and the label `current`. In that submenu `↑/↓/j/k` navigate, `Enter` selects, `←` goes back up to Appearance, `d` resets the theme to the default, and `F2` or `Esc` closes Settings.
+
+<Note>
+Whichever theme you pick, one rule does not move: `Themes never change the accent rule: banner green on focus only.` The accent marks the focused selection and nothing else, so a theme changes the palette without changing what the interface is telling you.
+</Note>
+
+## Set a theme in configuration
+
+Set it once in `config.toml` and every new session starts with it:
+
+```toml
+[tui.theme]
+name = "ocean_dark"
+```
+
+Use the config id, not the display name. `/reload-config` picks up a change made on disk without restarting the session. [Configuration](/cli/configuration) covers where the file lives and how project and personal settings combine.
+
+## Other display settings
+
+Two more keys live next to the theme and change how much the interface moves and how loudly it speaks:
+
+```toml
+[tui]
+animations = true
+notifications = true
+```
+
+`/compact` toggles a denser layout inside a session, which pairs well with a small terminal. For anything that is not the full interface, `--color auto|always|never` controls whether colour is emitted at all; use `--color never` when you are piping output into a file or a log. See [Headless and scripting](/cli/headless) for the rest of the non-interactive options.
+
+## The default palette
+
+These are the values the default theme uses. They are handy if you want your terminal profile, prompt or editor to sit next to the interface without clashing.
+
+| Role | Colour |
+| --- | --- |
+| Selection accent (the caret and the focused label, and the focused composer prompt) | `#1F4945` |
+| Background | `#000000` |
+| Charcoal panel (tips and info) | `#141414` |
+| Past user turn bar | `#1C1C1C` |
+| Selection bar | `#262626` |
+| Hairline above and below the prompt, and around search fields | `#3A3A3A` |
+| Focused border | `#525252` |
+| Text | `#F5F5F5` |
+| Dim text (placeholders, hints, descriptions) | `#6B7280` |
+| Muted text | `#4B5563` |
+| Success marks and diff additions (`+N`) | `#4ADE80` |
+| Warning | `#FFC857` |
+| Error, a stopped run, quota messages, a failed server | `#F87171` |
+| Thinking status | `#6B7280` |
+
+Three rules explain why the palette looks the way it does:
+
+- The accent is the dominant background pixel of the Cortex banner, RGB `(31, 73, 69)`, which is `#1F4945`.
+- The accent never outlines a box. Borders are grey, so a focused panel is legible without a coloured frame competing with the content.
+- Focused green glyphs get a near-white backing rather than disappearing on black, and descriptions next to them stay dim.
+
+<Tip>
+If you find an older screenshot or note that uses a gold accent, `#C9A95C`, it is stale. That colour is retired and no current theme uses it.
+</Tip>
+
+## When colour looks wrong
+
+A theme can only work with what the terminal gives it. If colours look flat or text is hard to read after switching:
+
+- Check that your terminal advertises true colour. A 256-colour profile approximates the palette, so the accent and the dim greys move closer together.
+- Try **Cortex Day** if you run a light terminal background. A dark theme on a light background is the usual cause of unreadable dim text.
+- Press `d` on the Theme row in Settings to go back to the default, or run `/theme dark`.
+- For output that is not the interface, remember that colour codes travel: `--color never` or a plain pipe destination gives you clean text. [CLI troubleshooting](/cli/troubleshooting) covers mangled output in more detail.
+
+## Custom themes
+
+A plugin can supply a theme: the plugin capability list includes themes, and a plugin can register a hook that overrides theme values. That is the supported extension point today, and it is described on [CLI plugins](/cli/plugins).
+
+<Note>
+Pick one of the four built-ins, or ship a plugin that supplies a theme. Overriding individual palette roles by hand is not part of the documented surface for this build.
+</Note>
+
+## Related
+
+- [The terminal interface](/cli/tui)
+- [Configuration](/cli/configuration)
+- [CLI plugins](/cli/plugins)
+- [Slash commands](/cli/slash-commands)
+- [Keyboard shortcuts](/cli/keyboard)
+- [CLI troubleshooting](/cli/troubleshooting)

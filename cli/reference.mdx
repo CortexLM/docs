@@ -1,0 +1,272 @@
+---
+title: "Command reference"
+description: "The supported cortex command surface: global options, run and exec, sessions, auth, bounty, agents, MCP, plugins, config, utilities and maintenance."
+icon: "book"
+---
+
+This is the supported command surface of the Cortex CLI, one table per group. The generated help is always authoritative: `cortex --help` and `cortex <command> --help` come from the same definitions this page describes, so if a flag here disagrees with your installed build, believe the build and check your version with `cortex --version`.
+
+Two invocation forms exist, and the first one has two meanings:
+
+```bash
+cortex [OPTIONS] [PROMPT]
+cortex [OPTIONS] <COMMAND> [ARGS]
+```
+
+With no subcommand and a terminal attached, `cortex` starts the interactive interface, and a positional prompt seeds that first session. Without a terminal, use [`run` or `exec`](/cli/headless). Global options go before the subcommand.
+
+## Global options
+
+| Flag | Description |
+| --- | --- |
+| `-c`, `--config <KEY=VALUE>` | Configuration override, repeatable |
+| `-v`, `--verbose` | Verbose output, equivalent to `--log-level debug` |
+| `--trace` | Trace-level logging |
+| `--color <auto\|always\|never>` | Colour output, default `auto` |
+| `-m`, `--model <MODEL>` | Model to use |
+| `--oss` | Use local or open providers instead of the hosted service |
+| `-p`, `--profile <NAME>` | Profile from `config.toml` |
+| `-s`, `--sandbox <MODE>` | `read-only`, `workspace-write`, `danger-full-access` |
+| `-a`, `--ask-for-approval <POLICY>` | `untrusted`, `on-failure`, `on-request`, `never` |
+| `--full-auto` | Automatic execution inside the sandbox |
+| `--dangerously-bypass-approvals-and-sandbox` | No prompts, no sandbox. Aliased `yolo`. |
+| `-C`, `--cd <DIR>` | Working root for the agent |
+| `--add-dir <DIR>` | Extra writable directory, repeatable |
+| `-i`, `--image <PATH>` | Attach an image to the initial prompt |
+| `--search` | Enable web search |
+| `--alternate-screen` / `--no-alternate-screen` | Take the full viewport, or stay inline in the host terminal. Same as `[tui] alternate_screen`. |
+| `--max-agent-threads <N>` | Concurrent agent threads |
+| `--max-tool-threads <N>` | Concurrent tool executions |
+| `--command-timeout <SECONDS>` | Shell command timeout |
+| `--http-timeout <SECONDS>` | HTTP request timeout |
+| `--no-streaming` | Disable streaming responses |
+| `-L`, `--log-level <LEVEL>` | `error`, `warn`, `info`, `debug`, `trace`. Default `info`. |
+| `--debug` | Record bounded, content-free local diagnostics under the Cortex home `diagnostics/` directory, or `CORTEX_DIAGNOSTICS_DIR` |
+| `-h`, `--help` | Help |
+| `-V`, `--version` | Version |
+
+<Warning>
+`--dangerously-bypass-approvals-and-sandbox` turns off both gates at once: nothing asks, and nothing is confined. Use it only in a throwaway environment you are willing to lose. [Modes and permissions](/cli/modes-and-permissions) explains the safer combinations.
+</Warning>
+
+## Run the agent
+
+### cortex run
+
+Non-interactive and streaming. Alias `r`. Usage: `cortex run [OPTIONS] [MESSAGE]...`
+
+| Flag | Description |
+| --- | --- |
+| `--command <COMMAND>` | Run a predefined command instead of a prompt |
+| `-c`, `--continue` | Continue the most recent session |
+| `-s`, `--session <ID>` | Continue a specific session |
+| `--share` | Share the session and print the URL |
+| `-m`, `--model <MODEL>` | Model, in `provider/model` form |
+| `--agent <AGENT>` | Agent to use |
+| `--format <default\|json\|jsonl>` | Output format, `--output` is an alias |
+| `-f`, `--file <PATH>` | Attach a file, repeatable |
+| `--title <TITLE>` | Session title |
+| `--attach <URL>` | Attach to a running server |
+| `--port <PORT>` | Local server port |
+| `-t`, `--temperature <N>` | 0.0 to 2.0 |
+| `--top-p`, `--top-k`, `--seed` | Sampling controls |
+| `-n`, `--notification` | Desktop notification when finished |
+| `--stream` / `--no-stream` | Stream or buffer the response |
+| `-C`, `--copy` | Copy the final response to the clipboard |
+| `-o`, `--output-file <PATH>` | Write the final response to a file |
+| `--cwd <PATH>` | Working directory |
+| `--add-dir <DIR>` | Extra writable directory |
+| `--timeout <SECONDS>` | `0` means no timeout |
+| `--dry-run` | Preview without executing |
+| `--max-tokens <N>` | Response cap |
+| `--system <PROMPT>` | Custom system prompt |
+| `--schema <PATH>` | JSON schema for structured output |
+| `-q`, `--quiet` | Quiet output |
+| `--no-progress`, `--no-cache` | Drop progress output, ignore the cache |
+| `--retry <N>` | Retry count |
+| `--frequency-penalty`, `--presence-penalty`, `--stop`, `--logprobs`, `--n`, `--best-of` | Sampling controls |
+
+### cortex exec
+
+Headless execution for CI and scripts. Alias `e`. Usage: `cortex exec [OPTIONS] [PROMPT]...`
+
+| Flag | Description |
+| --- | --- |
+| `-f`, `--file <PATH>` | Read the prompt from a file |
+| `-o`, `--output-format <FORMAT>` | `text` (default), `json`, `stream-json`, `debug`, `stream-jsonrpc` |
+| `--input-format <FORMAT>` | `text` (default) or `stream-jsonrpc` |
+| `--auto <LEVEL>` | `read-only` (default), `low`, `medium`, `high` |
+| `--skip-permissions-unsafe` | Bypass all permission checks, conflicts with `--auto` |
+| `-m`, `--model <MODEL>` | Model |
+| `--spec-model <MODEL>` | Model for specification mode |
+| `--use-spec` | Start in specification mode |
+| `-r`, `--reasoning-effort <LEVEL>` | Reasoning effort |
+| `-s`, `--session-id <ID>` | Continue a session |
+| `--enabled-tools <LIST>` / `--disabled-tools <LIST>` | Comma-separated allow list and deny list |
+| `--list-tools` | Print the available tools and exit |
+| `--cwd <PATH>` | Working directory |
+| `--max-turns <N>` | Default `100` |
+| `--timeout <SECONDS>` | Default `600` |
+| `-i`, `--image <PATH>` | Attach an image, repeatable |
+| `--system <PROMPT>` | Custom system prompt |
+| `--max-tokens <N>` | Response cap |
+| `--echo` | Include the prompt in the output |
+| `--user <ID>` | User identifier for tracking |
+| `--response-format <FORMAT>` | `text`, `json`, `json_object` |
+| `--output-schema <SCHEMA>` | Inline JSON or a file path |
+| `--url <URL>` | Fetch a URL into the context, repeatable |
+| `--clipboard` | Read the clipboard into the context |
+| `--git-diff` | Include the git diff |
+| `--include <GLOB>` / `--exclude <GLOB>` | Filter files in the context, repeatable |
+| `-v`, `--verbose` | Verbose output |
+| `--frequency-penalty`, `--presence-penalty`, `--stop`, `--logprobs`, `-n`, `--best-of` | Sampling controls |
+
+## Sessions
+
+| Command | Description |
+| --- | --- |
+| `cortex resume [SESSION_ID]` | Resume a session. `--last`, `--pick`, `--all`, `--no-session`. |
+| `cortex sessions` | List sessions. `--all`, `--days`, `--since`, `--until`, `--favorites`, `-s/--search`, `-l/--limit`, `--json`. |
+| `cortex export [SESSION_ID]` | Export a session. `-o/--output`, `-f/--format json\|yaml\|csv`, `--pretty`. |
+| `cortex import <FILE_OR_URL>` | Import a session. `-f/--force`, `--resume`. `-` reads standard input. |
+| `cortex delete <SESSION_ID>` | Delete a session. `-y/--yes`, `-f/--force`. |
+| `cortex lock [SESSION_ID]` | Protect sessions from cleanup. Alias `protect`. Subcommands `add`, `remove`, `list`, `check`. |
+| `cortex attach [SESSION_ID]` | Attach this terminal to a live Code session. The session keeps running when you detach. |
+| `cortex jobs` | List, follow, or stop background Code agents. Subcommands `list`, `logs`, `stop`, `attach`. |
+
+<Note>
+Sharing, forking and rewinding are in-session actions, not subcommands. Use the slash commands `/share`, `/fork` and `/rewind` inside a session, or `cortex run --share` for a one-shot run. See [Sessions](/cli/sessions).
+</Note>
+
+## Authentication
+
+| Command | Description |
+| --- | --- |
+| `cortex login` | Sign in. `--with-api-key`, `--token <TOKEN>`, `--device-auth`, `--sso`. Subcommand `status`. |
+| `cortex logout` | Sign out. `-y/--yes`, `--all`. |
+| `cortex whoami` | Show the signed-in account. |
+
+## Bounty
+
+| Command | Description |
+| --- | --- |
+| `cortex bounty pair --hotkey <ss58>` | Pair a mining hotkey with your Cortex account. `--accept-terms` is required the first time, until the research terms are accepted. See [Pair a hotkey](/bounty/pair-a-hotkey). |
+
+## Agents
+
+`cortex agent` manages agents. See [Agents](/cli/agents).
+
+| Subcommand | Arguments |
+| --- | --- |
+| `list` | `--json`, `--primary`, `--subagents`, `--all`, `--remote`, `--filter` |
+| `show <name>` | `--json`, `--model` |
+| `create` | `--name`, `-d/--description`, `--mode`, `--non-interactive`, `--generate <DESCRIPTION>`, `--model` |
+| `edit <name>` | `-e/--editor` |
+| `remove <name>` | `-f/--force` |
+| `install <name>` | `-f/--force`, `--registry` |
+| `copy <source> <destination>` | `-f/--force`. Alias `clone`. |
+| `export <name>` | `-o/--output`, `--json` |
+
+## MCP servers
+
+`cortex mcp` manages connected servers. See [MCP servers](/cli/mcp).
+
+| Subcommand | Arguments |
+| --- | --- |
+| `list` | `--json`, `--all`. Alias `ls`. |
+| `get <name>` | `--json` |
+| `add <name>` | `-f/--force`, `--allow-local`, `--env KEY=VALUE`, `--url <URL>`, `--bearer-token-env-var <ENV_VAR>`, `--sse <URL>`, `--sse-bearer-token-env-var <ENV_VAR>`, or `-- <command>...` for a local server |
+| `remove <name>` | `-y/--yes`. Alias `rm`. |
+| `enable <name>` / `disable <name>` | Turn a server on or off |
+| `rename <old> <new>` | Rename a server |
+| `auth [name]` | Authorise a server. Subcommand `list`. |
+| `logout [name]` | `--all` |
+| `debug <name>` | `--json`, `--test-auth`, `--timeout`, `--no-cache`, `--show-cache-info` |
+
+## Plugins
+
+`cortex plugin` manages plugins. Alias `plugins`. See [CLI plugins](/cli/plugins).
+
+| Subcommand | Arguments |
+| --- | --- |
+| `list` | `--json`, `--enabled`, `--disabled`. Alias `ls`. |
+| `install <name>` | `--version`, `-f/--force`, `--json`, `--accept-command <SHA256>`, `--trust-code`. Alias `add`. |
+| `show <name>` | `--json`. Alias `info`. |
+| `enable <name>` / `disable <name>` | Turn a plugin on or off |
+| `remove <name>` | `-y`. Aliases `rm`, `uninstall`. |
+| `update <name>` | `--source`, `--accept-command <SHA256>`, `--json` |
+| `trust <name>` | `--yes` |
+| `run <name>` | A command name, or `--tool <name>` with `--input <JSON>`. `--json`. |
+| `search <query>` / `browse` | `--json` |
+| `new <name>` | `-d`, `-a/--author`, `-o/--output`, `--advanced`. Alias `create`. |
+| `dev` | `-p/--path`, `-w/--watch`, `--debounce-ms` |
+| `build` | `-p/--path`, `--debug`, `-o/--output` |
+| `validate` | `-p/--path`, `--json`, `-v`. Alias `check`. |
+| `publish` | `-p/--path`, `--dry-run`, `-o` |
+
+## Editor integration
+
+`cortex acp` starts an Agent Client Protocol server so an editor can drive a session. Standard input and output is the only transport: run `cortex acp --stdio`. Alongside it you can pass `-C/--cwd`, `-v/--verbose` and `-m/--model`. A nonzero `-p/--port` or a `--host` other than the default fails closed with `ACP network transport is unsupported; use --stdio`, and `--agent`, `--allow-tool` or `--deny-tool` fail with `ACP agent selection and tool allow/deny controls are not supported`. Both checks run before the server starts. See [Editors](/cli/editor).
+
+## Configuration
+
+| Command | Description |
+| --- | --- |
+| `cortex config` | Show configuration. `--json`, `--edit`. Subcommands `get <key>`, `set <key> <value>`, `unset <key>`. |
+| `cortex models [PROVIDER]` | List models. `--json`. Subcommand `list` with `--limit`, `--offset`, `--sort`, `--full`. |
+| `cortex features list` | Inspect feature flags. |
+| `cortex init` | Write `AGENTS.md` in the current directory. `-f/--force`, `-y/--yes`. |
+
+See [Configuration](/cli/configuration) for the file format and [Environment variables](/cli/environment-variables) for what the binary reads from the environment.
+
+## Utilities
+
+| Command | Description |
+| --- | --- |
+| `cortex github` | Repository integration. Alias `gh`. Subcommands `install`, `run`, `status`, `uninstall`, `update`. |
+| `cortex pr <NUMBER>` | Check out a pull request. `-p/--path`, `-b/--branch`, `-F/--force`, `--info`, `--diff`, `--comments`, `--token`. |
+| `cortex scrape <URL>` | Fetch a page as markdown, text or HTML. `-o/--output`, `-f/--format`, `--method`, `-t/--timeout`, `--retries`, `--user-agent`, `-H/--header`, `--cookie`, `--no-follow-redirects`, `--no-images`, `--no-links`, `--selector`, `--xpath`, `--pretty`. |
+| `cortex stats` | Usage statistics. `-d/--days`, `-p/--provider`, `-m/--model`, `--json`, `-v`. |
+| `cortex completion [SHELL]` | Shell completions for `bash`, `elvish`, `fish`, `powershell`, `zsh`. `--install` writes them into place. |
+
+## Maintenance
+
+| Command | Description |
+| --- | --- |
+| `cortex upgrade [VERSION]` | Update the CLI. `-c/--check`, `--changelog`, `-f/--force`, `-y/--yes`, `--channel`, `--pre`. |
+| `cortex uninstall` | Remove the CLI. `-c/--keep-config`, `-d/--keep-data`, `--dry-run`, `-f/--force`, `-y/--yes`, `--backup`, `-p/--purge`. |
+| `cortex compact` | Compaction and cleanup. Aliases `gc`, `cleanup`. Subcommands `run`, `logs`, `vacuum`, `status`, `config`. |
+| `cortex cache` | Cache management. Subcommands `show`, `clear`, `size`, `list`. |
+| `cortex logs` | Read logs. `-n`, `-f/--follow`, `-l/--level`, `-s/--session`, `--json`, `--paths`, `--clear`, `--keep-days`. |
+| `cortex feedback [MESSAGE]` | Send feedback. Alias `report`. Subcommands `bug`, `good`, `bad`, `submit`, `history`. |
+| `cortex alias` | Command aliases. Alias `aliases`. Subcommands `set`, `list`, `remove`, `show`. |
+
+## Diagnostics
+
+`cortex debug` groups the diagnostic commands. They are hidden from the main help, and they are supported: use them when you need to know what the CLI actually resolved rather than what you think it resolved.
+
+| Subcommand | Reports |
+| --- | --- |
+| `config` | Resolved configuration. `--json`, `--env`, `--diff`. |
+| `paths` | Where everything is on disk |
+| `system` | Platform and environment details |
+| `file <path>` | How a file resolves |
+| `skill <name>` | How a skill resolves |
+| `lsp` | Language server status |
+| `ripgrep` | Search backend status |
+| `snapshot` | Workspace snapshots. `--create`, `--restore`, `--snapshot-id`, `--description`, `--json`. |
+
+A few further subcommands exist for development of the CLI itself. They are hidden, undocumented and not part of the supported surface. If `cortex --help` on your build lists a command this page does not, check your version with `cortex --version` before relying on it.
+
+## Exit codes and output shapes
+
+`cortex exec` is the command to script against. Its exit codes, its `json` envelope and the streaming event shapes are on [Headless and scripting](/cli/headless), along with the rule that matters most for automation: parse the JSON, and treat the shape of human-readable text as something that can change between releases.
+
+## Related
+
+- [Headless and scripting](/cli/headless)
+- [Slash commands](/cli/slash-commands)
+- [Tools the agent uses](/cli/tools)
+- [Configuration](/cli/configuration)
+- [Environment variables](/cli/environment-variables)
+- [CLI troubleshooting](/cli/troubleshooting)

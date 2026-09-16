@@ -5,24 +5,20 @@
  *
  * # Why this exists
  *
- * `PROBLEM_TYPE_BASE` is wire contract. It used to point at
- * `docs.cortex.sh/problems`, a host that did not serve pages and is not the
- * product domain. Moving it without pages, or documenting `/v1/…` paths the
- * router does not register, is the same class of silent decay as an unmirrored
- * `ErrorCode`.
+ * `PROBLEM_TYPE_BASE` is wire contract: every error the API returns carries a
+ * `type` URL under `https://docs.cortex.foundation/problems`, so each
+ * `ErrorCode` needs a page there, and no page may document a code the API does
+ * not emit. Documenting a `/v1/…` path the router does not register is the
+ * same class of silent decay.
  *
- * This check is mechanical rather than a note in a contributing guide because
- * the note is what would be ignored the next time someone adds a code or a
- * "helpful" endpoint to a docs table. It also holds the top navbar to Home +
- * Documentation (not Chat | Code | Bot product chrome) and home CTAs to ink,
- * not a brand-green Install / `navbar.primary` button. Public MDX must not
- * document `/auth/`, `/oauth/`, refresh tokens, WorkOS, or `cortex_rt`. A
- * `docs.json` navigation entry must resolve to an MDX page — Mintlify will
- * otherwise publish a sidebar link that 404s, and the rest of this job would
- * still pass.
- *
- * Kubernetes labels and AWS tags under `deploy/` that use `cortex.sh/…` are
- * internal identifiers and are not scanned.
+ * The site is end-user documentation. Public MDX must not document sign-in
+ * wire protocols (`/auth/`, `/oauth/`, refresh tokens, identity vendors, or the
+ * session cookie), and it carries no images: every page and card uses an
+ * icon. Navigation is `navigation.tabs`, one tab per application, so a reader
+ * picks the product from the navbar the way they would on any large docs site.
+ * Every navigation entry, group root, navbar link, and internal href must
+ * resolve to an MDX page — Mintlify would otherwise publish a link that 404s
+ * while the rest of this job stayed green.
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -33,6 +29,7 @@ const ROOT = resolve(process.env.CORTEX_CHECK_ROOT ?? fileURLToPath(new URL('..'
 const BACKEND = process.argv[2] === undefined ? null : resolve(process.argv[2]);
 const EXPECTED_BASE = 'https://docs.cortex.foundation/problems';
 const OPERATIONAL = new Set(['/healthz', '/readyz', '/startupz']);
+const PRODUCT_TABS = ['Chat', 'Code', 'Bot', 'CLI', 'Design', 'Security'];
 
 const failures = [];
 
@@ -80,41 +77,6 @@ function tsProblemBase(source) {
   return /export const PROBLEM_TYPE_BASE = '([^']+)'/.exec(source)?.[1] ?? null;
 }
 
-const PRODUCT_CHROME = new Set(['Chat', 'Code', 'Bot', 'Design']);
-
-function assertDocsChrome(docsJson) {
-  let parsed;
-  try {
-    parsed = JSON.parse(docsJson);
-  } catch {
-    fail('docs.json is not JSON');
-    return;
-  }
-  const links = parsed.navbar?.links;
-  if (!Array.isArray(links)) {
-    fail('docs.json navbar.links must include Home and Documentation');
-    return;
-  }
-  const labels = links.map((link) => link?.label);
-  if (!labels.includes('Home') || !labels.includes('Documentation')) {
-    fail('docs.json navbar must be Home + Documentation, not product chrome');
-  }
-  for (const label of labels) {
-    if (typeof label === 'string' && PRODUCT_CHROME.has(label)) {
-      fail(
-        `docs.json navbar.links must not include product chrome "${label}" (those are documentation tabs)`,
-      );
-    }
-  }
-  if (parsed.navbar?.primary) {
-    fail(
-      'docs.json navbar.primary is a brand-green CTA; docs CTAs are ink, not Install',
-    );
-  }
-  assertPublicApiNav(parsed);
-  assertNavPagesExist(parsed);
-}
-
 const FORBIDDEN_AUTH_PAGES = ['api/authentication', 'api/oauth'];
 
 function pushNavSlug(raw, out) {
@@ -136,9 +98,8 @@ function pushNavSlug(raw, out) {
 
 /**
  * Mintlify `pages` entries are either a slug string or a nested `{ group, pages }`
- * object. `href` on navbar links and nav objects is the same contract: an
- * internal path must resolve to MDX. Walking only `pages` strings is how a
- * dead navbar `/missing-mintlify-page` href used to leave this job green.
+ * object. `href` on navbar links, anchors and nav objects is the same contract:
+ * an internal path must resolve to MDX.
  */
 function collectNavPages(node, out = []) {
   if (node == null) return out;
@@ -169,12 +130,46 @@ function navPages(parsed) {
   const out = collectNavPages(parsed.navigation);
   collectNavPages(parsed.navbar?.links, out);
   if (parsed.navbar?.primary) collectNavPages(parsed.navbar.primary, out);
+  collectNavPages(parsed.footer?.links, out);
+  for (const redirect of parsed.redirects ?? []) pushNavSlug(redirect?.destination, out);
   return out;
 }
 
 function navPageExists(slug) {
   const candidates = [`${slug}.mdx`, `${slug}.md`, `${slug}/index.mdx`, `${slug}/index.md`];
   return candidates.some((rel) => existsSync(join(ROOT, rel)));
+}
+
+function assertDocsConfig(docsJson) {
+  let parsed;
+  try {
+    parsed = JSON.parse(docsJson);
+  } catch {
+    fail('docs.json is not JSON');
+    return;
+  }
+  const tabs = parsed.navigation?.tabs;
+  if (!Array.isArray(tabs)) {
+    fail('docs.json navigation must be `navigation.tabs` (one tab per application)');
+  } else {
+    const labels = tabs.map((tab) => tab?.tab);
+    for (const product of PRODUCT_TABS) {
+      if (!labels.includes(product)) fail(`docs.json navigation.tabs must carry a "${product}" tab`);
+    }
+    for (const tab of tabs) {
+      if (!tab?.icon) fail(`docs.json tab "${tab?.tab}" has no icon`);
+      for (const group of tab?.groups ?? []) {
+        if (!group?.icon) fail(`docs.json group "${group?.group}" in tab "${tab?.tab}" has no icon`);
+      }
+    }
+  }
+  if (parsed.theme !== 'mint') fail('docs.json theme must be "mint" (the Mintlify starter theme)');
+  if (!parsed.favicon) fail('docs.json must set a favicon');
+  for (const mode of ['light', 'dark']) {
+    if (typeof parsed.logo?.[mode] !== 'string') fail(`docs.json logo.${mode} is missing`);
+  }
+  assertPublicApiNav(parsed);
+  assertNavPagesExist(parsed);
 }
 
 function assertPublicApiNav(parsed) {
@@ -219,6 +214,63 @@ function assertNoAuthInternals(rel, text) {
       );
     }
   }
+}
+
+const IMAGES = [
+  { pattern: /<img\b/i, label: '<img>' },
+  { pattern: /<Frame\b/, label: '<Frame>' },
+  { pattern: /!\[[^\]]*\]\(/, label: 'a markdown image' },
+  { pattern: /^image:/m, label: '`image:` frontmatter' },
+  { pattern: /\/images\//, label: 'an /images/ path' },
+];
+
+function assertNoImages(rel, text) {
+  if (!rel.endsWith('.mdx')) return;
+  for (const { pattern, label } of IMAGES) {
+    if (pattern.test(text)) {
+      fail(`${rel} uses ${label}; this site carries no images, use icons`);
+    }
+  }
+}
+
+function frontmatter(text) {
+  const m = /^---\n([\s\S]*?)\n---\n/.exec(text);
+  if (m === null) return null;
+  const out = {};
+  for (const line of m[1].split('\n')) {
+    const kv = /^([a-zA-Z]+):\s*(.*)$/.exec(line);
+    if (kv) out[kv[1]] = kv[2].replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
+  }
+  return out;
+}
+
+function assertFrontmatter(rel, text, titles) {
+  if (!rel.endsWith('.mdx')) return;
+  const fm = frontmatter(text);
+  if (fm === null) {
+    fail(`${rel} has no frontmatter`);
+    return;
+  }
+  if (!fm.title) fail(`${rel} has no title`);
+  if (!fm.description) fail(`${rel} has no description`);
+  else if (fm.description.length > 160) fail(`${rel} description is ${fm.description.length} characters (max 160)`);
+  if (!rel.startsWith('problems/') && !fm.icon) fail(`${rel} has no icon (this site uses icons, not images)`);
+  if (fm.title) {
+    const other = titles.get(fm.title);
+    if (other !== undefined) fail(`${rel} repeats the title "${fm.title}" of ${other}`);
+    else titles.set(fm.title, rel);
+  }
+}
+
+function internalHrefs(text) {
+  const body = text.replace(/```[\s\S]*?```/g, '');
+  const out = new Set();
+  for (const m of body.matchAll(/(?:href=|\]\()"?(\/[A-Za-z0-9._\-/#?=]*)"?/g)) {
+    const raw = m[1].split('#')[0].split('?')[0];
+    if (raw === '/' || raw === '') continue;
+    out.add(raw.replace(/^\//, '').replace(/\/$/, ''));
+  }
+  return out;
 }
 
 function routerPaths(source) {
@@ -320,7 +372,7 @@ if (!existsSync(join(docsRoot, 'docs.json'))) {
   if (docsJson.includes('docs.cortex.sh')) {
     fail('docs.json still names docs.cortex.sh');
   }
-  assertDocsChrome(docsJson);
+  assertDocsConfig(docsJson);
 }
 
 for (const rel of FORBIDDEN_AUTH_PAGES) {
@@ -331,38 +383,26 @@ for (const rel of FORBIDDEN_AUTH_PAGES) {
   }
 }
 
-const indexMdx = join(docsRoot, 'index.mdx');
-if (existsSync(indexMdx)) {
-  const index = readFileSync(indexMdx, 'utf8');
-  if (/<Card\s[^>]*title="(Quickstart|Download|Install)"/.test(index)) {
-    fail(
-      'index.mdx must not use a Mintlify Card as a brand-green home CTA',
-    );
-  }
-  if (/\b(Quickstart|Download Cortex)\b/.test(index) && !index.includes('ink-btn')) {
-    fail('index.mdx home CTAs must use ink-btn, not Mintlify primary Cards');
-  }
-  if (!existsSync(join(docsRoot, 'custom.css'))) {
-    fail('custom.css is missing (ink CTA styles)');
-  }
-}
-
 const registered = routerPaths(routerRs);
 const registeredNorm = new Set([...registered].map(normalizePath));
 const docsFiles = walk(docsRoot).filter((path) => /\.(mdx|md|json)$/.test(path));
+const titles = new Map();
 
 for (const file of docsFiles) {
-  const rel = relative(ROOT, file);
+  const rel = relative(ROOT, file).split('\\').join('/');
+  if (rel === 'README.md' || rel === 'AGENTS.md') continue;
   const text = readFileSync(file, 'utf8');
   if (text.includes('docs.cortex.sh')) {
     fail(`${rel} names docs.cortex.sh (problem URIs belong on docs.cortex.foundation)`);
   }
-  if (rel.endsWith('.mdx') && text.includes('/images/frames/')) {
-    fail(
-      `${rel} uses a retired fake-app SVG plate under /images/frames/; use images/product/*.png or images/cli/`,
-    );
-  }
   assertNoAuthInternals(rel, text);
+  assertNoImages(rel, text);
+  assertFrontmatter(rel, text, titles);
+  if (rel.endsWith('.mdx')) {
+    for (const slug of internalHrefs(text)) {
+      if (!navPageExists(slug)) fail(`${rel} links to /${slug}, which has no MDX page`);
+    }
+  }
   if (BACKEND === null) continue;
   for (const path of documentedV1Paths(text)) {
     const norm = normalizePath(path);

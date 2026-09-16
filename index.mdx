@@ -1,89 +1,130 @@
 ---
-title: "Guides for Chat, Code, Bot, Design, and the CLI"
-description: "Product docs for the Cortex app — how to chat, ship code, run bots, design canvases, and drive Code from a terminal. Platform API lives elsewhere."
-image: "/images/banners/getting-started.png"
-keywords: ["Cortex docs", "documentation", "help", "guides"]
+title: "Cortex documentation"
+description: "Guides for every Cortex application: Chat, Code, Bot, the CLI, Design and Security, plus accounts, plans, settings and reference."
+icon: "house"
 ---
 
-<code>docs.cortex.foundation</code>
+Cortex is a set of applications that share one account on `cortex.foundation`. **Cortex Chat** answers questions and does research, **Cortex Code** works inside your repositories, **Cortex Bot** runs on a computer of its own, **Cortex CLI** drives Code from a terminal, **Cortex Design** holds canvases, and **Cortex Security** reviews pull requests where they already live. The same sign-in opens all of them.
 
-Product docs for the Cortex app — how to chat, ship code, run bots, design canvases, and drive Code from a terminal. One account, one domain. **Platform API lives elsewhere.**
+This is the product documentation. It explains what each application does, what you can do without an account, what signing in adds, and where every control lives. Start with the card for the application you came here for, or take the quickstart if you have never opened Cortex at all.
 
-<Frame caption="Cortex Chat home — Chat, Code, and Bot in the sidebar; recent conversations; the composer with its model chip; Code, Research, Docs, and Agents as starting points.">
-  <img src="/images/product/chat-home-recents.png" alt="Cortex Chat home with recent conversations in the sidebar and the composer ready" />
-</Frame>
-
-<p className="ink-cta-row">
-  <a className="ink-btn" href="/getting-started/quickstart">Quickstart</a>
-  <a className="ink-btn ink-btn-quiet" href="/getting-started/downloads">Download Cortex</a>
-</p>
-
-## Start here
+## Pick an application
 
 <CardGroup cols={3}>
-  <Card title="Getting started" img="/images/banners/getting-started.png" href="/getting-started/quickstart">
-    A first chat as a guest, then sign in for Code, Bot, and Design. Accounts, plans, settings.
+  <Card title="Cortex Chat" icon="comments" href="/chat/index">
+    Ask, research and create. Conversations, projects, Library, memory, tools, images and scheduled tasks. The only application that works before you sign in.
   </Card>
-  <Card title="Chat" img="/images/banners/chat.png" href="/chat">
-    Projects, Library, plans, models, tools, Deep Research, images, and how a turn runs.
+  <Card title="Cortex Code" icon="code" href="/code/index">
+    Agents in your repositories. Sessions, isolated runtimes, approvals, changes, tickets and pull-request review. Not a chat with a different icon.
   </Card>
-  <Card title="Code" img="/images/banners/code.png" href="/code">
-    A coding agent in an isolated Cloud guest — sessions, Ask / Plan / Agent, GitHub, review.
+  <Card title="Cortex Bot" icon="robot" href="/bot/index">
+    A teammate with a computer. A bot browses, clicks and works on a desktop you can watch, and parks consequential steps for your approval.
   </Card>
-  <Card title="Bot" img="/images/banners/bot.png" href="/bot">
-    Always-on agents with their own computer, approvals, routines, skills, and the Bot desktop app.
+  <Card title="Cortex CLI" icon="terminal" href="/cli/index">
+    Cortex Code in the terminal. Install, sign in, run sessions, use local and remote hosts, script headless runs and wire it into continuous integration.
   </Card>
-  <Card title="Design" img="/images/banners/design.png" href="/design">
-    Persistable canvases hosted from Chat or Code, edited in the Design desktop app.
+  <Card title="Cortex Design" icon="pen-ruler" href="/design/index">
+    Canvases hosted from Chat or Code and edited in the Cortex Design desktop app. Versions, a reusable library and export.
   </Card>
-  <Card title="CLI" icon="terminal" href="/cli">
-    Cortex Code in the terminal — install, sign in, the TUI, slash commands, `/goal`, headless runs.
+  <Card title="Cortex Security" icon="shield-halved" href="/security/index">
+    Pull-request review without pasting a diff. The change stays in the repository and Cortex reads it there, then writes a check run and a summary.
   </Card>
 </CardGroup>
 
-## Reference
+## Which one do I need?
 
-<CardGroup cols={3}>
-  <Card title="Troubleshooting" icon="life-buoy" href="/getting-started/troubleshooting">
-    What a message means across Chat, Code, and Bot — gates, quotas, reconnects.
-  </Card>
-  <Card title="Security and privacy" icon="shield-check" href="/security/overview">
-    What Cortex stores, cookies and consent, where code runs, export and deletion.
-  </Card>
-  <Card title="API" icon="braces" href="/api/overview">
-    The problem-document format and the public catalog of error codes.
-  </Card>
-  <Card title="System status" icon="activity" href="/status">
-    Live availability for Web, API, Chat, Code, and Bot — incidents and maintenance.
-  </Card>
-  <Card title="Changelog" icon="history" href="/changelog">
-    What shipped in Chat, Code, Bot, Design, and the CLI — dated, with the surface it changed.
-  </Card>
-  <Card title="Platform API" icon="clock" href="/platform">
-    Not available yet. No endpoints, SDKs, or keys — and what to use instead.
-  </Card>
-</CardGroup>
-
-## Which product do I want?
-
-| You want to… | Open |
+| You want to | Open |
 | --- | --- |
-| Ask questions, write, research with citations, work with documents and pictures | [Chat](/chat) |
-| Change a repository, run tests, open a pull request | [Code](/code) |
-| Delegate ongoing work to an agent that browses, clicks, and runs on a schedule | [Bot](/bot) |
-| Drive Code from your own terminal, a script, or CI | [CLI](/cli) |
-| Lay out frames, notes, and a component library on a board | [Design](/design) |
+| Ask a question, write, research, work with documents or pictures | [Cortex Chat](/chat/index) |
+| Change a repository, run tests, open a pull request | [Cortex Code](/code/index) |
+| Hand ongoing work to an agent that browses and clicks on its own desktop | [Cortex Bot](/bot/index) |
+| Drive the same Code sessions from your terminal, a script or a pipeline | [Cortex CLI](/cli/index) |
+| Lay out a board of frames, components and notes | [Cortex Design](/design/index) |
+| Review changes in the repository where they already live | [Cortex Security](/security/index) |
 
-Chat works before you sign in. Code, Bot, and Design need an account — see [Accounts](/getting-started/accounts).
+For the long version, with what each one needs before it will open, read [Which product do I need?](/getting-started/choose-a-product).
 
 <Note>
-The inference **Platform API** (a public model-inference API) is not documented on this site and is not implemented in this repository. See [Platform API](/platform).
+Chat is never gated. Everything else is for signed-in accounts, and Cortex Code and Cortex Bot are in closed beta, so a signed-in account that has not been invited sees a dialog offering to continue in Chat. See [Accounts and sign-in](/getting-started/accounts).
 </Note>
 
-## Next
+## First steps
 
-1. [Quickstart](/getting-started/quickstart) — a first Chat, then the surfaces that need an account.
-2. [What is Cortex](/getting-started/what-is-cortex) — the products, the models, and the hostnames in one place.
-3. [Accounts](/getting-started/accounts) — what a guest can do, and what signing in unlocks.
-4. [Downloads](/getting-started/downloads) — the desktop apps and the CLI, when you need a host the browser cannot offer.
-5. [Troubleshooting](/getting-started/troubleshooting) — when a message is not an error.
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/getting-started/quickstart">
+    From an open browser tab to a first answer, then sign in and open the rest.
+  </Card>
+  <Card title="What is Cortex" icon="circle-info" href="/getting-started/what-is-cortex">
+    The applications, the models, the one account, and which hostname serves what.
+  </Card>
+  <Card title="Which product do I need?" icon="signs-post" href="/getting-started/choose-a-product">
+    A task table that maps what you want to do to the application that does it.
+  </Card>
+  <Card title="Accounts and sign-in" icon="user" href="/getting-started/accounts">
+    What a guest can do, what signing in adds, and how the member-only gates read.
+  </Card>
+  <Card title="Plans and quotas" icon="credit-card" href="/getting-started/plans">
+    Guest, Free, Go, Plus and Pro, the two message windows, and how a limit resets.
+  </Card>
+  <Card title="Ways to run Cortex" icon="download" href="/getting-started/downloads">
+    The browser, the desktop app and the command line, and what only the last two can do.
+  </Card>
+</CardGroup>
+
+## Settings and your data
+
+<CardGroup cols={2}>
+  <Card title="Settings" icon="gear" href="/getting-started/settings">
+    The seven Settings tabs and every control inside them, plus the search across tabs.
+  </Card>
+  <Card title="Data and privacy" icon="user-shield" href="/getting-started/data-and-privacy">
+    Cookie consent, Global Privacy Control, memory, export and permanent deletion.
+  </Card>
+  <Card title="Two-factor authentication" icon="lock" href="/getting-started/two-factor">
+    Enrol an authenticator app, and the confirmation that export and deletion require.
+  </Card>
+  <Card title="Interface language" icon="language" href="/getting-started/language">
+    The eight interface languages, how to switch, and what stays in English.
+  </Card>
+</CardGroup>
+
+## Reference and help
+
+<CardGroup cols={3}>
+  <Card title="Troubleshooting" icon="life-ring" href="/getting-started/troubleshooting">
+    What a message means across Chat, Code and Bot: gates, quotas, reconnects, maintenance.
+  </Card>
+  <Card title="Limits and quotas" icon="gauge-high" href="/reference/limits">
+    Every user-facing limit in one table.
+  </Card>
+  <Card title="Models" icon="microchip" href="/reference/models">
+    The models Cortex serves today and what each one is for.
+  </Card>
+  <Card title="Errors" icon="triangle-exclamation" href="/reference/errors">
+    How a failure is reported, and the catalogue of problem codes behind it.
+  </Card>
+  <Card title="Problem catalog" icon="list" href="/problems/index">
+    One page per problem code, with what it means and what to do.
+  </Card>
+  <Card title="Security and privacy" icon="user-shield" href="/reference/security-and-privacy">
+    What Cortex stores, what it never stores, and what this deployment does not certify.
+  </Card>
+  <Card title="System status" icon="signal" href="/reference/status">
+    Live availability, incidents and maintenance windows.
+  </Card>
+  <Card title="Cortex Bounty" icon="coins" href="/bounty/index">
+    Pair a hotkey, file a report, and how verdicts are scored.
+  </Card>
+  <Card title="Changelog" icon="clock-rotate-left" href="/changelog">
+    What shipped, dated, with the surface it changed.
+  </Card>
+</CardGroup>
+
+## Related
+
+- [Quickstart](/getting-started/quickstart)
+- [What is Cortex](/getting-started/what-is-cortex)
+- [Which product do I need?](/getting-started/choose-a-product)
+- [Frequently asked questions](/getting-started/faq)
+- [Glossary](/getting-started/glossary)
+- [Troubleshooting](/getting-started/troubleshooting)

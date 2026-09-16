@@ -1,0 +1,123 @@
+---
+title: "Hooks"
+description: "How a hook reaches a CLI session: the plugin manifest block, the events that fire, the order they run in, and why a hook can deny but never approve"
+icon: "link"
+---
+
+A **hook** lets a plugin act when something happens in a session: a tool is about to run, a tool has finished, a session has started. A hook is declared by a plugin, in that plugin's manifest, and it runs inside the plugin runtime. There is no separate hooks file to write by hand.
+
+This page covers where a hook is declared, which events actually fire today, the order hooks run in, what a hook is allowed to change, and the one thing a hook can never do: approve something on your behalf.
+
+## Where a hook is declared
+
+Hooks live in the plugin manifest, as one `[[hooks]]` block per hook:
+
+```toml
+[[hooks]]
+hook_type = "tool_execute_before"
+priority = 50
+pattern = "*.rs"
+```
+
+A hook block has exactly four keys, and the manifest refuses any key it does not recognise rather than ignoring it:
+
+| Key | Required | What it does |
+| --- | --- | --- |
+| `hook_type` | yes | Which event this hook listens for |
+| `priority` | no | Ordering, default `100`. A **lower** number runs earlier |
+| `pattern` | no | Narrows the hook to matching subjects. Omit it to match everything |
+| `function` | no | The entry point in the plugin to call for this hook |
+
+Because a hook belongs to a plugin, installing a plugin is what installs its hooks. Creating, building, validating and installing a plugin is covered on [CLI plugins](/cli/plugins).
+
+## What fires today
+
+This is the part to read before you design anything around hooks. The manifest accepts a broad set of event names, but only some of them are dispatched by the shipped build.
+
+Hooks run in two situations:
+
+<Steps>
+  <Step title="When a session loads your plugins">
+    Starting the CLI loads your plugin directories into the plugin runtime and fires `session_start`. A plugin that refuses here stops the runtime from coming up.
+  </Step>
+  <Step title="When you invoke a plugin directly">
+    `cortex plugin run` dispatches the full chain around the call: `session_start`, then `tool_execute_before`, then the tool or command itself, then `tool_execute_after`, then `session_end`. A hook that denies at `session_start` or `tool_execute_before` stops the invocation and the reason it gave is what you see.
+  </Step>
+</Steps>
+
+<Warning>
+Every other event name is accepted by the manifest but is **not dispatched yet**. A hook declared on one of them is valid, installs cleanly, and never runs. In particular, a hook does not fire around the tool calls the model makes during an ordinary interactive turn, so a hook cannot be used to police an interactive session today. Use [Permission policy](/cli/policy) for that.
+</Warning>
+
+## The events
+
+Names are written in the manifest in lower case with underscores. Listings elsewhere in the product print the same events in a dotted form, so `tool_execute_before` appears as `tool.execute.before`. The manifest only accepts the underscore form.
+
+| Event | Fires today | Subject |
+| --- | --- | --- |
+| `session_start` | yes | A session or a plugin invocation is starting |
+| `session_end` | in `cortex plugin run` | The invocation finished, with its success or failure |
+| `tool_execute_before` | in `cortex plugin run` | A tool is about to run, with its arguments |
+| `tool_execute_after` | in `cortex plugin run` | A tool finished, with its success and output |
+| `chat_message` | no | A message before it is sent |
+| `permission_ask` | no | A permission question |
+| `prompt_inject` | no | Adding to what the model is given |
+| `ai_response_before`, `ai_response_stream`, `ai_response_after` | no | Around a model reply |
+| `file_operation_before`, `file_operation_after`, `file_edited` | no | Around a file operation |
+| `command_execute_before`, `command_execute_after` | no | Around a command |
+| `error_handle` | no | An error being reported |
+| `config_changed`, `model_changed`, `workspace_changed` | no | Something about the session changed |
+| `clipboard_copy`, `clipboard_paste` | no | Clipboard activity |
+
+The manifest also accepts a set of interface-level events for extending the terminal interface itself. None of them are dispatched yet either, and they are not useful to target today.
+
+## Order and matching
+
+When several hooks listen for the same event, the order is deterministic: by `priority` first, lowest number first, then by plugin identity to break a tie. Two plugins that both ask for priority `50` will always run in the same order relative to each other, run after run.
+
+`pattern` decides whether a hook is offered the event at all:
+
+| Pattern | Matches |
+| --- | --- |
+| `*` | Everything |
+| `*.rs` | Anything ending in `.rs` |
+| `src/*` | Anything starting with `src/` |
+| `read_file` | That subject exactly |
+
+One `*` at the start or the end is a prefix or suffix match. A pattern with no `*` is an exact match, not a substring search.
+
+## What a hook may not do
+
+A hook that fires before an action can change the payload it was given, and it can refuse the action outright with a reason. Both of those are bounded:
+
+- It cannot change which tool is being called, and it cannot remove the arguments. Trying to is refused with `A hook cannot change tool identity or remove arguments`.
+- It cannot raise the role of a message. Trying to is refused with `Hooks cannot elevate message roles`.
+- `tool_execute_after`, `session_end` and `error_handle` are observers. They see the outcome and can report on it, but they do not replace a result or reverse what already happened.
+
+## A hook is never consent
+
+A hook can say no. A hook can never say yes.
+
+Every permission question starts at "ask". A hook is allowed to answer "deny", and the first hook that answers anything other than "ask" settles it. If a hook answers "allow", the dispatch does not quietly accept it: the call fails with `Plugins cannot grant execution privileges`. A third-party plugin attempting it is refused with `Third-party plugins cannot auto-grant permissions (security restriction)`, and the engine checks the same thing again independently.
+
+So a hook cannot stand in for an approval, and it cannot remove one. If an action would have asked you, it still asks you. Wiring a hook in the hope of skipping a prompt does not work, by design and in two places.
+
+## When a plugin is not active
+
+Hooks are skipped for a plugin that is not loaded or has been disabled, quietly and without an error, which is what makes `cortex plugin disable` a complete off switch for that plugin's hooks. A plugin that is in any other non-active state reports `Plugin is not active` instead of being skipped.
+
+## The hooks file and the `/hooks` command
+
+Two things a reader often goes looking for are not available yet, and it is better to say so than to let you spend an afternoon on either.
+
+There is a configuration shape for standalone hooks, keyed by file pattern with a command, an environment and a timeout, and it is not read by anything in the shipped build. Writing that file has no effect. Hooks reach a session through a plugin manifest, as above.
+
+The `/hooks` command in the interactive interface is not wired either. Running it answers `Unsupported command in this session: hooks:list. No operation was performed.` Use `cortex plugin list` to see what is installed, and the plugin's own manifest to see which hooks it declares.
+
+## Related
+
+- [CLI plugins](/cli/plugins) - installing, trusting and building the plugin a hook belongs to.
+- [Permission policy](/cli/policy) - the mechanism that does gate an interactive session.
+- [Tools](/cli/tools) - the tools a `tool_execute_before` hook sees the name of.
+- [Slash commands](/cli/slash-commands) - the commands that are wired in the interactive interface.
+- [CLI troubleshooting](/cli/troubleshooting) - a declared hook that never runs.

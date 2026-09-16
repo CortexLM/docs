@@ -1,0 +1,79 @@
+---
+title: "Bot memory"
+sidebarTitle: "Memory"
+description: "The profile, log and notes a bot keeps between turns, how to add and delete an entry, and how it differs from Chat memory"
+icon: "lightbulb"
+---
+
+A bot in **Cortex Bot** is a standing thing rather than a thread you throw away, so it needs somewhere to keep what it has learned about you and the work. That place is its **Memory**. Each bot has its own, and what one bot remembers is invisible to the others.
+
+Memory is deliberately small and deliberately boring. It is not a search index over everything the bot has ever done, it is a short set of lines that are put in front of the bot at the start of every turn. This page covers the three tiers of memory, how to add and delete an entry, what the bot writes for itself, and why Bot memory and Chat memory are not the same thing.
+
+## The three tiers
+
+The panel states the model in one line: `Profile is injected every turn. Log is dated history. Notes fade after two days.`
+
+| Tier | What it holds | How long it lasts | What reaches the bot |
+| --- | --- | --- | --- |
+| **Profile** | Foundational facts: who you are, what the bot is for, standing preferences | Until you delete it | Included in every turn, up to 24 lines |
+| **Log** | Dated history of what happened and what was decided | Kept, with its date | Up to 12 lines per turn |
+| **Note** | A short reminder the bot only needs for a day or two | Dropped after 48 hours | While it lives |
+
+Each entry has a length ceiling: a **Profile** entry can be up to 4,000 characters, a **Log** or **Note** entry up to 500.
+
+## What memory does during a turn
+
+Memory is injected, not retrieved. There is no relevance search that goes looking for the right entry, so the profile lines are in front of the bot whether they matter to this job or not. That makes **Profile** valuable space: a handful of sharp lines works better than a long dump.
+
+Memory also survives a long turn. When a turn accumulates enough transcript the bot rewrites its own working context to keep going, and the **Profile** is one of the things it keeps, along with the open question and any open work. A bot does not forget who you are because the job ran long. See [How Bot works](/bot/how-it-works).
+
+Because memory belongs to the bot rather than to a thread, it travels everywhere that bot speaks: a message you send, a run a routine started, a skill you ran directly, and any channel the bot is a member of.
+
+## Add and remove an entry
+
+Open the bot and go to its **Memory** panel. A bot that has not remembered anything yet reads `Nothing remembered yet.`, and while the list is being fetched you see `Loading memory…`.
+
+<Steps>
+  <Step title="Write the fact">
+    The field asks `What should it keep?` Write one fact in plain language, the way you would tell a colleague.
+  </Step>
+  <Step title="Choose Remember">
+    **Remember** saves it. If the write fails you get `That memory could not be saved.` and nothing is stored, so you can try again.
+  </Step>
+  <Step title="Delete what is no longer true">
+    **Delete** removes a single entry. This is the only way to clear memory: there is no button that empties everything at once, so a bot with a lot of stale history is tidied entry by entry.
+  </Step>
+</Steps>
+
+The panel lists **Profile** and **Log** entries. Notes are short-lived by design and are not what the panel is for.
+
+## The bot writes its own memory too
+
+Remembering is one of the bot's own tools, and it is one of the tools that never stops to ask for approval, so a bot can record something mid-job without parking the turn. Telling it in the conversation to remember or to stop relying on something is enough, and the bot chooses the tier.
+
+Writes are deduplicated, so a bot cannot fill its **Profile** with the same sentence over and over. What it cannot do is decide for you what should be forgotten, which is why the panel keeps **Delete** in your hands.
+
+<Note>
+Only you can see what your bot remembers. Memory is never carried into a copy of a bot: the share preview lists **Memory** among the withheld sections, and Cortex is explicit about why. `Memory, secrets and the computer are withheld by name rather than dropped silently — an omission you cannot see is a decision you did not make.` See [Share a bot](/bot/sharing).
+</Note>
+
+## How this differs from Chat memory
+
+Cortex Chat has memory as well, and the two are separate systems that do not read each other.
+
+| | Chat memory | Bot memory |
+| --- | --- | --- |
+| Belongs to | A conversation | The bot |
+| Reaches | That conversation | Every turn, routine, skill run and channel that bot speaks in |
+| Managed from | The Chat memory settings | The bot's **Memory** panel |
+
+Adding something to one does nothing to the other, and clearing one leaves the other untouched. If a fact should follow a bot into scheduled work at three in the morning, it belongs in Bot memory. If it is about how you want a particular conversation to go, it belongs in [Chat memory](/chat/memory).
+
+## Related
+
+- [Bot tools](/bot/tools) - the memory tool among the rest of a bot's catalog.
+- [How Bot works](/bot/how-it-works) - the turn memory is injected into, and what happens when one runs long.
+- [Bot skills](/bot/skills) - the other thing a bot carries between turns, for how a job is done rather than what is true.
+- [Share a bot](/bot/sharing) - what a copy of a bot does and does not take with it.
+- [Chat memory](/chat/memory) - the separate system on the Chat side.
+- [Limits and quotas](/reference/limits) - every user-facing limit in one table.

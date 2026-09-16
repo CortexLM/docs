@@ -1,0 +1,107 @@
+---
+title: "Cortex Agent runs"
+description: "How Cortex Agent gathers evidence by running a change in an isolated runtime, what a run page shows, and why a run is never a pass"
+icon: "robot"
+---
+
+Every other part of a Cortex Security review reads your change. A reader can say "this looks like it would fail on empty input", but it cannot tell you whether it does. Cortex Agent is the part that finds out: it checks the pull request out in an isolated runtime, writes the narrowest program that would demonstrate the claim, runs it, and keeps what came back.
+
+This page explains what that produces, how to read a run and its artifacts, what the statuses mean, and why a Cortex Agent run never counts as an approval, not even when everything it tried came back clean. It also tells you plainly what a run needs from your deployment, because without an isolated runtime there is nothing to run in and every run is recorded as unavailable.
+
+## Evidence, not findings
+
+Cortex Agent does not add findings to a review. It adds evidence, and the review's verdict is still arithmetic over the findings that survived the second pass. See [How a review works](/security/how-a-review-works).
+
+It also answers a different question from your CI. CI already tells you whether this repository's tests still pass on this commit. The useful question a reviewer has is narrower: does the specific defect somebody suspects actually happen. Cortex Agent replaced an earlier stage that ran the repository's own test command, because that stage was answering the question CI had already answered.
+
+Evidence comes in two kinds, and the split is not the agent's opinion about its own work.
+
+| Kind | What it is |
+| --- | --- |
+| **Bug** | A defect that was reproduced. |
+| **Exploration** | Everything else: a suite it ran, a script that established what the code does, or a reproduction that did not reproduce. |
+
+Which one a step becomes is decided by the exit code of the program the agent wrote, never by what the agent says about it afterwards. It is told to exit `9` when the defect happens and zero when it does not, so a model that would like to report a bug cannot do it by writing a more confident sentence. The run page prints `exit {code}` beside every step.
+
+## What a run needs
+
+Two separate things have to be true.
+
+- The policy switch **Let Cortex Agent run the change in an isolated runtime** has to be on. It is on by default. See [Review policy](/security/review-policy).
+- The deployment has to have an isolated runtime for it to use. The hint under the switch is exact: *Needs an isolated runtime on this deployment. Without one the run is recorded as unavailable, which is never a pass.*
+
+<Warning>
+An isolated runtime is off by default on a deployment, so in practice most runs are recorded as unavailable with the sentence *This deployment has no isolated runtime for Cortex Agent to use, so this change was not run.* Do not read a review as having run your code unless a run says it did.
+</Warning>
+
+When code really was run, the summary comment on the pull request carries a line saying so. That line is rendered only in that case, so its absence is meaningful.
+
+A single program the agent writes gets ten minutes of wall clock by default.
+
+## Read a run
+
+<Steps>
+  <Step title="Start from the pull request">
+    Open the review in the app. Its **CORTEX AGENT** section reads either **Evidence collected** or **Nothing was run**, with counts beside it for bugs, explorations and artifacts.
+  </Step>
+  <Step title="Open the run">
+    Choose **View all artifacts**. That opens the run page, headed **Cortex Agent**, with **Open the pull request** to get back to GitHub and **Back to Cortex Security** to return to the review inbox.
+  </Step>
+  <Step title="Read what it did">
+    **What Cortex Agent did** lists each step in order, labelled **Bug** or **Exploration**, with its `exit {code}`. An exit of 9 is a reproduced defect. Anything else is an exploration, whatever the step was trying to show.
+  </Step>
+  <Step title="Open an artifact">
+    **Artifacts** lists the files the run kept. Selecting one shows its media type, its `SHA-256 {hash}` and its contents, with **Copy** to take the text away.
+  </Step>
+</Steps>
+
+## Artifacts
+
+Anything a program the agent wrote leaves in the run's artifacts directory is lifted out of the log and kept with a name, a media type, a size, a checksum and a one-clause description of what it is. Path separators are stripped from the name, so an artifact cannot pretend to be a path.
+
+Artifacts are always shown as text, whatever their media type says, and they are served as data rather than as their own type. That is deliberate: an artifact is output from a program a model wrote, and nothing a browser would execute should be handed to you as something to execute. The media type is read from a fixed list rather than guessed at.
+
+Three messages you may meet in the viewer:
+
+| Message | What it means |
+| --- | --- |
+| *This run kept no files. The harnesses it wrote printed their results rather than writing them out.* | Nothing was saved. The evidence is in the step list instead. |
+| *The harness wrote more than was kept. This is the beginning of the file.* | The file was long, so only its start was kept. |
+| *This file could not be read.* | The artifact itself is unavailable. |
+
+## When nothing was run
+
+A run page headed **Nothing was run** always says why, in one of four sentences.
+
+| What it says | What happened |
+| --- | --- |
+| *No model was available to write a harness with, so this change was not run.* | Nothing was available to write the program with. |
+| *This deployment has no isolated runtime for Cortex Agent to use, so this change was not run.* | The common one. Nothing on the deployment to run it in. |
+| *There was nothing in this change that a program could demonstrate.* | The change had no claim a program could settle, which is the ordinary case for a documentation or styling change. |
+| *The isolated runtime could not be reached, so this change was not run.* | Something else went wrong reaching the runtime. |
+
+Every one of them is followed by the same line: *A run that could not happen is never a pass, and nothing here counts towards the review's verdict.* There is also a shorter version of the same idea for a run that simply had no work: *Cortex Agent checked this change out and found nothing a program could demonstrate.*
+
+## Run statuses
+
+| Status | Meaning |
+| --- | --- |
+| Planning | The run is being planned. |
+| Running | A program is running. |
+| Completed | The agent ran what it planned. What it found is in the evidence. |
+| Failed | The stage itself failed. |
+| Unavailable | No runtime, nothing to write the program with, or nothing worth running. Never a pass. |
+
+An unavailable run cannot claim a bug, an exploration or an artifact, and it cannot exist without a reason attached. That is enforced in storage rather than by convention, so there is no path by which an empty run becomes a quiet success.
+
+## Who can see a run
+
+A run page is signed in, and only the account that owns the review can open it. A run belonging to another account is reported as not found rather than as forbidden, so the page cannot be used to work out whether a run id is real. Every account sees only its own reviews.
+
+## Related
+
+- [How a review works](/security/how-a-review-works) - the stages a review moves through, and where a run fits.
+- [Review policy](/security/review-policy) - the switch that allows a run, and everything else a review consults.
+- [Checks and comments](/security/checks) - the summary comment, including the line that appears when code was run.
+- [Repository scans](/security/scans) - the other way Cortex Security looks at a repository.
+- [Security troubleshooting](/security/troubleshooting) - when a run reads **Nothing was run** and you expected otherwise.

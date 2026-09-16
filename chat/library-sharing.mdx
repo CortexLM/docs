@@ -1,0 +1,101 @@
+---
+title: "Sharing files and connected drives"
+description: "Share a Library file as a Viewer or Editor grant, copy a link, connect a cloud drive, and attach drive items without a second upload."
+icon: "share-nodes"
+---
+
+Two things extend your [Library](/chat/library) outwards: **grants**, which let a named person see one of your files, and **cloud drives**, which let you browse a drive you already own and attach items from it without uploading them again. Both are built on the same rule, and the Library page states it in its own lead: sharing never moves ownership.
+
+This page covers inviting someone to a file, what **Viewer** and **Editor** can actually do, revoking access, what **Copy link** does and does not do, connecting and disconnecting a drive, and attaching a drive item to a chat.
+
+## Share a file with someone
+
+<Steps>
+  <Step title="Open Share on the file">
+    From the file's row actions in Library, choose **Share**. The dialog is titled **Share this file** and explains the choice: invite a viewer to the latest file, or pin the share to one version.
+  </Step>
+  <Step title="Enter the person's address">
+    Type it under **Share with**, in the field that shows a placeholder address such as `name@company.com`.
+  </Step>
+  <Step title="Choose the role">
+    Pick **Viewer** or **Editor**.
+  </Step>
+  <Step title="Choose which version they see">
+    **Always latest** makes the share follow every restored version. **Pin version** freezes the share on the version you are looking at now, so the other person keeps seeing exactly what you showed them.
+  </Step>
+  <Step title="Send">
+    Choose **Send**. Library confirms with **File shared** and tells you whether the viewer follows the latest version or is pinned to one.
+  </Step>
+</Steps>
+
+An address the product does not recognise is rejected rather than silently invited, and a failed invite says so instead of appearing to have worked.
+
+## What a Viewer and an Editor can do
+
+| Action | Viewer | Editor | Owner |
+| --- | --- | --- | --- |
+| Open and download the file | Yes | Yes | Yes |
+| Rename it | No | Yes | Yes |
+| Delete it | No | No | Yes |
+| Invite someone, change a role, revoke | No | No | Yes |
+| Add it to a project as a source | No | No | Yes |
+
+<Note>
+**Editor** grants renaming and nothing more today. There is no further write policy on a shared Library file yet, so do not count on an Editor being able to change a file's contents.
+</Note>
+
+The uploader stays the owner of the file in every case. A grant is revocable at any time, and revoking it takes the file out of that person's **Shared with me** list.
+
+## Manage or revoke access
+
+Reopen **Share** on the file. **People with access** lists everyone you invited. Change someone's role with the role control on their row, or choose **Revoke** to end their access. When nobody else holds a grant, the dialog says so: nothing is shared, and ownership stays with you.
+
+## Copy link
+
+**Copy link** copies a link back to the file in your Library. It is not a public link. Whoever opens it still has to be signed in and still has to hold a grant on the file. There is no public token and no "anyone with the link" mode anywhere in Library, so a link that leaks does not expose the file.
+
+<Warning>
+A guest cannot create a grant, and cannot be the person you invite. The dialog says **Sign in to share**, and explains why: a guest session cannot be signed back into to revoke a grant later. See [Accounts](/getting-started/accounts).
+</Warning>
+
+## Connect a cloud drive
+
+A connected drive lets you browse and attach without re-uploading, and Chat cites the original item rather than a copy.
+
+<Steps>
+  <Step title="Find Cloud drives in Library">
+    The **Cloud drives** section lists the drives this deployment supports.
+  </Step>
+  <Step title="Choose Connect">
+    Sign in to the drive with your own account. Cortex shows a **Connecting a drive** screen while it finishes, then **Connected**.
+  </Step>
+  <Step title="Browse it">
+    The drive appears in the panel. Use **Search this drive** to find an item.
+  </Step>
+</Steps>
+
+If you decline the sign-in, Cortex says the connection was declined and that nothing was changed. If it fails part way, it tells you to try connecting again and, again, that nothing was changed. **Back to Library** and **Try again** are both on that screen. To remove a drive later, choose **Disconnect** in the same panel.
+
+Access is read-only. Cortex does not write back to a drive, and there is nothing to paste: you sign in to the drive, and that is the whole setup.
+
+## Attach a drive item to a chat
+
+The composer's attach menu lists, in this order, **Attach file**, **Image** and **Check origin**, then **From your Library** and a **CLOUD DRIVES** block.
+
+1. Open the attach menu and choose the drive under **CLOUD DRIVES**.
+2. Browse or use **Search this drive**.
+3. Pick the item. It attaches without a second upload, and the answer cites the original back to the drive it came from.
+
+Attached drive items also appear in Library with the **Connected drive** badge, so you can find one again from there. In its preview dialog, the action to open it on the drive takes you back to the original.
+
+## When drives are not available
+
+A deployment with no drives configured simply shows no **Connect** control, and there is nothing to do about that from the app. A guest always sees drives as unavailable, for the same reason a guest cannot hold a grant. If neither applies and a drive still will not connect, disconnect it and connect again; nothing in your Library is changed by a failed connection.
+
+## Related
+
+- [Library](/chat/library) - the file store, versions, storage and row actions
+- [Attachments](/chat/attachments) - what happens to a file on a single turn
+- [Projects](/chat/projects) - adding a file as a project source
+- [Sharing and teams](/chat/sharing) - what else is per account today
+- [Connectors](/chat/plugins) - connected apps, which are a different surface

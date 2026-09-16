@@ -1,0 +1,107 @@
+---
+title: "Cloud runtimes"
+description: "What a browser Code session runs in: an isolated Cloud guest, how it starts and hibernates, and what happens when there is no capacity."
+icon: "cloud"
+---
+
+Every Cortex Code session you start in the browser runs in its own **isolated Cloud guest**: a machine of its own, prepared from the repository you chose. Reads, searches, edits and shell commands all execute inside it. Nothing runs in your browser, and no other session or account shares that guest with you.
+
+This page explains what a Cloud runtime is, how one starts and goes to sleep, how to give a session a machine that already has your toolchain installed, and how Cortex behaves when a guest cannot be placed at all. There is no Runtimes screen in the product: the controls live in a session's **Runtime** tab and on the [Environments](/code/environments) page.
+
+## What a Cloud guest is
+
+- **It is prepared from your repository.** The first turn of a session attaches a guest and clones the repository you picked in the composer. That is why the first session on a new repository spends time installing before any work appears.
+- **It is headless.** There is no screen, no desktop and no remote-desktop view in a Code runtime. A session's **Desktop** tab exists only with the badge **Soon**. If you want an agent with a screen and a browser, that is a Cortex Bot computer, not a Code runtime.
+- **One repository per runtime.** A session works one repository at a time. A second repository means a second session.
+- **It is where the diff comes from.** The **Diff** tab reads the guest's working tree live and captions it **Live from the Cloud guest**. When the tree cannot be read the pane says **The changes could not be read from the runtime.** rather than showing you an empty diff.
+- **It holds no secrets.** Code has no Secrets page on any surface, and nothing in Code asks you to paste a token.
+
+Three different Cortex machines are easy to confuse. They are not interchangeable:
+
+| Surface | Machine | Screen | What it can reach |
+| --- | --- | --- | --- |
+| **Cortex Code** | an isolated Cloud guest | no, headless | the clone of your repository inside that guest |
+| **Cortex Chat** | a small snippet sandbox | no | the snippet only, never a Code repository |
+| **Cortex Bot** | an isolated Cloud guest | yes | the bot's own files and its browser |
+
+## The life of a guest
+
+| Event | What happens |
+| --- | --- |
+| The first turn needs it | The guest starts, attaches, and installs what the repository declares |
+| You press **Stop** | The turn cancels. The guest and its files stay, and the session reads **Stopped** with a **Continue** button |
+| The session sits idle | The guest may hibernate |
+| You send a follow-up later | The guest is woken before the agent is prompted, which is why that turn starts slowly |
+| You come back another day | The session resumes on its guest with the repository as you left it |
+
+While the runtime is being attached the session status reads **Connecting**, then **Connected**. The **Terminal** tab tells you where commands went: **Commands from this session run inside the Cloud guest.**
+
+A long-running command eventually times out rather than hanging the turn forever, and a whole turn has a wall-clock ceiling. Neither is a fault in your repository: read the transcript, narrow the command, and send it again.
+
+## Give a session its own machine
+
+A plain Cloud session installs what the repository declares every time. An **environment** is a machine you keep: Cortex clones the repository into it, the harness installs the toolchain, and you save the result as an image so the next session skips the install.
+
+<Steps>
+  <Step title="Open the Runtime tab">
+    In an open session, choose **Runtime** in the output pane. While it looks for a machine it says **Looking for an environment…** With no repository on the session it says **No repository chosen**, because an environment is built from a repository.
+  </Step>
+  <Step title="Start one">
+    Press **Give this session its own machine**, then **Start an environment**.
+  </Step>
+  <Step title="Install it">
+    Press **Install the environment** and watch **Install progress** under **HARNESS**. It opens with **Cloning the repository and reading what it declares…** When nothing is reported yet the panel says **No progress was reported.**
+  </Step>
+  <Step title="Read the outcome">
+    On success the section reads **ENVIRONMENT** with a **Verified with** line. On failure it reads **SETUP DID NOT FINISH** and offers the **Harness transcript** plus **Re-run setup**.
+  </Step>
+  <Step title="Save it">
+    Press **Save image**. The toast confirms **Environment saved** and explains what you bought: **The next session on this repository and ref resumes from it.**
+  </Step>
+</Steps>
+
+Each account can keep **8** registered environments and **40** saved images. Those are the only numbers worth planning around. Managing them is covered on [Environments and images](/code/environments).
+
+## What a runtime does not give you
+
+<Warning>
+**There is no undo, no checkpoint and no revert.** A guest is not a save state you can roll back to. A file write is either rejected while it is still pending, or it lands. Plan on reviewing writes before they are applied, not on reversing them afterwards. See [Changes and diffs](/code/changes).
+</Warning>
+
+- **You cannot scope a runtime by directory or by command.** There is no command allowlist and no per-directory allowlist anywhere in Cortex Code. The shell is allowed or withheld as a whole, per command, at the moment it is asked. What that decision looks like is on [Permissions and approvals](/code/approvals).
+- **A file write is not approved on the permission rail.** Commands are answered with **Allow once**, **Always allow** or **Deny**; writes wait in **Changes** for **Approve**. Keep the two apart.
+- **A Code session has no MCP servers, no connected apps and no plugins**, whatever runtime it is on. The session's **Tools** tab says so in its own words: **Off · this session has no MCP access.** and **Off · Chat and Bot access does not carry into Code.** Servers you add under [Code integrations](/code/integrations) are configured for the workspace, and a Code session may report no access to them.
+- **There is no offline or mock Code runtime.** A deployment without a runtime fleet cannot run one at all, so there is nothing to try Code runtimes against.
+
+## When a runtime is not available
+
+Cortex fails closed here. If a guest cannot be placed, nothing is started, so nothing is lost. The surface separates three situations, and the right response differs for each:
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| **Sign in to use an isolated environment** | An environment outlives the browser session that started it, so a guest could never come back to find or delete one | **Sign in** |
+| **Isolated environments are not enabled here** and **This deployment has no runtime fleet. Cloud sessions still run.** | The capability is not enabled on this deployment | Nothing to do here, and this is not an upgrade prompt |
+| **No environment capacity is available: the fleet is scaled to zero. Nothing was started, so nothing was lost.** | Capacity is momentarily at zero | **Try again** |
+
+A session never quietly relocates. A runtime is bound once per turn with no fallback, so an unusable runtime refuses the turn and names an action to take.
+
+The error codes you may meet:
+
+| Code | What happened |
+| --- | --- |
+| [`no_capacity`](/problems/no_capacity) | No guest could be placed right now |
+| [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | Too many sessions active at once |
+| [`service_unavailable`](/problems/service_unavailable) | The fleet is not answering |
+| [`quota_exceeded`](/problems/quota_exceeded) | An environment or saved-image ceiling was reached |
+
+## Runtimes other than Cloud
+
+In the browser, **Cloud** is the runtime, plus a registered team runner when the deployment has one. Two more runtime kinds exist in the Cortex desktop app and the Cortex CLI: **This PC**, a machine you paired, and **SSH**, a registered remote host. See [Code on desktop](/code/desktop), [SSH hosts](/code/ssh-hosts) and [Machines](/code/machines).
+
+## Related
+
+- [Environments and images](/code/environments) - keep an installed machine and reuse it.
+- [Machines](/code/machines) - Cloud occupancy and team runners.
+- [SSH hosts](/code/ssh-hosts) - the third runtime kind, registered in the desktop app.
+- [How Code works](/code/how-it-works) - the turn loop that runs inside the guest.
+- [Code troubleshooting](/code/troubleshooting) - failed starts and capacity problems.

@@ -1,67 +1,167 @@
 ---
 title: "Chat troubleshooting"
-description: "What Chat shows when a turn, a file, a model, or a connection does not behave — and what to do about it."
-keywords: ["errors", "problems", "fixes", "not working"]
+description: "The messages Chat shows when a send, an answer, a file, a document, a limit or a search does not go through, and what to do about each."
+icon: "life-ring"
 ---
 
-Chat says what is wrong in plain words rather than spinning. This page maps those messages to causes and fixes. For the whole app, see [Troubleshooting](/getting-started/troubleshooting); for the terminal, [CLI troubleshooting](/cli/troubleshooting).
+Cortex Chat says what is wrong in plain words rather than spinning or guessing. That makes most problems self-explanatory once you know which message belongs to which situation, which is what this page is for.
 
-## The reply
+Everything below is grouped by what you were trying to do when the message appeared: send, wait for an answer, run a tool, attach a file, hit a limit, make a document, search, or tidy up a chat. Each entry gives the message you see, what it means, and what to do next.
 
-| What you see | Cause | Fix |
+## Why a control is sometimes missing rather than greyed out
+
+Before the messages, one rule explains a whole class of confusion. When a capability is not available to you, Cortex removes the control instead of disabling it. That is why the read-aloud button, the microphone, the save-to-drive button and the thinking selector are sometimes simply not there. A missing control means "not available here", not "broken". Expect controls to appear when they can do the work, rather than to sit greyed out.
+
+## Sending a message
+
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| A reply cut short, then the thread reconnects | The connection dropped mid-reply | **Do not resend.** Run state lives in the thread; the reply that already started continues. See [Streaming](/chat/streaming). |
-| The send button stays a stop control | A turn is in flight | Wait, or press **Esc** to stop it. The partial reply stays. |
-| A long thread answers more vaguely than it did | The thread was compacted to fit the model's context window | Start a new chat, or put the standing detail in a [project](/chat/projects) so it is not repeated. See [How Chat works](/chat/how-it-works). |
-| A turn fails with [`service_unavailable`](/problems/service_unavailable) | Compaction could not summarise the thread | Retry. Compaction fails closed rather than dropping your earlier turns. |
+| `The message is empty.` | there was nothing to send | type something first |
+| `The message is longer than the permitted maximum.` | one message can carry up to 50,000 characters | split it, or attach the text as a file |
+| `You are offline — your message will wait here` | no network; the draft is held, not lost | wait; you will also see `Sending when back online` |
+| `A waiting message was discarded because you left this chat.` | you navigated away while a message was queued offline | retype it in the chat you meant to send it from |
+| `Loading the available models.` | the model list has not arrived yet | wait a moment, then send |
+| A reason followed by `Sending is unavailable until the model list loads.` | the model list could not be fetched | retry; sending unblocks once the list loads |
+| `No models are available on your account.` | no model is offered to this account at all | check [Plans and quotas](/getting-started/plans), and [status.cortex.foundation](https://status.cortex.foundation) if it persists |
 
-## Files and images
+## Waiting for an answer
 
-| What you see | Cause | Fix |
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| A file will not attach | Type or size check failed at upload | A rejected file is not attached and does not enter Library. Try a supported type or a smaller file. |
-| An error square where an image should be | The Library fetch or the generation failed | Retry the request. It is never an endless spinner. |
-| **Improving prompt…** on an image card | The picture is queued; Chat is completing the scene description first | Wait — the card becomes a skeleton, then the image. |
-| A generated picture is missing from the thread | It saved to Library but the fetch failed | Open [Library](/chat/library) and attach it from there. |
-| Image generation is unavailable | The deployment has image generation switched off | The request fails closed before any quota is spent. See [Image generation](/chat/images). |
+| `Reconnecting`, then the same word with an attempt count | the connection dropped mid-answer | nothing; the card adds `The answer picks up where it stopped.` and the words continue from where they were |
+| `This stream is no longer resumable. Reload the conversation.` | too much time passed to pick the stream back up | reload the page; if the answer finished server-side, you will see it in full |
+| `Generation failed. Your allowance for this message has been returned.` | the model failed part-way through the turn | send it again; nothing was charged |
+| `The action was interrupted.` | the turn was cut short | continue the answer, or regenerate it |
+| An error card in the middle of a finished-looking answer | the failure happened after the answer had begun, so it arrives inside the answer rather than instead of it | read the code on the card and look it up in the [Problem catalog](/problems) |
 
-## Models and research
+Reloading the page during an answer does not lose it. The answer is produced on Cortex's side and buffered, so a dropped tab, a reload or a flaky connection does not cost you the turn. See [Streaming and reconnects](/chat/streaming).
 
-| What you see | Cause | Fix |
+Two endings are worth telling apart. An interrupted turn is either your own stop or a client that went away. A turn that ended on length hit the wall clock or the model's output ceiling, in which case continuing it is usually what you want.
+
+## Stopping, continuing, regenerating and branching
+
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| The model on the chip is not the one you picked | Peak-hour fallback, or the conversation kept the model it was created with | Check the chip: it always names the model serving the conversation. See [Models](/chat/models). |
-| A model is missing from the chip | Availability depends on your plan | Compare plans under **Settings → Plan & billing**. See [Plans](/getting-started/plans). |
-| **Deep Research** is missing | You are in Code or Bot | Deep Research is a Chat feature. Switch to Chat. |
-| A research run stops early | A per-run cap was reached | Questions, sources, and parallelism are capped per run. See [Deep Research](/chat/deep-research). |
-| Origin check says it cannot run | The check is unavailable on this deployment | Ask again later. Cortex says so rather than guessing — do not read silence as a verdict. See [Origin check](/chat/origin-check). |
+| `Stopped` on the answer card | the turn ended early and kept what it had written | use **Continue** (`Pick up the answer where it stopped.`) or **Regenerate** |
+| `That answer cannot be continued.` | this answer did not end in a way that can be resumed | regenerate instead |
+| `There is no answer to continue in a new conversation.` | there is nothing before this point to pick up | send a message first |
+| `Wait until the current answer finishes.` | you tried to edit or branch while an answer was live | wait for the answer, then edit; only one live answer can exist in a conversation |
+| `Branching from a message is not on this deployment.` | the branch action is not served here | copy what you need into a new chat |
+
+Regenerating never deletes anything: the previous answer is kept as a version, and a pager appears above the answer so you can step between them with **Previous version** and **Next version**. Editing one of your own messages keeps the original too, under the banner `Editing · original kept as Branch 1`.
+
+## Tools inside an answer
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| `No output.` on a tool row | the tool ran and returned nothing | usually harmless; the answer continues |
+| A row naming a tool that failed, with the detail it returned | one tool failed | the answer continues without it; rephrase if the missing step mattered |
+| `The same tool call repeated without progress. Try a different action.` | the same call repeated six times with no progress, so the loop was broken | rephrase the request, or narrow it |
+| `The tool call budget for this turn (50) is exhausted. Answer with what you have, or ask the user how to proceed.` | the turn reached its ceiling on tool calls | ask a narrower question, or split the work over two messages |
+| `Tools are not configured on this process.` | this deployment has no tools wired | not a user error; ask without tools |
+
+A Chat turn gets eight rounds of tool use and at most 50 tool calls. When the round budget runs out the model is told so and asked to answer with what it has, which is why a long research-shaped question can end with a summary rather than more searching. See [Built-in tools](/chat/tools).
+
+## Attaching a file
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| `Upload failed` | the upload did not complete | retry from the attach button |
+| `That file is larger than the attach limit.` | over the composer's ceiling, which is shown as `10 MB max` | compress it, split it, or paste the relevant part as text |
+| `That file is not an image or video the composer can attach.` | the image and video rail only takes media | use the general attach button for documents |
+| `That file is encrypted or unreadable. Cortex did not extract it.` | the file could not be read, so nothing was extracted from it | remove the protection, or export an unencrypted copy |
+| `HEIC photos can be checked for origin. Use Check origin, or convert to JPEG or PNG.` | that photo format is accepted for origin checking only | convert it, or use [Origin check](/chat/origin-check) |
+| A chip stuck on a reading state, naming the file | text is still being extracted | wait; the chip settles into the file name |
+
+The size check runs in the browser before anything uploads, so an oversized file is refused straight away rather than after a long wait. Signed-out use cannot upload at all. See [Attachments and files](/chat/attachments).
+
+## Running into a limit
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| `You’ve reached today’s limit for this model` | the daily message allowance is used up | wait for the reset named on the banner, or see [Plans and quotas](/getting-started/plans) |
+| `You’ve reached this month’s limit for this model` | the monthly allowance is used up | same; the banner says when it resets |
+| `Resets on its own.` | the reset time could not be named | retry later |
+| A banner offering another model that is still available | one model is capped, another is not | take the offer, or start a new chat on the other model |
+| `You have used today's messages` | the plan-limit detail behind a message cap | see [quota_exceeded](/problems/quota_exceeded) |
+| `You have used today's document exports` | the plan-limit detail behind an export cap | wait for tomorrow; drafting an outline never counts |
+| A **Sign in** action on a refusal | the thing you asked for needs an account | sign in; see [Accounts and sign-in](/getting-started/accounts) |
+| An **Upgrade** action on a refusal | your plan does not include it | see [Plans and quotas](/getting-started/plans) and [entitlement_required](/problems/entitlement_required) |
+
+Messages are charged against a daily and a monthly window at once, and the first one to run out is the one that stops you. Thinking is not metered on any plan.
+
+## Documents, decks and exports
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| `The document could not be opened.` | the canvas did not load | close and reopen the rail; see [Chat canvases](/chat/canvases) |
+| `The document could not be saved.` | the last canvas save failed | copy the text out before retrying |
+| `The deck could not be created` | the answer's deck export failed at the create step | retry; a failed write returns your export |
+| `The deck could not be exported.` | the thread's deck export failed | use **Try again** |
+| `The document writer is not available on this deployment.` | files cannot be typeset here | nothing to configure; the export is not charged |
+| `Deck export is not available yet.` | the deck flow on a research report is not ready | retry later |
+| `The outline could not be drafted.` | Cortex could not draft slides from this material | ask for a summary first, then export that |
+| `The file could not be saved.` | saving an export to a connected drive failed | download the file instead; drive saving is not available in this wave |
+
+See [Export documents](/chat/document-export) for the whole flow and its allowances.
+
+## Searching
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| `Search could not run.` | the search request failed | try again |
+| `No matches for` followed by your query | nothing matched in chat search | search matches conversation **titles** only, so try a word from the title |
+| `No matches in this conversation.` | the in-conversation search found nothing | the hint says it: `Try a shorter word, or a term from the answer rather than the question.` |
+| `No messages to search yet.` | the conversation is empty | ask something first |
+
+Chat search covers titles, Library and skills, eight results per group, and an empty query lists your recent chats. Its footer states the split with Code: `↑↓ to move · ↵ jump · Chat only · Code has its own palette`.
+
+## Organising a chat
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| `Chat titles cannot be renamed yet — this app has no route for it.` | renaming a chat is not available | a chat is named automatically from its first message; the title is never in the link |
+| `You have 20 pinned chats and projects. Unpin one before pinning another.` | the pin cap is 20, shared between chats and projects | unpin something first |
+| `A Temporary chat cannot be pinned or moved to a project.` | temporary chats cannot be filed | copy what you need into a normal chat |
+| `Temporary is chosen when a chat starts.` | you cannot switch temporary on or off later | start a new temporary chat |
+| `The chat could not be archived` | the archive did not stick | retry from the sidebar row |
+| `The chat could not be deleted` | the delete failed | retry; deleting is permanent once it succeeds |
+| `The chat could not be moved` | filing the chat failed | it adds `Please try again.` |
+| `Could not load your projects` | the project list did not load | reopen the move dialog; `No projects yet` means you have none |
+| `The note could not be saved` | saving a selection to Library failed | retry; the message adds `Please try again.` |
+| `The plan could not be created` | the plan dialog failed | retry from **Start a plan** |
+
+Archiving takes a chat out of Recents and offers `Undo` in its toast. There is no separate view that lists archived chats afterwards, so treat archiving as hiding a chat from Recents rather than filing it somewhere you can browse.
 
 ## Voice
 
-| What you see | Cause | Fix |
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| No mic in the composer | The deployment cannot transcribe | Nothing to configure — the capability is off, not broken. |
-| No **Listen** under an answer | The deployment cannot speak | Same. Voice controls appear only when the deployment behind them can do the work. |
+| No microphone in the composer | this deployment cannot transcribe speech | nothing to configure; type instead |
+| No **Listen** under an answer | this deployment cannot read answers aloud | same |
+| `Voice is not available on this deployment.` | a live voice conversation is not reachable here | use dictation and read-aloud where they appear; see [Voice](/chat/voice) |
 
-See [Voice](/chat/voice).
+## Sharing and copying
 
-## Quotas and access
-
-| What you see | Cause | Fix |
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| **Sign in to continue** above the composer | The guest allowance for today or this month is used up | Sign in to continue on Free, or wait for the reset. |
-| [`quota_exceeded`](/problems/quota_exceeded) | A daily or monthly window is exhausted | The error carries when it resets. See [Plans and quotas](/getting-started/plans). |
-| [`entitlement_required`](/problems/entitlement_required) | The plan does not include that capability at all | Compare plans under **Settings → Plan & billing**. |
-| [`rate_limited`](/problems/rate_limited) | Too many requests in a short burst | Pause, then retry. |
-| Projects, Library, or Memory are missing | You are a guest | Those need a signed-in account. See [Accounts](/getting-started/accounts). |
-| A connected app cannot be used in Chat | The connection is enabled for Bot only | **Customize → Connectors** → enable it for **Cortex Chat**. See [Tools and connectors](/chat/tools). |
-| No **Connect** control for an app | That connection is not available on this deployment, or you are a guest | Sign in; if it is still missing, it is not offered here. |
+| `Sharing is not on this deployment` | conversation sharing does not exist yet | export a file or copy the text; see [Sharing and teams](/chat/sharing) |
+| `Sharing is not available for this message yet.` | a link to that message could not be built | copy the message text instead |
+| `Copy failed` | the clipboard write was refused | check your browser's clipboard permission, then retry |
+| `The link could not be copied.` | the same, for a message link | retry |
 
 ## Still stuck
 
-Keep the `request_id` from the error, the time, and the surface you were on. Check [status.cortex.foundation](https://status.cortex.foundation) if Chat is failing alongside other products — see [System status](/status). Full error semantics: [Problem catalog](/problems).
+Keep the request id shown on the error card, the time, and what you were doing. Then:
+
+- Look the code up in the [Problem catalog](/problems) or in [Errors](/reference/errors).
+- Check [status.cortex.foundation](https://status.cortex.foundation) if other products are failing too, and see [System status](/reference/status).
+- If it looks like a defect, follow [Report a bug](/getting-started/report-a-bug).
 
 ## Related
 
-- [How Chat works](/chat/how-it-works) — the tool loop and its round budget.
-- [Streaming](/chat/streaming) — what a dropped connection does and does not lose.
-- [Troubleshooting](/getting-started/troubleshooting) — the same guidance across all products.
+- [How Chat works](/chat/how-it-works) for the turn loop and its budgets.
+- [Streaming and reconnects](/chat/streaming) for what a dropped connection does and does not lose.
+- [Plans and quotas](/getting-started/plans) for every allowance behind a limit message.
+- [Problem catalog](/problems) for the full list of error codes.
+- [Troubleshooting](/getting-started/troubleshooting) for the same guidance across all products.

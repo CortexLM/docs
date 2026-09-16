@@ -1,67 +1,114 @@
 ---
 title: "Deep Research"
-description: "Plan the questions, read live sources, and write a cited report. A Chat feature — not a Code tool and not a Bot skill."
-keywords: ["research", "citations", "sources", "report"]
+description: "Plan the questions, read live sources, and get a report with numbered citations you can open in a reader and save to Library."
+icon: "magnifying-glass-chart"
 ---
 
-Deep Research turns a conversation into a research run. Instead of one answer, Cortex plans a set of questions, reads live sources for each in parallel, and writes a report with citations. You review the plan before it runs and read the report on the thread when it is done.
+**Deep Research** turns one question into a research run. Instead of a single answer, Cortex Chat writes a plan, reads live sources for each question in parallel, and produces a report whose sentences carry numbered citations. It is worth the wait when the answer has to be defensible: a market scan, a comparison, a timeline, anything you will forward to someone who will ask where a number came from.
 
-<Frame caption="The Research card on Chat home prefills the composer and switches Deep Research on — the chip now ends in “De…” for Deep Research.">
-  <img src="/images/product/chat-deep-research.png" alt="Chat composer prefilled with “Research the latest on” and the model chip showing Deep Research enabled" />
-</Frame>
+The run has three phases, and you are in control between the first and the second. This page covers turning it on, reviewing and editing the plan, scoping which sources may be cited, what you can do while it runs, how to read the report and its citations, saving it as a file, and the limits.
 
 ## Turn it on
 
-Either:
+Open the model chip's panel under the composer and switch on **Deep Research**, listed under the **THINKING** heading as `Plan the questions, read live sources and write a cited report.` While it is on, the chip's detail line reads `· Deep Research`.
 
-- Open the model chip under the composer and switch on **Deep Research** — *Plan the questions, read live sources and write a cited report.*
-- Choose the **Research** card on Chat home. It prefills *Research the latest on* and enables Deep Research for that conversation.
+From an empty Home screen, the **Research** app card does the same thing and seeds the ask for you.
 
 Then describe what you want to know. The more specific the ask, the sharper the plan.
 
-## The run
+## Review the plan
 
-<Steps>
-  <Step title="Plan">
-    Cortex proposes the questions it will answer. The plan appears as a research block on the thread. Review it; a plan that has not been run still offers **Start** when you come back to the thread later.
-  </Step>
-  <Step title="Run">
-    Choose **Start**. Each question runs as its own background child, in parallel with the others, fetching and reading sources. **Start** disappears once the run has begun.
-  </Step>
-  <Step title="Read the report">
-    The report lands on the thread with its citations. Plan and report persist as research blocks, so you can return to them, ask follow-ups, or start a plan from the conversation.
-  </Step>
-</Steps>
+Nothing is searched until you say so. Cortex first writes a **Research plan** on the thread: a **Plan title**, a numbered list of **Research questions**, a labelled **Outline**, and a small **Plan diagram** of the approach.
+
+- Edit any question in place, or use **Add a question** and type into `Another question`. A counter reads `{count} of {max} questions`.
+- Remove questions you do not care about. Fewer, sharper questions beat a long list.
+- The plan survives a page reload, so you can leave it and come back.
+- When you are happy, choose **Start research**. The plan disappears from the thread once the run begins.
+
+## Scope it with Trusted sources
+
+**Trusted sources** is the scoping control, and its own line explains the rule: `Only these hosts, connected apps, and project files are cited. Leave hosts empty to search the open web.`
+
+| Field | What it does |
+| --- | --- |
+| **Allowed hosts** | Hostnames the run may cite, for example `example.com`. Leave it empty to search the open web. |
+| **Project files** | Folds a project's files and instructions into the run. |
+| **Trusted domains** | The list as it stands for this run. |
+
+Hostnames only, and at most five. A URL is not a hostname, and the refusals say so: `Use hostnames only — not URLs, IP addresses, or more than five names.` If you have narrowed the list to nothing you get `Add at least one hostname before starting. An empty list does not search the web.`
+
+You can also say that no connected app should be consulted. Where you have none attached to Chat, the panel reads `No connected apps on Chat.`
+
+When a run was scoped, the report tells the reader: `Citations are shown only when they match the trusted domains for this run.`
+
+## While it runs
+
+Progress is a short status line, not a wall of tool rows. **Research progress** moves through `Queued`, `Searching`, `Reading`, and then `Done` or `Failed`, and the line beside it uses a small fixed vocabulary: `Planning the research`, `Searching the web`, `Reading sources`, `Checking {topic}`, `Filling gaps`, `Writing the report`, `Checking connected apps`. The eyebrow above the block reads `Deep Research · Running`.
+
+Two controls are yours while it works:
+
+- **Stop** ends the run.
+- **Write with what you have** tells Cortex to stop searching and write the report from what it has already found. Use it when the status line has been grinding through the long tail of a question you no longer need.
+
+Several questions are worked on at once, and tools that would *write* anything are never used during a research run.
+
+## Read the report
+
+The finished report is ordinary Chat text with **numbered citations**, under the eyebrow `Deep Research · Report`. Each citation carries the page's title, its domain, and the sentence it supports, and the **Sources** list is grouped into `Web`, `Connected apps` and `Project`. Every report ends with the disclosure sentence, `This report was generated by Cortex Chat Deep Research.`
+
+**Open reader** opens the report on its own, away from the thread, and **Follow up** takes you straight back into the chat with it in hand. **Close report** returns you to the conversation.
+
+Where a run cited nothing you see `No sources were cited.` or `No sources recorded for this report.` rather than an invented list.
+
+## Save the report as a file
+
+The report card carries an **Export** menu with four items: `Markdown` (`.md`), `PDF`, `Word` and `Deck`.
+
+<Warning>
+Each format stays disabled until the server reports it as available, and the card starts with all four off. On a deployment that has enabled none of them you get no options rather than an empty file, so do not count on a download being there. **Markdown** is the one format that is implemented today. PDF, Word and Deck are listed but answer `This format is not available yet.`, and the menu's own footer says so: `Markdown is ready now. Other formats stay listed until they ship.`
+</Warning>
+
+When an export does run, it saves into your [Library](/chat/library) rather than downloading to your machine, confirmed with `Saved to Library as {filename}.` and findable under the Library's **Reports** filter. The report card shows **In Library** once it is there.
+
+Two more conditions apply. Export stays off until the report cites at least one source, `Export stays off until this report cites at least one source.`, and a guest is asked to sign in first, `Sign in to export this report.` Exports also draw on a daily allowance that depends on your plan; see [Export documents](/chat/document-export) and [Plans and quotas](/getting-started/plans).
 
 ## Limits
 
-| Cap | Limit |
+| Limit | Value |
 | --- | --- |
-| Questions per run | 32 |
+| Questions per plan | 32. A 33rd is refused |
 | Sources per run | 80 |
-| Questions in parallel | 8 |
-| Fetches per question | 4 |
+| Questions worked in parallel | 8 |
+| Page fetches per question | 4 |
 | Time per question | 180 seconds |
+| Report length | a budget of about 6,000 tokens |
+| Trusted hosts | at most 5, hostnames only |
+| Export formats implemented | Markdown only |
 
-A research run has its own loop and its own limits. It does not inherit Chat's eight-round tool budget, and it does not draw tool-start / tool-end chrome for every fetch.
+Deep Research runs on a Chat conversation. It is refused on a Cortex Code conversation, where the tools are a session's own. Guests may run it, though they cannot export the result.
 
-## Where Deep Research lives
+## When it cannot run
 
-| Surface | Available? |
-| --- | --- |
-| Cortex Chat | Yes — the toggle in the model chip |
-| Cortex Code | No. Code has web fetch inside a session, not Deep Research. |
-| Cortex Bot | No. Bot has `web_search` and `web_fetch` tools, not a research skill. |
-| CLI | No. `cortex scrape` fetches a single page; `--search` enables web search in a session. |
-
-## Tips
-
-- Ask for the shape you want back: *a comparison table*, *a timeline*, *a one-page brief with sources*.
-- Attach documents to the same thread when your question depends on them; the run can read Library attachments alongside live sources.
-- For a quick factual answer, leave Deep Research off — a normal turn with web search is faster.
+<AccordionGroup>
+  <Accordion title="Research could not reach the web. Try again.">
+    The run could not get out to the open web at all. Retry. If it persists, check [status.cortex.foundation](https://status.cortex.foundation).
+  </Accordion>
+  <Accordion title="This report is not available. / The research report could not be loaded.">
+    The reader could not fetch the report. Return to the thread, where the report block itself is still there, and open it again.
+  </Accordion>
+  <Accordion title="This format is not available yet.">
+    You chose PDF, Word or Deck. Choose **Markdown**, the format that is implemented.
+  </Accordion>
+  <Accordion title="Nothing happens when I press Export">
+    Check that the report cites at least one source and that you are signed in. Both turn the menu off.
+  </Accordion>
+</AccordionGroup>
 
 ## Related
 
-- [Models](/chat/models) — the chip where the toggle lives.
-- [Plans](/chat/plans) — turn the report into a task list.
-- [How Chat works](/chat/how-it-works) — the ordinary tool loop that Deep Research replaces.
+- [Models and thinking](/chat/models) - the chip panel where Deep Research is switched on.
+- [Built-in tools](/chat/tools) - the ordinary tool loop a research run replaces.
+- [Library](/chat/library) - where an exported report is saved.
+- [Export documents](/chat/document-export) - the formats Chat can produce and the daily allowance.
+- [Connectors](/chat/plugins) - connected apps a run may consult and cite.
+- [Planning](/chat/plans) - turn a report into a task list.

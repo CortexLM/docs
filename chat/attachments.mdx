@@ -1,0 +1,109 @@
+---
+title: "Attachments and files"
+description: "Send a file with a message: what Cortex Chat accepts, the 10 MB ceiling, what text is read out of a document, and where uploads land"
+icon: "paperclip"
+---
+
+You can send a file along with a message in Cortex Chat. Pick it from your computer, drag it onto the composer, or choose one you already have in Library or on a connected cloud drive. The file is uploaded, kept in [Library](/chat/library), and referenced by the turn you attached it to.
+
+This page covers how to attach a file, what Chat accepts, the size ceiling and where it is enforced, what Cortex can read out of a document, and the messages you see when an upload or an extraction does not work.
+
+## Attach a file
+
+<Steps>
+  <Step title="Open the attach menu">
+    Click **Attach a file** in the composer. The menu offers a local file, **From your Library**, and **Cloud drives**. A drive you have not connected shows **Connect** instead of a file list.
+  </Step>
+  <Step title="Watch the chip">
+    The file appears as a chip above the composer. It reads **Uploading…** with a percentage while the transfer runs, then settles to the file name. The chip states the ceiling: **10 MB max**.
+  </Step>
+  <Step title="Remove it if you change your mind">
+    **Remove** with the file name drops the attachment. The same button cancels an upload that is still running.
+  </Step>
+  <Step title="Send the message">
+    Write your question and send. The file is in Library afterwards, so you can attach it again later without uploading it a second time.
+  </Step>
+</Steps>
+
+Images and video have their own control, **Add image or video**, which builds a small rail of media instead of document chips. It refuses anything that is not one of those with **That file is not an image or video the composer can attach.**
+
+## What Chat accepts
+
+| Kind | Extensions |
+| --- | --- |
+| Images | `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif` |
+| Video | `.mp4`, `.webm`, `.mov` |
+| Documents | `.pdf`, `.docx`, `.xlsx` |
+| Text and data | `.json`, `.txt`, `.md`, `.csv` |
+| Origin check only | `.heic`, `.heif` |
+
+A file type outside this list is refused as an unsupported media type. See [Unsupported media type](/problems/unsupported_media_type).
+
+Photos in the `.heic` and `.heif` formats are accepted for a provenance check but not as chat images. The message says so: **HEIC photos can be checked for origin. Use Check origin, or convert to JPEG or PNG.** See [Check origin](/chat/origin-check).
+
+## The size ceiling is 10 MB
+
+The composer applies a single limit of **10 MB per file**, and it applies to everyone. The check happens in your browser before the upload starts, so an oversized file is refused straight away instead of wasting a long transfer. The media rail refuses the same way, with **That file is larger than the attach limit.**
+
+If a file is too large, the fix is to split it, export a smaller range, or attach the relevant part as text.
+
+<Note>
+Uploading requires an account. Signed out, you get a working conversation but no uploads. If an upload is refused on your plan before the size check even runs, that is an entitlement refusal rather than a size problem, and [Entitlement required](/problems/entitlement_required) explains what to do.
+</Note>
+
+A message that is rejected for size, whether it is the file or the text of the message itself, shows up as [Payload too large](/problems/payload_too_large).
+
+## What Cortex reads out of a file
+
+Uploading is only half the job. Cortex then tries to read text out of what you sent, and the chip says **Reading** with the file name while that happens.
+
+| File | What happens |
+| --- | --- |
+| `.docx` and `.xlsx` | The text is pulled out and included with your message |
+| `.pdf` | Attached and referred to by name, rather than having its text pulled into the message |
+| `.txt`, `.md`, `.csv`, `.json` | Read as the text they already are |
+| Encrypted or damaged files | Nothing is read, and you are told rather than left guessing |
+
+An unreadable file fails plainly: **That file is encrypted or unreadable. Cortex did not extract it.** If that happens on a document you know is fine, an export to plain text or a re-save from the original application usually fixes it.
+
+When an answer quotes something from a file, the citation names the file and the place inside it, so a claim can be checked against the source. The shape is the file name followed by a locator, for example `report.pdf · p.12` or `forecast.xlsx · Sheet 1`.
+
+## Images
+
+You can attach an image, and the composer will upload it like anything else. What a model does with it is another matter: neither model published in Chat today advertises image understanding, so do not build a question around Cortex reading what is inside a picture. See [Models and thinking](/chat/models).
+
+There is one thing a picture is definitely good for. If your question is whether an image was generated or edited rather than what it shows, run it through [Check origin](/chat/origin-check), which is built for exactly that and accepts the widest set of photo formats.
+
+## Where uploads land
+
+Every file you attach is stored in [Library](/chat/library), not only inside the conversation. Two consequences are worth knowing:
+
+- Deleting a chat does not delete the files you attached to it. They stay in Library until you remove them there.
+- A file already in Library can be attached to any later chat through **From your Library**, with no second upload.
+
+Files are yours alone. Chat is per account, so an attachment is visible only to the account that uploaded it. Sharing a result means exporting or copying it, as described in [Sharing and teams](/chat/sharing).
+
+## When an upload will not work
+
+<AccordionGroup>
+  <Accordion title="Upload failed">
+    The transfer did not complete. The chip turns to an error state and keeps the file name. Remove the chip and attach the file again; if it fails repeatedly on a large file, check your connection before blaming the file.
+  </Accordion>
+  <Accordion title="The file is over 10 MB">
+    It is refused before the upload starts, so nothing was transferred. Reduce or split the file.
+  </Accordion>
+  <Accordion title="Cortex did not extract it">
+    The file uploaded but could not be read, which is usually password protection or corruption. The file is still in Library; the text simply did not reach the model.
+  </Accordion>
+  <Accordion title="There is no attach button at all">
+    Attaching needs an account. Sign in with your Cortex account and the control appears.
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+- [Library](/chat/library) - where every upload and generated file is kept.
+- [Check origin](/chat/origin-check) - test whether a photo was generated or edited.
+- [Models and thinking](/chat/models) - what the current models do and do not handle.
+- [How Chat works](/chat/how-it-works) - how an attachment becomes part of a turn.
+- [Chat troubleshooting](/chat/troubleshooting) - upload and extraction messages in context.

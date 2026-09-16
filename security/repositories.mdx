@@ -1,0 +1,103 @@
+---
+title: "Installation and repositories"
+description: "The Cortex Security GitHub App: what it asks for, which repositories it reviews, Security mode, and the four ways to stop reviews"
+icon: "github"
+---
+
+Cortex Security reviews pull requests through a GitHub App that you install on the repositories you choose. This page is about that installation: what the App asks GitHub for and why, how the repositories list works, where the review policy lives, what Security mode adds, and how to stop reviews at four different levels without guessing which one you want.
+
+For the walk-through that gets you from nothing to a first reviewed pull request, read the [Security quickstart](/security/quickstart) instead. Everything here is the reference behind it, on the **App** tab of Cortex Security.
+
+## Two GitHub connections, and neither implies the other
+
+This is the single most common confusion, and the install page carries an inline explainer about exactly it. Three separate things touch GitHub, and reaching for the wrong one is the usual cause of "why is nothing being reviewed".
+
+| Thing | What it does |
+| --- | --- |
+| The **Cortex Security GitHub App** | Reviews pull requests in place, posts comments and reports a check run. Installed from the **App** tab. |
+| **Connect GitHub** in Cortex Code | Gives Cortex Code access to your repositories for sessions. A separate connection. See [Connect GitHub](/code/github). |
+| The **Cortex CLI** in your own pipeline | Runs a review as a headless Cortex Code run, from your CI. Not this App. See [CI cookbook](/cli/ci). |
+
+The two connections coexist happily, and installing one does not install the other. Use whichever fits, or both.
+
+## Installing and claiming the installation
+
+Choose **Install on GitHub** under **Install Cortex Security on GitHub**, pick the repositories GitHub should let it see, and confirm. GitHub sends you back to the **App** tab, which claims the new installation; the server confirms it against GitHub before storing it, so nobody can claim an installation by editing a query parameter. A toast reads **GitHub connected**, or **Could not connect GitHub** when the claim did not work.
+
+<Note>
+Self-hosting a deployment adds one requirement: the App's **Setup URL** has to point at this install page, because GitHub only hands back the installation identifier when it does. The page tells you the exact URL to register: *After install, GitHub must send people to {url}. Register that as the App's Setup URL.*
+</Note>
+
+## What the App asks for
+
+The page lists what it asks for under **WHAT THE APP ASKS FOR**, with a reason beside each one. The full set the App requests is five permissions, and nothing beyond them.
+
+| Permission | Access | Why |
+| --- | --- | --- |
+| Contents | Read | To fetch the pull request's change, and read the manifest that names your tests. |
+| Pull requests | Write | To post the review, its inline comments, and the reaction that says the review has started. |
+| Issues | Write | To read a comment that mentions the App and reply to it. On GitHub, comment events on a pull request live under Issues. |
+| Checks | Write | To report the **Cortex Security** check run. |
+| Metadata | Read | Required by GitHub for any app. |
+
+Commit statuses is requested as read-only and is **not used today**, and would only matter if you wanted the App to read other checks. **Nothing else. In particular not Administration, not Actions, and not Secrets.**
+
+The App listens for five kinds of event: pull request, issue comment, installation, installation repositories, and pull request review thread. Two of those are worth knowing about, because an installation that does not receive them looks broken rather than unsubscribed: **issue comment** is what makes mentioning the App work at all, and **pull request review thread** is how resolving one of its comment threads counts as a dismissal.
+
+## The repositories list
+
+Under **REPOSITORIES** each repository the installation can see has its own switch, labelled `Review pull requests in {name}`. A repository that is off gets no review, no comment and no check run: nothing at all reaches its pull requests. Each row also shows how many pull requests Cortex Security has seen there, or **No pull requests seen yet**, and marks a **Private** repository as such.
+
+Two more controls sit around the list.
+
+- **Review new repositories automatically**: *When a repository is added to the installation later, start reviewing its pull requests without asking. Off means it arrives switched off and you enable it here.* This is the setting behind "I added a repository and nothing happened".
+- **Add or remove repositories on GitHub** takes you to GitHub, which owns the list of repositories the App can see at all. When there are none, the page says *The installation has no repositories yet. Add some on GitHub and they will appear here.*
+
+Under **CONNECTION** the state reads **Connected** once an installation is claimed.
+
+## Where the review policy lives
+
+The review policy is set once, on the **Policy** tab, and governs **the installation**, which means every repository in it. There is no per-repository policy screen today: if you need different treatment per repository, the levers are the repository switch above and a file in the repository itself.
+
+A repository can carry its own instructions and rules on the branch under review. Those can make a review stricter or better informed, and they cannot exclude a path, raise a threshold or switch the review off, because the author of a pull request would otherwise have a say over the scrutiny it receives. [Review policy](/security/review-policy) covers both layers and what each may change.
+
+## Security mode
+
+Security mode is the switch that enables repository scans. It is separate from the installation, and the two only meet when you start a scan.
+
+- Turning the mode on does **not** need the GitHub App. Starting a scan does, on a repository this account owns.
+- A personal enable is ungated. An **organisation-wide** enable needs an owner or an admin **and** an Enterprise plan, after which members inherit it and need no switch of their own. An admin who enables the organisation keeps their personal switch as well. See [Plans](/getting-started/plans).
+- GitHub.com only: **GitHub Enterprise Server is not available yet.**
+
+[Repository scans](/security/scans) covers what the mode unlocks.
+
+## States you may see
+
+| What the page says | What it means |
+| --- | --- |
+| **Cortex Security is not configured on this deployment** | This deployment has no GitHub App set up, so no pull request is reviewed and there is nothing to install. An operator has to supply the App's credentials first. **Installation details** explains what is missing. |
+| *This deployment has no app slug configured, so there is no install link to follow.* | The App exists here but the page has no link to send you to. An operator can find the App's install URL on its settings page. |
+| **Connected** | An installation is claimed, and the repositories list is live. |
+| *This installation is suspended on GitHub, so no pull request is being reviewed.* | Unsuspend it from the App's settings page on GitHub to resume. |
+| **Could not save that** | A change to the list or the auto-enable switch did not stick. Try it again. |
+
+Cortex Security is not available to guest accounts, and a guest trying to install the App is refused with the reason: a guest session cannot be signed back into later in order to revoke a GitHub installation.
+
+## Stop reviews
+
+Four different levels, and people habitually reach for the wrong one.
+
+| Goal | Do this |
+| --- | --- |
+| Stop reviewing one repository | Switch **off** `Review pull requests in {name}` on the **App** tab. No comment, no check run, nothing. |
+| Keep the reviewer available but silent | **Policy** to **Review pull requests** to **Only when asked**. It then reviews only when somebody mentions the App. |
+| Stop reviewing entirely, keep the installation | **Policy** to **Review pull requests** to **Never**. Different from disabling a repository, which also stops the check run being created. |
+| Remove Cortex Security from GitHub | Uninstall the App from GitHub. **Add or remove repositories on GitHub** is the link out to its settings. |
+
+## Related
+
+- [Security quickstart](/security/quickstart) - install, enable a repository, read a first review.
+- [Review policy](/security/review-policy) - everything the policy form governs for this installation.
+- [Repository scans](/security/scans) - what Security mode plus an owned repository gives you.
+- [Checks and comments](/security/checks) - what lands on a pull request once a repository is on.
+- [Security troubleshooting](/security/troubleshooting) - nothing appearing, a suspended installation, a repository that is not being reviewed.

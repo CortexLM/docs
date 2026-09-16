@@ -1,0 +1,56 @@
+---
+title: "Bot jobs"
+description: "What the Bot jobs surface in Cortex Design is meant for, why handing a design to a Cortex Bot is not available yet, and what to do instead."
+icon: "robot"
+---
+
+Bot jobs is the surface where you would hand a design task to one of your Cortex Bots: give it a canvas and a brief, let it work while you do something else, and come back to what it produced. That is the intent.
+
+**It is not available yet, and there is nothing to switch on.** The Design desktop app draws the surface, but no work is behind it. A Cortex Bot cannot open, read, or change a design canvas today, so nothing you submit from these controls starts anything. This page says what the surface is for, what you can do instead right now, and what will change when it ships.
+
+<Warning>
+  Handing a design to a Cortex Bot is planned, not shipped. Treat the **Bot jobs** row in the sidebar, the **Hand to Bot** button in the editor header, and the **Hand to a Bot** sheet as the shape of a feature under construction rather than as controls that do something.
+</Warning>
+
+## What you are looking at
+
+The Design desktop app's sidebar carries a **Bot jobs** row, and the editor header carries a **Hand to Bot** button that opens a sheet asking which bot, what kind of job, and which part of the canvas to work on. Those controls are drawn, and they are the right place to look when the feature arrives. What they are not is wired: there is no service behind them, so a submitted brief does not reach a bot and no job appears anywhere.
+
+For the same reason, do not read the screen as a status board. Nothing is queued, nothing is running, and there is no result waiting for review.
+
+## What to do instead today
+
+Do the design work in the Design desktop app yourself, and use Cortex Bot for the work it can already do.
+
+<CardGroup cols={2}>
+  <Card title="Cortex Bot" icon="robot" href="/bot">
+    What a bot is, what it can reach, and how to talk to one. Start here rather than from Design.
+  </Card>
+  <Card title="Tasks" icon="list-check" href="/bot/tasks">
+    Give a bot a piece of work and follow it, on the surfaces where that already works.
+  </Card>
+  <Card title="Routines" icon="repeat" href="/bot/routines">
+    Have a bot do something on a schedule, rather than waiting for design jobs to land.
+  </Card>
+  <Card title="Generate and edit" icon="pen-ruler" href="/design/editor">
+    Ask Cortex for frames in the canvas thread. This is the working path for design work today.
+  </Card>
+</CardGroup>
+
+The editor thread is the closest thing to what Bot jobs promises. You describe the change you want, Cortex draws it onto the canvas, and every save becomes a numbered version you can read or restore later. The difference is that you are in the room while it happens, rather than reviewing afterwards.
+
+## What will change when it ships
+
+Two things sit on the list for the next version of Cortex Design and both matter here: bot tasks, and live updates. Until they land:
+
+- A bot has no ability to read or write a design canvas, which is the missing piece rather than a permission you can grant.
+- Canvas state is refreshed rather than streamed. While Cortex draws, the canvas reports a drawing state and the app refreshes it, so even a working job surface would be something you check rather than something that pushes at you. The Bot jobs header says as much about live updates itself.
+
+When both ship, expect this page to describe the real flow: picking a bot, scoping the brief to a frame or a whole canvas, and reviewing the version that comes back. Watch the [changelog](/changelog) for it.
+
+## Related
+
+- [Cortex Bot](/bot) - what bots do today.
+- [Generate and edit](/design/editor) - the working way to change a canvas now.
+- [Versions](/design/versions) - the history every save leaves behind.
+- [Design troubleshooting](/design/troubleshooting) - Design surfaces that refuse or fail.

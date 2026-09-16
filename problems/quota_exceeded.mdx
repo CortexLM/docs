@@ -10,7 +10,7 @@ description: "Plan limit reached. HTTP 429."
 | `type` | `https://docs.cortex.foundation/problems/quota_exceeded` |
 | Retryable | no |
 
-A plan quota window is exhausted. Carries `resets_at`, `retry_after_seconds`, `quota_key`, `plan`, and optionally `fallback_model`. Not retryable: wait for the window or upgrade. Free and Guest `images_per_day` is a quota, not a paywall.
+A plan quota window is exhausted. Carries `resets_at`, `retry_after_seconds`, `quota_key`, `plan`, and optionally `fallback_model`. Not retryable: wait for the window to reset, or move to a plan with higher ceilings. Note that `images_per_day` is a quota rather than a paywall, because every plan including Guest can generate images, in different daily amounts.
 
 ```json
 {
@@ -24,6 +24,6 @@ A plan quota window is exhausted. Carries `resets_at`, `retry_after_seconds`, `q
 
 ## Related
 
-- [Errors](/api/errors) — how to branch on `code`, and what not to render from `detail`.
-- [Problem catalog](/problems) — every code, its status, and whether retrying helps.
-- [Troubleshooting](/getting-started/troubleshooting) — what a message in the product means.
+- [Errors](/reference/errors) - how to branch on `code`, and what not to render from `detail`.
+- [Problem catalog](/problems) - every code, its status, and whether retrying helps.
+- [Troubleshooting](/getting-started/troubleshooting) - what a message in the product means.

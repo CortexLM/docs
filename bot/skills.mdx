@@ -1,50 +1,102 @@
 ---
-title: "Skills"
-description: "Skills are instruction bundles a bot can follow. Enable first-party skills on a bot you own; the bot loads one when the task calls for it."
-keywords: ["instructions", "bundles", "procedures"]
+title: "Bot skills"
+sidebarTitle: "Skills"
+description: "Recipes a bot may follow: the catalog, the scan that gates every skill, enabling one on a bot, running it, and what a skill does not grant"
+icon: "graduation-cap"
 ---
 
-A skill tells a bot **how** a particular job is done — the checklist for a weekly report, the steps for a support triage, the way your team wants a summary written. Instead of carrying every procedure in its context all the time, the bot loads a skill when the task calls for it.
+A skill is a recipe a bot may follow: the checklist for a weekly report, the steps for a support triage, the way your team wants a summary written. Instead of carrying every procedure in its head all the time, the bot reads the recipe when a job calls for it. The panel puts it plainly: `Recipes this bot may follow. Each one is scanned before it can be turned on.`
+
+Skills are about **how** a job is done. They are not permissions and they are not a schedule. This page covers where skills come from, the scan that stands between a recipe and a switch, enabling one on a bot, running a skill directly, and the three things a skill is often confused with.
+
+## Where skills come from
+
+Open a bot and go to its **Skills** panel. The **Catalog** lists every skill on the account, each with its state, and an account with none reads `No skills on this account yet.` While the list loads you see `Loading skills…`.
+
+There are two kinds of row.
+
+- **Per-bot skills.** A switch reading **On** or **Off**, with **Enable** and **Turn off** to change it. Enabling is per bot, so one bot can follow a recipe while another never sees it. You need to be signed in to change a switch.
+- **Account-managed skills.** These render with no switch at all, marked **Always on**. They are set for the account rather than per bot.
+
+You can also add to the catalog yourself. A skill you authored that has the same name as one Cortex bundles takes precedence, so overriding a default is a matter of writing your own with that name. The quickest way to produce one for a bot is to show it the job on its own computer: see [Teach from a demonstration](/bot/teach), which ends in **Save and enable**. Authoring recipes by hand is covered on [Chat skills](/chat/skills), since the same recipe file can be enabled for Cortex Chat and for Cortex Bot.
+
+## The scan is a gate, not a warning
+
+Every skill is checked before it can be turned on, and the result decides what the row even offers you. Two checks run: a static pass over the file and a bounded review by a model.
+
+| Verdict | What you see | What you can do |
+| --- | --- | --- |
+| Clean | `No findings. The static check ran and the review agreed.` | **Enable** |
+| Flagged | **Flagged**, with a count of findings | **Review**, then **Read the SKILL.md**, then **Enable anyway** |
+| Not checked | `The review did not run, so this recipe has not been cleared. Enable anyway only if you have read it.` | **Enable anyway** only |
+
+**Enable** appears only for a clean verdict. Everywhere else the affordance is **Enable anyway**, which shows each finding with its line number and a redacted quote, and sends your acknowledgement along with the change. Turning on a flagged recipe is recorded as a decision you made, not as a switch that happened to be flipped.
+
+There are seven kinds of finding, and this is the whole list.
+
+| Finding | What it means |
+| --- | --- |
+| `A credential is written into the recipe.` | A password, key or token is sitting in the file |
+| `This recipe moves credentials off the machine.` | The steps send secrets somewhere else |
+| `This recipe downloads and runs code.` | It fetches something from the network and executes it |
+| `This recipe asks for elevated privileges.` | It wants more power on the computer than the job needs |
+| `This recipe writes outside the workspace.` | It touches files beyond the bot's own working folder |
+| `This recipe tries to instruct the model directly.` | The file is aimed at the bot's instructions rather than at the task |
+| `This recipe hides what it runs.` | The real command is obscured |
+
+If a change cannot be saved you get `That change could not be saved.` and the switch stays where it was.
 
 ## Enable a skill
 
 <Steps>
-  <Step title="Sign in and open a bot you own">
-    A guest cannot enable or run skills.
+  <Step title="Open the bot's Skills panel">
+    Sign in first. Bot needs a signed-in Cortex account.
   </Step>
-  <Step title="Enable the first-party skills the bot should follow">
-    Each bot has its own set. Enable only what that bot's job needs.
+  <Step title="Read the verdict on the row">
+    A clean row offers **Enable**. Choose it and the skill is on for this bot.
   </Step>
-  <Step title="Let the bot use them">
-    The bot loads a skill through its `skill` tool when a task matches. You can also ask for one by name in the conversation.
+  <Step title="For a flagged row, review before you decide">
+    **Review** lists each finding with its line number. **Read the SKILL.md** shows you the file itself. Only then does **Enable anyway** appear.
+  </Step>
+  <Step title="Turn one off when the job changes">
+    **Turn off** removes the skill from this bot. It stays in the catalog for your other bots.
   </Step>
 </Steps>
 
-## Skills are not…
+You can also pick a bot's skills while you create it: the **New bot** form has a **Skills** section that says `Skills this bot may run. Distinct from connectors.` Everything on that form can be changed later. See [Create a bot](/bot/create-a-bot).
 
-| Object | What it is |
+## How a bot picks one, and how you run one yourself
+
+A bot reaches its skills through a tool of its own. That tool lists the skills that are enabled and reads one recipe by name, so the bot looks at what is available, reads the relevant recipe, and then follows it. Nothing forces a match: asking for a skill by name in the conversation is the reliable way to get the one you meant.
+
+You can also run a skill directly rather than describing the job. Running one starts a full bot turn, the same as sending a message, and the turn is marked as having been started by a skill rather than by you. Because it is a normal turn, everything else about a turn applies: there is no round limit, the same fifteen-minute deadline holds, and consequential steps still park for a decision.
+
+A skill can be put on a schedule, which is where the two features meet. A routine built from a saved skill simply has `Run the saved skill {slug}.` as its instruction, so the schedule decides when and the recipe decides how. See [Routines](/bot/routines).
+
+## A skill grants nothing
+
+This is the part worth internalising. A recipe is instructions, not capability. Enabling a skill adds no tool to the bot, no connected app, and no permission.
+
+A skill that tells the bot to run a command still parks that command behind **Allow**, **Deny** or **Always**. A skill that tells it to change something in a connected app still parks that change. A skill that names a tool the bot was never given simply has nothing to call. The recipe describes the job; [Approvals and tool policy](/bot/approvals) decides whether each step runs.
+
+<Note>
+A skill runs inside the bot's turn and does not produce a row of its own in the conversation. You see only the bubbles, questions and secret requests the bot chooses to send, exactly as in any other turn. To watch the detail, open the bot's [Computer](/bot/computer).
+</Note>
+
+## What a skill is not
+
+| Thing | What it actually is |
 | --- | --- |
-| [Deep Research](/chat/deep-research) | A Chat research run |
-| Code's workspace catalog | The tools a [Code session](/code/how-it-works) runs in its guest |
-| [Routines](/bot/routines) | *When* a bot works; a skill is *how* |
-| Connected apps | Tools from apps you connected under **Customize → Connectors** |
-
-## How a bot reaches a skill
-
-A skill is not a tool the bot runs on its own initiative — it is an instruction bundle the `skill` tool loads, and the `skill` tool is one entry in the catalog a bot receives. See [Tools](/bot/tools) for where it sits among files and shell, computer use, browser, and the user-visible tools.
-
-Because a skill is instructions rather than a capability, loading one does not add permissions. A skill that tells the bot to change something in a connected app still parks that change behind [Approvals](/bot/approvals), and a skill that tells it to delete files still parks the dangerous step. The skill describes the job; the approval decides whether it runs.
-
-## What you see when a skill runs
-
-A skill runs inside the bot's turn, so it does not produce a row of its own. The conversation shows only the user-visible tools — `send_to_user`, `ask_user`, `notify`, and `secret_request` — and the [Computer](/bot/computer) rail shows the rest as it happens. See [How Bot works](/bot/how-it-works).
-
-## Skills in the CLI
-
-The CLI has its own skills system for the coding agent — `SKILL.md` bundles with frontmatter, found in your project or under `~/.cortex/skills/`, loaded through a `UseSkill` tool and gated by the `permission.skill` table. Those are CLI skills for Code, separate from Bot's first-party skills. See [Extend the CLI](/cli/extend).
+| [Routines](/bot/routines) | **When** a bot works. A skill is **how**. |
+| [Connected apps](/bot/plugins) | Tools from an app you connected. A skill cannot turn one on. |
+| [Bot tools](/bot/tools) | The catalog the bot receives. The skill tool is one entry in it. |
+| [CLI skills](/cli/skills) | The Cortex CLI has its own skills system for the terminal coding agent. |
 
 ## Related
 
-- [Tools](/bot/tools) — the `skill` tool and the rest of the catalog.
-- [How Bot works](/bot/how-it-works) — what you see when a skill runs.
-- [Routines](/bot/routines) — the schedule a skill does not provide.
+- [Teach from a demonstration](/bot/teach) - record yourself doing a job and save the draft as a skill.
+- [Routines](/bot/routines) - put a skill on a schedule.
+- [Approvals and tool policy](/bot/approvals) - why a skill cannot approve its own steps.
+- [Bot tools](/bot/tools) - the tool a bot uses to list and read its recipes.
+- [Chat skills](/chat/skills) - authoring a recipe, and using the same one in Cortex Chat.
+- [Create a bot](/bot/create-a-bot) - choosing skills on the New bot form.

@@ -1,65 +1,112 @@
 ---
 title: "Computer"
-description: "The Computer rail is a live desktop on a Cloud guest — screen, browser, shell — not a slideshow of screenshots. Web is Cloud-only."
-keywords: ["desktop", "guest", "This PC", "SSH", "sleep"]
+description: "The Computer rail: start and wake a bot's desktop, watch it live, take control, record a session, and understand hibernation."
+icon: "display"
 ---
 
-Every bot can have a computer. In the web app it is an isolated Cloud guest with a desktop, and the **Computer rail** on the right of the open bot shows that desktop live while the bot works.
+Every bot in **Cortex Bot** can have a computer of its own: an isolated cloud computer with a graphical Linux desktop, a browser, a shell and a file system. The **Computer** tab of an open bot is the rail where you watch that desktop while the bot works, and where you take the mouse and keyboard back when you want to do something yourself.
 
-## Hosts
+This page covers starting and waking the computer, what the rail shows while a turn runs, taking and handing back control, recording a session on the **Videos** tab, hibernation, and what the computer is allowed to reach.
 
-| Host | Where | Desktop | Available from |
-| --- | --- | --- | --- |
-| **Cloud** | An isolated guest on the Cortex farm | Yes — desktop, browser, shell | Web app, Bot desktop app |
-| **This PC** | Your machine | Your own desktop | [Bot desktop app](/bot/desktop) only |
-| **SSH** | A host you register | No — shell only | Bot desktop app |
+## Start the computer
 
-The browser cannot choose This PC or SSH; that is host placement, not a missing option. A Cloud bot still has a full desktop and a shell.
-
-## Open desktop and Sleep
+A bot's computer is created with the bot, but it is not kept running for nothing. The rail tells you which state it is in and offers exactly one sensible action.
 
 <Steps>
-  <Step title="Open a bot you own">
-    Guests cannot drive a bot.
+  <Step title="Open the Computer tab">
+    Open a bot you own and choose **Computer**. An open bot has **Messages**, **Computer**, **Videos** and **VNC** tabs.
   </Step>
-  <Step title="Choose Open desktop">
-    The guest starts. The rail reads **Connecting** only while the guest is starting.
+  <Step title="Start or wake it">
+    If the rail says **No computer yet**, with the hint `Start a Cloud computer to open a live desktop.`, choose **Start computer**. If it says **Computer is asleep**, with `Wake it to resume the desktop.`, choose **Wake the computer** or **Resume**.
+  </Step>
+  <Step title="Wait for the desktop">
+    You will see `Starting the computer…` while the machine comes up, then `Connecting to the desktop stream…` for a few seconds while the view is joined. The rail then reads **Live**.
   </Step>
   <Step title="Watch it work">
-    The live screen shows what the bot sees and does — pages it opens, controls it clicks, files it edits.
-  </Step>
-  <Step title="Choose Sleep when you are done">
-    The guest hibernates. The next active turn wakes it before the model is prompted, so the bot never has to apologise that it has no shell.
+    The live screen shows what the bot sees and does: pages it opens, controls it clicks, files it edits.
   </Step>
 </Steps>
 
-## Rail states
+You do not usually have to do any of this before giving the bot a task, because a turn that needs the desktop starts it again first. When that does not work the bot says so, with `Could not wake the computer` in its activity, and **Wake the computer** on the rail is then your move.
 
-| State | Meaning |
+## What the rail shows
+
+**Live** and **Off** are the two words for the stream itself. Between them sit the honest intermediate states, which is the point of the rail: it never paints a fake desktop.
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| `Starting the computer…` | The machine is coming up | Wait |
+| `Connecting to the desktop stream…` | The view is being joined | Wait, up to about twenty seconds |
+| **Live** | The desktop is streaming | Nothing |
+| `No live desktop stream on this ticket — showing screenshots instead.` | The live view could not be joined, so the rail fell back to stills | Usable, but it is the fallback, not the feature |
+| `The desktop stream could not connect.` | The live view failed | **Retry stream** |
+| `The live desktop is unavailable.` | The desktop cannot be joined at all | Wake it, or **Recreate** |
+| `The Cloud computer is unavailable. Wake it to try again.` | Asleep or unreachable | **Wake the computer** |
+| **Could not start the computer** with `Try again, or recreate the computer.` | The machine did not start | **Try again**, then **Recreate** |
+
+Screenshots are the fallback and never the normal mode. If you are looking at stills, the live stream could not be joined on that view.
+
+## Take control
+
+The desktop has one writer at a time. **Take control** hands the mouse and keyboard to you and the rail confirms `You have control`. **Hand back** returns them to the bot. While the bot holds them you see `{name} is still working.`, and handing control away is acknowledged with `You handed back control.`
+
+Taking control is the right move when the bot is stuck on something only you can do, such as a screen it should not be clicking through on its own. For a password, a one-time code or a captcha, do not type it into the thread: the bot raises **Cortex needs you** and the value you enter there is delivered to the computer rather than posted as a message.
+
+## Record a session
+
+The **Videos** tab is the bot's **Recordings** list. A recording captures the full screen, the path the pointer took and zooms on its clicks, which makes it the clearest way to review what a routine did overnight.
+
+<Steps>
+  <Step title="Check the computer is awake">
+    Recording needs a running computer: `Recording needs the computer to be awake.` Only the bot's owner can record it.
+  </Step>
+  <Step title="Start">
+    On **Videos**, choose **Record**. The tab shows `Recording…` while it runs.
+  </Step>
+  <Step title="Stop and play">
+    Choose **Stop recording**. The finished recording is listed with its length and size and a **Play** action.
+  </Step>
+</Steps>
+
+With nothing recorded yet the tab reads **No recordings yet**. If a recording cannot be produced you get `Encoding failed` rather than a broken file.
+
+The separate **Record / replay** and **Teach a task** recorders turn a demonstration into a reusable skill instead of a video. See [Teach from a demonstration](/bot/teach).
+
+## Sleep, hibernation and recreate
+
+| Control | What it does |
 | --- | --- |
-| **Connecting** | The guest is starting. Only then. |
-| Live desktop | The guest is running and its screen is reachable |
-| **Stream Unavailable** | The guest is running but its live screen is not reachable right now. This is its own state — not stacked under Connecting. |
-| Asleep | You chose **Sleep**, or the guest hibernated after idling |
+| **Sleep** or **Hibernate** | Puts the computer away. Its disk and its files stay |
+| **Wake the computer** or **Resume** | Brings it back and rejoins the desktop |
+| **Recreate** | Rebuilds the computer when it will not start |
+| **Open desktop** and **Close desktop** | Opens and closes the desktop view without changing the machine's state |
 
-## What the bot can do on its computer
+An idle computer hibernates on its own to save resources, and **Hibernation** is a toggle on the bot's settings. There is nothing to clean up after a job: leave the bot alone and its computer puts itself away, then wakes on the next turn that needs it.
 
-The computer-use tools let the bot look (`screenshot`), point precisely (`grounded_click`), type, press hotkeys, scroll, drag, wait, open and switch apps, save a note, and hand a coding task to `code_agent`. The planner describes the control it wants; a second inference call returns the exact framebuffer coordinates, so the planner never guesses raw pixels. A `browser` tool and a `shell` round it out. Full list: [Tools](/bot/tools).
+<Warning>
+**Recreate** rebuilds the machine. Treat anything the bot left on its desktop as gone, and deleting the bot retires its computer with it.
+</Warning>
 
-Dangerous computer steps park behind [Approvals](/bot/approvals) before they run.
+## What the computer can reach
 
-## Three machines, again
+A bot's computer reaches the network through an allow list, not the open internet. The rule is stated on the bot's own **Egress and activity** panel: `Hosts on the allow list may be reached. Everything else is refused, and the blocked ranges are refused before this list is read.` With nothing on the list the bot reaches nothing at all, so adding the first domain is what turns egress on.
 
-| Surface | Machine |
-| --- | --- |
-| **Bot computer** | Isolated Cloud guest **with** a desktop |
-| **Code Cloud** | Isolated Cloud guest, headless — see [Cloud runtimes](/code/cloud) |
-| **Chat Python** | A snippet sandbox, no workspace |
+Some addresses can never be allowed whatever the list says: instance metadata, loopback and the private network are refused first, and a hostname that resolves to one of those is refused as well. The panel also carries an **Activity** feed of the bot's own events, such as `Asked you a question`, `Waiting for your approval`, `Could not wake the computer` and `A recording finished`. It is an event feed rather than a request log, so it does not record destinations.
 
-A bot's desktop cannot see a Code repository, and a Code session cannot reach a bot's screen. See [Security](/security/overview).
+<Note>
+Editing that allow list is not available yet. The list you see is what the deployment holds, and adding or removing a domain from this panel does not persist. Browsing the computer's workspace files from the rail is not available yet either.
+</Note>
+
+## One computer, one bot
+
+Each bot has exactly one computer, and it is always the cloud computer Cortex runs for it. Its disk, its desktop and its recordings belong to that bot alone, so one bot cannot see another's screen or files, and a bot's desktop cannot see a Cortex Code workspace.
+
+Choosing a different machine to run work on, your own computer or a host you keep, is a Cortex Code control rather than a Bot one. See [Machines](/code/machines) and [SSH hosts](/code/ssh-hosts).
 
 ## Related
 
-- [How Bot works](/bot/how-it-works) — the turn that wakes a hibernated guest.
-- [Routines](/bot/routines) — scheduled work on the same computer.
-- [Troubleshooting](/bot/troubleshooting)
+- [Bot tools](/bot/tools) - the desktop verbs the bot uses on this screen.
+- [Approvals and tool policy](/bot/approvals) - why a click or a command stops and asks.
+- [Teach from a demonstration](/bot/teach) - turn what you do on this desktop into a skill.
+- [Routines](/bot/routines) - scheduled work that wakes this computer.
+- [Bot troubleshooting](/bot/troubleshooting) - when the desktop will not start or the stream will not connect.

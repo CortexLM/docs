@@ -1,0 +1,62 @@
+---
+title: "Code notifications"
+sidebarTitle: "Notifications"
+description: "The Notifications inbox: everything Cortex has told you about, newest first, with one row per thing that happened and one button to clear them."
+icon: "bell"
+---
+
+**Notifications** is where Cortex tells you what happened while you were not watching. A Cortex Code session can run for a long time, and the whole point of starting one is that you go and do something else, so the inbox exists to bring you back at the two moments that matter: when a run finished, and when it is stuck waiting on a decision only you can make.
+
+This page explains what lands in the inbox, how to read and clear it, and what the inbox deliberately does not do. It is a list, not a settings screen: there is nothing to configure here.
+
+## One inbox for the whole product
+
+The most useful thing to know before you open it: **this is one inbox for the whole product, not a Code filter.** Despite living under Code in the app, the list is shared. Cortex Code runs, prompts from a bot that need an answer from a human, scheduled task results and machine wake failures all arrive in the same column, newest first.
+
+So do not expect a page that shows only your sessions. Read it as "everything Cortex has told you about", which is exactly how the page describes itself:
+
+> **Everything Cortex has told you about, newest first.**
+
+When something is unread, that line is replaced by a count, `{n} unread, newest first.`
+
+Every row links to whatever it is about. Depending on which identifier the notification carries, following a row takes you to a session, to a conversation, or to a bot. There is no separate detail view for a notification itself: the row exists to hand you back to the thing that needed you.
+
+## What Cortex tells you about
+
+The empty state is the clearest statement of the inbox's job, and it is worth taking literally:
+
+> **Cortex tells you when a session finishes, when it needs a decision, and when an automation ran.**
+
+Those three clauses map onto the work you actually do in Code. A finished session means there is a diff to read or a pull request to open, so see [Changes and diffs](/code/changes). A session that needs a decision is waiting on you in the approval rail or in the **Changes** pane, so see [Permissions and approvals](/code/approvals). An automation that ran has prepared a session you can open, so see [Automations](/code/automations).
+
+<Note>
+The inbox draws **no per-kind label** on a row. There is no badge or heading anywhere in the list that reads "session finished" or "needs decision", so do not go looking for a way to see or filter by notification type. Read the row's own text and follow it.
+</Note>
+
+## Clearing the list
+
+Rows arrive newest first and stay in that order. There is a single control:
+
+- **Mark all read** appears only when something is unread. Press it and the unread count goes away.
+- If that does not work, Cortex says so plainly: **They could not be marked read**. Nothing was lost; try again.
+
+When the list has never had anything in it, the page shows **Nothing yet** with the three-clause sentence above and a **Start a session** button that takes you to Code Home.
+
+## What this page does not do
+
+Be aware of the gaps before you plan a workflow around the inbox.
+
+- There is no preference, mute or per-category control on this page. It reports; it does not configure. [Code settings](/code/settings) has model defaults and pointers, and no notification fields.
+- Email and push delivery are not documented for this inbox. Treat the page in the app as the place notifications live.
+- **Mark all read** is the only read control described here. Whether an individual row can be marked read on its own is not documented.
+- How long a notification is kept is not documented. If a run matters, open the session and read it there rather than relying on the row still being in the list later.
+
+If a notification points at a session that will not open, or a run you expected never announced itself, work through [Code troubleshooting](/code/troubleshooting).
+
+## Related
+
+- [Code sessions](/code/sessions)
+- [Permissions and approvals](/code/approvals)
+- [Automations](/code/automations)
+- [Code settings](/code/settings)
+- [Notifications](/getting-started/notifications)

@@ -1,0 +1,106 @@
+---
+title: "Security quickstart"
+description: "Install the Cortex Security GitHub App on a repository, open a pull request, and read the check run and summary comment it posts"
+icon: "rocket"
+---
+
+This walk-through takes you from nothing to a reviewed pull request. You need a Cortex account that is not a guest, and a GitHub repository you can install an app on. Everything happens on GitHub.com; the App is installed there, and the review is posted there.
+
+You will open Security inside Cortex Code, install the GitHub App, enable one repository, open a pull request, and read the four things Cortex Security posts back. The last step, making the check required, is optional and is the one that turns a review into a gate.
+
+## Your first review
+
+<Steps>
+  <Step title="Open Security">
+    Sign in with your Cortex account at [cortex.foundation](https://cortex.foundation) and open **Cortex Code**. Security is a mode inside Code rather than a separate product, so there is no row for it in the product switcher.
+
+    Open the Code command palette and choose **Security**. That lands you on the review inbox, headed **Security**, which describes itself as *every pull request Cortex Security has seen, what it found, and the evidence behind it.*
+
+    If the inbox says **Cortex Security is not configured on this deployment**, stop here: this deployment has no GitHub App credentials, so nothing can be installed until an operator supplies them. Choose **Installation details** to see what is missing.
+  </Step>
+  <Step title="Install the GitHub App">
+    Open the **App** tab. Before an installation exists it reads **Install Cortex Security on GitHub**, with the body *Choose the repositories it can see. Cortex Security asks for read access to code, and write access to pull requests and checks — enough to post a review and report a check run, and nothing else.*
+
+    Choose **Install on GitHub**. GitHub asks which repositories the App may see; pick all of them or a short list, and confirm. GitHub sends you back to the **App** tab, which claims the new installation and confirms it against GitHub before storing it. A toast reads **GitHub connected** on success, or **Could not connect GitHub** if the claim failed.
+
+    This is not the same connection as **Connect GitHub** in Cortex Code. The two coexist and neither implies the other.
+  </Step>
+  <Step title="Enable a repository">
+    Under **REPOSITORIES**, switch on the repository you want reviewed. The switch is labelled `Review pull requests in {name}`. A repository that is off gets no review, no comment and no check run at all, so nothing appears on its pull requests.
+
+    Under **CONNECTION** the state reads **Connected**, and **Add or remove repositories on GitHub** takes you back to GitHub to change the list.
+
+    Optionally switch on **Review new repositories automatically**: *When a repository is added to the installation later, start reviewing its pull requests without asking. Off means it arrives switched off and you enable it here.*
+  </Step>
+  <Step title="Open a pull request">
+    Open an ordinary pull request in the repository you just enabled. A draft is **not** reviewed by default, so either mark it ready or ask for a review by mentioning the App in a comment.
+
+    Within moments the pull request picks up an eyes reaction, meaning the review has started, and a check run named **Cortex Security** appears in progress. A thumbs-up reaction is added when the review finishes; a confused reaction means it could not run. There is never a thumbs-up on a review that did not happen.
+  </Step>
+  <Step title="Read the check run">
+    The check run is created as soon as the event arrives, moves to in progress while the review runs, and completes with one of three conclusions.
+
+    | Conclusion | What it means |
+    | --- | --- |
+    | **Success** | The review finished and nothing that blocks survived verification. There may still be observations to read. |
+    | **Failure** | Something blocking or major survived verification, so this check fails. Whether the pass ran to the end does not change that conclusion. |
+    | **Neutral** | *The review could not run, or did not finish. The summary says why. This is never an approval — a change nobody reviewed must not report as one.* |
+
+    Blocking and major findings fail the check. Minor findings and notes never do.
+  </Step>
+  <Step title="Read the comments">
+    Alongside the check run you get up to three more things, each of which your policy can switch off.
+
+    - **Inline comments**, one thread per finding, on the line. A thread carries a severity badge, the finding's title, the failure mode with the input that reaches it, sometimes a committable suggestion, and a footer naming the category, the weakness class and how certain the finding is.
+    - **A summary comment**, with a headline and counts, a confidence score from 0 to 5 for the pull request, and an issues table that is folded by default. Its footer carries the review number, the commit that was read, and the handle to mention for another look.
+    - **A review event**: changes requested when something blocking survived, or a plain comment otherwise.
+  </Step>
+  <Step title="Read the row in the inbox">
+    Back in the inbox, under **PULL REQUESTS**, your pull request now has a row with the status the pass earned: **No findings**, or *N* **to read** when there are findings that do not block, or **1 blocking finding**, or **Not reviewed**.
+
+    Open the row for the whole picture: how many files were reviewed, the short commit, the findings that were posted, the ones the verifier rejected, and the ones your policy filtered out.
+  </Step>
+  <Step title="Optional: make the check required">
+    Open the **Checks** tab. It explains the check run, the severities, and under **REQUIRING IT** offers **Copy workflow** (the button then reads **Copied**), which copies a workflow that waits for the **Cortex Security** check and fails on any conclusion other than success, with a fifteen-minute deadline.
+
+    Commit it as `.github/workflows/cortex-security.yml`, then add that job to the branch's required status checks in GitHub branch protection. Until you do, a red check is information rather than a gate: whether a merge is blocked is GitHub's decision, not a Cortex setting.
+  </Step>
+</Steps>
+
+## Ask for another look
+
+Pushing a new commit re-reviews the pull request, unless **Review again on every push** has been switched off. Two other ways exist:
+
+- In the app, open the pull request from the inbox and choose **Review again**. A toast reads **Review queued**, or **Could not queue the review**. This opens a new review of the current head.
+- On GitHub, post a comment mentioning the App: a bare mention of `@cortex-security-agent`, or a mention followed by the word `review`. The summary comment's footer carries the handle for exactly this.
+
+A mention followed by anything else is treated as a **question** and answered as a reply. A question never approves, never requests changes and never creates a check run. A mention inside a quote or a fenced code block is ignored, a comment written by a bot never triggers anything, and editing an old comment to add the handle does nothing; only a new comment counts.
+
+## If nothing has appeared yet
+
+The inbox has three different empty states, and they mean different things.
+
+| What it says | What to do |
+| --- | --- |
+| **Cortex Security is not configured on this deployment** | Nothing can be installed here until an operator supplies the GitHub App credentials. **Installation details** explains what is missing. |
+| **Cortex Security is not connected yet** | The App is available but not installed. Choose **Install the GitHub App**, or read **How the check appears** first. |
+| **No pull requests yet** | *Cortex Security is connected and watching. The next pull request opened in an enabled repository will appear here while it is being reviewed.* Check the repository is switched on under **Manage repositories**. |
+
+## What this quickstart deliberately leaves out
+
+<Warning>
+Cortex Security does not approve pull requests. The policy page states **Human approval required**, and there is no toggle to change that: *Cortex never approves a pull request automatically. Quality findings remain for a person to review.*
+</Warning>
+
+- **Security lives inside Cortex Code.** You reach it through the Code command palette entry **Security**, which is the palette's own shortcut rather than one of Security's.
+- **A review reads your change; it does not run it.** Running the change to gather evidence is the job of Cortex Agent, and it needs an isolated runtime on your deployment, which is off by default. See [Cortex Agent runs](/security/agent).
+- **General code review is off to begin with.** Out of the box a finding has to be a security, correctness, API contract, test or performance problem. Ordinary code-review opinions are a separate layer, off by default per installation, switched on with **Enable general code review** in [Review policy](/security/review-policy).
+- **GitHub.com only.** GitHub Enterprise Server is not available yet.
+
+## Related
+
+- [How a review works](/security/how-a-review-works) - the stages, the second pass, and how the verdict is decided.
+- [Checks and comments](/security/checks) - the check run and everything that lands on the pull request.
+- [Installation and repositories](/security/repositories) - what the App asks for, and how to stop reviews.
+- [Review policy](/security/review-policy) - when to review, what to report, how hard it lands.
+- [Security troubleshooting](/security/troubleshooting) - when no check run appears at all.

@@ -1,78 +1,93 @@
 ---
 title: "Quickstart"
-description: "Open Cortex in a browser, get a first answer from Chat, then sign in for Code, Bot, and Design."
-image: "/images/banners/getting-started.png"
-keywords: ["tutorial", "first steps", "getting started", "onboarding"]
+description: "Open Cortex in a browser, get a first answer from Chat as a guest, then sign in and open Code, Bot, Design, Security or the CLI."
+icon: "rocket"
 ---
 
-Cortex is one account across four products: **Chat**, **Code**, **Bot**, and **Design**, plus a **CLI** for the terminal. This page takes you from a browser tab to a useful first session in about five minutes.
+This page takes you from a browser tab to a useful first session. The first answer needs nothing but a browser: **Cortex Chat** works before you sign in. Everything that has to survive a closed tab, and every other application, needs a signed-in account.
 
-<Frame caption="Cortex Chat home as a guest — Chat, Code, and Bot in the sidebar, the composer ready, and 100 free messages before you sign in.">
-  <img src="/images/product/chat-home.png" alt="Cortex Chat home — Chat, Code, and Bot in the sidebar, composer ready" />
-</Frame>
+It covers what each task requires, the five steps to a first answer, how signing in changes the screen, and where to go next for the application you actually came for.
 
 ## What you need
 
 | To do this | You need |
 | --- | --- |
-| Ask Chat a question | A browser. No account. |
-| Keep projects, files, memory, and plans | A signed-in account |
-| Connect apps, GitHub, or MCP servers | A signed-in account |
-| Open Code or Bot | A signed-in account |
-| Run Code on **This PC** or over **SSH** | The [desktop app](/getting-started/desktop) or the [CLI](/cli) |
-| Edit a Design canvas | The [Design desktop app](/design/desktop) |
+| Ask Cortex Chat a question | A browser. No account. |
+| Keep chats, projects, Library files and memory across devices | A signed-in account |
+| Attach a file to a message | A signed-in account. The size ceiling comes from your plan |
+| Connect an app or an MCP server | A signed-in account |
+| Open Cortex Code or Cortex Bot | A signed-in account, and a closed-beta invitation |
+| Work on a Cortex Design canvas | A signed-in account and the Cortex Design desktop app |
+| Run Code on your own machine, or on a server you own | The [desktop app](/getting-started/desktop) or the [CLI](/cli/index) |
+
+## Get a first answer
 
 <Steps>
-  <Step title="Open Chat">
-    Go to [cortex.foundation](https://cortex.foundation). Chat is the default surface and works before you sign in. The banner above the composer shows how many free guest messages remain today.
+  <Step title="Open Cortex">
+    Go to [cortex.foundation](https://cortex.foundation). Chat is the surface you land on, and it is the one application that is never gated. A banner above the composer counts the free messages left in the guest allowance, which is 100 a day and 500 over thirty days.
   </Step>
-  <Step title="Send a first message">
-    Type in the composer and press **Enter**. The answer streams in as it is written; press **Esc** to stop a response. Try one of the suggestions under the composer, or paste a document and ask for a summary.
+  <Step title="Send a message">
+    Type in the composer and press **Enter**. The answer streams as it is written. Press **Esc** to stop a response that is still running, and **Shift** with **Enter** for a new line instead of sending.
 
     ```text
     Summarize this quarterly report in five bullet points, then list three risks.
     ```
   </Step>
-  <Step title="Attach a file or pick a mode">
-    The **+** button on the composer offers **Attach file**, **Image**, and **Check origin**. The model chip below the text box switches between **Cortex 1 Mini** and **Cortex Teutonic-1**, sets the **Thinking** level, and turns on **Deep Research**.
+  <Step title="Look around the shell">
+    The sidebar holds **New chat**, a **WORKSPACE** section (**Planning**, **Projects**, **Library**, **Plugins**, **Artifacts**, **Customize**), a **PINNED** section and **RECENTS**. **Switch product** at the top moves between Chat, Code and Bot without reloading anything. In Chat, `Ctrl` with `K` (`⌘` `K` on a Mac) opens **Search**, and `Ctrl` with `/` opens the full **Keyboard shortcuts** sheet.
+
+    A **Two-minute orientation** card offers **Start tour**, which walks you through the product menu, the command menu and Settings. **Dismiss onboarding** hides it for good.
   </Step>
-  <Step title="Sign in when you want more">
-    Choose **Sign in to save your work** in the sidebar footer. A signed-in account keeps chats, projects, Library files, plans, and Bot routines across devices, and unlocks Code and Bot. See [Accounts](/getting-started/accounts).
+  <Step title="Sign in to keep your work">
+    Choose **Sign in to save your work** in the sidebar footer, or **Sign in** on any public page. The dialog runs on `cortex.foundation` and says so. Signing in does not navigate away: the conversation on screen is kept, the sidebar swaps the **Guest** row for your account, and the dialog closes on its own about a second after it reads **You're signed in.**
+
+    The available methods, and what to do when a sign-in banner reports a problem, are on [Accounts and sign-in](/getting-started/accounts).
   </Step>
-  <Step title="Pick your next surface">
-    | Surface | First useful thing | Guide |
-    | --- | --- | --- |
-    | **Chat** | Create a project with standing instructions | [Chat quickstart](/chat/quickstart) |
-    | **Code** | Connect GitHub and start a Cloud session on a repository | [Code quickstart](/code/quickstart) |
-    | **Bot** | Create a bot and open its computer | [Bot quickstart](/bot/quickstart) |
-    | **CLI** | Install, sign in, run `cortex` in a project | [CLI quickstart](/cli/quickstart) |
-    | **Design** | Host a canvas from Chat or Code, then open it on desktop | [Design](/design) |
+  <Step title="Open a second application">
+    Use **Switch product** in the sidebar to pick **Cortex Code** or **Cortex Bot**. If you are still a guest, a dialog headed **This space is reserved** offers **Sign in** or **Continue in Chat**. If you are signed in but not yet invited, a closed-beta dialog offers **Continue in Chat** only. Neither dialog can be dismissed and neither redirects, so the address bar keeps the URL you asked for.
   </Step>
 </Steps>
 
+<Note>
+Guest conversations live in the browser session. Sign in before you close the tab if you want to keep the one you just started. Guests also have no projects, no Library, no memory and no uploads, because a guest session could never come back to revoke something it created.
+</Note>
+
+## Set the model and the thinking level
+
+Chat picks a default model for new chats and lets you switch at any time from the composer. The current public models are **Cortex 1 Mini**, **Cortex Teutonic-1** and, for pictures, **Cortex-Image-1**. All three are previews.
+
+To change the default rather than the current chat, open **Settings** from the sidebar footer and stay on **Models**. **Default model** applies to new chats, and **Default thinking level** (**Low**, **Medium**, **High**) sets how much time Cortex spends reasoning before it answers. Every published model is available from the Free plan up, so the picker will not lock a row on you. See [Models](/reference/models).
+
 ## Install the desktop app or the CLI
 
-The browser runs Chat, Code Cloud, and Bot Cloud. **This PC** and **SSH** hosts exist only on the desktop app and the CLI — that is where the code runs, not a missing feature in the browser.
+The browser covers Chat, and the cloud runtimes behind Code and Bot. A local host, meaning your own machine or a server you own, exists only on the desktop app and the command line. That is a deliberate split, not a missing browser feature.
 
-<p className="ink-cta-row">
-  <a className="ink-btn" href="/getting-started/downloads">Download Cortex</a>
-  <a className="ink-btn ink-btn-quiet" href="/cli/install">Install the CLI</a>
-</p>
+<Tip>
+The desktop app also adds a few things the web cannot offer at all: a floating companion with a global **Quick Chat**, and **Appshots**, a capture chord for the last Chat or Code thread you used. The web has no global hotkey.
+</Tip>
+
+Start from [Ways to run Cortex](/getting-started/downloads) for the desktop app, or [Install the CLI](/cli/install) for the terminal.
 
 ## Then pick a surface
 
 <CardGroup cols={2}>
-  <Card title="Chat guides" img="/images/banners/chat.png" href="/chat">
-    Projects, Library, plans, models, tools, research, and images.
+  <Card title="Chat quickstart" icon="comments" href="/chat/quickstart">
+    Create a project with standing instructions, add files to Library, and run a research task.
   </Card>
-  <Card title="Code guides" img="/images/banners/code.png" href="/code">
-    Sessions in an isolated Cloud guest, GitHub, Ask / Plan / Agent, pull-request review.
+  <Card title="Code quickstart" icon="code" href="/code/quickstart">
+    Connect a repository and start your first session with approvals turned on.
   </Card>
-  <Card title="Bot guides" img="/images/banners/bot.png" href="/bot">
-    Always-on agents with their own computer, approvals, routines, and skills.
+  <Card title="Bot quickstart" icon="robot" href="/bot/quickstart">
+    Create a bot, open its computer, and watch it work while it asks before consequential steps.
   </Card>
-  <Card title="Design guides" img="/images/banners/design.png" href="/design">
-    Persistable canvases hosted from Chat or Code, edited in the Design desktop app.
+  <Card title="CLI quickstart" icon="terminal" href="/cli/quickstart">
+    Sign in from the terminal and run a session in a checkout you already have.
+  </Card>
+  <Card title="Design quickstart" icon="pen-ruler" href="/design/quickstart">
+    Install the Cortex Design desktop app and make your first canvas.
+  </Card>
+  <Card title="Security quickstart" icon="shield-halved" href="/security/quickstart">
+    Put review on a repository and read the check run it writes on a pull request.
   </Card>
 </CardGroup>
 
@@ -80,24 +95,27 @@ The browser runs Chat, Code Cloud, and Bot Cloud. **This PC** and **SSH** hosts 
 
 <AccordionGroup>
   <Accordion title="Do I need an account to try Cortex?">
-    No. Chat works as a guest with a daily and monthly message allowance (100 messages today and 500 this month at the time of writing — the banner above the composer shows the live numbers). Everything that must survive a closed tab — projects, files, memory, Code, Bot — needs a signed-in account.
+    No. Chat works as a guest with 100 messages a day and 500 over thirty days. The banner above the composer shows how many are left. Signing in moves you to the Free plan, whose windows start fresh on the account: an unused guest allowance does not carry over.
   </Accordion>
-  <Accordion title="Where does my code run?">
-    Web Code runs in an isolated Cloud guest. Chat's Python tool is a small snippet sandbox with no workspace. Bot's computer is a Cloud guest with a desktop. **This PC** and **SSH** are desktop and CLI hosts. See [Security](/security/overview).
+  <Accordion title="Why does Cortex Code say the space is reserved?">
+    You are not signed in. Code and Bot are member surfaces. Choose **Sign in**, or **Continue in Chat**.
   </Accordion>
-  <Accordion title="Why does /code show “This space is reserved”?">
-    You are not signed in. Code and Bot are member surfaces so that a guest session can never create something it cannot come back to revoke. Choose **Sign in**, or **Continue in Chat**.
+  <Accordion title="I am signed in and Cortex Code still will not open.">
+    Code and Bot are in closed beta, so a signed-in account also has to be invited. The dialog offers **Continue in Chat** only. Ask for an invitation, and use Chat in the meantime.
+  </Accordion>
+  <Accordion title="Can I change plan from inside the app?">
+    **Settings** then **Plan & billing** lists the plans and marks the one you are on, but checkout is not available yet on this deployment: expect a hold badge on the action rather than a payment form. [Plans and quotas](/getting-started/plans) explains what each plan includes.
   </Accordion>
   <Accordion title="Is there a public inference API?">
-    Not on this site. The inference Platform API is [coming soon](/platform) and has no endpoints to document yet. The [API tab](/api/overview) covers the problem-document format the app already uses.
+    Not yet. There is no public model-inference API, no endpoints and no programmatic keys to document. See [Platform API](/reference/platform-api).
   </Accordion>
 </AccordionGroup>
 
-## Next
+## Related
 
-1. [Chat quickstart](/chat/quickstart) — projects, files, models, and research.
-2. [Code quickstart](/code/quickstart) — a Cloud session on one of your repositories.
-3. [Bot quickstart](/bot/quickstart) — a bot with its own computer.
-4. [CLI quickstart](/cli/quickstart) — the same Code sessions from a terminal.
-5. [Accounts](/getting-started/accounts) — what signing in unlocks, and what it does not.
-6. [Troubleshooting](/getting-started/troubleshooting) — when a message is not an error.
+- [What is Cortex](/getting-started/what-is-cortex)
+- [Which product do I need?](/getting-started/choose-a-product)
+- [Accounts and sign-in](/getting-started/accounts)
+- [Plans and quotas](/getting-started/plans)
+- [Keyboard shortcuts](/getting-started/keyboard-shortcuts)
+- [Troubleshooting](/getting-started/troubleshooting)

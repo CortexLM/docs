@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.mdx text eol=lf
+*.json text eol=lf
+*.mjs text eol=lf
+*.sh text eol=lf
+*.svg text eol=lf

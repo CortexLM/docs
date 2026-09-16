@@ -1,0 +1,97 @@
+---
+title: "Cortex Bounty"
+description: "The Cortex Bounty Challenge: pair a mining hotkey, file a report from Chat, and read every verdict on a public log"
+icon: "coins"
+---
+
+Cortex Bounty is the **Cortex Bounty Challenge**, a bug bounty for miners on the Cortex subnet. You pair a mining hotkey to a Cortex account, look for a real defect in Cortex inside a marked conversation, file a report, and wait for a verdict. Every verdict that is reached is published on a log that anyone can read without signing in and without a credential.
+
+Cortex plays three parts in the programme: it records your pairing and the session context, it adjudicates the reports that are filed, and it publishes the public transparency log. It does not set weights and it does not compute a score. The subnet reads the public endpoints and sets weights from the valid rows it finds there.
+
+## The four pages of this section
+
+<CardGroup cols={2}>
+  <Card title="Pair a hotkey" icon="key" href="/bounty/pair-a-hotkey">
+    Accept the terms, sign the payload the CLI prints, and link an SS58 hotkey to your mining account.
+  </Card>
+  <Card title="File a report" icon="flag" href="/bounty/report">
+    Mark a conversation as a miner session, file from Chat, and see what the report carries.
+  </Card>
+  <Card title="Verdicts and scoring" icon="scale-balanced" href="/bounty/scoring">
+    The four statuses, the gates a row has to clear, and what can never become a valid row.
+  </Card>
+  <Card title="Transparency API" icon="globe" href="/bounty/public-api">
+    The unauthenticated public endpoints, windows and paging, and how to read a zero.
+  </Card>
+</CardGroup>
+
+## Before you start
+
+Use a **dedicated mining** Cortex account, not your private personal account. The programme terms are explicit about why: "Conversations, logs, and the account may be read for research, to fix bugs, and to remunerate you."
+
+<Warning>
+Accepting the terms is blocking. Until the terms are accepted, pairing is refused and so is marking a conversation as a miner session. The version in force is `bounty-research-v1`, and what is stored with your acceptance is your account id, that version, and a timestamp.
+</Warning>
+
+## How it flows end to end
+
+<Steps>
+  <Step title="Create a dedicated mining account">
+    Sign in to Cortex with an account you keep for mining. See [Accounts and sign-in](/getting-started/accounts).
+  </Step>
+  <Step title="Accept the terms and pair a hotkey">
+    Install the Cortex CLI and run the pairing command. The CLI prints an exact string, you sign it with your own wallet tool, and the hotkey is linked. Full procedure on [Pair a hotkey](/bounty/pair-a-hotkey).
+  </Step>
+  <Step title="Mark a conversation as a miner session">
+    Pairing prints a command to send in Chat, plus a one-time session code. Sending that command marks the conversation as a bounty-miner session and injects miner context.
+  </Step>
+  <Step title="Find a defect and file a report">
+    Describe what you found in the marked conversation, then file it with the Chat report tool. See [File a report](/bounty/report).
+  </Step>
+  <Step title="Wait for a verdict">
+    A filed report is pending and private. It is not on the public endpoints, and fetching it by id answers as though it did not exist, until a verdict exists.
+  </Step>
+  <Step title="Read the verdict on the public log">
+    Once a verdict is recorded, the row becomes public. Anyone can read it, count it and verify it with the [Transparency API](/bounty/public-api).
+  </Step>
+</Steps>
+
+## What a machine decides and what a person decides
+
+Two different kinds of decision sit in this programme, and it is worth knowing which is which before you file.
+
+| Decided mechanically | Decided by judgement |
+| --- | --- |
+| Whether the terms are accepted, and therefore whether you may pair or mark a session at all | Whether what you found is a real, unique defect |
+| Whether a hotkey is already held by another account | Which of the four statuses your report receives |
+| Whether a report has enough substance to be published at all | The wording of the finding and the reasoning recorded with the verdict |
+| Whether a row appears on the public endpoints, and in which window | Whether a report duplicates an earlier one, and which one it names |
+
+The mechanical gates are described in full on [Verdicts and scoring](/bounty/scoring). They are the usual reason a report you consider valid has not appeared on the public log.
+
+## What this section does not tell you
+
+This documentation covers the mechanics: pairing, filing, verdicts, and the public log. It does not state what a reward is worth, when a verdict will arrive, or who is eligible to take part. Those belong to the programme's own terms, the ones you accept at pairing, and they can depend on the case. Do not read an amount or a schedule into the three outcomes described on the scoring page.
+
+## How it fits with the other Cortex products
+
+Cortex Bounty is a programme rather than an application you open, so it borrows the surfaces of two products you already have.
+
+- The [Cortex CLI](/cli/index) does the pairing. It is the only place the pairing command runs, and the only place the string you have to sign is printed.
+- [Cortex Chat](/chat/index) is where a report is filed, from a conversation that has been marked as a miner session. The report tool is not offered in an ordinary conversation.
+- The Transparency API stands on its own. It needs no account, so a third party can check a payout claim without your help.
+
+If you have found a defect but are not a miner on the subnet, this is not your intake. Use [Report a bug](/getting-started/report-a-bug) instead.
+
+<Note>
+Not part of this programme, and not a Cortex feature: `/miner` is not a command and never will be, there is no attestation surface here, and there is no teacher host. The subnet runs its own pipeline beyond the public log, and nothing in it is documented on this site.
+</Note>
+
+## Related
+
+- [Pair a hotkey](/bounty/pair-a-hotkey)
+- [File a report](/bounty/report)
+- [Verdicts and scoring](/bounty/scoring)
+- [Transparency API](/bounty/public-api)
+- [Install the CLI](/cli/install)
+- [Report a bug](/getting-started/report-a-bug)

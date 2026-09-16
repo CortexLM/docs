@@ -1,60 +1,132 @@
 ---
 title: "Design troubleshooting"
-description: "Where a canvas lives, why the browser will not edit it, a Library item that is not there, and the app that is not opening."
-keywords: ["errors", "problems", "fixes", "not working", "canvas missing"]
+description: "What a Cortex Design refusal means: signed out, a canvas that is not available, the canvas cap, a save that clashed, an option that did not finish."
+icon: "life-ring"
 ---
 
-Design spans two places on purpose: the browser creates and lists a canvas, the [Design desktop app](/design/desktop) edits it. Most confusion comes from looking for the editor in the wrong one. For the rest of the app see [Troubleshooting](/getting-started/troubleshooting).
+Cortex Design refuses in plain sentences rather than in codes, so the message you are looking at is usually the answer. This page lists the message or the state you see, what caused it, and what to do about it, grouped by the part of Design you were in when it happened.
 
-## Access
+One piece of orientation explains a good share of the confusion. Design has two surfaces: a **CANVASES** rail beside a Chat thread or a Code session, which lists and creates canvases, and the Cortex Design window, which edits them. There is no Design page in the browser, so if you are hunting for the editor there, that is why you cannot find it. See [Cortex Design](/design) for the map.
 
-| What you see | Cause | Fix |
+## Signing in and access
+
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| No canvas tools at all | You are a guest | Canvases are member objects. Sign in — see [Accounts](/getting-started/accounts) |
-| A canvas that is not yours is missing | Canvases are private to the account that owns them | Expected. Another account's boards are never listed |
-| **No `/design` route** in the browser | The web app has no Design mode | Create and list canvases from Chat or Code, then edit in the desktop app |
+| `Design canvases need an account. Sign in to keep your work.` | You are signed out. Every Design surface refuses a visitor without an account. | Sign in, or create an account. See [entitlement_required](/problems/entitlement_required). |
+| No rail at all beside a thread | Same cause. Rather than showing a locked panel, the rail draws nothing when you are signed out. | Sign in and reopen the thread. |
+| A dialog headed `Cortex Design is part of your Cortex account.` | The Design window's version of the same refusal, with **Sign in** and **Create an account**. | Sign in with the account that owns the canvases. |
+| A dialog headed `Your session expired` | Your sign-in lapsed while the window was open. | Choose **Sign in again**. Work you did in the window in the meantime is kept on this computer and syncs back once you are in. See [unauthenticated](/problems/unauthenticated). |
+| `This canvas isn't available` | The canvas does not exist, or it belongs to another account. Cortex gives the same answer for both, so it never reveals whether a canvas exists outside your account. | Check you are signed in as the right account, or ask the owner for the reference. See [not_found](/problems/not_found). |
 
-## The canvas
+## The canvas cap
 
-| What you see | Cause | Fix |
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| The board is called **Untitled canvas** | That is the default until you rename it | Rename it from the desktop app; the host binding stays |
-| Frames are missing after a rename | The rename did not change which conversation hosts the board | Reopen the board — the host binding is unchanged by a rename |
-| The canvas disappeared from the list | Deleting a canvas hides it from the list | There is no restore. Host a new one from [Chat](/chat/canvases) or [Code](/code) |
-| Chat made a document, not a board | A [Chat canvas](/chat/canvases) is a document beside one conversation | Ask for a **Design** canvas, or open the board from the Design desktop app |
+| `This account already has the maximum number of Design canvases.` | Your account already holds 200 design canvases, which is the ceiling. | Make room, then create again. See [quota_exceeded](/problems/quota_exceeded). |
 
-## The Library
+Making room needs one detail. Deleting a design **hides** it: its versions and images stay so it can come back, and a hidden canvas is still yours, so it still occupies one of the 200. If you are at the cap, permanently delete a hidden canvas rather than only hiding another one.
 
-| What you see | Cause | Fix |
+<Note>
+  200 canvases per account is the only cap on how many designs you can have. There is no daily allowance, no monthly allowance and no separate per-plan figure for Design, so a refusal at this point is about the total you hold, not about something resetting later.
+</Note>
+
+## A save that was refused
+
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| No Library drawer in the browser | The drawer lives on a canvas in the desktop app | Open the board in the [Design desktop app](/design/desktop) |
-| A component has no thumbnail | Thumbnails are **uploaded**, not rendered | Upload one, or leave it — the item still works |
-| A Chat file is not in the Design Library | They are different objects that share a word | See [two libraries](/design/library#two-libraries) |
+| `This canvas was saved from another tab. Reload and try again.` | Two windows saved the canvas from the same starting version, and the second one lost. | Reload the canvas and redo the change. See [conflict](/problems/conflict). |
+| `This canvas is too large to save.` | The canvas document has outgrown 8 MiB uncompressed. | Split the work across canvases, or remove content. See [payload_too_large](/problems/payload_too_large). |
+| `This canvas has too many nodes.` | A canvas holds at most 8,000 pieces. | The same fix: split the board. See [validation_failed](/problems/validation_failed). |
+| `A note is at most 16,384 characters.` | One note went past its length. | Shorten it, or split it into two notes. |
+| `A canvas title is at most 200 characters.` | The title you typed is too long. | Shorten the title. Renaming does not affect which thread hosts the canvas. |
+| `The canvas page size is invalid.` | A page was given a width or a height outside the allowed range. | Return the page to a sensible size. A new page starts at 1440 by 900. |
 
-## The desktop app
+## An image that was refused
 
-| What you see | Cause | Fix |
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| The app asks you to sign in | Canvases are member objects | Sign in with the same account as the web app |
-| Your boards are not listed | The app is signed in as a different account | Sign in as the account that hosted them |
-| A download is missing for your platform | Desktop builds are published per platform | Check [releases.cortex.foundation](https://releases.cortex.foundation) — see [Downloads](/getting-started/downloads) |
+| `A Design asset is at most 8 MB.` | The file you placed, or the thumbnail you uploaded, is over the per-file ceiling. | Reduce the file and try again. |
+| `SVG is not stored as a Design asset.` | Vector files are not accepted on a canvas. | Convert the artwork to PNG first. |
+| `A thumbnail or image fill must be an image.` | The file is not a raster image at all. | Use a PNG or another raster format. |
 
-## Errors
+See [Export a design](/design/export) for the thumbnail a canvas carries and what export produces.
 
-Design uses the same problem documents as the rest of Cortex:
+## An option that did not finish
 
-| Code | Meaning |
+When Cortex answers a brief with several options and one of them stops, the rest of the board is unaffected. The frame that could not finish shows **Failed** and its card explains in words why the attempt stopped.
+
+<Steps>
+  <Step title="Read the card">
+    It names the option and the reason. Nothing else on the canvas is rolled back.
+  </Step>
+  <Step title="Retry just that option">
+    Use the retry control on the frame card, or the matching retry in the thread. It reruns that option only.
+  </Step>
+  <Step title="Or remove the frame">
+    **Remove frame** drops the failed option and keeps the rest of the canvas.
+  </Step>
+</Steps>
+
+Until you do one or the other, the whole canvas reports its state as failed. That is deliberate: a failed piece outranks a piece that is still being drawn, which outranks a finished one, so the canvas tells you about the worst thing on it rather than the newest.
+
+<Note>
+  A board that looks stuck is sometimes a board between refreshes. The editor's pills use the word `Streaming` while a change lands, but Design refreshes canvas state rather than receiving a live push, so give it a moment, or reopen the canvas, before treating it as failed.
+</Note>
+
+## When Cortex cannot be reached
+
+The Design window is built to say so rather than to look empty.
+
+| What you see | What it means |
 | --- | --- |
-| [`unauthenticated`](/problems/unauthenticated) | You are not signed in |
-| [`forbidden`](/problems/forbidden) | The action is not permitted for this account |
-| [`not_found`](/problems/not_found) | The canvas or Library item no longer exists |
-| [`invalid_state`](/problems/invalid_state) | The board is not in a state that allows the action |
+| `Couldn't reach Cortex` | The window could not reach the service at all. |
+| `Couldn't load your designs`, with **Work offline** and **Retry** | The gallery is showing your last sync rather than the live list. |
+| `Couldn't reach Cortex — showing last sync` with a time | The same thing, said in the gallery header. |
+| `Canvases could not be loaded.` with **Retry** | The web app's rail could not load. Retry it. |
+| `Couldn't load connectors` | The connectors page could not load. Connections you already have stay active. See [Design connectors](/design/plugins). |
 
-Full list: [Problem catalog](/problems).
+While you are offline, canvases you already have open stay readable from the copy on your machine, and edits queue and sync when the connection returns. If the window will not get past this state, there is no Design-specific recovery step beyond retrying: check [Status](/reference/status) or [status.cortex.foundation](https://status.cortex.foundation) for an incident, then see [Troubleshooting](/getting-started/troubleshooting) for the guidance that applies to every Cortex application.
+
+## A control you cannot find
+
+Comments, sharing and the numeric tweak control are not available in Cortex Design today.
+
+<AccordionGroup>
+  <Accordion title="I want to leave a comment on a frame">
+    There is no comment surface on a canvas, and no way to resolve or reply to one. Leave a **note** on the board instead: notes are part of the canvas, they are saved into the version history with everything else, and Cortex reads them. See [Design canvases](/design/canvases).
+  </Accordion>
+  <Accordion title="I want to share a canvas or publish a read-only link">
+    Sharing is not available. A canvas is private to the account that owns it, there is no publish control, no viewer link and no access list, and someone else's canvas answers exactly as one that does not exist. To hand the work to someone, export it: a rendered PNG for a person to look at, or the canvas document as JSON. See [Export a design](/design/export).
+  </Accordion>
+  <Accordion title="I want to adjust a number on a generated frame">
+    Editing a generated frame by its numbers is not available yet. Ask for the change in the editor thread instead, naming the frame, and Cortex redraws it. See [Generate and edit](/design/editor).
+  </Accordion>
+  <Accordion title="I am looking for the status of a design handed to a bot">
+    There is no queue and no status board to look at. The **Bot jobs** row, the **Hand to Bot** button in the editor header and the **Hand to a Bot** sheet are drawn, but nothing runs behind them, and a Cortex Bot cannot open or change a design canvas today. See [Bot jobs](/design/bot-jobs).
+  </Accordion>
+  <Accordion title="A file from Cortex Chat is not in my Design library">
+    They are separate stores that share a word. The Design library holds components, tokens and pages you reuse on canvases; the Chat Library is a file store. See [Design library](/design/library).
+  </Accordion>
+</AccordionGroup>
+
+## Error codes used by Design
+
+| Code | When Design returns it |
+| --- | --- |
+| [entitlement_required](/problems/entitlement_required) | You are signed out. |
+| [unauthenticated](/problems/unauthenticated) | Your session lapsed while you were working. |
+| [not_found](/problems/not_found) | The canvas, or the library item, is not one of yours. |
+| [validation_failed](/problems/validation_failed) | Something you sent was out of bounds: a title, a note, a node count, a page size. |
+| [conflict](/problems/conflict) | The canvas was saved from somewhere else first. |
+| [payload_too_large](/problems/payload_too_large) | The canvas document is over its size ceiling. |
+| [quota_exceeded](/problems/quota_exceeded) | You already hold 200 design canvases. |
+
+The full catalogue is at [Problems](/problems).
 
 ## Related
 
-- [Canvases](/design/canvases) — what lives on a board and how it is hosted.
-- [Design desktop](/design/desktop) — the app that edits it.
-- [Design library](/design/library) — components, pages, and tokens.
-- [Troubleshooting](/getting-started/troubleshooting) — the same guidance across all products.
+- [Design canvases](/design/canvases) - the limits behind most of these refusals.
+- [Generate and edit](/design/editor) - options, retries and the editor's states.
+- [Design settings](/design/settings) - the panes, and the rows that are not switched on yet.
+- [Design connectors](/design/plugins) - a connection that lapsed or a catalogue that will not load.
+- [Troubleshooting](/getting-started/troubleshooting) - the same guidance across every Cortex application.

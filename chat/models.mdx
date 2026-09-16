@@ -1,57 +1,100 @@
 ---
 title: "Models and thinking"
-description: "Pick a model per conversation from the composer chip, set how long Cortex thinks before answering, and know what happens at peak hours."
-keywords: ["Cortex 1 Mini", "Cortex Teutonic-1", "thinking level", "model picker", "context window"]
+description: "The two models Cortex Chat offers, what the Preview badge means, why the model is fixed per conversation, and the three thinking levels"
+icon: "microchip"
 ---
 
-Every conversation runs on a Cortex model. The chip under the composer — *Cortex 1 Mini · Preview · Thinking Low* by default — is where you change it. The choice belongs to the conversation: existing threads keep the model they were created with, and new chats start from the default.
+Every conversation in Cortex Chat runs on one model, and the chip under the composer is where you see and change it. The chip is plain text with a chevron: it shows the display name of the model in use, never the word "Model" in front of it, and it can carry a short detail after the name, such as the thinking level currently set.
 
-<Frame caption="The model chip opened: two preview models, the Thinking level, and the Deep Research toggle.">
-  <img src="/images/product/chat-model-picker.png" alt="Model picker — Cortex 1 Mini and Cortex Teutonic-1 in Preview, Thinking Low / Medium / High, and Deep Research" />
-</Frame>
+This page covers the two models Chat publishes today, what the **PREVIEW** badge on them means, how the model and the thinking level are decided, and what Chat tells you when a model is busy or cannot be reached.
 
-## What you can pick
+## The two models
 
-| Model | Status | Context | Capabilities | Role |
-| --- | --- | --- | --- | --- |
-| **Cortex 1 Mini** | Preview | 262.1K | Reasoning, tools | The model Cortex is serving today. Default for new chats. |
-| **Cortex Teutonic-1** | Preview | 32.8K | Reasoning, tools | Second public preview, under active training. |
-| **Cortex-Image-1** | Preview | — | Image generation | Used when you ask for a picture. Built on NVIDIA Cosmos. See [Image generation](/chat/images). |
+The list in the panel is fetched from Cortex when the page loads rather than built into the app, so it always reflects what your account can actually use. Today it holds two entries, and both are marked Preview.
 
-The composer model chip is a Chat control. Web Code has no model picker; the CLI has its own `/model` picker with the same family under English names (**Cortex Mini 1**, **Cortex 1**, **Cortex Max 1**) — see [CLI modes](/cli/modes-and-permissions).
+| Model | Description in the panel | Context window | Thinking |
+| --- | --- | --- | --- |
+| **Cortex 1 Mini** | *Preview — the model Cortex is serving today.* | 262,144 tokens | Yes |
+| **Cortex Teutonic-1** | *Preview (under active training).* | 32,768 tokens | Yes |
 
-<Frame caption="Settings → Models lists the same models with their context windows and capabilities.">
-  <img src="/images/product/settings-models.png" alt="Settings → Models — Cortex 1 Mini, Cortex Teutonic-1, Cortex-Image-1, default thinking level, reasoning summaries" />
-</Frame>
+Cortex 1 Mini is the model Chat serves by default. Cortex Teutonic-1 is a second preview with a smaller context window.
 
-## Thinking level
+Each model also caps how long a single answer can be. Cortex 1 Mini writes up to 32,768 tokens in one answer. Cortex Teutonic-1's ceiling is lower, and because it is still under active training you should not plan a long single-shot generation around it: split the work into turns instead.
 
-**Low**, **Medium**, or **High**. Higher thinking spends more time before answering and suits multi-step reasoning, careful writing, and anything where a wrong first draft is expensive. Low is right for quick questions. The level is per conversation; a saved default under **Settings → Models** is marked *coming soon*.
+Neither of these models advertises image understanding, which matters when you attach a picture. See [Attachments and files](/chat/attachments).
 
-**Show reasoning summaries** (also *coming soon* in Settings) displays a short summary of the model's thinking above each answer.
+Image generation does not use either of them. Asking Chat for a picture routes to a separate image model that is not offered in this picker, as described in [Image generation](/chat/image-generation).
 
-## Deep Research
+## What Preview means
 
-The toggle at the bottom of the chip turns a conversation into a research run: plan the questions, read live sources, and write a cited report. It is a Chat feature only. See [Deep Research](/chat/deep-research).
+Both rows carry an uppercase **PREVIEW** badge. It is a maturity signal about the name, not a different service: a preview model is served on the same production path as anything else. Read it as "this model is new and may change", not as "this model is running somewhere experimental".
 
-## How a turn uses the model
+<Note>
+Because both published models are previews, every row in the picker shows the badge. Nothing is hidden behind it, and there is nothing to opt into.
+</Note>
 
-1. You pick the model on the conversation.
-2. Chat assembles the prompt — your message, attachments from Library, memory, project instructions, tool results — and clamps generation so prompt plus output fit the model's context window.
-3. The model runs the tool loop until it stops or reaches Chat's round budget. See [How Chat works](/chat/how-it-works).
+## The model belongs to the conversation
 
-Completions for Teutonic use their own upstream. If that upstream is not configured on a deployment, the request fails closed before any quota is spent and never falls through to Mini.
+The model is chosen when a chat starts and stays fixed for the life of that conversation. There is no control that swaps the model of an existing thread. If you want a different one, start a new chat.
 
-## Availability and peak hours
+A model your plan cannot reach is listed in the panel with the reason, rather than being hidden, on the principle that knowing what a plan would add is useful information. In practice no Chat model is plan-gated today: both are available from the Free plan up, so you will not meet a locked row in Chat.
 
-Model availability depends on your plan. During peak hours new chats may fall back to a faster model; the chip always tells you which model is serving the conversation. Go and higher plans get priority when the fleet is busy — see [Plans](/getting-started/plans).
+**Set as default…** is in the panel but not wired yet. Choosing it answers **Set as default is not available yet — the session default is chosen when the chat starts.**
 
-## What this page is not
+## Use a different model for one message
 
-There is no public inference API on this site. Model names here are product names inside Cortex Chat, not endpoints. See [Coming soon](/platform).
+The one exception to the fixed model is a single message.
+
+<Steps>
+  <Step title="Open the model chip">
+    Click the chip under the composer.
+  </Step>
+  <Step title="Choose This message only">
+    Pick **This message only**, then pick the model. The hint states the scope: **Applies to your next message. The session default is unchanged.**
+  </Step>
+  <Step title="Send">
+    The chip shows the chosen model followed by *this message*, so you can see that the override is armed. It applies to the next message you send and then falls away.
+  </Step>
+  <Step title="Change your mind">
+    **Reset to** the session default puts the chip back. The session default itself is shown as the model name followed by *session default*.
+  </Step>
+</Steps>
+
+## Thinking effort
+
+Thinking is a three-way choice under the **THINKING** heading in the model panel: **Low**, **Medium** or **High**. The panel states what you are trading: **Higher thinking spends more time before answering.** Arrow keys move between the three levels and wrap around.
+
+Use Low for quick factual questions where a fast answer is the point. Use High for multi-step reasoning, careful writing, and anything where a wrong first draft is expensive. Medium is a reasonable middle for everyday work.
+
+Two things are worth knowing about the control itself:
+
+- It is attached to the model, not to your plan. Thinking runs are not metered on any plan, so raising the level costs you nothing beyond the wait.
+- It is drawn only on a model that supports thinking, and simply absent on one that does not, rather than greyed out. Both models published today support it, so you should always see it in Chat.
+
+## What you see while a model thinks
+
+While the turn runs, the reasoning streams into a collapsible **Thinking** block. Before the first tokens arrive it reads **Waiting for the first tokens…**. When the answer starts it collapses to a single line, **Thought for** a duration, or **Thought about this** when the duration was not recorded.
+
+Some turns do no thinking at all. The block then says **No reasoning was recorded for this turn.**, which is a normal outcome and not a failure.
+
+## When a model is busy or unavailable
+
+Chat never quietly substitutes one model for another. If something is wrong you are told, and you are offered whatever is still available.
+
+| What you see | What it means |
+| --- | --- |
+| **Loading the available models.** | The model list has not arrived yet. Sending waits for it |
+| A reason followed by *Sending is unavailable until the model list loads.* | The list could not be fetched. Nothing is sent in the meantime |
+| **No models are available on your account.** | Your account currently has no usable model. Check your plan |
+| **You’ve reached today’s limit for this model** | The daily allowance for that model is spent, with a line telling you when it resets |
+| **You’ve reached this month’s limit for this model** | Same, for the monthly allowance |
+
+When a per-model limit is reached, the banner names the model that is still available and offers a button to use it. That is a choice you make, not a switch made for you.
 
 ## Related
 
-- [Streaming](/chat/streaming) — tokens as they arrive.
-- [Settings](/getting-started/settings) — defaults for new chats.
-- [Plans and quotas](/getting-started/plans) — quotas fail closed.
+- [Streaming and reconnects](/chat/streaming) - how an answer arrives once a model starts writing.
+- [How Chat works](/chat/how-it-works) - what goes into a turn and how the context window is used.
+- [Attachments and files](/chat/attachments) - what happens to a file you send a model.
+- [All models](/reference/models) - the reference list across the products.
+- [Plans and quotas](/getting-started/plans) - message allowances and what resets when.

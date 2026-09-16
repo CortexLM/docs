@@ -1,81 +1,100 @@
 ---
 title: "Goals"
-description: "/goal attaches a long-horizon objective to the session. It survives compaction and resume while the agent keeps planning, acting, and verifying."
-keywords: ["objective", "long running", "/goal"]
+description: "Attach a long-horizon objective to a CLI session with /goal: it survives compaction and resume, carries a turn budget, and completes on evidence"
+icon: "bullseye"
 ---
 
-A normal turn ends when the model stops. A **goal** does not: `/goal` attaches an objective to the session, and the agent keeps working toward it across turns — planning, acting, verifying — until the work is **evidence-complete**, until you pause or clear it, or until the budget runs out. The goal survives the end of a turn, context compaction, and closing and resuming the TUI.
+A normal turn ends when the model stops. A **goal** does not. `/goal` attaches one objective to the session, and the agent keeps working toward it across turns, planning, acting and verifying, until it can show evidence that the work is done, until you pause or clear it, or until its turn budget runs out. The objective is session state, so it survives the end of a turn, context compaction, and closing and resuming the terminal app.
 
-This is Cortex session state, not a second coding provider. Agent mode still talks to the Cortex API; `/goal` is harness state — persist, continue, wrap up.
+This page covers the commands, the chip that reports progress, the five states a goal can be in, how completion is decided, the turn budget, where the goal is kept, and when a goal is the right tool instead of a single turn or a headless run.
 
 <Note>
-`/goal` landed on the CLI main branch on 8 September 2026 ([CortexLM/cli #54](https://github.com/CortexLM/cli/pull/54)) and ships with the next tagged release after 0.1.10. If `/goal` is not in your palette yet, run `cortex upgrade` once that release is out.
+`/goal` is a recent addition to the CLI. If it does not appear when you type `/`, run `cortex upgrade` and try again.
 </Note>
+
+## Set a goal
+
+<Steps>
+  <Step title="State the objective">
+    Type `/goal <objective>` in the composer. Describe an outcome that can be checked, not a single edit: *ship the rate limiter and prove it with tests* rather than *open the rate limiter file*.
+  </Step>
+  <Step title="Watch the chip appear">
+    A goal chip appears immediately after the mode chip on the composer, reading `Goal · 0/8` before the first turn and counting up from there.
+  </Step>
+  <Step title="Let it run, and check in">
+    The agent continues between turns while the goal is `active`. Type `/goal` on its own at any point to see the objective, the state, the progress so far and the remaining budget.
+  </Step>
+  <Step title="Stop it when you want to">
+    `/goal pause` stops the automatic continuation and leaves the objective in place. `/goal resume` picks it up again. `/goal clear` deletes it.
+  </Step>
+</Steps>
 
 ## Commands
 
 | Command | Effect |
 | --- | --- |
 | `/goal <objective>` | Create or replace the active goal and start a kickoff turn |
-| `/goal` | Show the objective, state, progress, and budget |
-| `/goal pause` | Stop auto-continuation. Only you can pause; the model cannot. |
-| `/goal resume` | Resume a paused or blocked goal if budget remains |
+| `/goal` | Show the objective, the state, the progress and the budget |
+| `/goal pause` | Stop the automatic continuation. Only you can pause; the model cannot |
+| `/goal resume` | Pick a paused or blocked goal back up while budget remains |
 | `/goal clear` | Delete the persisted goal |
 
-A reserved word is only special when it is the **entire** argument. `/goal pause the deploy` sets an objective; it does not pause.
+<Warning>
+A reserved word is only special when it is the **entire** argument. `/goal pause the deploy` sets an objective called *pause the deploy*; it does not pause anything. To pause, type `/goal pause` and nothing else.
+</Warning>
 
-## What you see
+## The chip and the five states
 
-The composer carries a chip with the goal's progress, painted in Cortex green on the border next to the mode:
+The chip sits next to the mode chip on the composer border, so the goal is visible in every turn without opening a panel.
 
-<Frame caption="An active goal: the composer border reads Agent — Goal · 2/8 after the kickoff turn “ship the rate limiter and prove it with tests”.">
-  <img src="/images/cli/runtime/120x40/goal-chip-active.png" alt="Cortex CLI composer with the Goal · 2/8 chip on its border" />
-</Frame>
+| State | Chip | What it means |
+| --- | --- | --- |
+| `active` | `Goal · 2/8` | The agent continues automatically between turns. The pair is turns used against the turn budget |
+| `paused` | `Goal · paused` | You stopped the automatic continuation. Resume when you are ready |
+| `complete` | `Goal · done` | The agent submitted evidence and it was accepted |
+| `budget_limited` | `Goal · budget` | The turn budget ran out before the objective was met |
+| `blocked` | `Goal · blocked` | The agent reported that it cannot proceed without you |
 
-The chip reads `Goal · 2/8` while active, and `paused`, `done`, `budget`, or `blocked` in the other states.
+## Completion is evidence-based
 
-<Frame caption="Evidence-complete: the chip reads Goal · done and auto-continuation stops.">
-  <img src="/images/cli/runtime/120x40/goal-chip-done.png" alt="Cortex CLI composer with the Goal · done chip on its border" />
-</Frame>
+The agent reports progress through a dedicated `UpdateGoal` tool rather than by saying it is finished. That call carries a `status` of `active`, `blocked` or `complete`, optionally a `progress` note and a `reason`, and optionally `evidence`. Each piece of evidence has a `kind` of `file`, `command` or `test`, plus a detail naming the file, the command or the test in question.
 
-## States
+Two rules follow from that, and they are the point of the feature:
 
-| State | Meaning |
-| --- | --- |
-| `active` | The agent continues automatically between turns |
-| `paused` | You stopped auto-continuation; resume when ready |
-| `complete` | Evidence-complete — see below |
-| `budget_limited` | The turn or token budget ran out; resume with a fresh budget if you want more |
-| `blocked` | The agent needs something from you; resume after you provide it |
+- **Marking a goal complete requires a reason and usable evidence.** A confident paragraph is not enough to move the chip to `Goal · done`.
+- **The model cannot pause a goal.** `active`, `blocked` and `complete` are the only states it can set. Pausing is yours alone.
 
-## Evidence, not vibes
+A goal does not change what the agent is allowed to do. Every turn it takes still runs under the mode you are in, your approval policy and the sandbox, so commands that would prompt for approval still prompt. See [Modes and permissions](/cli/modes-and-permissions).
 
-Completion is evidence-based. To mark a goal done the model must call `UpdateGoal` with a reason **and** at least one of: a file path, a command, or a test. A confident paragraph is not enough.
+## The turn budget
 
-## Budget
+A goal carries a turn budget, **8 turns** by default, which is the right-hand number on the chip. Close to the limit the next continuation is asked to wrap up what it has rather than open new scope. When the budget is used up the goal moves to `budget_limited`, the chip reads `Goal · budget`, and the automatic continuation stops; set the goal again if you want it to carry on with a fresh budget.
 
-The default budget is **8 turns**. Near the limit — one turn left, or 85% of a token cap — the next continuation asks the agent to wrap up rather than open new scope.
+For work that should run unattended with a hard ceiling instead, use a headless run with its own turn and time limits. See [Headless and one-shot runs](/cli/headless).
 
-## Where it is stored
+## Where the goal is kept
 
-`goal.json` lives next to the session files:
+The goal is written next to the rest of the session's files, in the Cortex home directory:
 
 ```text
 ~/.cortex/sessions/{session-id}/goal.json
 ```
 
-Resuming the session reloads it. See [Sessions](/cli/sessions) and [Configuration → Data locations](/cli/configuration#data-locations).
+Because it is a file beside the session, resuming the session reloads the objective, the state and the progress, and compacting the conversation does not lose it. See [CLI sessions](/cli/sessions) and [Data locations](/cli/data-locations).
 
 ## When to use a goal
 
-| Situation | Goal or not |
+| Situation | Use |
 | --- | --- |
-| *Fix this one test* | A normal turn |
-| *Ship the rate limiter and prove it with tests* — several files, a build, tests | **Goal** |
-| Something you want done overnight in CI | [`cortex exec`](/cli/headless) with `--max-turns` and `--timeout` |
-| Scheduled, repeated work on a computer | A [Bot routine](/bot/routines) |
+| *Fix this one failing test* | A normal turn. A goal adds nothing |
+| *Ship the rate limiter and prove it with tests*, several files, a build and a test run | A goal |
+| Work that has to run unattended, in a job that reports an exit code | [`cortex exec`](/cli/headless) with its turn and time limits |
+| Repeated work on a schedule | A [Bot routine](/bot/routines) |
 
 ## Related
 
-- [Modes and permissions](/cli/modes-and-permissions) — a goal still runs under your approval policy and sandbox.
-- [Sessions](/cli/sessions) — resume brings the goal back.
+- [Modes and permissions](/cli/modes-and-permissions): the approval policy and sandbox a goal still runs under
+- [CLI sessions](/cli/sessions): resuming a session brings its goal back
+- [Tools the agent uses](/cli/tools): the `UpdateGoal` tool and everything else the agent can call
+- [Slash commands](/cli/slash-commands): the rest of what you can type after `/`
+- [Headless and one-shot runs](/cli/headless): the unattended equivalent

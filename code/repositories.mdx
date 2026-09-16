@@ -1,0 +1,79 @@
+---
+title: "Repositories and branches"
+description: "Choose the repository and base branch a Code session works on, and understand the isolated worktree and the branches a session may push."
+icon: "code-branch"
+---
+
+Every Cortex Code session works on one repository, on one base branch, inside its own isolated worktree. You choose both before the first turn, with the two chips above the prompt box, and the choice stays with the session for its lifetime.
+
+There is no Repositories screen in Code to visit. The controls described here live in the composer, in the session's own panes, and on the **Environments** page, so this page is a map of where each choice is made rather than a tour of a settings screen.
+
+## Choose a repository and a branch
+
+The composer carries two context chips above the prompt.
+
+| Chip | Label | What it does |
+| --- | --- | --- |
+| First | **Choose a repository** | picks the repository the session works on. With no GitHub connection it offers **Connect GitHub** instead of an empty list |
+| Second | **Branch** | picks the base branch. Leave it alone and the session uses the repository's own default branch |
+
+Both are set before you press **Start session**. If the repository list is not what you expect, the reason is almost always the connection rather than the picker, so start at [Connect GitHub](/code/github).
+
+## One repository per runtime
+
+A session works one repository at a time, and **a second repository means a second session**. This is the most repeated rule in Code and it is not a limitation to work around: it is why a session's changes stay legible, why its diff is readable, and why a runtime can be prepared from one repository up front.
+
+If a change spans two repositories, open two sessions and review two pull requests.
+
+## Your session's own worktree
+
+Each Cloud session works in **its own isolated worktree**, shown on the session's meta line as **worktree** followed by a name in the `cortex/` namespace. The worktree strip in the output pane states the rule in its own words: **Each Cloud session uses its own isolated worktree. Chat and the CLI are not this page.** Two sessions on the same repository therefore do not collide, and neither of them is working in whatever you happen to have checked out locally.
+
+The strip's **New worktree** action starts a fresh one, showing **Opening…** while it does.
+
+<Note>
+**Pushes are limited to Cortex-owned branches.** The agent cannot push over your default branch. What arrives for review is a branch Cortex created and, once it exists, a pull request from it.
+</Note>
+
+## Follow the branch through the session
+
+The **Git** tab in the output pane is where a session's branch and pull request show up, and it has an honest empty state for each stage:
+
+- **No branch yet** while nothing has been created.
+- **No pull request** once a branch exists but no pull request has been opened.
+- **Open pull request** once there is one to open.
+
+Changes reach that branch only after a person approves them. Until then each touched file sits in the **Changes** pane as a pending write, and you are reading a proposed diff rather than something that has landed. Because there is no undo, no checkpoint and no revert in Code, a pending change is the moment to use **Reject**. See [Changes and diffs](/code/changes) and [Permissions and approvals](/code/approvals).
+
+## A repository on the Environments page
+
+An environment is a machine of its own, built from a repository. Under **START ONE** on the **Environments** page the two fields are the same choice in a different shape:
+
+| Field | What it accepts |
+| --- | --- |
+| **Repository** | **A clone URL, or owner/name for GitHub.** |
+| **Ref** | **Empty uses the repository default.** |
+
+A saved image is keyed by **repository and ref** together. The next session on that same pair resumes from the image instead of installing everything again, which is the single biggest difference between your first session on a repository and your tenth. See [Environments and images](/code/environments).
+
+## When the repository list is empty
+
+The empty copy tells you which of the three situations you are in.
+
+| What the list says | What it means |
+| --- | --- |
+| **Connect GitHub and your repositories appear here.** | there is no connection yet, so there is nothing to list |
+| **GitHub returned no repositories for this account.** | the connection works, and it covers no repository Cortex can see. Widen it on GitHub's side |
+| **No repositories to show yet.** | GitHub is not available to connect on this deployment |
+
+## What is not configurable
+
+There is no per-repository settings screen in Code, no default-repository setting, and no setting for a base branch or a branch prefix. Code settings store model defaults and nothing else, and the settings page says as much itself under **NOT CONFIGURABLE YET**: pull-request behaviour, a branch prefix, a network allowlist and a shell-command policy are all decided per session today. Every repository and branch choice is made when you start a session, or on the turn you send. See [Code settings](/code/settings).
+
+## Related
+
+- [Connect GitHub](/code/github) for the connection that fills the repository list.
+- [Changes and diffs](/code/changes) for the gate a write passes before it reaches the branch.
+- [Environments and images](/code/environments) for a machine prepared per repository and ref.
+- [Code sessions](/code/sessions) for the session the repository belongs to.
+- [Cloud runtimes](/code/runtimes) for the guest a session works inside.

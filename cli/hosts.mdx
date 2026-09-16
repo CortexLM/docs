@@ -1,0 +1,83 @@
+---
+title: "Cloud, This PC, and SSH"
+description: "Where a CLI session runs its tools: Cortex Cloud by default, with This PC and SSH as opt-in hosts that fail closed"
+icon: "server"
+---
+
+Every Cortex CLI session runs its tools somewhere. Reading a file, searching a directory, running a command, applying a patch: all of it happens on a **host**, and there are three. **Cloud** is the default and needs nothing from you. **This PC** and **SSH** are opt-in, selected with an environment variable, and they refuse a turn rather than quietly running it somewhere else.
+
+This page covers the three hosts and how to select one, what the two opt-in hosts require before they will accept a turn, the refusal you see when nothing is connected, how to hand a single turn to Cortex Cloud from the composer, and what the host setting does not control.
+
+## The three hosts
+
+| Host | Default | How you select it |
+| --- | --- | --- |
+| **Cloud** | Yes | Nothing to do |
+| **This PC** | No | `CORTEX_COMPUTER=this_pc` |
+| **SSH** | No | `CORTEX_SSH_HOST=<target>`, or `CORTEX_COMPUTER=ssh` |
+
+The names on this page are the ones you use. `Computer` is the setting that chooses between them, and `CORTEX_COMPUTER` is the variable that carries it.
+
+## Cloud is the default
+
+The TUI and `cortex exec` create a Cloud session unless you explicitly select This PC or SSH. That is the shipped default, which is why a fresh install can complete a turn with no extra configuration at all.
+
+Cloud work runs in an isolated cloud environment that Cortex manages for you, not on your machine. Two things are worth separating in your head: the CLI never runs a model locally, so every turn goes to the coding service regardless of host, and the host only decides where the *tools* the model calls actually execute.
+
+## Select This PC
+
+Set `CORTEX_COMPUTER` to run tools on the machine you are sitting at:
+
+```bash
+export CORTEX_COMPUTER=this_pc
+cortex
+```
+
+The documented values are `this_pc` and `ssh`. Leaving the variable unset, or setting it to `cloud`, uses Cloud. The spellings `this-pc` and `local` are also accepted for This PC.
+
+This PC requires an **already connected Code session**. The connection itself is established on the Cortex Code side, not from the CLI, so the machine has to be set up there first. See [Runtimes](/code/runtimes) and [Machines](/code/machines).
+
+## Select an SSH host
+
+Set `CORTEX_SSH_HOST` to a target and the runtime becomes SSH:
+
+```bash
+export CORTEX_SSH_HOST=<your target>
+cortex
+```
+
+`CORTEX_SSH_TARGET` is an alias of the same variable. Setting either one selects SSH without touching `CORTEX_COMPUTER`, and the same connected-session rule applies: the host must already be connected to a Code session. See [SSH hosts](/code/ssh-hosts) for setting one up.
+
+<Note>
+This PC and SSH are opt-in, and the CLI documentation describes them as possibly shipping during the 0.1.x series. If they are not enabled on your build, Cloud is the only host available to you.
+</Note>
+
+## Both opt-in hosts fail closed
+
+There is no silent substitution. If This PC or SSH is selected and the host is not usable, the turn stops instead of running in Cloud. The refusal is a single message:
+
+```
+This PC and SSH Code execution require an already connected Code session
+```
+
+Read it as the whole story: connect the Code session, then run the turn again. A turn with nowhere to run stops and tells you that no host is connected rather than guessing. Cortex will not substitute Cloud on your behalf, because a command you meant to run on your own machine, against your own checkout, is not the same command anywhere else.
+
+If you are diagnosing a connection, do it from the Code side. That is where a host is attached to a session, and where its state is shown.
+
+## Hand one turn to Cortex Cloud
+
+You do not have to change the host to move a single turn. Type `&` at the start of the composer and that turn is handed to Cortex Cloud. The timeline records it as a row reading `↑ Handed off to Cortex Cloud`, so you can see afterwards which turns ran where.
+
+## What the host setting does not control
+
+`Computer` selects where tools run. That is all it does. In particular it is not browser or desktop control: the CLI ships no built-in browser or desktop-automation tool, and that kind of work is done by connecting a server that provides those tools, on whichever host the session is using. See [MCP servers in the CLI](/cli/mcp).
+
+The host also does not change the permission model. Approvals, the sandbox and the permission table apply identically on all three hosts, so selecting This PC does not widen what the agent may do, it only changes where it does it.
+
+## Related
+
+- [Tools the agent uses](/cli/tools), what the agent runs on the host you selected
+- [Environment variables](/cli/environment-variables), `CORTEX_COMPUTER`, `CORTEX_SSH_HOST` and the rest
+- [Modes and permissions](/cli/modes-and-permissions), the controls that apply on every host
+- [Headless and one-shot runs](/cli/headless), choosing a host for an unattended run
+- [Runtimes](/code/runtimes), how the same hosts appear in Cortex Code
