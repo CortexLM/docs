@@ -58,7 +58,7 @@ RS
         "groups": [
           {
             "group": "Problems",
-            "pages": ["problems/not_found", "problems/internal"]
+            "pages": ["problems/index", "problems/not_found", "problems/internal"]
           }
         ]
       }
@@ -79,6 +79,16 @@ title: "${code}"
 | \`GET\` | \`/v1/conversations\` |
 MDX
   done
+  cat > "$dest/site/problems/index.mdx" <<'MDX'
+---
+title: "Problem catalog"
+---
+
+| Code | HTTP |
+| --- | --- |
+| [`not_found`](/problems/not_found) | 404 |
+| [`internal`](/problems/internal) | 500 |
+MDX
 }
 
 must_fail() {
@@ -318,7 +328,7 @@ cat > "$goodroot/site/docs.json" <<'JSON'
           {
             "group": "Problems",
             "root": "problems/not_found",
-            "pages": ["problems/internal"]
+            "pages": ["problems/internal", "problems/index"]
           }
         ]
       }
@@ -361,5 +371,125 @@ cat > "$missinghref/site/docs.json" <<'JSON'
 }
 JSON
 must_fail "$missinghref" "missing-mintlify-page"
+
+# Staging must not return to the public site. docs.cortex.foundation served a
+# /staging collection publicly once; a re-added page, nav entry, or redirect
+# would put pre-prod copy back on the domain.
+stagingnav="$tmp/staging-nav"
+seed "$stagingnav"
+mkdir -p "$stagingnav/site/staging"
+cat > "$stagingnav/site/staging/index.mdx" <<'MDX'
+---
+title: "Index"
+---
+Staging mirror — unpublished drafts / pre-prod docs
+MDX
+cat > "$stagingnav/site/docs.json" <<'JSON'
+{
+  "name": "Cortex",
+  "logo": { "href": "https://docs.cortex.foundation" },
+  "navbar": {
+    "links": [
+      { "label": "Home", "href": "/" },
+      { "label": "Documentation", "href": "/problems/not_found" }
+    ]
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Staging",
+        "groups": [
+          { "group": "Drafts", "pages": ["staging/index"] }
+        ]
+      }
+    ]
+  }
+}
+JSON
+must_fail "$stagingnav" "staging"
+
+# A redirect into a staging path is the same leak by another route.
+stagingredirect="$tmp/staging-redirect"
+seed "$stagingredirect"
+cat > "$stagingredirect/site/docs.json" <<'JSON'
+{
+  "name": "Cortex",
+  "logo": { "href": "https://docs.cortex.foundation" },
+  "navbar": {
+    "links": [
+      { "label": "Home", "href": "/" },
+      { "label": "Documentation", "href": "/problems/not_found" }
+    ]
+  },
+  "redirects": [
+    { "source": "/drafts", "destination": "/staging/index" }
+  ],
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "API",
+        "groups": [
+          { "group": "Problems", "pages": ["problems/not_found", "problems/internal"] }
+        ]
+      }
+    ]
+  }
+}
+JSON
+must_fail "$stagingredirect" "staging"
+
+# Copy that sends a reader to a staging host or path must fail even when the
+# page itself is fine.
+stagingcopy="$tmp/staging-copy"
+seed "$stagingcopy"
+printf '\nUse the staging environment at `/staging/api` for pre-prod keys.\n' \
+  >> "$stagingcopy/site/problems/not_found.mdx"
+must_fail "$stagingcopy" "staging"
+
+# A page no navigation entry reaches still gets indexed, but no reader can
+# navigate to it. That is how the tree accumulated a second hub for every
+# product.
+orphan="$tmp/orphan-page"
+seed "$orphan"
+cat > "$orphan/site/problems/leftover.mdx" <<'MDX'
+---
+title: "Leftover"
+---
+
+`type` is `https://docs.cortex.foundation/problems/leftover`.
+MDX
+must_fail "$orphan" "orphaned page"
+
+# The catalog index is hand-maintained while the pages beside it are generated
+# in lockstep with the backend. A page the catalog forgets is invisible to the
+# reader who lands on the index.
+drift="$tmp/catalog-drift"
+seed "$drift"
+cat > "$drift/site/problems/index.mdx" <<'MDX'
+---
+title: "Problem catalog"
+---
+
+| Code | HTTP |
+| --- | --- |
+| [`not_found`](/problems/not_found) | 404 |
+MDX
+must_fail "$drift" "does not link \`internal\`"
+
+# And the reverse: a catalog entry with no page behind it.
+dangling="$tmp/catalog-dangling"
+seed "$dangling"
+cat > "$dangling/site/problems/index.mdx" <<'MDX'
+---
+title: "Problem catalog"
+---
+
+| Code | HTTP |
+| --- | --- |
+| [`not_found`](/problems/not_found) | 404 |
+| [`internal`](/problems/internal) | 500 |
+| [`ghost`](/problems/ghost) | 500 |
+MDX
+must_fail "$dangling" "no page at problems/ghost.mdx"
 
 echo "check-docs-site: ok"
