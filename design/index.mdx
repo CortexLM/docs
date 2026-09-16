@@ -1,68 +1,92 @@
 ---
 title: "Cortex Design"
-description: "Persistable canvases hosted from Chat or Code and edited in the Design desktop app. Frames, notes, options, and a Library of components, pages, and tokens."
-image: "/images/banners/design.png"
-keywords: ["canvas", "board", "UI design", "mockups"]
+description: "Boards of frames and notes, hosted from a Chat thread or a Code session and edited in the Cortex Design desktop app."
+icon: "pen-ruler"
 ---
 
-Cortex Design is where visual work lives. A canvas is a board of frames, notes, and options that you host from a Chat conversation or a Code session and then open in the **Design desktop app** to work on. There is no Design mode in the web shell: the browser creates and lists canvases, the desktop app is where you edit them.
+Cortex Design is where visual work lives. The unit of work is a **design canvas**: a board that holds frames, notes, images and pieces you reuse from your Design library. A canvas is created from, and stays linked to, one thread, either a Cortex Chat conversation or a Cortex Code session. Ask Cortex for a layout in that thread and it draws frames on the canvas beside it.
 
-<CardGroup cols={3}>
-  <Card title="Canvases" icon="layout-template" href="/design/canvases">
-    Frames, notes, options, and the host binding to Chat or Code. Default title Untitled canvas.
+Design has exactly two surfaces. In the web app, a **CANVASES** rail sits beside a Chat thread or a Code session and lists the canvases that thread produced. The working editor is the **Cortex Design** desktop app, a separate window with its own gallery, editor, library and settings. This page is the map of the whole area.
+
+## Explore Design
+
+<CardGroup cols={2}>
+  <Card title="Design quickstart" icon="rocket" href="/design/quickstart">
+    From an empty gallery to a saved version and an export, in a few minutes.
   </Card>
-  <Card title="Design desktop" icon="monitor" href="/design/desktop">
-    Install the working UI, open a board, edit frames and notes.
+  <Card title="Design canvases" icon="object-group" href="/design/canvases">
+    What a canvas holds, its host thread, the rail, the gallery, renaming and deleting.
   </Card>
-  <Card title="Library" icon="library" href="/design/library">
-    Components, pages, and tokens you reuse across canvases. Thumbnails are uploaded.
+  <Card title="Generate and edit" icon="wand-magic-sparkles" href="/design/editor">
+    Generate options, pick one, ask for a change on a frame, retry an option that failed.
   </Card>
-  <Card title="Troubleshooting" icon="life-buoy" href="/design/troubleshooting">
-    Where a canvas lives, why the browser will not edit it, and a board that is not listed.
+  <Card title="Versions" icon="clock-rotate-left" href="/design/versions">
+    Every save is a version. View an older one, or restore it as a new version.
+  </Card>
+  <Card title="Design library" icon="swatchbook" href="/design/library">
+    Components, tokens and pages you reuse across canvases, shared by your whole account.
+  </Card>
+  <Card title="Export a design" icon="file-export" href="/design/export">
+    A rendered PNG and the canvas document as JSON. SVG and PDF are planned.
+  </Card>
+  <Card title="Bot jobs" icon="robot" href="/design/bot-jobs">
+    Handing a design brief to a Cortex Bot is planned. It is not available yet.
+  </Card>
+  <Card title="Design connectors" icon="plug" href="/design/plugins">
+    The Plugins page in the Design window, and which connectors reach Design.
+  </Card>
+  <Card title="Design desktop app" icon="desktop" href="/design/desktop">
+    What the window holds, its sidebar, and why there is nothing to install yet.
+  </Card>
+  <Card title="Design settings" icon="gear" href="/design/settings">
+    General, Models, and Data and privacy, inside the Design window.
+  </Card>
+  <Card title="Design troubleshooting" icon="life-ring" href="/design/troubleshooting">
+    Signed out, a canvas that is not available, the canvas quota, an option that failed.
   </Card>
 </CardGroup>
 
-## The shape of the product
+## Where Design lives
 
-| Fact | What it means |
+<Tabs>
+  <Tab title="In the web app">
+    A **CANVASES** rail is drawn beside an open Chat thread or Code session. It lists only the canvases that belong to the thread you are looking at, with each row's title, host, time and artifact counts, and a status pill of **Idle**, **In flight**, **Ready** or **Failed**.
+
+    The rail is a right-hand column on a wide window, and a collapsed strip under the pane on a narrow one, so the transcript keeps its width until you ask for the rail. From a row you can choose **Open in Design** when the app can be reached, or **Copy reference** to copy the canvas id and paste it into the Design window.
+
+    There is no Design page in the browser, and no Design entry beside Chat, Code and Bot. That is the design of the product, not a gap: the rail creates and lists canvases, and the desktop app edits them.
+  </Tab>
+  <Tab title="In the desktop app">
+    The **Cortex Design** window opens on **Designs**, your gallery of canvases. Its sidebar also carries **Library**, **Plugins** and **Bot jobs**, a **Settings** control, a **New design** button and a search field.
+
+    Inside a canvas you get the editor: the board itself with a small toolbar, a thread rail where you ask for changes, a **Versions** rail, and **Export**. The window is Design only, with no Chat or Code switcher in it.
+  </Tab>
+</Tabs>
+
+## How it fits with the other products
+
+| Product | How it meets Design |
 | --- | --- |
-| **Hosted from Chat or Code** | Both products have design tools that create and write to a canvas. Bot does not. |
-| **Edited on desktop** | The working UI is a separate desktop app. There is no `/design` route in the web app and no Design segment on the Chat · Code · Bot switcher. |
-| **Private to your account** | Sign in first. Another account's canvases are not visible. |
-| **Not a Chat sidecar** | A Chat canvas is a document beside a conversation. A Design canvas is a board of frames. Different objects. |
+| [Cortex Chat](/chat) | Ask for a design in a conversation. Cortex creates a canvas bound to that conversation and draws frames on it. |
+| [Cortex Code](/code) | The same, from a Code session. A mode that only answers or only plans cannot write a canvas, so use a mode that can act. See [Ask, Plan, Agent](/code/interactions). |
+| [Cortex Bot](/bot) | A bot cannot open or change a design canvas today. See [Bot jobs](/design/bot-jobs). |
 
-## Start from Chat or Code
+A canvas's host is Chat or Code, never both, and you can move that binding later. Deleting the thread a canvas came from does not delete the canvas: it only leaves the canvas with no thread.
 
-<Steps>
-  <Step title="Sign in">
-    Canvases are member objects.
-  </Step>
-  <Step title="Host a canvas">
-    Ask Chat — *lay these three screens out on a canvas* — or ask a Code session to draw the architecture. The design tools create the board, titled **Untitled canvas**, and write frames to it.
-  </Step>
-  <Step title="Open it on desktop">
-    Install the [Design desktop app](/design/desktop), sign in, and open the board. Edit frames, notes, and the Library drawer there.
-  </Step>
-</Steps>
+Two nearby things share a word with Design and are separate objects. A [Chat canvas](/chat/canvases) is a markdown document written beside a conversation, not a board of frames. The [Design library](/design/library) is a set of design building blocks, while the [Chat Library](/chat/library) is a file store. [Design canvases](/design/canvases) has a table that keeps them apart.
 
-## Design and the other products
+## What is not available yet
 
-| Object | Product | What it is |
-| --- | --- | --- |
-| **Design canvas** | Design | A board of frames and notes, edited on desktop |
-| [Chat canvas](/chat/canvases) | Chat | A document beside one conversation |
-| [Plan](/chat/plans) | Chat | A task list |
-| Code file | Code | A file inside a session's guest |
+<Note>
+  Cortex Design is honest about its edges. Handing a design to a Bot is planned and does not work today. SVG and PDF export are planned; PNG and JSON ship. There is no comment surface and no publish or share surface: a canvas is private to your account, and someone else's canvas simply answers as not available. Numeric tweaking of a generated frame is also planned.
+</Note>
 
-Chat and Code can host a Design canvas through their design tools; Bot does not receive those tools. A [Design library](/design/library) item and a file in Chat's [Library](/chat/library) are different objects that share a word.
+An account can keep up to **200 design canvases**. That is the only cap on how many designs you can have.
 
 ## Related
 
-- [Downloads](/getting-started/downloads) — every desktop app and the CLI in one place.
-- [Security and privacy](/security/overview) — what Cortex stores and where your work runs.
-
-## Next
-
-1. [Canvases](/design/canvases) — what lives on a board and how it is hosted.
-2. [Design desktop](/design/desktop) — install the app and open your first canvas.
-3. [Design library](/design/library) — components, pages, and tokens.
+- [Design quickstart](/design/quickstart) - draw, save and export your first canvas.
+- [Design canvases](/design/canvases) - the board, its host thread, and the gallery.
+- [Generate and edit](/design/editor) - the editor, option by option.
+- [Design desktop app](/design/desktop) - get the window that does the editing.
+- [Ways to run Cortex](/getting-started/downloads) - every application in one place.

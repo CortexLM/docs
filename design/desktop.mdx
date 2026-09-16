@@ -1,55 +1,153 @@
 ---
-title: "Design desktop"
-description: "The working UI for Cortex Design is a separate desktop app. Chat and Code create canvases; you edit them here."
-keywords: ["app", "download", "editor"]
+title: "Design desktop app"
+description: "The Cortex Design window: its sidebar, the Designs gallery, light and dark, offline states, and the download that is not published yet."
+icon: "desktop"
 ---
 
-The Design working UI is a desktop app of its own. The web app creates and lists canvases when Chat or Code hosts one; editing frames, notes, options, and the Library drawer happens here.
+The **Cortex Design** window is the application that edits design canvases. Cortex Design has two
+surfaces and only two: a **CANVASES** rail beside a Cortex Chat thread or a Cortex Code session,
+which creates and lists canvases, and this window, which does the editing. There is no Design page
+in the browser and no Design entry in the product switcher, so the window is not an optional extra
+for power users. It is the editor.
 
-## Install
+One thing to settle before anything else: Cortex does not publish a download for this window yet,
+so this page is not an install guide. What follows describes the window as it is built, so the
+vocabulary matches when a build reaches you: the sidebar and its four destinations, the gallery it
+opens on, the screens behind the other rows, light and dark, and the offline states.
 
-<Steps>
-  <Step title="Download">
-    Desktop builds are published at [releases.cortex.foundation](https://releases.cortex.foundation). Pick the Design desktop app for your platform.
-  </Step>
-  <Step title="Sign in">
-    Same account as the web app. Canvases are member objects.
-  </Step>
-  <Step title="Open a canvas">
-    Your canvases follow your account. Boards hosted from Chat or Code are already listed.
-  </Step>
-</Steps>
+## Getting the window
 
-## Work on a board
+<Warning>
+No installer for the Cortex Design window is published yet. There is no platform list, no updater
+of its own, and no sign-in procedure to give you, and Cortex publishes no public download page for
+its desktop applications. [Ways to run Cortex](/getting-started/downloads) lists the applications
+you can run today, and is where this one will appear once it can be downloaded.
+</Warning>
 
-Edit frames and notes, lay out options side by side, and pull components, pages, and tokens from the Library drawer. Rename the board from **Untitled canvas** to something useful; the host binding to the originating Chat conversation or Code session stays.
+There is no editor in the browser to fall back on in the meantime. What you can still do from the
+**CANVASES** rail in a Chat thread or a Code session is ask Cortex for a design, create an empty
+canvas with **New canvas**, read each canvas's counts and status, and use **Copy reference** to
+copy the canvas id that the Design window accepts as an address. Generating and editing frames, the
+version history, the library and export all live in the window.
 
-## What the web app will not do
+Design needs a Cortex account. Every Design surface refuses a visitor who is not signed in, and the
+window draws that refusal as a dialog headed `Cortex Design is part of your Cortex account.`
 
-| | Web app | Design desktop |
-| --- | --- | --- |
-| Create a canvas from Chat or Code | Yes | — |
-| List your canvases | Yes | Yes |
-| Edit frames, notes, options | No | Yes |
-| Library drawer | No | Yes |
-| Design segment on the Chat · Code · Bot switcher | No | — |
+## The sidebar
 
-## Your boards follow the account
+The sidebar carries the **Cortex Design** wordmark, a **New design** action beside it, and a search
+field whose placeholder is **Search designs, frames, notes** with a **⌘K** badge. **Collapse
+sidebar** narrows it when you want the canvas wider. Below the search field there are four
+destinations, and nothing else:
 
-Sign in with the same account you use on the web and your canvases are already listed — the boards a Chat conversation or a Code session hosted are not tied to the machine that created them. Another account's canvases are never visible. See [Canvases](/design/canvases) and [Accounts](/getting-started/accounts).
-
-## Three desktop apps
-
-| App | Carries |
+| Destination | What is there |
 | --- | --- |
-| [Cortex desktop](/getting-started/desktop) | Chat and Code, with This PC and SSH hosts |
-| [Cortex Bot desktop](/bot/desktop) | Agents, routines, channels |
-| **Cortex Design desktop** | Canvases and the Library drawer |
+| **Designs** | Every design in your account, newest first, as a grid or a list |
+| **Library** | Your components, tokens and pages, mirrored read-only in this window |
+| **Plugins** | Your connectors, with a meta line counting how many are connected |
+| **Bot jobs** | The surface for handing a design to a Cortex Bot, which is not available yet |
 
-See [Downloads](/getting-started/downloads) for the full list.
+Under them a **RECENT** section lists what you opened last. Before you have opened anything it
+reads `Designs you open show up here, most recent first.` Your identity and the **Settings**
+control sit in the footer.
+
+There is no Chat or Code switcher in this window, by design. The Settings dialog says so in one
+line of its own: `Code editor preferences stay in Cortex Code. This window is Design-only`. The
+bindings the window advertises are `⌘N` for a new design, `⌘ \` to toggle the sidebar, `⌘K` to
+focus the search field, `⌘E` to export, and `↵` to send your message in the editor thread.
+
+## Designs, the screen it opens on
+
+**Designs** is the landing screen and the gallery of every canvas you own, rather than one thread's
+worth. Its header line reports the state of the list, rows are grouped under day headings such as
+`Today` and `Earlier this week`, and there is a **Grid** or **List** view, filter chips and a
+`Last edited` sort. [Design canvases](/design/canvases) covers the gallery control by control.
+
+Before you have made anything the screen reads `Your first design starts as a sentence.` There are
+three ways to get past it. Ask Cortex for the design inside a Chat thread or a Code session, use
+**New canvas** in the rail beside that thread, or use **New design** here. Handing a brief to a
+Cortex Bot is a fourth route the window suggests, and it is not available yet.
+
+**New design** (`⌘N`) opens a sheet with four fields: **NAME**, of up to 48 characters, **START
+FROM**, a **BRIEF** that becomes the first message in the design's thread, and **MODEL**. **Create
+design** (`⌘↵`) makes it.
+
+<Note>
+An account can keep up to **200 design canvases**, and that is the only cap on how many designs you
+can have. There is no daily allowance, no monthly allowance and no separate per-plan figure for
+Design. A deleted design is hidden rather than erased, and a hidden canvas is still yours, so it
+still occupies one of the 200.
+</Note>
+
+Deleting a design starts with a dialog that names it, lists what goes with it, and offers **Keep
+it** or **Delete design**. A toast then offers **Undo** for ten seconds. Let that window pass and
+the design is hidden, with its versions and images kept, until you restore it or permanently delete
+it. The Chat thread that started the design is not touched either way.
+
+## Library, Plugins and Bot jobs
+
+**Library** is a read-only mirror in this window of the components, tokens and pages your account
+reuses across canvases. Its tabs are **Components**, **Tokens** and **Pages**, each with a count,
+and **Sync** pulls the library again after you have added items elsewhere. The tab strip carries a
+fourth tab listing saved design files, which are files rather than library items and are not one of
+the three kinds. See [Design library](/design/library).
+
+**Plugins** is the same connector catalogue as the rest of Cortex, with a chip on each card marking
+which surfaces that connector reaches, Design among them, and the sidebar row counts how many you
+have connected. When a connector's authorisation lapses the window raises an authorisation-expired
+toast with a **Reconnect** action. See [Design connectors](/design/plugins).
+
+**Bot jobs** is drawn, and nothing is behind it. A Cortex Bot cannot open, read or change a design
+canvas today, so the row, the **Hand to a Bot** sheet and the editor's **Hand to Bot** button start
+nothing. [Bot jobs](/design/bot-jobs) explains what is planned.
+
+Inside a canvas you get the editor itself: the board, a thread rail where you ask for changes, a
+**Versions** button, and **Export**. The **Export** sheet offers **PNG**, which the window renders
+on your own machine, and **JSON**, the canvas document. **SVG** and **PDF** are drawn in the same
+sheet but disabled and marked for the next version. See [Generate and edit](/design/editor),
+[Versions](/design/versions) and [Export a design](/design/export).
+
+## Light and dark
+
+**Settings → General** holds a **Theme** row with **Light**, **Dark** and **System**. The choice is
+remembered on the machine you set it on rather than carried with your account, so it does not
+follow you to another computer, and the window opens light until you change it. The **System**
+option is offered but does not follow your operating system's own light or dark setting yet, so
+pick **Light** or **Dark** explicitly.
+
+Several other rows in Settings are drawn with a **COMING SOON** or **SOON** chip, including the
+default model, the default thinking level, reasoning summaries, the answer font, chat-history
+retention and the data export. [Design settings](/design/settings) goes pane by pane.
+
+## When Cortex cannot be reached
+
+The window is built to stay usable when the Design service cannot be reached, and to say so rather
+than to look empty.
+
+| What you see | What it means |
+| --- | --- |
+| `Syncing your designs…` | The list is loading, which never looks like a list that is empty. |
+| `{n} designs · synced {time}` | The list is live and current. |
+| `Nothing here yet` | The list loaded and you have no designs. |
+| `Couldn't reach Cortex — showing last sync` with a time | You are offline and reading the last list that arrived. |
+| `Couldn't load your designs`, with **Work offline** and **Retry** | The service did not answer. Keep reading the last sync, or try again. |
+| `Couldn't load connectors`, with **Retry** | The connectors page could not load. Connections you already have stay active. |
+| `Offline · retrying in 15s` | A pill on the canvas-not-available state, shown while the window waits before trying again. |
+
+While you are offline, canvases you already have open stay readable from the copy on your machine,
+and edits queue and sync when the connection comes back. If your sign-in lapses while the window is
+open you get a dialog headed `Your session expired`, and work done in the meantime is kept on the
+machine and syncs when you are back in.
+
+A canvas the window cannot fetch gets its own state, headed `This canvas isn't available`, with
+**Back to Designs**. Cortex answers the same way for a canvas that was deleted and one that belongs
+to another account. [Design troubleshooting](/design/troubleshooting) maps every Design refusal to
+what to do about it.
 
 ## Related
 
-- [Canvases](/design/canvases) · [Library](/design/library)
-- [Chat canvases](/chat/canvases) — the document sidecar, which stays in the browser.
-- [Design troubleshooting](/design/troubleshooting) — when the app or a board does not appear.
+- [Cortex Design](/design) for what the product is and how its two surfaces divide the work.
+- [Design canvases](/design/canvases) for the gallery, the rail, renaming, deleting and the caps.
+- [Design settings](/design/settings) for the panes inside this window.
+- [Design troubleshooting](/design/troubleshooting) when a canvas or the window itself refuses.
+- [Ways to run Cortex](/getting-started/downloads) for the applications you can run today.

@@ -1,0 +1,106 @@
+---
+title: "Create a bot"
+description: "Every field on the New bot form: name, look and face, description, label, notifications, skills and connected apps, then settings and delete"
+icon: "wand-magic-sparkles"
+---
+
+Creating a bot takes one short form. The product describes what you are making in a single line: `A bot is a persistent agent with a Linux computer of its own. Give it a name, a look and a job — all of it can be changed later.` The last clause is the important one. Nothing on this form is a decision you are stuck with, and nothing on it grants the bot a permission.
+
+This page walks the form field by field, says exactly what a **Description** does and does not do, covers the two gates a connected app has to pass before a bot can use it, and ends with the settings you get afterwards, including delete.
+
+## Before you start
+
+You need to be signed in. Creating a bot is not available in a guest session, and the product says why: `A guest session cannot own something it could never come back to revoke.` A bot outlives the session that made it, so it needs an account that can come back and take things away from it.
+
+In the Bot sidebar, choose **New bot**. An account with no bots yet lands on **Create your first bot** instead of an empty list.
+
+## Name
+
+**Name** is the only required field. It must be 1 to 40 characters; anything outside that gets `The name must be 1–40 characters.` The name is what the sidebar row, the conversation header and the composer placeholder use, so a short concrete one reads better than a long one.
+
+## Look and Face
+
+A bot's appearance is two choices, and that is the whole of it.
+
+| Field | Options |
+| --- | --- |
+| **Look** | Meadow, Teal, Terracotta, Amber, Plum, Slate |
+| **Face** | Dots, Slits, Wink, Peek, Smile, Glance |
+
+Every bot uses the same silhouette, so **Look** is its colour and **Face** is its expression. A small resting tilt is applied automatically and is not something you pick. Faces are drawn on the bot's own transcript and its avatar; they are not drawn on the narrow sidebar rows, and they are deliberately not drawn in a channel thread, where the product notes that faces stay on a bot's transcript.
+
+The preview beside the form shows what you have built so far, labelled `Your bot` and `A persistent agent with a computer of its own`.
+
+## Description, and what it cannot do
+
+**Description** is the bot's mission line. The placeholder suggests the shape: `What it watches, how it writes, when it should wake you…`
+
+This is the field people most often misread, so the form carries a guide beside it. Under **What the bot is told**, an empty field reads `No mission line yet. A description is prompt text: it shapes how the bot talks about itself and nothing about what it may do.` The whole effect of a Description is one injected line in the bot's instructions: `Your mission: {description}.` That is all it is.
+
+The guide then lists, under **What this cannot turn on**, the five things a sentence here will never grant.
+
+| It cannot grant | Because |
+| --- | --- |
+| Reaching a domain | the allow list decides that, not this sentence |
+| Using a credential | secrets are stored sealed, one field at a time |
+| Driving the desktop | Computer Use is a lifecycle, not a sentence |
+| Using a connected app | that is a per-bot connector, off until you turn it on |
+| Being published | a public link is its own control, with its own revoke |
+
+Read the other way round, that is reassuring: a mission line cannot quietly widen what a bot may do. As the guide puts it, it `Reads as a mission, not a permission. Nothing here needs to be allowed anywhere else.`
+
+<Warning>
+  Never put a credential in a Description. If the text looks like one you get `This looks like a credential`, and the reason is worth keeping in mind: a description is prompt text, so it is repeated in every transcript this bot produces. Credentials belong under **Secrets**, where the value is sealed and never appears in the conversation. See [Connected apps and secrets](/bot/plugins).
+</Warning>
+
+If you write past the field's character limit the guide tells you so, and anything past it is not saved.
+
+## Label
+
+**Label** is one short role word, placed beside the name so a list of bots is readable at a glance. The placeholder gives the register: `Watch, Support, Notes…` It is cosmetic and optional.
+
+## Notifications
+
+Turn on **Notify me** under **Notifications** if you want to be told when this bot needs you. A bot that asks a question or parks a step for approval stops working until you answer, so this is worth setting on any bot you do not plan to watch. Everything waiting on you across every bot also collects in the [Inbox](/bot/inbox).
+
+## Skills
+
+Under **Skills**, choose the recipes this bot may follow. The hint draws the distinction that matters here: `Skills this bot may run. Distinct from connectors.` A skill is a procedure the bot can read and work through, not an integration and not a permission; a skill has to pass a scan before it can be enabled at all. See [Skills](/bot/skills).
+
+## Connected apps
+
+Under **Connectors** and **Plugins** you decide which connected apps this bot may use. The hint states the model in one line: `Apps this bot may use. Off until you turn one on for this bot only.`
+
+There are two independent gates, and both start off.
+
+1. **Account level.** On the Plugins page an app is assigned to Cortex Chat, Cortex Bot, or both. An app that is not assigned to Bot cannot be turned on here.
+2. **This bot.** Even an app that is assigned to Bot is off for a new bot until you switch it on, which is why the row reads `Off by default for this bot. Not Always-allow.`
+
+If you have not connected anything yet the section reads `No connected apps yet. Connect one on Plugins, then assign it here.` A row that cannot be turned on always says why and points at the same place: not available to Cortex Bot, needs reconnecting, still half-connected, a failed connection, or turned off for Bot. Use **Add connector**, **Reconnect** or **Fix** to go and deal with it.
+
+<Note>
+  Switching an app on here does not mean the bot may use it unattended. The form says so outright: `Always-allow is not offered. Ask each time or leave it off.` A rule that stops a connected app's tool from asking has to be written later, against that exact tool. See [Approvals and tool policy](/bot/approvals).
+</Note>
+
+## Create it
+
+Choose **Create bot**. You see `Creating…`, then the bot's first conversation.
+
+Its computer is created with the bot, one per bot, and retired with it. From there, give it a first task as in the [Bot quickstart](/bot/quickstart), or open the **Computer** tab to watch its desktop.
+
+## Afterwards: settings, sharing and delete
+
+Everything on the form can be changed from the bot's **Settings** page, which also carries `Connections →` for its per-bot connected apps and `All settings →` for the rest. **Hibernation** controls whether an idle bot's computer is put away for you. **Share as template** hands a copy of the bot to someone else by email; what travels and what does not is covered in [Share a bot](/bot/sharing).
+
+**Delete this bot** lives on the settings page rather than the row menu, behind a typed confirmation, and states its consequences plainly: `Removes the bot, its computer and its messages. This cannot be undone.`
+
+The bot's row menu, **Bot actions**, also offers **Duplicate**, which would copy a bot's identity and skills but none of its memory, secrets, computer, messages, routines, channels, approvals or plugins. Duplicating a bot is not available yet.
+
+## Related
+
+- [Bot quickstart](/bot/quickstart) - create a bot and give it a first task.
+- [Talking to a bot](/bot/conversations) - what a bot says back, and the questions it asks you.
+- [Skills](/bot/skills) - the recipes you enable on the form.
+- [Connected apps and secrets](/bot/plugins) - the two gates, and where credentials go.
+- [Approvals and tool policy](/bot/approvals) - what a bot may do without asking.
+- [Share a bot](/bot/sharing) - what a recipient gets, and what never travels.

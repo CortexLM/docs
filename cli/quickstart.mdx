@@ -1,103 +1,144 @@
 ---
 title: "CLI quickstart"
-description: "From nothing installed to a working Cortex Code session in the terminal — install, sign in, first turn, AGENTS.md, and how much autonomy to grant."
-image: "/images/banners/code.png"
-keywords: ["tutorial", "first run", "getting started"]
+description: "From nothing installed to a finished first turn in a project: install, sign in, start a session, write AGENTS.md, and choose an autonomy level"
+icon: "rocket"
 ---
 
-Ten minutes, end to end. The TUI and `cortex exec` run on the **Cloud** Code runtime by default, so a fresh install completes a turn without any extra configuration.
+This is the ten-minute path from nothing installed to a first piece of work finished in one of your own repositories. You need a terminal, a Cortex account, and a project to point it at.
 
-<Frame caption="First run: the welcome splash and four tips — /model, @ files, Shift+Tab to cycle Agent / Plan / Ask, Ctrl+x for shortcuts and F2 for settings.">
-  <img src="/images/cli/runtime/120x40/first-run-tips.png" alt="Cortex CLI first-run tips panel above the empty composer" />
-</Frame>
+Sessions run on the Cloud host by default, so a fresh install completes a turn with no extra configuration. Nothing here assumes you have used Cortex before, and each step links to the page that covers it properly.
 
 <Steps>
-  <Step title="Install">
-    <CodeGroup>
-    ```bash macOS and Linux
-    curl -fsSL https://software.cortex.foundation/install.sh | sh
+  <Step title="Install the CLI">
+    <Tabs>
+      <Tab title="macOS and Linux">
+        ```bash
+        curl -fsSL https://software.cortex.foundation/install.sh | sh
+        ```
+      </Tab>
+      <Tab title="Windows">
+        ```powershell
+        irm https://software.cortex.foundation/install.ps1 | iex
+        ```
+      </Tab>
+    </Tabs>
+
+    Then check it:
+
+    ```bash
+    cortex --version
     ```
 
-    ```powershell Windows
-    irm https://software.cortex.foundation/install.ps1 | iex
-    ```
-    </CodeGroup>
-
-    Then `cortex --version`. Details and options: [Install](/cli/install).
+    If the command is not found, the install directory is not on your `PATH`. [Install the CLI](/cli/install) has the exact locations and the options for pinning a version.
   </Step>
+
   <Step title="Sign in">
     ```bash
     cortex login
     ```
 
-    The browser opens; approve the sign-in. `cortex whoami` confirms it. No browser on this machine? `cortex login --device-auth`. See [Sign in](/cli/sign-in).
+    A sign-in page opens in your browser; approve it there and the CLI continues. `cortex whoami` confirms the account. On a machine with no browser, use `cortex login --device-auth` and enter the printed code on another device. See [Sign in](/cli/sign-in).
   </Step>
+
   <Step title="Start a session in your project">
     ```bash
     cd ~/code/my-project
     cortex
     ```
 
-    The session view opens: a timeline, a composer at the bottom, and a footer with the model and mode — `Cortex Mini 1 · Agent`. Type what you want changed and press **Enter**.
+    The session view opens: a timeline above, a composer at the bottom with the placeholder `Plan, search, build anything`, the mode chip reading `Agent` at its top left, and the model chip, for example `Cortex Mini 1 (medium)`, at its bottom right.
+
+    On a first run you also get the tips panel:
 
     ```text
-    > add a /healthz endpoint and cover it with a test
+    A few tips to get the most out of this tool:
+    1. Use /model to switch between models and adjust reasoning effort.
+    2. Add @ files to give Cortex the right context.
+    3. Press Shift+Tab anytime to cycle Agent / Plan / Ask.
+    4. Ctrl+x lists every shortcut · F2 opens settings.
     ```
 
-    Cortex works through the request as a series of tool calls — searching, reading, editing, running commands — and each appears on the timeline as it happens. Press **Esc** to interrupt a turn that is going the wrong way.
+    Typing `/` opens the command list, and `/models` is the entry for picking a model and its reasoning effort.
 
-    <Frame caption="A turn in flight: Thinking with the elapsed time, and a composer that already accepts a follow-up to queue.">
-      <img src="/images/cli/runtime/120x40/session-thinking-live.png" alt="Cortex CLI thinking on a prompt, with Add a follow-up — Enter to queue in the composer" />
-    </Frame>
+    Now type what you want and press **Enter**:
+
+    ```text
+    add a /healthz endpoint and cover it with a test
+    ```
+
+    Cortex works through the request as a series of tool calls, searching, reading, editing and running commands, and each one appears in the timeline as a row while it happens. The turn ends with a line like `Worked for 12s`.
+
+    Press **Esc** to interrupt a turn that is heading the wrong way; the timeline marks it `Stopped`. While a turn is running the composer still accepts text, but **Enter** queues a follow-up instead of sending it.
   </Step>
-  <Step title="Tell Cortex about your project">
+
+  <Step title="Tell Cortex about the project">
     ```bash
     cortex init
     ```
 
-    Writes an `AGENTS.md` in the current directory. Cortex reads it at the start of every session, so put build commands, test commands, house style, and anything a new contributor would need there. `/init` does the same from inside the TUI.
+    This writes an `AGENTS.md` in the current directory, and `/init` does the same from inside a session. Cortex reads that file at the start of every session in the project, so put the build command, the test command, house style, and anything a new contributor would need to be told into it. Add `--force` to overwrite an existing file.
+
+    A good `AGENTS.md` is the single highest-value thing you can do for the quality of later turns.
   </Step>
+
   <Step title="Choose how much autonomy to grant">
-    Every session runs under an approval policy and a sandbox. By default Cortex asks before it does anything consequential. Press **Shift+Tab** to cycle **Agent → Plan → Ask**, use `/permissions` to pick **Read-only**, **Smart**, or **Full access**, or set it up front:
+    Every session runs under an approval policy and a sandbox. The defaults are `approval_policy = "on-request"`, so the agent asks before anything consequential, and `sandbox_mode = "workspace-write"`, so writes stay inside the workspace.
+
+    Press **Shift+Tab** to cycle the mode. The chip at the top left of the composer tells you where you are:
+
+    | Mode | Chip | What it allows |
+    | --- | --- | --- |
+    | Agent | `Agent` | Read, write and run, with approvals |
+    | Plan | `Plan · no edits` | Read and reason, no changes |
+    | Ask | `Ask · read-only` | Questions about the codebase only |
+
+    Plan and Ask are enforced by the harness, not by asking the model to behave: the mutating tools are withheld outright.
+
+    Or set the policy when you start the session:
 
     ```bash
-    cortex --ask-for-approval on-request   # ask when the agent requests it (default)
+    cortex --ask-for-approval on-request   # ask when the agent requests it (the default)
     cortex --sandbox read-only             # no writes at all
     cortex --sandbox workspace-write       # writes confined to the workspace
-    cortex --full-auto                     # automatic, inside the sandbox
     ```
 
-    See [Modes and permissions](/cli/modes-and-permissions).
+    When the agent wants to run a command you get a numbered prompt headed `Cortex wants to run`. Option 1 runs it once, option 2 allows that kind of command in this project from now on, option 3 lets you edit the command first, and option 4 refuses and lets you say what to do instead. See [Modes and permissions](/cli/modes-and-permissions).
   </Step>
 </Steps>
 
 ## Other ways to start
 
 ```bash
-cortex "explain this repository"              # seed the session with a prompt
-cortex --cd /path/to/project                  # another working root
-cortex --profile work                         # a profile from config.toml
-cortex resume --last                          # pick up where you left off
-cortex run "explain the release process"      # one-shot, streamed, no TUI
-cortex exec --auto read-only --git-diff "review my uncommitted changes"   # headless
+cortex "explain this repository"            # open a session seeded with a prompt
+cortex --cd /path/to/project                # work in another directory
+cortex --profile work                       # use a profile from config.toml
+cortex resume --last                        # pick up the most recent session
+cortex run "explain the release process"    # one-shot, streamed, no session view
+cortex exec --auto read-only --git-diff "review my uncommitted changes"
 ```
 
-The TUI needs a terminal on both stdin and stdout. In a pipeline or a CI job, use [`cortex run` or `cortex exec`](/cli/headless).
+The session view needs a real terminal on both standard input and standard output. In a pipeline or a scheduled job, use `cortex run` or `cortex exec` instead: see [Headless and one-shot runs](/cli/headless).
+
+<Note>
+Every turn goes to the Cortex coding service; the CLI does not run a model on your machine. If the service cannot be reached you get `The coding service is temporarily unavailable` and a non-zero exit status, never a quiet fallback.
+</Note>
 
 ## Where to go next
 
-| Want to… | Read |
+| Want to | Read |
 | --- | --- |
 | Understand everything on screen | [The TUI](/cli/tui) |
+| Get a plan before anything changes | [Plan and Spec modes](/cli/plan-mode) |
 | Learn the `/` commands | [Slash commands](/cli/slash-commands) |
 | Keep the agent working toward a bigger objective | [Goals](/cli/goal) |
-| Resume, export, or share a session | [Sessions](/cli/sessions) |
-| Run in CI | [Headless runs](/cli/headless) |
-| Connect an MCP server or write a skill | [Extend](/cli/extend) |
+| Resume, export or share a session | [Sessions](/cli/sessions) |
+| Run it in a pipeline | [CI cookbook](/cli/ci) |
+| Connect an MCP server or write a skill | [MCP servers](/cli/mcp) and [Skills](/cli/skills) |
 
 ## Related
 
-- [Install](/cli/install) — checksums, version pins, and channels.
-- [Sign in](/cli/sign-in) — the browser flow, device codes, and CI keys.
-- [Modes and permissions](/cli/modes-and-permissions) — decide how much the agent may do.
-- [CLI troubleshooting](/cli/troubleshooting) — the terminal.
+- [Install the CLI](/cli/install)
+- [Sign in](/cli/sign-in)
+- [Modes and permissions](/cli/modes-and-permissions)
+- [Cortex CLI](/cli/index)
+- [CLI troubleshooting](/cli/troubleshooting)

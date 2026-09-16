@@ -1,70 +1,142 @@
 ---
 title: "Code troubleshooting"
-description: "Gates, Reconnect, Cloud availability, modes that will not edit, and what a failed Cortex Security review means."
-keywords: ["errors", "problems", "fixes", "not working"]
+description: "What Cortex Code tells you when something is wrong, what each message actually means, and which page owns the fix."
+icon: "life-ring"
 ---
 
-Code tells you what is wrong in plain words. This page maps those words to causes and fixes. For the terminal, see [CLI troubleshooting](/cli/troubleshooting); for the rest of the app, [Troubleshooting](/getting-started/troubleshooting).
+Cortex Code says what is wrong in plain words rather than in codes, so most of the time the message on screen is the diagnosis. This page maps those messages to their real cause and points at the page that owns the fix. It is grouped the way the product is: access, GitHub, the runtime, turns that will not edit anything, session control, context, changes, automations, Cortex Security, and the error codes underneath all of it.
+
+Three questions answer a surprising number of problems before you read any further. Are you signed in, since a guest sees a reduced surface and cannot start work. Are you **attached** to the session, since a detached viewer can watch but cannot send or decide. And which mode did you send the turn in, since **Ask** and **Plan** are built without the tools that change files. For the terminal, see [CLI troubleshooting](/cli/troubleshooting); for the rest of the products, [Troubleshooting](/getting-started/troubleshooting).
 
 ## Access
 
-| What you see | Cause | Fix |
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| **This space is reserved** | You are not signed in | **Sign in**, or **Continue in Chat** |
-| The public product page at `/code` | Same — guests see the product page | Sign in, then choose **Code** |
-| `/code/secrets` sends you home | There is no Secrets page | Set environment inside the session; see [Cloud runtimes](/code/cloud) |
+| **This space is reserved**, with **Continue in Chat** and **Sign in** | you followed a link into Code while signed out | sign in, or take the work to Cortex Chat |
+| The public product page where you expected the composer | guests get the product page at Code rather than the session composer | sign in, then open Code |
+| A link to a secrets page sends you back to Code Home | there is no Secrets page in Code, on any surface | nothing to fix. Code stores no secrets and nothing in it asks you to paste a token |
+| Pressing **Connect GitHub** takes you to sign-in instead of GitHub | holding a connection requires an account | sign in first, then connect |
 
 ## GitHub
 
-| What you see | Cause | Fix |
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| No **Connect GitHub** control | GitHub is not available on this deployment, or you are a guest | Sign in; if still missing, the surface is not offered here |
-| **Reconnect** | The grant lapsed or was revoked | Choose **Reconnect** and approve on GitHub |
-| A repository is missing from the picker | The grant does not cover it | Reconnect and include it |
-| You are looking for a token field | There is none | Connect GitHub is the only route; see [Connect GitHub](/code/github) |
+| No **Connect GitHub** control anywhere | GitHub is not available on this deployment | the control is absent rather than greyed out, and there is no token field to fall back on. Ask whoever runs the deployment |
+| **Reconnect GitHub** | the connection lapsed or was revoked | press it and approve on GitHub again. Nothing was changed in the meantime |
+| A repository you expect is missing from the picker | the grant on GitHub does not cover that repository | reconnect, and include it on GitHub's own consent screen |
+| **GitHub did not complete the connection**, **GitHub took too long**, or **GitHub is not available to connect** | GitHub failed, did not answer in time, or is unreachable | try again. Each of these ends with nothing changed on your side |
+| **This connection attempt is no longer valid** | the attempt went stale or had already been used | start again from **Connect GitHub** rather than reloading the old page |
+| **GitHub was not connected** | you pressed **Cancel** on GitHub's consent screen | this is a decision, not a fault. Connect again whenever you want to |
 
-## Runtime
+The full set of states and messages, and how to revoke the connection, is on [Connect GitHub](/code/github).
 
-| What you see | Cause | Fix |
+## Runtime, environments and capacity
+
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| Code says Cloud compute is unavailable | No Cloud runtime on this deployment right now | Try again later, or use **This PC** on the desktop app or CLI |
-| A session is slow to start | The guest is being prepared — the agent is installing what the repository needs | Wait; the timeline shows progress |
-| A follow-up wakes the session before working | The guest hibernated while idle | Expected — the turn resumes it first |
-| This PC or SSH is refused in the CLI | Those hosts need an already connected Code session | Resume a session that has the host, or unset `CORTEX_COMPUTER`. See [Code on desktop](/code/desktop) |
+| **Isolated environments are not enabled here** and **This deployment has no runtime fleet. Cloud sessions still run.** | the deployment has no fleet behind environments | environments cannot be used here at all. Ordinary Cloud sessions still work |
+| **No environment capacity is available: the fleet is scaled to zero. Nothing was started, so nothing was lost.** | there is no capacity right now | press **Try again**. Nothing was half-created that you need to clean up |
+| **Sign in to use an isolated environment** | an environment outlives the browser tab that started it, so a guest could never come back to it | sign in |
+| A first turn that sits on **Looking for an environment…**, then **Cloning the repository and reading what it declares…**, or **No progress was reported.** | the guest is being prepared and the repository's own install is running | wait. Save the result as an image afterwards so the next session on the same repository and ref skips it |
+| **SETUP DID NOT FINISH**, **The environment is not usable yet**, or **The harness could not finish.** | the install did not complete | read the harness transcript on the session's **Runtime** tab, then **Re-run setup**. See [Environments and images](/code/environments) |
+| A follow-up wakes the session before it does any work | an idle guest hibernates and the next turn wakes it | expected behaviour, not a fault |
+| **This session runs on This PC, and no host is connected. Pair one from the Host pane and the composer comes back.** | a desktop session's host went away | pair a host again, or do the work in a Cloud session. See [Code on desktop](/code/desktop) |
+| A terminal run refuses This PC or SSH | a host override is set in your shell and its prerequisites are not met | both need an already connected Code session. Clearing the override returns the run to Cloud. See [Code in the terminal](/code/cli) |
+| **Without an isolated guest this deployment cannot run Tower.** | Tower needs an isolated guest and refuses rather than half-running | use a Cloud session on a deployment that has a fleet |
+| The **Desktop** tab carries the badge **Soon** | a Code runtime is headless, so there is no screen inside it | there is nothing to enable. It is not available yet |
 
-## The agent will not change anything
+## A turn that will not change anything
 
-Check, in order:
+Work through these in order. The first two explain almost every case.
 
-1. **Mode.** Ask and Plan withhold the mutating tools. Switch the turn to **Agent**.
-2. **In the CLI, the sandbox.** `--sandbox read-only` blocks all writes; `workspace-write` confines them to the project. See [Modes and permissions](/cli/modes-and-permissions).
-3. **In the CLI, Spec mode.** Mutating tools stay locked until you accept the plan.
-4. **In the CLI, the `permission` table** in `config.toml` can deny `edit` or specific commands outright. `cortex debug config --diff` shows what differs from the defaults.
+1. **The mode.** **Ask** and **Plan** are built without the tools that write files, edit files or run commands, so a turn in either one cannot change anything however it is worded. The **Changes** pane says so outright: **Ask and Plan do not change files, so there is nothing to review here.** Switch to **Agent** and send again. The tool set is chosen when a turn is built, so a mode change applies to the next turn and never to the one already running. See [Ask, Plan, Agent](/code/interactions).
+2. **The write gate.** Writes do not land by themselves. They wait in **Changes** as pending files, and the tree is not written until a person presses **Approve** or **Approve all**. If your files are sitting at **Pending**, that is the answer. See [Changes and diffs](/code/changes).
+3. **A denial is not a crash.** **Deny** refuses one call. The turn keeps going and the model is told it was denied, so the transcript continuing after a denial is normal.
+4. **A tool you connected elsewhere.** A Code session is given no tool servers, no connectors and no plugins of its own, and it will tell you so: **Off · this session has no MCP access.** and **Off · Chat and Bot access does not carry into Code.** Never plan a session around a tool you connected for the workspace. See [Code integrations](/code/integrations).
+5. **A list of safe commands.** There is no command allowlist and no per-directory allowlist in Code. The shell is allowed or withheld as a whole, and each command is put to you when it is asked. See [Permissions and approvals](/code/approvals).
+
+<Warning>
+**There is no undo, no checkpoint and no revert of a turn's edits.** Nothing in Cortex rolls an approved change back. The moment to refuse is while the write is still pending, with **Reject**, and after that your repository's own history on the branch is what you have. Do not plan a session around being able to unwind it afterwards.
+</Warning>
+
+## Session control, follow-ups and decisions
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| Pressing **Stop** a second time does nothing | the cancel is already recorded | a cancel is a recorded request, not a repeatable button. Wait for the session to read **Stopped** |
+| The session reads **Stopped** where you expected **Failed** | a session you cancelled is not a failed one, and is never drawn as an error | press **Continue** to carry on from where you stopped. A genuinely failed turn offers **Try again** instead |
+| A follow-up you send has no effect | you are detached from the session | press **Attach**, then send it. Detaching never stopped the turn, it only stopped you sending and deciding |
+| **Queued follow-up**, with **Reclaim** | your text is waiting behind the turn that is running | press **Reclaim**, or Escape, to take it back. **Only the owner can return this follow-up.** |
+| **That decision could not be recorded** | an approval did not save | decide again. Nothing was allowed while it was unrecorded |
+| **That spend decision could not be recorded** | the same, for a spend consent | decide again. A spend decision cannot be changed once it is recorded |
+| An approval prompt you expected never appears | not every tool stops and asks on every deployment | the gate you can rely on is the file write in **Changes**. Do not treat a silent tool as a granted one |
+| **That agent could not be stopped.** | a nested transcript refused the stop | nested transcripts are read-only and **Stop** is the only control on them. Press it again |
+| **Sessions could not be loaded.** with **Retry**, or **The session could not be opened** | the board or the session failed to load | retry, or reload the page. Nothing about the session itself changed |
+
+## Context and compaction
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| **Context is full. Compact the session to continue.** | the transcript has outgrown the window | compact it. Put anything that must survive into **Keep in context** first, or press **Compact anyway** |
+| **Compaction is not available on this deployment.** | this deployment cannot compact | start a new session and carry over what matters in the first prompt |
+| **The session could not be compacted.** | compaction ran and failed | try again, and start a new session if it keeps failing |
+| **Earlier turns were compacted** | Cortex has already compacted the session for you | nothing to do. Compaction fails closed, so the turn stops rather than silently dropping history |
+
+## Changes and diffs
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| **The changes could not be read from the runtime.** | the runtime answered but its working tree could not be read | reopen the session, or wait for the runtime to wake. The pane says this rather than showing you an empty diff |
+| **Pending file writes could not be loaded.** | the write gate itself could not be read | reload. Nothing is decided for you while the list is unreadable |
+| **No branch yet** or **No pull request** | the session has not pushed anything yet | these are states, not errors. A branch appears once there is work on it |
+
+## An automation that never ran
+
+Nothing in Code runs unattended today, and the page says so itself: **Saved instructions only. Schedules and events do not execute yet. Prepare a session, then send an interactive turn to start work.** A saved schedule or event trigger is stored, and it is not executed. Enabling an automation only makes manual preparation available.
+
+If you expected a run, use the row's own control to prepare a session, then send a turn to it. See [Automations](/code/automations).
 
 ## Cortex Security
 
-| What you see | Cause | Fix |
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| A check run marked **failed** | The review found issues, or could not run — a review that could not run is stored as failed, never as approved | Read the check run; fix and push |
-| No check run on a pull request | The GitHub App is not installed on that repository | Install it from `/code/security` |
-| You expected `/security` to show reviews | `cortex.foundation/security` is the public product page | Open `/code/security` in the app |
+| A check run marked as failed | the review found something, or it could not run. A review that could not run is stored as failed and never as an approval | read the check run, then see [Security troubleshooting](/security/troubleshooting) |
+| No check run on a pull request at all | the Cortex Security GitHub App is not installed on that repository | **Connect GitHub** does not cover it, because it is a separate install. See [Pull-request review](/code/security) |
+| You expected a Code session to produce a review | a session writes code, a review reads a pull request, and reviews are not started from a session | open Security for the repository instead |
 
-## Errors
+## Usage that looks empty
 
-Every failure is a problem document with a stable `code` and a `request_id`. Common ones in Code:
+A session can finish without a matching row appearing on [Usage](/code/usage). The page shows what the account ledger recorded, and a Code turn is not guaranteed to write to it, so token columns can be empty for Code rows. Treat Usage as a record of recorded cost rather than as a count of your sessions.
 
-| Code | Meaning |
+## Error codes
+
+When a failure has no message of its own, it surfaces as a problem with a stable code. These are the ones a Code user can actually meet.
+
+| Code | When you meet it |
 | --- | --- |
-| [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | Too many sessions or turns at once on the account |
-| [`no_capacity`](/problems/no_capacity) | The farm is full; try again shortly |
-| [`invalid_state`](/problems/invalid_state) | The session is not in a state that allows the action — for example a turn is already running |
-| [`upstream_timeout`](/problems/upstream_timeout) | The runtime did not answer in time; retry |
+| [`no_capacity`](/problems/no_capacity) | no isolated guest could be placed for the work |
+| [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | too many sessions at once on the account |
+| [`service_unavailable`](/problems/service_unavailable) | the runtime fleet is not answering |
+| [`quota_exceeded`](/problems/quota_exceeded) | a saved-environment or runtime ceiling was reached |
+| [`invalid_state`](/problems/invalid_state) | the action does not fit the session's state, such as cancelling a cancel that is already recorded |
+| [`not_found`](/problems/not_found) | the session no longer exists, or never did |
+| [`gone`](/problems/gone) | you reached something that has been retired |
+| [`validation_failed`](/problems/validation_failed) | a field was malformed, or a status outside the allowed set was sent |
+| [`forbidden`](/problems/forbidden) and [`unauthenticated`](/problems/unauthenticated) | a guest action, or a sign-in that has lapsed |
+| [`entitlement_required`](/problems/entitlement_required) | a capability your plan or your deployment does not include |
+| [`upstream_failure`](/problems/upstream_failure) and [`upstream_timeout`](/problems/upstream_timeout) | GitHub did not complete, or took too long |
 
-Full list: [Problem catalog](/problems).
+<Note>
+Where a surface has wording of its own you see that instead of a code, and the wording is the better guide. The GitHub connection screens are the clearest example: they translate an upstream failure into **GitHub did not complete the connection** rather than showing you a raw code.
+</Note>
+
+The full set, with a page per code, is in the [Problem catalog](/problems).
 
 ## Related
 
-- [Code](/code) — what Code is and who can open it.
-- [Ask, Plan, Agent](/code/interactions) — the modes that withhold mutating tools.
-- [How Code works](/code/how-it-works) — where workspace tools execute.
-- [Troubleshooting](/getting-started/troubleshooting) — the same guidance across all products.
+- [Permissions and approvals](/code/approvals) for the two gates and what each answer grants.
+- [Changes and diffs](/code/changes) for the write gate, per file and per batch.
+- [Cloud runtimes](/code/runtimes) for how a guest is prepared, hibernated and woken.
+- [Connect GitHub](/code/github) for every state of the connection.
+- [CLI troubleshooting](/cli/troubleshooting) for the same work in a terminal.
+- [Troubleshooting](/getting-started/troubleshooting) for problems across all the products.

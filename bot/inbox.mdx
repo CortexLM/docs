@@ -1,0 +1,98 @@
+---
+title: "Inbox"
+description: "Everything that needs you across every bot you own: the Working, Pending, Inbox and All filters, what each row can be, and read state"
+icon: "inbox"
+---
+
+A bot works while you are elsewhere, and a bot that needs something stops and waits. The inbox is where that waiting collects. It is the Bot home page, the one you land on before you open any single bot, and it lists every bot you own that is mid-job or that wants a decision, so you can work through the pile in one place instead of opening bots one by one.
+
+This page covers the three lists Cortex keeps and which to reach for, the four filters over the inbox, the three kinds of row and what each offers, read state, and the other places the same pending work shows up.
+
+## Three lists, and which one to use
+
+| List | Where | What it holds |
+| --- | --- | --- |
+| **Inbox** | the Bot home page | every bot you own: rows that need you, plus bots still on a job |
+| **Approvals** | the **Approvals** action in the Bot sidebar | parked tools only, from every bot, with **Allow**, **Deny**, **Always** and the read-only **Always allow** rail |
+| Chat's activity list | the Cortex Chat surface | Chat's own runs and requests. Its own lede says `Not the Bot home inbox.` |
+
+Use the inbox to triage. Use [Approvals and tool policy](/bot/approvals) when you want to work through parked tools specifically, or to see which **Always** rules are in force.
+
+## The four filters
+
+One list, four views. The header counts what is waiting, `{count} need you`, and reads `Quiet, for now` when nothing is.
+
+| Filter | What it shows | When it is empty |
+| --- | --- | --- |
+| **Working** | bots still mid-job. `Bots still on a job. Open a row to talk.` | `Nobody is mid-job.` |
+| **Pending** | everything that wants a decision from you | `Nothing is waiting on you.` |
+| **Inbox** | unread messages from your bots | `No unread messages.` |
+| **All** | all of the above together | `Quiet, for now` |
+
+**All** is the filter you start on, and the choice is remembered in your browser, so the view you left is the view you come back to. A **Working** row is not a request: it is a bot getting on with something, marked `On a job`, and its footer reminds you that the desktop lives in the cloud and that you open a direct message to look at it. See [Computer](/bot/computer).
+
+If the list itself fails to arrive you get `Inbox didn’t load` rather than an empty inbox. Retry, and if it keeps happening, quote the `req_id {id}` the rows carry when you [report it](/getting-started/report-a-bug).
+
+## What a row can be
+
+Three things can put a bot in the list, and each row offers only the actions that fit it.
+
+| Row | What it says | What the row offers |
+| --- | --- | --- |
+| A parked tool | `Needs you to allow {tool}.` | **Approve**, **Edit first**, **Deny** |
+| A secret request | `Asked for a value for the vault.` | **Save to vault**, **Not now** |
+| A question | `Asked a question.` | open the bot and answer in the thread |
+
+When the tool's name is not available the row falls back to `a parked action`. A question blocks the bot's composer until you answer it, which is why answering in the thread is the whole of that row's job. See [Talking to a bot](/bot/conversations).
+
+<Note>
+  The inbox row is a shortcut, not the full picture. The bot's reason for wanting a tool and the exact arguments it intends to use are shown in the conversation, on the approval widget itself. Open the bot when the decision is not obvious from the tool's name.
+</Note>
+
+Secret requests behave the same wherever you settle them: the value goes to the sealed vault and never appears in the thread. See [Connected apps and secrets](/bot/plugins).
+
+## Work through the list
+
+<Steps>
+  <Step title="Open the Bot home page">
+    The header tells you how many rows need you.
+  </Step>
+  <Step title="Pick a filter">
+    **Pending** first if you want to unblock bots, **Working** if you want to see what is in flight.
+  </Step>
+  <Step title="Settle what you can from the row">
+    **Approve**, **Edit first** or **Deny** on a parked tool. **Save to vault** or **Not now** on a secret request.
+  </Step>
+  <Step title="Open the bot for anything else">
+    Questions are answered in the thread, and so is anything you want to read in full before deciding.
+  </Step>
+  <Step title="Clear the read state">
+    **Mark read** on a row, **Mark unread** to put it back, or **Mark all read** for the lot.
+  </Step>
+</Steps>
+
+## Read state
+
+**Mark read**, **Mark unread** and **Mark all read** control the unread list you see. Marking a row read does not settle it: a parked tool that you mark read is still parked, and still waiting. Clearing unread is bookkeeping for you, deciding is the **Approve** or **Deny**.
+
+## Where the same work shows up elsewhere
+
+The inbox is not the only signal, and the others are deliberately quieter.
+
+- **The sidebar.** A bot with a parked tool replaces its status word with a small amber marker and the label `Pending approval`. That marker is the sign to open the bot.
+- **The command palette.** A **Waiting on you** group lists pending approvals, each annotated `needs a decision`. Selecting one takes you to it. The palette navigates, it does not decide.
+- **Notifications.** Cortex raises `bot needs you` when a bot wants a decision, and `computer could not start` when its computer failed to wake. See [Notifications](/getting-started/notifications).
+- **The desktop app.** The Bot desktop app has its own inbox in its rail, built around the same approvals, secret requests and questions. See [Bot desktop app](/bot/desktop).
+
+<Info>
+  **Companion**, the phone-width column that would list approvals and pushes for the bots you own, is drawn in the interface but is not available yet. Nothing is served behind it, and it says so when you open it.
+</Info>
+
+## Related
+
+- [Approvals and tool policy](/bot/approvals) - the three choices, and the rules behind them.
+- [Talking to a bot](/bot/conversations) - answering a question and reading a draft in the thread.
+- [Connected apps and secrets](/bot/plugins) - what a secret request does with the value.
+- [Bot desktop app](/bot/desktop) - the same inbox in a desktop application.
+- [Notifications](/getting-started/notifications) - what Cortex tells you about, and where.
+- [Bot troubleshooting](/bot/troubleshooting) - a row that will not settle, and a turn that stopped.

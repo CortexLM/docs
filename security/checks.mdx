@@ -1,0 +1,124 @@
+---
+title: "Checks and comments"
+description: "The Cortex Security check run and its three conclusions, the summary comment, what an inline finding contains, and how to ask for another look"
+icon: "circle-check"
+---
+
+Everything Cortex Security has to say about a pull request lands on the pull request itself: a check run named **Cortex Security**, review comments on the lines the change touched, a summary comment, and a review event. This page is the reference for all four, plus the one thing you have to do in GitHub if you want a red check to actually stop a merge.
+
+It is the page to read when you are looking at a comment and want to know what each part of it means, when a comment you expected is missing, or when you want another pass over the current head. [How a review works](/security/how-a-review-works) covers the stages behind these outputs and how the verdict is decided; this page covers what you see.
+
+## The check run
+
+The check run is created a moment after the pull-request event arrives, once Cortex has split the change up, and it appears together with the eyes reaction that says the review has started. It then sits in progress while the review runs and completes with one of three conclusions. The **Checks** tab in the app explains the same three under the heading **THE CHECK RUN**.
+
+| Conclusion | What it means |
+| --- | --- |
+| **Success** | The review finished and nothing that blocks survived verification. There may still be observations to read. |
+| **Failure** | Something blocking or major survived verification, and this repository's policy fails the check on it. Whether the pass ran to the end does not change this conclusion. |
+| **Neutral** | *The review could not run, or did not finish. The summary says why. This is never an approval — a change nobody reviewed must not report as one.* |
+
+Under **SEVERITIES** the rule is short: **blocking** and **major** findings fail the check, and **minor** findings and **notes** never do. A check that fails on a note teaches people to click through it. Which severity is serious enough to fail the check is a policy setting of its own, separate from which findings get reported at all, and a **Neutral** conclusion always means the pass did not complete rather than that it found something. The reasons a review ends **Neutral** are listed in [How a review works](/security/how-a-review-works).
+
+## What lands on a pull request
+
+Four things, each of which your policy can switch off.
+
+1. **The check run** named **Cortex Security**.
+2. **Inline comments** posted as review comments on the change itself, one thread per finding, on the line.
+3. **A summary comment**, up to three blocks plus a footer.
+4. **A review event**: changes requested when something blocking survived, or a plain comment otherwise.
+
+Reactions on the pull request, or on the comment that asked for the review, track the run while it happens. An eyes reaction means the review has started, a thumbs-up means it finished, and a confused reaction means it could not run. There is never a thumbs-up on a review that did not happen, for the same reason there is never a green check run on one.
+
+## What an inline comment contains
+
+A finding's thread has five parts, in this order.
+
+| Part | What it is |
+| --- | --- |
+| A severity badge | A shield carrying the severity's initial. |
+| The title | What the finding is, in one line. For a rule finding this is the rule's own title. |
+| The failure mode | How it goes wrong, and the input that reaches it. |
+| A committable suggestion | Optional. A concrete replacement you can commit from GitHub. |
+| A footer | The category, the weakness class, and how certain the finding is. |
+
+The weakness class in the footer is a CWE identifier rather than prose, and it is in the footer rather than the title because a reader scanning a pull request wants the failure while a reader triaging one wants to search for `CWE-89`. Expect it to be absent outside security findings: most correctness bugs are not a weakness class, and an invented one would destroy the only property the field has, which is that two runs agree.
+
+The severity is one of four words, and the app shows each with a one-letter mark: **Blocking** (`B`), **Major** (`M`), **Minor** (`m`), **Note** (`N`). Confidence is one of three phrases, written the way the policy form writes them: **Confirmed in the diff**, **Depends on a caller not shown**, or **Worth checking**.
+
+<Note>
+A committable suggestion is dropped rather than approximated. A suggestion block renders a **Commit suggestion** button, which reads as something that was checked, and one broken suggestion costs the trust of every correct one after it. So a fix that is empty, longer than twelve lines, or that contains a code fence of its own is not rendered at all.
+</Note>
+
+Each comment carries an invisible fingerprint, so the next review over the same line **edits** the existing comment instead of adding a second one. That is the **Edit comments on a new push instead of adding more** setting, on by default.
+
+## Why a comment you expected is missing
+
+By default a review posts at most **25** inline comments, worst first, and an owner can set that anywhere from 1 to 100. Beyond the ceiling, three other things keep a comment off a line: the finding was filtered out before it was posted, the second pass rejected it, or **Post the summary only, with no inline comments** is on. The first two are visible in the app on the pull request's own page, under the disclosures for rejected and filtered findings. See [Review policy](/security/review-policy) for the filters and [How a review works](/security/how-a-review-works) for the second pass.
+
+When the summary-only setting is on, edits to comments already posted still go out. Leaving a stale comment on a line while the summary says something else is worse than either.
+
+## The summary comment
+
+The summary is one comment with three blocks. Each block can be **Hidden**, **Shown** or **Folded** independently.
+
+| Block | Setting | Content |
+| --- | --- | --- |
+| Headline and counts | **Headline and counts** | The headline sentence and the severity badges. |
+| Confidence score | **Confidence score** | A score from 0 to 5 for the pull request, with a sentence beside it. |
+| Issues table | **Issues table** | One row per posted finding. Folded by default. |
+
+Three things about the confidence score are worth knowing before you sort a dashboard by it. It is arithmetic over what survived verification, for the same reason the verdict is: a model asked for a score *and* for findings produces a pair that disagree, and a reader who sees a 5 out of 5 beside a blocking injection learns to trust neither. An incomplete run scores **0** rather than leaving the score out, because omitting it would let a reader supply the optimistic number themselves. And it is computed over every surviving finding rather than only the posted ones, so a low comment ceiling cannot improve the number people sort by.
+
+The **footer** carries three things: the review number, the short commit hash that was read, and the handle to mention for another look. They go together or not at all, which is what **Hide the footer** switches, because a re-trigger line with no commit beside it invites somebody to re-run a review of they-do-not-know-what. When Cortex Agent actually ran code, the footer carries one more line saying so, and only then.
+
+**Write the summary into the pull request description** puts the summary in the description instead of posting it as a comment.
+
+### Diagrams
+
+A review can include one diagram in the summary, of the kind the change calls for: a sequence diagram for something crossing a service boundary, an entity relation diagram for a migration, a class diagram for new types, and a flow diagram otherwise. The choice is deterministic, and a small change gets none, which is the common case.
+
+An invalid diagram is omitted rather than rendered. A diagram that does not parse is a red error box in the middle of a review whose findings are fine, and the reader discounts both. Rejected: the wrong declared type, a header with nothing under it, a stray fence, a click or link directive, and anything over sixty lines.
+
+## Ask for another look
+
+| How | What happens |
+| --- | --- |
+| Push a commit | Re-reviews the pull request, unless **Review again on every push** is off. |
+| **Review again** in the app | Open the pull request from the inbox and choose it. A toast reads **Review queued**, or **Could not queue the review**. This opens a new review of the current head. |
+| Mention the App on GitHub | A bare mention of `@cortex-security-agent`, or a mention followed by the word `review`. The summary comment's footer carries the handle for exactly this. |
+
+A mention followed by anything else is a **question**, answered as a reply. A question never approves, never requests changes and never creates a check run. A mention inside a quote or a fenced code block is ignored, which is what stops GitHub's reply button from re-triggering a review on every reply. A comment written by a bot never triggers anything, and editing an old comment to add the handle does nothing: only a newly posted comment counts.
+
+## Make the check required
+
+A red check is information until GitHub is told to treat it as a gate. From the **Checks** tab, under **REQUIRING IT**:
+
+<Steps>
+  <Step title="Copy the workflow">
+    Choose **Copy workflow**; the button then reads **Copied**. It copies a workflow that waits for the **Cortex Security** check run, reads check results only, and fails on any conclusion other than success, giving up after fifteen minutes.
+  </Step>
+  <Step title="Commit it">
+    Add it to the repository as `.github/workflows/cortex-security.yml`.
+  </Step>
+  <Step title="Require that job">
+    In GitHub branch protection, add that workflow's job to the branch's required status checks.
+  </Step>
+</Steps>
+
+Until you do the third step, a failing check does not stop a merge. Whether a merge is blocked is GitHub's decision, not a Cortex setting.
+
+## When a comment is wrong or unwanted
+
+Put a thumbs-down on it, or resolve the thread. Both are read as a dismissal of that *class* of finding in that repository, and after three of them the class stops being posted there. Anything blocking or major, anything carrying a CWE, and anything filed under security is never silenced this way, however often it is dismissed. [Review policy](/security/review-policy) has the full conditions.
+
+A finding that points at a line the pull request did not change should not have been posted at all, and that is exactly what the second pass exists to reject. If you see one, the pull request's page in the app shows what the verifier rejected on that review.
+
+## Related
+
+- [How a review works](/security/how-a-review-works) - the stages, the second pass, and the verdict arithmetic behind these conclusions.
+- [Review policy](/security/review-policy) - every setting that decides what is posted and how hard it lands.
+- [Security quickstart](/security/quickstart) - install the App and read a first review end to end.
+- [Cortex Agent runs](/security/agent) - the evidence behind the footer line that says code was run.
+- [Security troubleshooting](/security/troubleshooting) - no check run, a green check you expected to be red, or comments that never arrived.

@@ -1,0 +1,111 @@
+---
+title: "Scheduled tasks"
+description: "Run a prompt on a cadence inside a conversation you already have, and read the answer in that chat like any other turn."
+icon: "calendar-days"
+---
+
+A **scheduled task** runs a prompt you wrote, on a cadence, inside a conversation you already have. Every run lands in that conversation as an ordinary turn, so the place to read the result is the chat itself. The surface is the **Scheduled** page, and its lead says what it is for: `Run a prompt on a cadence in a chat you already have. Sharing a schedule is a different surface.`
+
+This page covers how to create a schedule from the Scheduled page or from a chat, the one fact that matters most (a scheduled run has no tools), where results land, how to pause, run and delete a schedule, and the limits and messages involved.
+
+<Warning>
+A scheduled run has no tools. It is one completion of your prompt: no web search, no Python, no connected apps, no memory writes, no file reads. If the answer needs any of those, run it yourself in the chat.
+</Warning>
+
+## Create a schedule
+
+<Tabs>
+  <Tab title="From the Scheduled page">
+    <Steps>
+      <Step title="Open Scheduled and choose New schedule">
+        The empty state describes the form you are about to fill: `Pick a conversation, a cadence and an instruction. The optional webhook field is not stored here.`
+      </Step>
+      <Step title="Give it a Name">
+        One to 200 characters. A shorter or longer name is refused with `title must be between 1 and 200 characters.`
+      </Step>
+      <Step title="Pick the Conversation">
+        A dropdown of your existing chats, starting at `Choose a conversation`. Runs land in whichever one you pick, so choose the thread where the answer belongs.
+      </Step>
+      <Step title="Set the Cadence">
+        A five-field cron expression, prefilled `0 9 * * 1-5`. Anything else is refused with `schedule must be a 5-field cron expression, interpreted in Europe/Paris.`
+      </Step>
+      <Step title="Write the Instruction">
+        The prompt each run sends, one to 4,000 characters. Over the ceiling you get `prompt must be between 1 and 4000 characters.`
+      </Step>
+      <Step title="Choose Create">
+        The schedule appears in the list as **Active**.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="From a chat">
+    <Steps>
+      <Step title="Open More in the thread header">
+        Choose **Schedule this**. The dialog is titled **Schedule this chat**.
+      </Step>
+      <Step title="Check the cadence">
+        Here the cron field is prefilled `0 9 * * *`, which is different from the Scheduled page's weekday default. The hint beside it reads `Five-field cron in {timezone}.`
+      </Step>
+      <Step title="Confirm">
+        The title and the prompt are seeded from the conversation you are in, and the runs land in that same conversation.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+Reach the Scheduled page from the product navigation, and the schedule dialog from the thread header's **More** menu.
+
+## Times are always Europe/Paris
+
+The cadence is read in one timezone and only one. The dialog states it plainly: `The task runs as a Chat turn in Europe/Paris. The API stores no other timezone.` The list carries the same reminder, `Chat schedules. Times in {timezone}.` Convert your local time yourself when you write the expression.
+
+Cortex checks for due schedules about once a minute, and it guards against a schedule firing twice for the same slot.
+
+## Where results land, and what happens when a run fails
+
+A run posts its answer into the conversation you chose, as a normal turn, and the answer is deliberately short. Nothing is emailed, nothing is collected on the Scheduled page for you to read: the chat is the inbox.
+
+If a run cannot reach a model, it lands a failed result in that same conversation and stamps the reason on the schedule, so the failure shows up exactly where the answer would have been. The stable reasons are that the upstream is not configured, that no model was available, that the prompt could not be read, or that the model returned nothing.
+
+Each row on the Scheduled page shows the schedule's state, **Active** or **Paused**, the number of runs so far, and the last run's status. A prompt that cannot be read back is listed as `(prompt unavailable)` rather than guessed at.
+
+## Pause, run now, delete
+
+Row actions do what their labels say, and none of them touch the conversation:
+
+| Action | Effect |
+| --- | --- |
+| **Pause** | Stops the cadence. Everything else stays in place. |
+| **Resume** | Starts the cadence again. |
+| **Run now** | Fires the task immediately, without disturbing the cadence. |
+| **Delete** | Removes the schedule. The conversation and the turns already landed stay. |
+
+## Limits
+
+| Limit | Value |
+| --- | --- |
+| Schedules per account | **50** |
+| Name | 1 to 200 characters |
+| Instruction | 1 to 4,000 characters |
+| Cadence | a five-field cron expression |
+| Timezone | Europe/Paris, always |
+| How often Cortex checks | about once a minute |
+| Tools available in a run | none |
+| Answer length per run | short, about 1,200 tokens |
+
+The cap of 50 is account-wide and identical for everyone. The dialog's usage line reads `{used} of {limit} schedules on this plan.` and the refusal at the ceiling reads `You've reached the schedule limit on this plan.`, but the wording is misleading: no plan raises or lowers it. The server answers `A user may hold at most 50 scheduled tasks.` whatever you are subscribed to. Delete a schedule you no longer need to make room.
+
+<Note>
+Scheduling needs an account. A guest is refused with `Sign in to schedule a task.` See [Accounts](/getting-started/accounts).
+</Note>
+
+## The Webhook field is not saved
+
+The create form shows a **Webhook** field, and it tells you the truth about it: `Webhook not stored`, followed by `Sharing a schedule with a webhook is a different product surface. This field is not persisted.` Anything you type there is discarded. Sharing a schedule outward does not exist yet, so treat the field as a placeholder and ignore it.
+
+## Related
+
+- [Conversations](/chat/conversations) - the thread header with **More** and **Schedule this**, and the place every run lands.
+- [Planning](/chat/plans) - task lists, the surface for what is left to do rather than when it happens.
+- [Built-in tools](/chat/tools) - what a normal turn can reach, and therefore what a scheduled run gives up.
+- [Chat troubleshooting](/chat/troubleshooting) - when a run lands a failure instead of an answer.
+- [Limits and quotas](/reference/limits) - the rest of the ceilings across the products.

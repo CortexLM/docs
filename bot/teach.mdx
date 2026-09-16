@@ -1,0 +1,95 @@
+---
+title: "Teach from a demonstration"
+description: "Show a bot a job on its own computer, read the draft skill it writes from what you did, then save it, schedule it, or record it again"
+icon: "chalkboard-user"
+---
+
+Some jobs are quicker to show than to describe. **Cortex Bot** can watch a job being done on a bot's own computer and write it up as a draft recipe: the steps, the values they needed, and how to tell the job worked. You read that draft before anything is turned on, which is the point of the feature: the bot ends up with a written procedure you approved rather than a guess at what you meant.
+
+This page covers the two recorders that do this, what has to be true before either will start, what the draft contains and what it deliberately leaves out, how a taught job becomes a schedule, and how all of this differs from recording a video of the desktop.
+
+## Before you start
+
+A demonstration is recorded on the bot's computer, so the computer has to be up and you have to be the person who owns the bot.
+
+| What has to be true | What you see when it is not |
+| --- | --- |
+| The computer is running | `Recording needs a running computer.` |
+| Computer use is on for this bot | `Computer Use is off, so recording is refused.` |
+| You own the bot | `Only the owner can record.` |
+| You are signed in | `A guest cannot record this computer.` |
+
+Open the bot, choose the **Computer** tab, and start or wake the computer if the rail does not read **Live**. Starting, waking and taking control of a desktop are covered on [Computer](/bot/computer).
+
+<Note>
+The desktop has one writer at a time. To work through the job yourself while the recorder is listening, choose **Take control** on the rail first, and **Hand back** when you are done.
+</Note>
+
+## Teach a task
+
+**Teach a task** is the short path: record, stop, read, save.
+
+<Steps>
+  <Step title="Start the recorder">
+    On the bot's computer, choose **Teach a task**. While it watches you see `Recording · {time}`.
+  </Step>
+  <Step title="Do the job once, properly">
+    Work through the whole job, including the checks you would normally make. What is not demonstrated is not in the draft.
+  </Step>
+  <Step title="Stop">
+    Choose **Stop**. The recorder shows `Drafting the skill for review…` while it writes the job up.
+  </Step>
+  <Step title="Read the draft before you enable it">
+    The recorder tells you why in as many words: `Review the draft before enabling it. Secret values never belong in this file.` Read it as a recipe someone else will follow, because that is what it becomes.
+  </Step>
+  <Step title="Save it, schedule it, or try again">
+    **Save and enable** confirms with `The skill is saved and enabled.` **Make routine** turns the same draft into scheduled work. **Retry** throws the recording away and records again.
+  </Step>
+</Steps>
+
+A teach that fails says so and leaves nothing behind: `The task could not be taught. Nothing was saved.` There is no half-saved recipe to find and delete afterwards.
+
+## Record / replay, and what a draft looks like
+
+**Record / replay** is the same idea with the draft's structure on show. **Start** begins it, the panel notes `Recording started`, and it explains what it is doing: `Listening for computer actions on this bot. Steps appear as tools run.` So the step list builds up as the work happens rather than appearing all at once at the end, which makes it obvious when something was missed. **Stop** ends the recording.
+
+The result is a **Draft skill** with four named sections, **When**, **Inputs**, **Steps** and **Verify**, and two properties worth understanding before you run one.
+
+- `Replay asks each time` is on the draft by design. A replay checks with you rather than running the whole thing unattended.
+- `Secrets are stripped from the draft.` A password or a token you used during the demonstration does not end up written into the recipe.
+
+Saving from here is explicit about the draft not being finished: `Draft skill saved. Edit it before anyone runs it.` Treat a fresh draft as a first pass. Recorded steps carry the specifics of the run they came from, so the editing you do is mostly generalising: naming the values that change under **Inputs**, and making **Verify** something the bot can actually check.
+
+## What a demonstration does not hand over
+
+Teaching a bot a job does not give it any new power to do it.
+
+- **A recipe is not a permission.** Every step in a taught skill is still evaluated when the bot runs it. A command, a file write or a click parks for **Allow**, **Deny** or **Always** exactly as it would have if you had asked in the thread. See [Approvals and tool policy](/bot/approvals).
+- **A recipe is not a credential.** Secrets are kept out of the file. A value the bot needs belongs in the vault through a secret request, and a password it meets on screen belongs in the **Cortex needs you** prompt. See [Connected apps and secrets](/bot/plugins).
+- **A recipe is still scanned.** A skill written from a demonstration goes through the same check as any other recipe before it can be turned on, and a flagged one has to be reviewed first. See [Bot skills](/bot/skills).
+- **A recipe is not a connected app.** If the job you demonstrated used an app, that app still has to be assigned to the bot on its own terms.
+
+## Put a taught job on a schedule
+
+**Make routine** is the one place teaching and scheduling meet, and it is the reason to teach a job you repeat rather than one you did once. A routine built from a saved skill simply carries `Run the saved skill {slug}.` as its instruction: the recipe decides how the job is done, the schedule decides when.
+
+A routine fires a complete bot turn in your local weekday hours, so the taught job can use every tool it needs and can still park a step for your decision. Creating, pausing and sharing one is covered on [Routines](/bot/routines).
+
+## Teaching is not recording a video
+
+The two recorders are easy to confuse because both start on the Computer tab.
+
+| Surface | What you get | What it is for |
+| --- | --- | --- |
+| **Teach a task** and **Record / replay** | a draft recipe the bot can follow again | repeating a job |
+| **Record** on the **Videos** tab | a video of the desktop, with the cursor path and click zooms | reviewing what happened |
+
+A video is the right tool for checking what a routine did overnight. A demonstration is the right tool for making sure it does the same thing tomorrow. Recording a video is covered on [Computer](/bot/computer).
+
+## Related
+
+- [Bot skills](/bot/skills) - the catalog a taught recipe lands in, and the check it passes first.
+- [Computer](/bot/computer) - starting the desktop, taking control, and recording a video instead.
+- [Routines](/bot/routines) - what **Make routine** creates, and when it runs.
+- [Approvals and tool policy](/bot/approvals) - why a taught step still asks before it runs.
+- [Bot troubleshooting](/bot/troubleshooting) - a recorder that will not start, and a draft that was not saved.

@@ -10,7 +10,7 @@ description: "Not allowed in the current state. HTTP 422."
 | `type` | `https://docs.cortex.foundation/problems/invalid_state` |
 | Retryable | no |
 
-The request is well-formed but the resource forbids it — for example cancelling a Code turn that already finished, or restoring a runtime that is `stopping`.
+The request is well-formed but the resource forbids it — for example cancelling a Code turn that already finished, or restoring a runtime that is shutting down.
 
 ```json
 {
@@ -24,6 +24,6 @@ The request is well-formed but the resource forbids it — for example cancellin
 
 ## Related
 
-- [Errors](/api/errors) — how to branch on `code`, and what not to render from `detail`.
-- [Problem catalog](/problems) — every code, its status, and whether retrying helps.
-- [Troubleshooting](/getting-started/troubleshooting) — what a message in the product means.
+- [Errors](/reference/errors) - how to branch on `code`, and what not to render from `detail`.
+- [Problem catalog](/problems) - every code, its status, and whether retrying helps.
+- [Troubleshooting](/getting-started/troubleshooting) - what a message in the product means.

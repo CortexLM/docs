@@ -1,0 +1,101 @@
+---
+title: "Connected apps and secrets"
+description: "Assign a connected app to one bot, how its tools ask before they act, the sealed vault behind a secret request, and the MCP servers a bot receives"
+icon: "plug"
+---
+
+A bot reaches an outside app only because you handed it one. Connecting an app to your account is not enough: each bot is switched on for that app separately, so a bot you made for one narrow job never quietly inherits the rest of your connections. The product states the commitment plainly: a connected app reaches Cortex Chat, Cortex Bot, or both, and you pick, so **Cortex Bot** does not inherit tools you never assigned to it.
+
+This page covers the two gates an app has to pass, how to switch one on for a single bot, what happens when a row refuses, how a connected app's tools behave inside a turn, the sealed vault a bot writes a secret into, and the MCP servers a bot's turn also receives.
+
+## Two gates, both off by default
+
+| Gate | Where you set it | What it decides |
+| --- | --- | --- |
+| Account and surface | the account **Plugins** page | whether the app is available to Cortex Chat, to Cortex Bot, or to both |
+| Per bot | the bot's **Connectors** panel, or the create form | whether this one bot may use it |
+
+Both have to be on. The panel says so in its own words: **Connectors** is described as `Apps this bot may use. Off until you turn one on for this bot only.`, and a row that is off carries `Off by default for this bot. Not Always-allow.`
+
+Connecting the app itself happens once, on the account page. The Bot sidebar action is labelled **Plugins** and the page is documented as [Connectors](/chat/plugins). With nothing connected yet, the bot's panel reads `No connected apps yet. Add a connector, then enable it here for this bot.`, or `No connected apps yet. Connect one on Plugins, then assign it here.`
+
+## Turn an app on for one bot
+
+<Steps>
+  <Step title="Connect the app once, on the account page">
+    Connect it and assign it to Cortex Bot, or to both surfaces. **Add connector** on the bot's panel takes you there. Connecting an app needs a signed-in Cortex account.
+  </Step>
+  <Step title="Open the bot's Connectors panel">
+    From the bot's settings, **Connections →**, or from the **New bot** form while you are creating it. See [Create a bot](/bot/create-a-bot).
+  </Step>
+  <Step title="Switch the row On">
+    Each row is **On** or **Off** for this bot alone. The switch moves once the change has been saved, not before, so what you see is the state Cortex holds.
+  </Step>
+  <Step title="Let the bot start its next turn">
+    The app's actions appear in the bot's tool catalog from the next turn, one tool per enabled action. A turn already running does not gain them.
+  </Step>
+</Steps>
+
+## When a row will not turn on
+
+A blocked row tells you which of five things is wrong and sends you back to the account page rather than failing silently.
+
+| What the row says | What to do |
+| --- | --- |
+| `Not available to Cortex Bot. Turn it on from Plugins.` | the app is connected but not assigned to Bot |
+| `Reconnect this app from Plugins.` | the connection needs signing in again |
+| `Finish connecting this app from Plugins.` | the connection was started and never completed |
+| `This app's connection failed. Reconnect from Plugins.` | the connection broke |
+| `Turned off for Cortex Bot. Turn it on from Plugins.` | the app is on for another surface only |
+
+A blocked row carries a shortcut to where the problem is fixed, labelled **Reconnect** or **Fix**, so you do not have to hunt for the app on the account page. Two more messages belong to this panel: `This connector cannot be turned on.` when the row is refused outright, and `Connectors could not be loaded. Try again.` when the list itself did not arrive. A failed read is not an empty list, so retry before concluding a bot has nothing assigned.
+
+## How a connected app's tools behave
+
+An enabled app contributes one tool per action, and those tools are governed like any other tool the bot holds.
+
+- An action that changes something asks for approval every time it runs. A read-only call passes without asking.
+- An always-allow rule has to name that exact tool. A rule covering a whole app, or a whole category of apps, is refused by design, so an app you added for one harmless lookup cannot inherit an auto-run you never saw.
+- The per-bot switch itself never offers always-allow. The form says `Always-allow is not offered. Ask each time or leave it off.`
+
+The three choices behind those prompts, and the rules they write, are on [Approvals and tool policy](/bot/approvals). The rest of the catalog a bot receives is on [Bot tools](/bot/tools).
+
+<Note>
+  A subagent inherits none of this. Nested work a bot dispatches inside a turn gets no connected-app tools and no MCP tools at all, only the core catalog. See [Tasks and subagents](/bot/tasks).
+</Note>
+
+## Secrets and the vault
+
+A bot never asks for a credential in the conversation. When it needs one it makes a secret request, and you get a **Secret** widget with a **Give** button and the note `Never shown in the conversation.` The value goes into a sealed vault under a name you give it, one field at a time, and it is never echoed back into the thread.
+
+The same request also lands in your inbox as `Asked for a value for the vault.`, where the row offers **Save to vault** or **Not now**. A pending secret request blocks the composer on that bot until you answer one way or the other, so the bot is not left guessing.
+
+| Field | Limit |
+| --- | --- |
+| The field name | 1 to 80 characters |
+| The value | 1 to 4096 characters |
+
+A secret stays with the bot you gave it to. Copying a bot does not bring its secrets, sharing a bot never includes them, and a bot pack file that carries secrets is refused rather than quietly stripped. See [Share a bot](/bot/sharing).
+
+### A password the bot hits on screen
+
+A credential the bot runs into on its own computer, such as a sign-in form, a one-time code or a captcha, is a different prompt: **Cortex needs you**, with fields for **Password**, **Code** or **Captcha** and a **Value** box. **Deliver** sends it, **Dismiss** drops it, and the panel states what happens to it: `This value is delivered to the computer. It is never posted as a chat message.` This is a one-off delivery rather than a vault write, and some deployments do not accept it at all, in which case the panel says so.
+
+<Warning>
+  Put a credential in the vault or in this prompt, never in the bot's description. The description is scanned before a bot can be shared precisely because a published description is public text.
+</Warning>
+
+## MCP servers a bot receives
+
+A bot's own turn also receives the remote MCP servers you opted into on your account, one tool per allowed server tool, alongside its connected apps. The caps are account-level rather than per bot: **4** servers, and **24** tools from each. Anything a server returns is treated as third-party content, the same as a fetched web page.
+
+Registering a server, signing in to it and removing it are account actions rather than Bot actions, and they are covered on [MCP servers](/chat/mcp-servers).
+
+## Related
+
+- [Approvals and tool policy](/bot/approvals) - Allow, Deny and Always, and why an app-wide rule is refused.
+- [Bot tools](/bot/tools) - the full catalog, with the tools that always ask.
+- [Connectors](/chat/plugins) - connect an app once and choose which surfaces may use it.
+- [MCP servers](/chat/mcp-servers) - add a remote server, and its caps.
+- [Inbox](/bot/inbox) - where a secret request waits when you are not in the thread.
+- [Share a bot](/bot/sharing) - what a copy carries, and what it never does.

@@ -1,122 +1,124 @@
 ---
 title: "Cortex Bot"
-description: "A bot with its own computer. Browses, clicks, and works on a desktop you can watch; parks consequential steps behind approvals; runs routines on schedule."
-image: "/images/banners/bot.png"
-keywords: ["Agents", "computer use", "teammate", "automation"]
+description: "A bot with its own computer: it browses, clicks and works on a desktop you can watch, and asks before anything consequential"
+icon: "robot"
 ---
 
-Cortex Bot is an always-on teammate. Where Chat answers and Code changes a repository, a bot **does things on a desktop**: opens a browser, clicks through a flow, reads files, runs a shell command, and reports back in a few short messages. You can watch its screen while it works, and it asks before it does anything consequential.
+Cortex Bot gives you a bot with its own computer. Where Cortex Chat answers a question and Cortex Code changes a repository, a bot does things on a desktop: it opens a browser, clicks through a flow, reads and writes files, runs a command, and reports back in a few short messages. You can watch its screen while it works, take the mouse and keyboard yourself, and it parks anything consequential until you decide.
 
-Bots belong to a signed-in account. Your bots are listed once, in the sidebar; the pane is the open bot — conversation in the middle, its computer on the right.
+A bot is persistent. It keeps its name, its look, its memory, its skills, its routines, its secrets and its files between turns, so it is a standing thing you come back to rather than a thread you start again. Every bot has exactly one computer of its own, created with the bot and retired with it. Bot needs a signed-in Cortex account, because a guest session cannot come back later to revoke what it created.
 
-<Frame caption="cortex.foundation/bot — the public product page a guest sees. Sign in to create a bot.">
-  <img src="/images/product/bot-public.png" alt="Cortex Bot public page — a bot with its own computer" />
-</Frame>
+This page is the map of the Bot documentation. Start with the quickstart if you have never made a bot, or go straight to the guide you need.
 
-<Frame caption="The public Bot page's four commitments: a real desktop, your bots listed once, plugins you chose, one product and one sign-in.">
-  <img src="/images/product/bot-public-features.png" alt="Cortex Bot feature grid — A real desktop not a transcript, Your bots listed once, Plugins you chose, One product one sign-in" />
-</Frame>
+## Start here
+
+<CardGroup cols={2}>
+  <Card title="Bot quickstart" icon="rocket" href="/bot/quickstart">
+    Sign in, create a bot, open its computer, give it a task, approve its first consequential step.
+  </Card>
+  <Card title="How Bot works" icon="diagram-project" href="/bot/how-it-works">
+    The turn in user terms: no round limit, a deadline, a stuck guard, wake cues, and what actually reaches you.
+  </Card>
+</CardGroup>
+
+## Your bots
+
+<CardGroup cols={2}>
+  <Card title="Create a bot" icon="wand-magic-sparkles" href="/bot/create-a-bot">
+    The New bot form: name, look and face, description, label, notifications, skills and connectors.
+  </Card>
+  <Card title="Talking to a bot" icon="message" href="/bot/conversations">
+    Direct messages, suggested asks, questions the bot puts to you, drafts it wants to send, and the status words.
+  </Card>
+  <Card title="Computer" icon="display" href="/bot/computer">
+    The Computer rail: the live desktop, taking control, recordings, sleep and wake, and where it runs.
+  </Card>
+  <Card title="Bot tools" icon="screwdriver-wrench" href="/bot/tools">
+    The catalog a bot receives: files and shell, desktop verbs, browser and web, memory, skills, tasks and connected apps.
+  </Card>
+  <Card title="Approvals and tool policy" icon="hand" href="/bot/approvals">
+    Allow, Deny and Always, which tools always ask, the policy tiers, and where pending decisions collect.
+  </Card>
+  <Card title="Memory" icon="lightbulb" href="/bot/memory">
+    Profile, log and notes: what a bot carries between turns, and how that differs from Chat memory.
+  </Card>
+  <Card title="Skills" icon="graduation-cap" href="/bot/skills">
+    Recipes a bot may follow, the scan that gates them, and how a bot picks one.
+  </Card>
+  <Card title="Routines" icon="calendar-days" href="/bot/routines">
+    Recurring work on one bot, in your local weekday hours, with pause, resume and run history.
+  </Card>
+  <Card title="Tasks and subagents" icon="sitemap" href="/bot/tasks">
+    Nested work a bot dispatches inside a turn, the one desktop worker rule, cancelling, and bot-to-bot messages.
+  </Card>
+  <Card title="Connected apps and secrets" icon="plug" href="/bot/plugins">
+    Assign a connected app to one bot, how its tools ask for approval, and the sealed vault behind a secret request.
+  </Card>
+  <Card title="Inbox" icon="inbox" href="/bot/inbox">
+    Everything that needs you across every bot you own, with the Working, Pending, Inbox and All filters.
+  </Card>
+</CardGroup>
+
+## Collaborate and extend
+
+<CardGroup cols={2}>
+  <Card title="Channels" icon="comments" href="/bot/rooms">
+    Group threads for the bots you own. Create a channel, add members, then address one bot in the composer.
+  </Card>
+  <Card title="Share a bot" icon="share-nodes" href="/bot/sharing">
+    Email invites, the independent copy a recipient gets, and what a shared bot never carries with it.
+  </Card>
+  <Card title="Teach from a demonstration" icon="chalkboard-user" href="/bot/teach">
+    Show the bot how to do something on its computer, review the draft, and save it as a skill.
+  </Card>
+  <Card title="Bot desktop app" icon="desktop" href="/bot/desktop">
+    A desktop application built around Bot alone, with no Chat or Code sidebar.
+  </Card>
+  <Card title="Bot troubleshooting" icon="life-ring" href="/bot/troubleshooting">
+    A desktop that will not start, a stream that will not connect, parked steps, and turns that stop early.
+  </Card>
+</CardGroup>
 
 ## What a bot is
 
 | Commitment | What it means |
 | --- | --- |
-| **A real desktop, not a transcript** | Each bot can have a computer: a screen, a browser, files. You watch it work instead of pasting a web page into chat. |
-| **Your bots listed once** | One list in the sidebar, in the web app and the [Bot desktop app](/bot/desktop). |
-| **Plugins you chose** | A bot never inherits a connection you did not assign to it. |
-| **One product, one sign-in** | The same account as Chat and Code. |
+| A real desktop, not a transcript | Each bot can have a computer: a screen, a browser, files. You watch it work instead of pasting a web page into a chat. |
+| Your bots, listed once | The account's bots live in the sidebar. The pane is the open bot: the conversation in the middle, its computer on the right. |
+| Plugins you chose | A connected app reaches Cortex Chat, Cortex Bot, or both, and you pick. A bot does not inherit tools you never assigned to it. |
+| One product, one sign-in | The same account as Chat and Code. You create a bot after you sign in. |
 
-## Start here
+An account can have up to 24 bots. That ceiling is the same for every account.
 
-<CardGroup cols={3}>
-  <Card title="Quickstart" img="/images/banners/bot.png" href="/bot/quickstart">
-    Sign in, create a bot, open its computer, give it a first task.
-  </Card>
-  <Card title="Computer" icon="app-window" href="/bot/computer">
-    A live desktop on a Cloud guest — screen, browser, files.
-  </Card>
-  <Card title="Bot desktop" icon="monitor" href="/bot/desktop">
-    A desktop app built around agents, routines, and channels — no Chat or Code sidebar.
-  </Card>
-</CardGroup>
+## Where things are
 
-## Create your first bot
+The Bot sidebar is one narrow column. At the top are four actions: **New bot**, **Routines**, **Plugins** and **Approvals**. Under the **BOTS** heading is one row per bot, with its status on the right, and under **CHANNELS** one row per channel. An account with no bots gets the setup form rather than a list, and an account with no channels reads `No channels yet.`
 
-<Steps>
-  <Step title="Sign in">
-    Bots are member objects. A guest sees the public product page at `/bot`.
-  </Step>
-  <Step title="Create a bot">
-    An account with no bots yet gets the **setup form**, not an empty list. Give the bot a name and, if it helps, a description of the job.
-  </Step>
-  <Step title="Open its computer">
-    On the Computer rail choose **Open desktop**. The Cloud guest starts — the rail reads **Connecting** while it does — and the live desktop appears: screen, browser, files.
-  </Step>
-  <Step title="Give it a task">
-    Describe the job in the conversation.
+Open a bot and the pane has tabs for **Messages**, **Computer**, **Videos** and **VNC**. A bot you can choose to leave **Awake**, **Resting** or **Hibernating**; the other status words you see, such as **Starting…**, **Running**, **Hibernated**, **Stopped**, **Archived** and **Error**, describe what its computer is doing and are reported by Cortex rather than chosen by you.
 
-    ```text
-    Open our status page, check whether any component is degraded, and tell me what you find.
-    ```
+<Note>
+  Several Bot surfaces are drawn in the interface but are not wired up yet, and nothing happens when you use them: multi-bot rooms, importing and exporting a bot pack, duplicating a bot, browsing and downloading workspace files, inbound mail, live voice, the phone-width Companion column and the cost ledger. Each one says so in the product when you open it.
+</Note>
 
-    The bot works on its desktop while you watch. It reports back in short messages rather than a transcript of every click.
-  </Step>
-  <Step title="Approve — or decline — a parked step">
-    When the bot reaches a consequential action — changing something in a connected app, or a dangerous computer step — it parks and shows **Allow / Deny / Always**. Nothing runs until you choose. See [Approvals](/bot/approvals).
-  </Step>
-  <Step title="Put it on a schedule (optional)">
-    Add a **routine** for work you want repeated. Routines fire in your local weekday hours. See [Routines](/bot/routines).
-  </Step>
-  <Step title="Let it sleep">
-    Choose **Sleep** on the Computer rail when you are done. The next task wakes the guest before the bot is prompted.
-  </Step>
-</Steps>
+## How it fits with the other products
 
-## Core guides
+Chat and Code are two modes of one engine. Bot is a separate loop, which is why per-tool approvals exist here in full and the turn is not capped in rounds.
 
-<CardGroup cols={2}>
-  <Card title="Computer" icon="app-window" href="/bot/computer">
-    A live desktop on a Cloud guest, not a screenshot slideshow. Open desktop, Sleep, and the three hosts.
-  </Card>
-  <Card title="Tools" icon="wrench" href="/bot/tools">
-    The parent catalog — shell, computer use, browser, web, memory, skills, messaging, nested tasks.
-  </Card>
-  <Card title="Approvals" icon="shield-check" href="/bot/approvals">
-    Allow / Deny / Always. Nothing consequential runs until you choose.
-  </Card>
-  <Card title="Routines" icon="calendar-clock" href="/bot/routines">
-    Scheduled work on a bot you own, on your local weekday hours.
-  </Card>
-  <Card title="Skills" icon="book-marked" href="/bot/skills">
-    First-party instruction bundles a bot can follow.
-  </Card>
-  <Card title="Connected apps" icon="plug" href="/chat/tools">
-    A connection reaches Chat, Bot, or both — you pick, under Customize → Connectors.
-  </Card>
-</CardGroup>
+| | Cortex Chat | Cortex Code | Cortex Bot |
+| --- | --- | --- | --- |
+| The unit of work | a conversation | a repository session | a bot that persists |
+| Where tools run | the platform | a workspace you attached | the bot's own computer |
+| Turn length | short, capped rounds | longer, capped rounds | no round cap: it runs until done, cancelled or timed out |
+| Memory | conversation memory | the repository | the bot's profile, log and notes |
+| Scheduling | scheduled tasks, per chat | none | routines, per bot |
+| Per-tool approval | no | on file writes | yes: Allow, Deny, Always |
 
-## Give the bot tools
+A bot can also open a piece of work in Cortex Code through **Open in Code** in its conversation. Cortex Design has a page for handing a design task to a bot, and that feature is not available yet.
 
-Under **Customize → Connectors**, connect an app and make it available to **Cortex Bot** (or to both Chat and Bot). A bot never inherits a connection you did not assign. See [Tools and connectors](/chat/tools).
+## Related
 
-## Good first tasks
-
-| Task | Why it suits a bot |
-| --- | --- |
-| Check a dashboard and summarise what changed | Browsing plus a short report |
-| Fill a recurring form from a document you attach | Desktop work with a clear stopping point |
-| Watch a page and notify you when something appears | A routine plus `notify` |
-| Pull a report from a connected app every Monday | A routine with an approved connection |
-
-## Advanced
-
-- [How Bot works](/bot/how-it-works) — user-visible bubbles only, no round counter, waking a hibernated guest.
-- [Bot troubleshooting](/bot/troubleshooting) — Connecting versus Stream Unavailable, parked steps, the setup form.
-- [Security and privacy](/security/overview) — what Cortex stores and where a bot's computer runs.
-
-## Next
-
-1. [Bot quickstart](/bot/quickstart) — create a bot and give it a first task.
-2. [Computer](/bot/computer) — open the desktop, and choose a host.
-3. [Approvals](/bot/approvals) — decide what a bot may do without asking.
-4. [Routines](/bot/routines) — put repeated work on a schedule.
+- [Bot quickstart](/bot/quickstart) - create a bot and give it a first task.
+- [How Bot works](/bot/how-it-works) - the turn, the stop conditions and the wake cues.
+- [Approvals and tool policy](/bot/approvals) - decide what a bot may do without asking.
+- [Cortex Chat](/chat) and [Cortex Code](/code) - the two products a bot sits beside.
+- [Limits and quotas](/reference/limits) - every user-facing limit in one table.

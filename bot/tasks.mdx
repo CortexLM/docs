@@ -1,0 +1,93 @@
+---
+title: "Tasks and subagents"
+description: "The nested subagents a bot dispatches inside a turn: the kinds, background results, the one desktop worker rule, limits, cancelling, and bot-to-bot messages"
+icon: "sitemap"
+---
+
+A task is a bot delegating part of its own turn. Rather than doing a long piece of reading, browsing or file work in the middle of the main job, the bot dispatches a **subagent**: a child that runs the same bot loop on a narrowed brief, reports back a summary, and disappears. In **Cortex Bot** this is a real nested agent, not a label on a longer prompt.
+
+Tasks have no page of their own in the interface, because you never create one. Only the bot does, using a tool of its own, and the tool does not stop to ask you first. This page covers the kinds of task a bot can dispatch, how results come back, the single rule that limits desktop work, what a child deliberately cannot do, and how a bot reaches other bots you own.
+
+## The kinds of task
+
+| Kind | What it is for |
+| --- | --- |
+| `explore` | Look around and report back |
+| `research` | Gather and synthesise |
+| `executor` | Do a bounded piece of work |
+| `browser` | Drive the browser |
+| `computer` | Drive the desktop |
+| `watch_video` | Watch something on screen |
+| `general-purpose` | Anything else |
+
+The last three are **desktop kinds**: they need the bot's screen, keyboard and mouse. The first four do not.
+
+## Results come back in the background
+
+By default a dispatch returns immediately and the parent keeps working. The child is queued, runs on its own, and when it is done the parent is handed the outcome: which task it was, its kind, whether it succeeded or failed, and a summary of what it found. A bot can also choose to wait for the child instead, in which case the dispatch simply does not return until the result is ready.
+
+Because a child can outlive the turn that started it, a completion can arrive after the parent has already finished and gone quiet. When that happens the result wakes a fresh turn, marked as having been started by a finished task rather than by you, and the bot picks the thread back up. This is one of the reasons a bot occasionally starts talking without you having sent anything. See [How Bot works](/bot/how-it-works).
+
+<Note>
+None of this is visible in the conversation unless the bot tells you. A turn only renders the bubbles, questions and secret requests the bot sends deliberately, so a job that fans out into several children usually arrives as one short summary. To watch the work itself, open the bot's [Computer](/bot/computer).
+</Note>
+
+## One desktop worker at a time
+
+Every bot has exactly one computer, and the desktop kinds share it. Only one `browser`, `computer` or `watch_video` task can be running per bot at any moment. A second one is refused outright, with the reason spelled out: `One computer-use worker per desktop: another browser/computer/watch_video task is already running.`
+
+The non-desktop kinds are not affected by this, so a bot can have reading and research children in flight while its one desktop worker is busy.
+
+If a refusal surfaces to you as an error rather than as something the bot works around, it is the concurrency problem: see [`concurrency_limit_reached`](/problems/concurrency_limit_reached).
+
+## What a child cannot do
+
+A subagent is intentionally smaller than its parent. It runs the same loop with the same style of tools, but five of them are taken away, and that shapes what delegation can be used for.
+
+| Removed from a child | Consequence |
+| --- | --- |
+| Sending you a message | A child cannot put a bubble in the conversation |
+| Asking you a question | A child cannot stop and wait for an answer |
+| Requesting a secret | A child cannot ask for a value for the vault |
+| Sending a status notice | A child cannot post its own progress |
+| Dispatching a task | A child cannot fan out further, so nesting stops at one level |
+
+A child also gets no connected apps and no tools from an MCP server, even when the parent has them. Everything a connected app can reach stays with the parent.
+
+The practical upshot is worth stating twice: **the parent bot is the only voice**. A child reports to its parent and the parent decides what, if anything, you hear. If a job genuinely needs a decision from you, it has to be the parent that asks.
+
+## Limits
+
+| Limit | Value |
+| --- | --- |
+| Desktop tasks running at once, per bot | 1 |
+| Time a child gets before it is stopped | 180 seconds |
+| Levels of nesting | 1, since a child cannot dispatch its own tasks |
+| Tools a child receives | 26 of the parent's 31, minus connected apps and MCP tools |
+
+The 180-second ceiling is the reason delegation suits bounded questions rather than open-ended jobs. A long piece of work belongs in the parent turn, which has no round limit, or in a [routine](/bot/routines) that runs again tomorrow.
+
+## Cancel a task
+
+A task that is queued or running can be cancelled. Once it has finished, succeeded or failed, there is nothing to cancel and the attempt is refused with `Only a queued or running task can be cancelled.`
+
+When a child fails, the failure names its reason rather than reporting a bare error, and the parent receives that reason along with the outcome. If a bot keeps reporting the same failure on the same kind of task, the detail it passes on is the thing to read before retrying.
+
+## Bots talking to other bots
+
+Delegation inside a turn is one thing. Reaching a different bot is another, and a bot has three tools for it.
+
+- **Message another bot you own.** The other bot is woken with its own turn, marked as having been started by another bot. This is how a bot that watches a queue can hand something to a bot that writes reports. Cortex warns the bot against bouncing empty acknowledgements back and forth, so this is meant for real handoffs rather than chatter.
+- **Create another bot.** A bot can create a new bot for you. The account ceiling of 24 bots still applies, so a bot cannot create its way past it. See [Create a bot](/bot/create-a-bot).
+- **Open a channel.** A bot can create a group thread with bots you own as members. Channels are the shipped multi-bot surface, and addressing one bot in a channel composer is covered on [Channels](/bot/rooms).
+
+None of these three stops to ask for approval, because none of them changes a file, runs a command or touches a keyboard. What the woken bot then tries to do is governed by its own policy and its own approvals, not by the bot that messaged it. See [Approvals and tool policy](/bot/approvals).
+
+## Related
+
+- [How Bot works](/bot/how-it-works) - the turn a task lives inside, and why a finished task can start a new one.
+- [Bot tools](/bot/tools) - the task tool among the full catalog a bot receives.
+- [Computer](/bot/computer) - the single desktop the desktop kinds share.
+- [Routines](/bot/routines) - recurring work, as opposed to delegation inside one turn.
+- [Approvals and tool policy](/bot/approvals) - what still asks when work is delegated.
+- [Channels](/bot/rooms) - group threads for the bots you own.

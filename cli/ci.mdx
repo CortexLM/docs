@@ -1,0 +1,183 @@
+---
+title: "CI cookbook"
+description: "Run the CLI in a pipeline: pick a command, pass the secret through the environment, set the autonomy level, and fail the job on the exit code"
+icon: "code-merge"
+---
+
+A continuous integration job is the least forgiving place to run an agent. Nobody is watching, nothing can be approved interactively, and a run that hangs costs you a runner. This page is the set of recipes that work, with the details that usually go wrong called out: how the job authenticates, how much authority the run gets, what to parse, and how the job should fail.
+
+It assumes you have read [Headless and one-shot runs](/cli/headless), which describes the two commands themselves. Here we only cover what changes when the pipeline is driving them.
+
+## Pick the right command
+
+| You want | Use |
+| --- | --- |
+| A single answer, streamed, human-readable | `cortex run` |
+| A machine-readable result document | `cortex run --format json` |
+| Multi-turn, controllable, scriptable | `cortex exec` with a streaming input format |
+| Strict autonomy control | `cortex exec --auto read-only`, or a higher level, deliberately |
+
+Most jobs want the second or the fourth row. Reach for streaming input only when the pipeline really does need to send more than one message and react in between.
+
+## Authenticate the job
+
+Credentials resolve in a fixed order: `CORTEX_AUTH_TOKEN` first, then `CORTEX_API_KEY`, and only then the credential `cortex login` stored. A CI runner has no credential store and no browser, so `cortex login` cannot complete its interactive flow there. An environment variable is the only path that works, and because it is checked first it also wins on a machine that does have a stored sign-in.
+
+Set the secret on the job or step, from your provider's secret store, and never bake a token into an image:
+
+```bash
+# The variable is enough. No cortex login step is needed.
+export CORTEX_API_KEY="$CI_SECRET"
+cortex run --format json "summarise the changes on this branch"
+```
+
+If you would rather store the credential in the runner's own auth file, read it from standard input so it never reaches shell history or a process listing:
+
+```bash
+printf '%s' "$CORTEX_API_KEY" | cortex login --with-api-key
+```
+
+See [Sign in to the CLI](/cli/sign-in) for the full set of sign-in paths.
+
+## Install the CLI in the job
+
+Install from the release host as a job step, then check the version so a broken install fails early rather than mid-run:
+
+```bash
+curl -fsSL https://software.cortex.foundation/install.sh | sh
+cortex --version
+```
+
+On Windows runners, use the PowerShell installer from the same host. Do not pin a version in your pipeline unless you have a reason to: take it from the release channel.
+
+## GitHub Actions
+
+```yaml
+name: Cortex review
+on: [pull_request]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install the CLI
+        run: curl -fsSL https://software.cortex.foundation/install.sh | sh
+      - name: Review the diff
+        env:
+          CORTEX_API_KEY: ${{ secrets.CORTEX_API_KEY }}
+        run: |
+          cortex exec --auto read-only --git-diff \
+            --timeout 600 --max-turns 20 \
+            -o json "Review this diff for bugs, security issues and missing tests" > review.json
+      - name: Show the result
+        run: jq -r '.' review.json
+```
+
+Four details carry this recipe:
+
+- **`fetch-depth: 0`.** The default checkout is shallow, and an agent cannot diff against a base branch it does not have. This is the single most common cause of "the agent cannot see my changes".
+- **`env:` at the step level**, so the secret is exposed to the one step that needs it.
+- **A JSON output format**, because the default text shape is not a contract and will break your parser one day.
+- **`--timeout` and `--max-turns` on every invocation.** Defaults exist, 600 seconds and 100 turns, but a pipeline should state its own.
+
+`cortex github install` scaffolds workflows for pull-request review and issue automation if you would rather not maintain the YAML yourself. See [GitHub](/code/github).
+
+## GitLab CI
+
+```yaml
+code-review:
+  script:
+    - curl -fsSL https://software.cortex.foundation/install.sh | sh
+    - cortex exec --auto read-only -o json "Review the code changes" > review.json
+  artifacts:
+    paths: [review.json]
+```
+
+Mark the credential variable as masked in the project's settings so it does not appear in job logs.
+
+## A shell script
+
+The same shape works in any runner, and it is worth keeping the early exit: a job that had nothing to review should pass, not spend a turn.
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+if git diff --quiet; then
+  echo "No changes to review"
+  exit 0
+fi
+
+cortex exec --auto read-only --git-diff \
+  --timeout 300 --max-turns 20 \
+  -o json "Review these changes for issues" > review.json
+```
+
+## Decide the autonomy before the run
+
+In CI there is nobody to answer an approval prompt, so what the run may do has to be settled by policy in advance. Three controls do that, and they compose:
+
+- `--auto`, the level for this run, `read-only` by default.
+- `.cortex/permissions.toml`, committed to the repository, pinning individual rules. First matching rule wins, and deny beats allow.
+- The `[permission]` table in configuration, which can set a capability to `allow`, `ask` or `deny`. A project `.cortex/config.toml` carries these and beats the user's own configuration, which makes it the right place to pin what CI may do for a given repository.
+
+<Warning>
+When a run hits a permission refusal, grant the specific capability through the `[permission]` table, or raise `--auto` to `high` if the job genuinely needs it. `--skip-permissions-unsafe` is not the lever: `cortex exec` refuses it outright, with `--skip-permissions-unsafe is not supported by the Code service contract. No turn was submitted.`
+</Warning>
+
+A hook is not consent. No hook can approve a tool call on your behalf, and adding hooks does not raise what a run is permitted to do. Hooks are also not the lever for stopping something in CI: they belong to a plugin and do not fire around the tool calls a run makes. Pin what a job may do with the `[permission]` table above. See [Hooks](/cli/hooks) and [Permission policy](/cli/policy).
+
+## Restrict network egress
+
+Network egress is blocked by default in a headless run. When you want a specific, reviewable restriction for a repository, commit a `.cortex/sandbox.toml` to it: it restricts egress for runs in that repository, and because it is in the repository, every CI run inherits the same rules without anyone remembering to pass a flag.
+
+## Fail the job on the exit code
+
+Branch on the exit status, not on prose in the output:
+
+```bash
+if cortex exec --auto read-only --timeout 300 -o json "Check for regressions" > out.json; then
+  echo "run completed"
+else
+  echo "run failed, interrupted or truncated"
+  exit 1
+fi
+```
+
+Exit `0` means the task completed. Any non-zero exit means the run failed, was interrupted, was truncated, or the coding service was unreachable. That is the contract, so do not wrap a failing run in `|| true`. The JSON result document tells the cases apart if the job needs to know which one it was.
+
+Two small things while you are here. `--dry-run` belongs to `cortex run` rather than `cortex exec`, and it previews what would be sent, with estimated token counts, without executing: the cheap way to test a pipeline change. And `-n`/`--notification`, also on `cortex run`, raises a desktop notification, which is pointless on a runner.
+
+## Driving a multi-turn run
+
+For a pipeline that sends more than one message, `cortex exec` accepts a streaming input format: one JSON object per line on standard input, plus two control messages.
+
+```json
+{"control":"interrupt"}
+{"control":"shutdown"}
+```
+
+The value for that input format is `stream-jsonl`: every non-empty line is the next turn, the stream needs no envelope or ids, and the connection stays open after a turn completes. `--input-format stream-jsonrpc` is the JSON-RPC variant instead, for a pipeline that wants request ids and matching responses.
+
+## Troubleshooting
+
+| Symptom | What to do |
+| --- | --- |
+| Authentication fails | Check the variable name, and that the secret is actually exposed to that job or step |
+| Output is not valid JSON | You are on the default text format. Add `--format json` or `-o json` |
+| The run never ends | Set `--timeout` and `--max-turns` |
+| The agent cannot see the branch you want to diff | Shallow clone. Set `fetch-depth: 0` or the equivalent |
+| Permission refusals | Grant the specific capability through the `[permission]` table, or raise `--auto` to `high`, rather than trying to disable checks |
+
+If the run reports that the coding service is temporarily unavailable, that message is the whole story: retry the job. See [CLI troubleshooting](/cli/troubleshooting).
+
+## Related
+
+- [Headless and one-shot runs](/cli/headless), the two commands and their flags
+- [Permission policy](/cli/policy), rules that decide an unattended run's authority
+- [Sign in to the CLI](/cli/sign-in), credentials for a runner
+- [Cloud, This PC, and SSH](/cli/hosts), where a CI run executes its tools
+- [Cortex Security](/security), a review that runs on pull requests without a pipeline of your own

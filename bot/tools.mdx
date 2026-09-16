@@ -1,56 +1,130 @@
 ---
 title: "Bot tools"
-description: "The parent catalog a bot receives — files and shell, computer use, browser, web, memory and skills, messaging, nested tasks, agents, and your plugins."
-keywords: ["capabilities", "catalog", "computer use", "browser"]
+description: "The catalog a bot receives: files and shell, the desktop verbs, browser and web, memory and skills, messaging, tasks, other bots, and your connected apps."
+icon: "screwdriver-wrench"
 ---
 
-A bot receives the **parent catalog**: everything below, plus the connected apps you enabled for Bot. It is not a subset of Chat's tools or Code's workspace catalog — it is its own set, built around having a computer.
+A bot in **Cortex Bot** is built around having a computer, so its tools are not a subset of what a chat gets. It receives its own catalog of 31 tools, plus a tool for every action of every connected app you assigned to that bot. The sections below group those 31 by what they touch: its files and command line, its screen, the browser and the web, you, its memory and schedule, and other bots. That grouping is for reading; it is not the split that decides which tools stop and ask you first, which is covered under [Approvals and tool policy](/bot/approvals).
 
-## Catalog
+This page lists the whole catalog, says which tools stop and ask for your consent before they run, and covers the three conditional groups: connected apps, MCP server tools and page tools. It is reference material; if you only want to know why a step stopped, read [Approvals and tool policy](/bot/approvals).
 
-| Group | Tools | Notes |
+## Files and shell
+
+Four tools for the bot's own workspace and command line.
+
+| Tool | Always asks | What it does |
 | --- | --- | --- |
-| **Files and shell** | `read`, `write`, `edit`, `shell` | On the bot's computer |
-| **Computer use** | `screenshot`, `grounded_click`, `type`, `hotkey`, `scroll`, `drag`, `wait`, `open_app`, `switch_app`, `save_note`, `code_agent` | The planner names a control; a second inference call returns framebuffer coordinates. The planner never guesses raw pixels. |
-| **Browser** | `browser` | Drive a browser on the desktop |
-| **Web** | `web_search`, `web_fetch` | Search and fetch without opening the browser |
-| **Memory and skills** | `update_memory`, `skill`, `routine` | Remember, follow a [skill](/bot/skills), schedule a [routine](/bot/routines) |
-| **User-visible** | `send_to_user`, `ask_user`, `notify`, `secret_request` | The only things that appear as bubbles in the conversation |
-| **Nested** | `task` | Background work with progress events |
-| **Agents** | `send_to_agent`, `create_agent`, `create_channel` | Work with other agents and channels |
-| **Artifacts** | `read_artifact`, `grep_artifact` | Read and search large outputs |
-| **Plugins** | Connected apps enabled for **Bot** | Under **Customize → Connectors** — see [Tools and connectors](/chat/tools) |
+| `read` | no | Read a file on the bot's own computer |
+| `write` | yes | Write a file on the bot's own computer |
+| `edit` | yes | Replace one occurrence of some text with other text in a file |
+| `shell` | yes | Run a shell command on the bot's own computer, as a real command rather than typing into a window |
 
-## User-visible tools
+## Computer use
 
-What you see in the conversation is a handful of short bubbles, not the inner loop. Four tools produce them:
+The tools a bot uses while it is working at its screen. These are what make a bot different from a chat: it operates the applications in front of it instead of asking you to paste things into a conversation.
 
-| Tool | What you see |
-| --- | --- |
-| `send_to_user` | A message from the bot |
-| `ask_user` | A question that waits for your answer |
-| `notify` | A notification — useful from a [routine](/bot/routines) |
-| `secret_request` | A request for a credential the bot needs, entered by you, never typed into the transcript |
+| Tool | Always asks | What it does |
+| --- | --- | --- |
+| `screenshot` | no | Capture the whole screen for the bot to look at. This is for the bot, not for you; the live rail is what you watch |
+| `grounded_click` | yes | Click a control the bot describes in a full sentence. A separate call resolves that sentence to a point on screen |
+| `type` | yes | Type text. It can click a named field first, clear what is there, and press Return |
+| `hotkey` | yes | Press a key combination instead of hunting through menus |
+| `scroll` | no | Scroll at a named control |
+| `drag` | yes | Drag from one named control to another, each resolved separately |
+| `wait` | no | Pause so the interface can settle. Capped at 10,000 ms |
+| `open_app` | yes | Open an application or a file on the desktop |
+| `switch_app` | yes | Focus a window that is already open, by name |
+| `save_note` | no | Remember a short fact for the rest of this turn, such as a value it copied |
+| `code_agent` | yes | A bounded shell and Python loop on the bot's computer for bulk file or formula work |
 
-Plain assistant text outside these tools is dropped, not rewritten into a canned message. See [How Bot works](/bot/how-it-works).
+The bot must not guess pixels. Clicking, typing into a field, scrolling and dragging all take a description of the control, and a separate grounding step turns that description into coordinates. A control the bot cannot describe is a control it cannot click.
 
-## Background tasks
+## Browser and web
 
-`task` starts work in the background and returns immediately with `{ ok, id, status: "queued" }`. The child then emits `task_started`, `task_progress`, and `task_completed` or `task_failed`. Children cannot `send_to_user` and cannot nest another `task`; everything reports back through the parent.
+| Tool | Always asks | What it does |
+| --- | --- | --- |
+| `browser` | yes | A page-level browser action: navigate, snapshot, click by reference, fill |
+| `web_search` | no | Search the public web |
+| `web_fetch` | no | Fetch a public URL and return readable text |
 
-## What parks behind approvals
+For work that lives entirely in a web page, the catalog itself steers the bot towards `browser` rather than clicking pixels on the desktop, because a page reference is more reliable than a point on a screen.
 
-Dangerous computer steps and changes in connected apps do not run on the bot's say-so. They park as **Allow / Deny / Always** in the conversation. See [Approvals](/bot/approvals).
+## Talking to you
 
-## What is not here
+Four tools, and they are the only way anything reaches your thread.
 
-| Not a Bot tool | Where it lives |
-| --- | --- |
-| Deep Research | [Chat](/chat/deep-research) |
-| Code's `read_file` / `edit_file` / `bash` workspace catalog | [Code sessions](/code/how-it-works) — though `code_agent` can hand a coding task to Code |
-| Design canvas tools | Chat and Code host canvases; Bot does not receive those tools. See [Design](/design) |
+| Tool | Always asks | What it does |
+| --- | --- | --- |
+| `send_to_user` | no | One short visible bubble. Called again for another bubble, never for tool output or an inner monologue |
+| `ask_user` | no | A visible question. It blocks the composer until you answer |
+| `secret_request` | no | Ask for a secret out of band. The value never goes in the conversation |
+| `notify` | no | A short notice, for a status you should see |
+
+Everything else the model writes is work and is not rendered. See [Talking to a bot](/bot/conversations).
+
+## Memory, skills and scheduling
+
+| Tool | Always asks | What it does |
+| --- | --- | --- |
+| `update_memory` | no | Write a memory as a profile line, a dated log line or a fast-fading note |
+| `skill` | no | List the skills that are enabled, or read one recipe by name |
+| `routine` | no | Create, update, pause, resume or delete a standing routine |
+| `task` | no | Dispatch a subagent |
+
+A bot can therefore put work on its own schedule and remember things between turns without asking. What it does with those tools is visible on the bot's [Bot memory](/bot/memory) and [Routines](/bot/routines) panels, where you can read and remove anything it wrote.
+
+## Other bots and stored results
+
+| Tool | Always asks | What it does |
+| --- | --- | --- |
+| `send_to_agent` | no | Message another bot you own, waking it |
+| `create_agent` | no | Create another bot for you |
+| `create_channel` | no | Create a group channel with bots you own as members |
+| `read_artifact` | no | Read a character range from a stored tool result, by its id |
+| `grep_artifact` | no | Search a stored tool result for a literal substring |
+
+When a tool result is too big to carry, it is stored and replaced with a short stub and an `art_…` id. The bot then reads or searches it with the two artifact tools, which is why a bot can work through a huge log without the turn falling over.
+
+## What a subagent gets
+
+A nested task runs the bot loop again as a child, and it does not get the full catalog. Children lose `send_to_user`, `ask_user`, `secret_request`, `notify` and `task`, which leaves 26 tools. They also get no connected apps and no MCP tools at all.
+
+The consequence is worth remembering: a child cannot talk to you, cannot ask you a question and cannot start children of its own. Only the parent bot speaks in the thread, and it reports what the child found. See [Tasks and subagents](/bot/tasks).
+
+## Conditional tools
+
+Three groups only exist when you have turned something on.
+
+<CardGroup cols={3}>
+  <Card title="Connected apps" icon="plug" href="/bot/plugins">
+    One tool per enabled action of each app you assigned to this bot.
+  </Card>
+  <Card title="MCP servers" icon="server" href="/chat/mcp-servers">
+    One tool per allowed tool of each MCP server the account opted in, up to four servers with 24 tools each.
+  </Card>
+  <Card title="Page tools" icon="window" href="/chat/page-tools">
+    Reading a page you are on and filling its fields, with the Cortex browser extension.
+  </Card>
+</CardGroup>
+
+Connected apps reach a bot only when you assigned them to it. An app is off for a bot until you turn it on for that bot alone, and the tools appear in its catalog from the next turn. Mutating actions ask for approval, read-only calls pass, and an always-allow rule for a connected app has to name that exact tool: a grant for a whole app or a whole category is refused by design.
+
+Page tools come from the browser extension and appear on the Computer rail as **Page context**. Consent is per group of fields rather than per site, and every fill is confirmed before it is written.
+
+## Which tools stop and ask
+
+Read the **Always asks** column as one sentence: anything that changes a file, runs a command, or moves the mouse or keyboard asks first. Looking, waiting, remembering and talking do not. Eleven tools always ask, twenty never do, and a tool on neither list runs.
+
+That is the shipped default, and it sits under the rules you write. Your own always-allow rules and the ceilings Cortex sets for a deployment are both consulted before every call, so the table above is where a tool starts rather than the last word. See [Approvals and tool policy](/bot/approvals).
+
+<Note>
+Bot's names are its own. `shell` here is what other Cortex surfaces call `bash`, and there is no raw pixel-coordinate tool on a bot at all. Do not expect a Chat or Code tool list to match this one.
+</Note>
 
 ## Related
 
-- [Computer](/bot/computer) — the machine the tools run on.
-- [Skills](/bot/skills) — instruction bundles the `skill` tool loads.
+- [Approvals and tool policy](/bot/approvals) - the three choices and the rules behind them.
+- [Computer](/bot/computer) - the machine the desktop verbs run on.
+- [Bot skills](/bot/skills) - the recipes the `skill` tool reads.
+- [Tasks and subagents](/bot/tasks) - what `task` dispatches and its limits.
+- [Connected apps and secrets](/bot/plugins) - assigning an app to one bot.

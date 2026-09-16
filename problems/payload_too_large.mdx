@@ -10,7 +10,7 @@ description: "Payload too large. HTTP 413."
 | `type` | `https://docs.cortex.foundation/problems/payload_too_large` |
 | Retryable | no |
 
-An upload exceeded the configured per-file or per-request ceiling. Chat and Library ingest cap at 10 MiB; bug-report screenshots at 4 MiB; transcribe at 25 MiB.
+An upload was larger than the ceiling for the surface it arrived on. A chat or Library attachment can be at most 10 MB, a bug-report screenshot 4 MB, and a dictated audio clip 25 MiB.
 
 ```json
 {
@@ -24,6 +24,6 @@ An upload exceeded the configured per-file or per-request ceiling. Chat and Libr
 
 ## Related
 
-- [Errors](/api/errors) — how to branch on `code`, and what not to render from `detail`.
-- [Problem catalog](/problems) — every code, its status, and whether retrying helps.
-- [Troubleshooting](/getting-started/troubleshooting) — what a message in the product means.
+- [Errors](/reference/errors) - how to branch on `code`, and what not to render from `detail`.
+- [Problem catalog](/problems) - every code, its status, and whether retrying helps.
+- [Troubleshooting](/getting-started/troubleshooting) - what a message in the product means.

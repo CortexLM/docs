@@ -1,67 +1,148 @@
 ---
 title: "Bot troubleshooting"
-description: "Connecting versus Stream Unavailable, parked steps that do not run, the setup form, missing tools, and turns that stop."
-keywords: ["errors", "problems", "fixes", "not working"]
+description: "What each Bot message means and what to do: the desktop stream, parked steps, missing tools, turns that stop early, routines, and error codes"
+icon: "life-ring"
 ---
 
-Bot names its states plainly. This page maps them to causes and fixes. For the rest of the app see [Troubleshooting](/getting-started/troubleshooting).
+**Cortex Bot** tells you what went wrong in a sentence rather than a code, so the quickest way to fix something is to find the exact sentence you are looking at. This page is grouped by area: locate your symptom, read what it means, then do what the last column says.
 
-## Access
+Two habits make everything here easier. First, Bot fails closed: when a check cannot be read, the action is refused rather than quietly allowed, so many failures are about a read that did not come back and not about permission you lack. Second, a load failure is never a statement about what exists. `Could not load Always rules.` does not mean you have no rules, and `Your bots could not be loaded.` does not mean the account is empty.
 
-| What you see | Cause | Fix |
+## You cannot find your bots
+
+An account with no bots opens on **Create your first bot** rather than an empty list. That setup form is the expected first screen, not an error. It asks for a **Name** and optionally a **Look**, **Face**, **Description**, **Label**, **Notifications** and **Skills**, and every field can be changed later.
+
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| **This space is reserved** | You are not signed in | **Sign in**, or **Continue in Chat** |
-| The public product page at `/bot` | Guests see the product page | Sign in, then choose **Bot** |
-| The **setup form** instead of a bot list | The account has no bots yet — a setup, not an empty list | Create a bot |
+| `Your bots could not be loaded.` or `Could not load your bots.` | the sidebar read failed | reload; do not treat it as an empty account |
+| `No bots yet.` | the account really has none | create one |
+| `That bot is not on this account.` | the bot was removed, or you are signed in to a different account | choose **Back to your bots** |
+| `Your channels could not be loaded.` or `No channels yet.` | the same two cases, for channels | reload, or create a channel |
+| `The name must be 1–40 characters.` | the name is empty or too long | shorten it |
 
-## The computer
+An account holds at most 24 bots, and each bot has exactly one computer. Those ceilings are fixed for everyone, so hitting one is not something a setting will lift. See [Limits and quotas](/reference/limits).
 
-| What you see | Cause | Fix |
+Bot also requires a signed-in account, end to end, because a signed-out visitor cannot come back later to revoke what it set up. The refusals say which part needs an account: `Guests cannot use Bot — the app is signed-in only.`, `A guest session has no bot files. Sign in to browse a bot’s workspace.`, `Connecting an app needs a signed-in account.`, `A guest cannot record this computer.`, and `Guest credentials are not accepted on this deployment.`
+
+If you are in a browser and there is no **This PC** or **SSH** choice on the **Runs on** rail, that is expected: on the web a bot's computer is **Cloud** only. The [Bot desktop app](/bot/desktop) is where the other choices appear.
+
+## The computer will not start, or the desktop will not appear
+
+### `Connecting to the desktop stream…` is not a failure
+
+It is the live view handshaking, which can take up to about 20 seconds. The failure is a different sentence, `The desktop stream could not connect.`, and that one has a button: **Retry stream**. If all you have is the connecting line, wait rather than restarting the computer.
+
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| **Connecting** on the rail | The Cloud guest is starting | Wait — this state exists only while the guest starts |
-| **Stream Unavailable** | The guest is running but its live screen is not reachable right now | Choose **Open desktop** again, or **Sleep** and wake it with a turn |
-| The first message of a turn takes a moment | The guest hibernated while idle and is being resumed before the model runs | Expected |
-| No **This PC** option | You are in the browser | Use the [Bot desktop app](/bot/desktop) |
+| `No computer yet` + `Start a Cloud computer to open a live desktop.` | the bot has no computer | choose **Start computer** |
+| `Starting the computer…`, `Loading the computer…`, `Loading desktop…` | it is being prepared | wait |
+| `Connecting to the desktop stream…` | the stream is handshaking, up to about 20 s | wait |
+| `The desktop stream could not connect.` | the live view failed | choose **Retry stream** |
+| `The live desktop is unavailable.` | the desktop cannot be joined at all | wake it, then **Recreate** if it persists |
+| `The Cloud computer is unavailable. Wake it to try again.` | it is asleep or unreachable | choose **Wake the computer** |
+| `Computer is asleep` + `Wake it to resume the desktop.` | it hibernated while idle | choose **Wake the computer** or **Resume** |
+| `Could not start the computer` + `Try again, or recreate the computer.` | the start failed | choose **Try again**, then **Recreate** |
+| `No live desktop stream on this ticket — showing screenshots instead.` | the live stream could not be joined, so the fallback engaged | usable, but it is not the live desktop |
+| `The desktop ticket is unavailable.` | there is no valid viewing ticket | reload the page and open the desktop again |
+| `That action is unavailable.` | the control does not apply in the computer's current state | check the rail: **Off** needs waking first |
+| `{name} is still working.` | the bot holds the mouse and keyboard | choose **Take control**, and **Hand back** when you are done |
+| `This PC is not reachable. Pair a host and start the agent, or pick Cloud.` | the local host is not paired or not running | pair it, or switch to **Cloud** |
+| `Pick a saved SSH host, or choose Cloud.` | **SSH** is selected with no host chosen | pick a host, or switch to **Cloud** |
 
-## Tools and approvals
+The rail itself is the short version: **Live** means the stream is up, **Off** means the computer is not running and **Wake the computer** is your next move. An idle computer hibernates on its own, so the first step of a turn can take a moment while it comes back. That is normal, not a fault.
 
-| What you see | Cause | Fix |
+If the computer did not respond as expected, try the action again. **Recreate** rebuilds the computer and is the last resort rather than the first, because a rebuilt desktop starts from scratch. Starting, waking, sleeping and recreating are covered in full on [Computer](/bot/computer).
+
+## A parked step will not clear
+
+Every step that changes something stops and asks. Until you choose, nothing happens: that is the widget doing its job, not a stuck screen. The model is one line: `Allow runs the parked tool. Deny does not. Always writes a rule.`
+
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| An **Allow / Deny / Always** widget that does not go away | A consequential step is parked. Nothing runs until you choose. | Read it, then choose |
-| The bot cannot use an app you connected | The connection is enabled for Chat only | **Customize → Connectors** → enable it for **Cortex Bot** |
-| A step you allowed once parks again | **Allow** is for this once; **Always** remembers that kind of step | Choose **Always** if you want it remembered |
-| The bot asks you for a credential | `secret_request` — it needs a secret it should never see typed in the transcript | Enter it in the widget |
+| The same tool asks again after you allowed it | `Allow still asks. Deny never writes a rule.` | choose **Always**, which `Always grants this tool for this Bot until its approval rule is removed.` |
+| `This request cannot be settled from here.` | the row you are on has no message to decide against, so it fails closed | open the bot's own conversation and decide there |
+| `This hold has no message to settle.` | the same case on a browsing session | open the bot while signed in |
+| `The decision could not be sent.` | the Allow, Deny or Always write failed | the tool is still parked: decide again |
+| `Could not load Always rules.` or `Some Always rules could not be loaded.` | a read failed | reload before concluding the bot has no rules |
+| `The tool policy could not record this call, so it was refused.` | the call could not be written to the audit, so it was refused rather than run | try again, and report it if it keeps happening |
+| `not a tool this bot offers` | the bot named a tool it was never given | nothing ran; no action needed |
 
-## Turns
+Two more reasons an approval seems not to take. Marking an inbox row read is not the same as deciding it, so a row you have read can still be waiting. And an **Always** you write can be overruled: tool policy is evaluated in tiers and the administrator tier wins, so a rule set above you still asks or still denies. Both are explained on [Approvals and tool policy](/bot/approvals), which also lists exactly which tools always ask, which never do, and where parked steps collect.
 
-| What you see | Cause | Fix |
+<Warning>
+`The Bot turn timed out; external effects may have occurred.` means the 15-minute deadline expired part-way through, not that nothing happened. Check what the bot actually did, on its computer and anywhere it was posting, before you ask it to run the job again.
+</Warning>
+
+## A tool, an app or a skill is missing
+
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| A long job stops after about 15 minutes | The turn deadline | Split the job, or run it as a [routine](/bot/routines) or background task |
-| A turn stops after repeating the same action | Six consecutive identical tool calls trip the loop guard | Rephrase the task or give the bot the missing information |
-| The bot says nothing after working | It had nothing to send. Plain text outside the user-visible tools is dropped. | Ask it to report — *tell me what you found* |
+| A connected app listed but unusable | each blocked row names its own reason, and all five point at the same place | fix it on **Plugins**: an app has to be available to Bot and assigned to this bot |
+| `Connectors could not be loaded. Try again.` | a read failed | reload, then reopen the list |
+| `This connector cannot be turned on.` | the app is not available to this bot | nothing on the form will change it |
+| `Always-allow is not offered. Ask each time or leave it off.` | connected apps have no standing permission | leave it asking, or turn the app off |
+| `The value could not be delivered.` | a **Cortex needs you** value did not reach the computer | send it again; `This value is delivered to the computer. It is never posted as a chat message.` |
+| `Reading pages and filling fields needs the Cortex browser extension.` | page tools are not installed | install the Cortex browser extension |
+| `One computer-use worker per desktop: another browser/computer/watch_video task is already running.` | one desktop worker at a time | wait for it, or cancel it |
+| `Only a queued or running task can be cancelled.` | the task already finished | nothing to cancel |
+| `That change could not be saved.` | a skill or setting write failed | make the change again |
 
-## Routines
+A skill that is enabled but seems ignored is usually not a fault: a skill is a recipe, not a permission, and the bot picks one up when the job matches. Name it in your message to be sure. If the review never ran you get `The review did not run, so this recipe has not been cleared. Enable anyway only if you have read it.`, and the only control offered is **Enable anyway**. See [Bot skills](/bot/skills).
 
-| What you see | Cause | Fix |
+When a bot cannot reach a host, the allow list is the reason: `Hosts on the allow list may be reached. Everything else is refused, and the blocked ranges are refused before this list is read.` An empty list means exactly what it says, `No host is allowlisted, so the bot reaches nothing. Adding one is what turns egress on.`, and some destinations can never be allowed at all: `Instance metadata, loopback and the private network are blocked whatever this list says — {example} cannot be allowed.` Editing the list from this panel is not wired yet, which the panel admits: `Cortex cannot store an egress rule yet, so nothing here writes. The list above is what the deployment holds.`
+
+## A turn stopped early, or the bot said nothing
+
+| What you see | What it means | What to do |
 | --- | --- | --- |
-| A routine fired at an unexpected hour | Routines use **your local weekday** clock | Check your device's time zone |
-| A routine did nothing on Saturday | Weekdays only | Expected |
+| `The Bot turn timed out; external effects may have occurred.` | the 15-minute deadline expired | check what happened, then split the job into smaller ones |
+| `The same tool call repeated without progress. Try a different action.` | the same call repeated six times without getting anywhere | rephrase the request, or unblock what it was stuck on |
+| `I can't reach the assistant right now — your message is saved. Try again in a moment.` | the model was unreachable; your message is not lost | try again shortly |
+| `Waiting — the bot will continue as soon as it can.` | the turn is queued behind something | wait |
 
-## Errors
+A turn that ends with work done and nothing said is a real case: only what the bot deliberately sends becomes a bubble, and it can send at most eight in a turn. Its own prose is not shown. If you want a summary, ask for one. A turn has no round limit, so length alone will not stop it: the 15-minute deadline and the repeat guard above are what stop it.
 
-Bot uses the same problem documents as the rest of Cortex. Common ones:
+If the composer will not accept a message, look for a question or a secret request in the thread. A pending one blocks the composer until you answer it. And a task the bot spun off cannot talk to you at all, only the parent bot speaks, so watch the parent thread rather than the task. See [How Bot works](/bot/how-it-works) and [Tasks and subagents](/bot/tasks).
 
-| Code | Meaning |
-| --- | --- |
-| [`no_capacity`](/problems/no_capacity) | No guest could be started right now; try again shortly |
-| [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | Too many bots or turns active at once |
-| [`invalid_state`](/problems/invalid_state) | The bot or its computer is not in a state that allows the action |
+## A routine did not run when you expected
 
-Full list: [Problem catalog](/problems).
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| It fired at the wrong hour | `Runs on weekdays at 9:00 in your local time, unless the prompt says otherwise.` | check the time zone of the device you are reading on |
+| Nothing ran at the weekend | the weekday grid is weekdays only | say so in the prompt, or schedule it by date |
+| The routine is not on the week grid | it is date-bound | look under **Scheduled by date** |
+| A routine someone shared does nothing | `Copied schedules start paused.` | resume it on your own bot |
+| `Weekday hours must be whole hours from 0 to 23.` | the hour is not a whole number in range | enter a whole hour |
+| `The routine could not be created.` | the write failed | try again |
+
+See [Routines](/bot/routines).
+
+## Recording or teaching is refused
+
+Recording needs a computer that is up and an owner doing the recording: `Recording needs a running computer.`, `Recording needs the computer to be awake.`, `Computer Use is off, so recording is refused.`, `Only the owner can record.` A video that fails at the end says `Encoding failed`, and a demonstration that fails says `The task could not be taught. Nothing was saved.`, which means there is nothing half-saved to clean up. See [Teach from a demonstration](/bot/teach).
+
+## Not available yet, so there is nothing to fix
+
+<Note>
+Some surfaces are built but not wired up on this deployment, and no setting will turn them on. Bot rooms and room sharing: `This deployment does not host bot rooms yet. Nothing was started.` Bot packs and duplicating a bot. Browsing or downloading a bot's workspace files. Editing the egress allow list. Minting a public share link: `Cortex cannot mint a link yet, so nothing here writes.` Inbound mail: `Inbound mail is not configured on this deployment.` Live voice: `Live voice is not available on this deployment.` The companion roster: `The companion roster is not served here yet.`
+</Note>
+
+There is also no per-turn cost line to look up for a bot: `The cost ledger is not configured on this deployment.` If a bot action failed, the reason is the message it gave you, so work from that rather than looking for a billing explanation. Channels, routines, tasks, secrets, memory, skills, tool policy and teaching are all live, and [Channels](/bot/rooms) and [Share a bot](/bot/sharing) say which half of each pair works today.
+
+## Error codes you may see
+
+| Code | On a bot this means | What to do |
+| --- | --- | --- |
+| [`no_capacity`](/problems/no_capacity) | no computer could be started right now | try again shortly |
+| [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | too much at once, such as a second desktop task | let the first one finish |
+| [`invalid_state`](/problems/invalid_state) | the action does not apply in the computer's current state | check the rail, then wake or start the computer |
+
+Every code has its own page in the [Problem catalog](/problems), and [Errors](/reference/errors) explains how to read one. If several things fail at once across products, check [System status](/reference/status) before debugging your own bot.
 
 ## Related
 
-- [Computer](/bot/computer) — the guest states behind Connecting and Stream Unavailable.
-- [Approvals](/bot/approvals) — why a parked step waits.
-- [Routines](/bot/routines) — local weekday timing.
-- [Troubleshooting](/getting-started/troubleshooting) — the same guidance across all products.
+- [Computer](/bot/computer) - the desktop rail, the stream, control handover, and recreating a computer.
+- [Approvals and tool policy](/bot/approvals) - which tools ask, what **Always** writes, and where parked steps collect.
+- [How Bot works](/bot/how-it-works) - what a turn is, what ends one, and what the bot can say.
+- [Routines](/bot/routines) - schedules, weekday hours, and paused copies.
+- [Troubleshooting](/getting-started/troubleshooting) - sign-in, updates and the rest of the app.

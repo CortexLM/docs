@@ -1,0 +1,78 @@
+---
+title: "Usage"
+description: "Read the Usage page: recorded cost and billable actions over a 7, 30 or 90 day window, the breakdowns, and what the ledger can honestly tell you."
+icon: "chart-simple"
+---
+
+**Usage** is the accounting view for your workspace. It reads the ledger that turns write to and shows what was recorded: a total cost, a count of billable actions, the models that were used, and the raw rows behind all three. The page describes itself as **Recorded usage and cost for this workspace, from the ledger each turn writes to.**, and that wording is deliberate. It reports what the ledger holds, not what you are about to be invoiced.
+
+This page explains the window selector, the three figures at the top, the four breakdowns, and the limits of the data. Read the honesty section before you use these numbers to reconcile anything: there are two places where a reasonable reader draws a wrong conclusion.
+
+## Choose a window
+
+One selector, labelled **Usage window**, controls the whole page. It offers **7 days**, **30 days** and **90 days**, and opens on **30 days**. Everything below it, the stats, the chart and the ledger rows, is recomputed for the window you pick.
+
+## The three figures at the top
+
+| Figure | What it is |
+| --- | --- |
+| **Recorded cost** | The cost the ledger recorded in the window. The note under it reads `Over {n} days`. |
+| **Billable actions** | How many billable events were recorded. It is a count of events, not of sessions or of turns. |
+| **Models used** | How many distinct models appear in the window. |
+
+## The four breakdowns
+
+Under the figures the page splits the same data four ways.
+
+- **COST PER DAY**, a chart of the window.
+- **BY KIND**, cost grouped by the kind of activity recorded.
+- **BY MODEL**, cost grouped by model.
+- **LEDGER**, the rows themselves, with the columns **Date**, **Kind**, **Model**, **Count**, **Cost**, **Tokens** and **Name**.
+
+When there is nothing to show you get **No usage in this window.**, or **No model usage in this window.** for the model breakdown specifically.
+
+<Note>
+The chart joins only the days that had activity. A quiet day is absent rather than drawn as a zero, so a line that jumps a gap is the chart working correctly, not a rendering fault. Zero-filling is refused on purpose, so that a day with no recorded activity is not presented as a measured zero.
+</Note>
+
+## What the ledger can and cannot tell you
+
+Two caveats matter more than anything else on this page.
+
+<Warning>
+**Do not treat this page as a complete record of Code activity.** The page reads a ledger, and it is not established that every Code turn writes a row to it. Read the page as "what the ledger recorded" rather than "everything that ran". If a session you remember running does not appear, that is within what the page promises.
+</Warning>
+
+The second caveat is the **Tokens** column. Recorded rows can carry no token counts at all, so the column may simply be empty for rows that came from Code. That is not data loss you can recover from this page, and it means you should not try to reconcile token counts here against anything else. Use the column when it is populated, and ignore it when it is not.
+
+## Cost is on the account, not the session
+
+Inside a session, the **SESSION USAGE** meter states the rule outright:
+
+> **Cost is on the account ledger, not per session.**
+
+It links to **Account usage**, which is this page. A session row on Code Home or on the sessions board shows a cost suffix **only** when that particular session has a recorded spend, so a row without one is normal and does not mean the session was free. There is no per-session invoice to produce, and there is no per-member split on this page.
+
+## Spend limits, plan limits, and what is billed
+
+Two different controls are easy to confuse.
+
+**Set spend limit** is an action on this page, and it is the control for capping spend. That is all that is documented about it here: the form behind the button is not described, so open it in the app to see what it asks for.
+
+**Spend consent** is a different thing and lives in a session, not here. When a turn needs to spend, it asks, and you choose to allow it once, allow it up to an amount, or deny it. A decision cannot be changed afterwards. See [Permissions and approvals](/code/approvals).
+
+Cortex warns before you hit the included amount rather than after. A warning banner appears at **80 %** of the included amount and a reached banner at **100 %**. Those are the only usage percentages worth memorising. Beyond the included amount, the product's own wording applies:
+
+> **Usage beyond the included amount is billed at API rates. Changes apply at the start of the next billing cycle.**
+
+<Info>
+How much is included, and how many sessions, turns or minutes your plan allows, depends on the plan and is not shown on this page. See [Limits and quotas](/reference/limits) for the figures that apply to your account, and the upgrade dialog in the app, which names your current plan and its price per month. No per-session or per-turn Code allowance is published, so do not plan around one.
+</Info>
+
+## Related
+
+- [Limits and quotas](/reference/limits)
+- [Permissions and approvals](/code/approvals)
+- [Code sessions](/code/sessions)
+- [Code settings](/code/settings)
+- [Cloud runtimes](/code/runtimes)

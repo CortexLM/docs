@@ -1,27 +1,39 @@
 ---
 title: "Cortex CLI"
-description: "Cortex Code in your terminal — an interactive session view, one-shot runs, headless mode for CI, and the extension points."
-image: "/images/banners/code.png"
-keywords: ["terminal", "command line", "cortex command"]
+description: "Cortex Code in the terminal: an interactive session view, one-shot runs, headless runs for scripts, and every page of the CLI documentation"
+icon: "terminal"
 ---
 
-The Cortex CLI is **Cortex Code for the terminal**. One binary, `cortex`, gives you an interactive TUI with a live timeline and approvals, one-shot runs from your own shell, and a headless mode for scripts and CI. It uses the same account and the same Code sessions as the web and desktop apps, runs on the Cloud runtime by default, and never runs the model on your laptop.
+The Cortex CLI is **Cortex Code in the terminal**. One binary gives you an interactive full-screen session view with a live timeline and approval prompts, one-shot runs from your own shell, and a headless mode for scripts. It uses the same Cortex account and the same Code sessions as the web and desktop apps, so a change you start in the terminal is the same piece of work you can pick up in a browser.
 
-<Frame caption="The CLI in a macOS Terminal: splash, a prompt, the slash palette, the model picker, and a Shell tool row. A generated desktop demo of the shipped TUI, not a live recording. The stills on the pages below are headless renders of the same chrome.">
-  <img src="/images/cli/intro.gif" alt="Cortex CLI on a macOS desktop: splash, prompt, slash commands, and a Shell tool row" />
-</Frame>
+One thing to know before anything else: **the CLI does not run a model on your machine**. Every turn goes to the Cortex coding service. When that service cannot be reached, the CLI says so and stops with a non-zero exit status; it never quietly substitutes something local.
+
+This page is the map of the CLI documentation. If you have never used it, follow the three Get started pages in order.
+
+## Three ways to run it
+
+| Surface | Command | Use it for |
+| --- | --- | --- |
+| Interactive session view | `cortex` | Everyday work: a timeline, approvals, Agent, Plan and Ask modes, sessions you can resume |
+| One-shot | `cortex run "..."` | A single request from your shell, streamed, with session continuation |
+| Headless | `cortex exec "..."` | Scripts and pipelines: an autonomy ceiling, machine-readable output, turn and time limits |
 
 ## Install in one line
 
-<CodeGroup>
-```bash macOS and Linux
-curl -fsSL https://software.cortex.foundation/install.sh | sh
-```
+<Tabs>
+  <Tab title="macOS and Linux">
+    ```bash
+    curl -fsSL https://software.cortex.foundation/install.sh | sh
+    ```
+  </Tab>
+  <Tab title="Windows">
+    ```powershell
+    irm https://software.cortex.foundation/install.ps1 | iex
+    ```
+  </Tab>
+</Tabs>
 
-```powershell Windows
-irm https://software.cortex.foundation/install.ps1 | iex
-```
-</CodeGroup>
+Then sign in and open a session in a project:
 
 ```bash
 cortex login
@@ -29,77 +41,153 @@ cd ~/code/my-project
 cortex
 ```
 
-<p className="ink-cta-row">
-  <a className="ink-btn" href="/cli/install">Install</a>
-  <a className="ink-btn ink-btn-quiet" href="/cli/quickstart">Quickstart</a>
-</p>
-
-<Frame caption="The shipped session chrome: the Agent composer with its dual hairline, the model chip Cortex Mini 1 (medium) on the border, and the footer hints. Mouse hover is supported.">
-  <img src="/images/cli/runtime/120x40/composer-hover.png" alt="Cortex CLI session composer with the pointer hovering over it" />
-</Frame>
-
-## What one binary gives you
-
-| Surface | Command | Use it for |
-| --- | --- | --- |
-| **Interactive TUI** | `cortex` | Everyday work: a timeline, approvals, Agent / Plan / Ask, sessions you can resume, rewind, and fork |
-| **One-shot** | `cortex run "…"` | A single request from your shell, streamed, with session continuation and sharing |
-| **Headless** | `cortex exec "…"` | Scripts and CI: autonomy levels, JSON output, turn and time limits |
-
-## Guides
+## Get started
 
 <CardGroup cols={2}>
-  <Card title="Install" icon="download" href="/cli/install">
-    Installer, checksums, version pins, channels, `cortex upgrade`, uninstall.
+  <Card title="Install the CLI" icon="download" href="/cli/install">
+    The installers for macOS, Linux and Windows, what the checksum check proves, pinning a version, `cortex upgrade`, uninstalling.
   </Card>
-  <Card title="Sign in" icon="key-round" href="/cli/sign-in">
-    `cortex login` in a browser, device code for headless machines, API keys for CI, the OS keyring.
+  <Card title="Sign in" icon="right-to-bracket" href="/cli/sign-in">
+    `cortex login` in a browser, a device code for machines without one, single sign-on, API keys for unattended runs.
   </Card>
-  <Card title="Quickstart" icon="rocket" href="/cli/quickstart">
-    First session, `AGENTS.md`, choosing autonomy.
-  </Card>
-  <Card title="The TUI" icon="terminal" href="/cli/tui">
-    Timeline rows, the composer, status line, queueing follow-ups, interrupting.
-  </Card>
-  <Card title="Slash commands" icon="slash" href="/cli/slash-commands">
-    Everything after `/` — model, mode, permissions, plan, goal, sessions, MCP, diagnostics.
-  </Card>
-  <Card title="Modes and permissions" icon="shield-check" href="/cli/modes-and-permissions">
-    Agent / Plan / Ask, Spec, approvals, sandbox, the `permission` table, effort.
-  </Card>
-  <Card title="Goals" icon="target" href="/cli/goal">
-    `/goal` — a persisted long-horizon objective that survives compaction and resume.
-  </Card>
-  <Card title="Sessions" icon="history" href="/cli/sessions">
-    Resume, rewind, fork, export, import, share, lock, clean up.
-  </Card>
-  <Card title="Keyboard shortcuts" icon="keyboard" href="/cli/keyboard">
-    Every binding, grouped by where it applies — plus the Ctrl+X overlay.
-  </Card>
-  <Card title="Headless runs" icon="workflow" href="/cli/headless">
-    `cortex exec` and `cortex run` in scripts, GitHub Actions, GitLab CI.
-  </Card>
-  <Card title="Configuration" icon="settings" href="/cli/configuration">
-    `config.toml`, profiles, environment variables, data locations, hosts.
-  </Card>
-  <Card title="Extend" icon="puzzle" href="/cli/extend">
-    MCP servers, skills, agents and subagents, hooks, plugins, themes.
-  </Card>
-  <Card title="Troubleshooting" icon="life-buoy" href="/cli/troubleshooting">
-    Outage copy, hosts that refuse, the agent that will not edit, MCP, quotas.
+  <Card title="CLI quickstart" icon="rocket" href="/cli/quickstart">
+    Install, sign in, a first turn in a project, `AGENTS.md`, and how much autonomy to grant on day one.
   </Card>
 </CardGroup>
 
+## Use the CLI
+
+<CardGroup cols={2}>
+  <Card title="The TUI" icon="window-maximize" href="/cli/tui">
+    Everything on screen: the timeline, the composer and its chips, the footer hints, queueing a follow-up, the panels.
+  </Card>
+  <Card title="Modes and permissions" icon="sliders" href="/cli/modes-and-permissions">
+    Agent, Plan, Ask and Bash, the approval prompt, the sandbox, and the permission table.
+  </Card>
+  <Card title="Plan and Spec modes" icon="list-check" href="/cli/plan-mode">
+    Get a plan before anything changes, accept or keep iterating, and the stricter Spec lock.
+  </Card>
+  <Card title="Sessions" icon="clock-rotate-left" href="/cli/sessions">
+    Sessions are files: list, resume, rewind, fork, export, import, share, lock and clean up.
+  </Card>
+  <Card title="Goals" icon="bullseye" href="/cli/goal">
+    A long-horizon objective that survives compaction and resume, with a turn budget and evidence.
+  </Card>
+  <Card title="Slash commands" icon="bolt" href="/cli/slash-commands">
+    Everything after `/` in the composer, grouped by purpose, plus your own custom commands.
+  </Card>
+  <Card title="Keyboard shortcuts" icon="keyboard" href="/cli/keyboard">
+    Every binding, grouped by where it applies, and the in-app shortcuts overlay.
+  </Card>
+  <Card title="Tools the agent uses" icon="screwdriver-wrench" href="/cli/tools">
+    Search, read, edit, shell and the rest, how each one appears in the timeline, and which ones ask first.
+  </Card>
+  <Card title="Cloud, This PC, and SSH" icon="server" href="/cli/hosts">
+    Where a session actually runs, how to opt in to the other hosts, and why they fail closed.
+  </Card>
+  <Card title="Editor integration" icon="pen-to-square" href="/cli/editor">
+    Driving the CLI from an editor over the agent protocol, and what is not wired yet.
+  </Card>
+</CardGroup>
+
+## Automate
+
+<CardGroup cols={2}>
+  <Card title="Headless and one-shot runs" icon="gears" href="/cli/headless">
+    `cortex run` and `cortex exec`: autonomy levels, output formats, turn and time limits, exit codes.
+  </Card>
+  <Card title="CI cookbook" icon="code-merge" href="/cli/ci">
+    Recipes for pipelines: the key in the environment, parsing the result document, reviewing uncommitted changes.
+  </Card>
+</CardGroup>
+
+## Configure
+
+<CardGroup cols={2}>
+  <Card title="Configuration" icon="gear" href="/cli/configuration">
+    `config.toml` keys, profiles, and the five layers that decide which value wins.
+  </Card>
+  <Card title="Environment variables" icon="list" href="/cli/environment-variables">
+    Every `CORTEX_*` variable the CLI reads and what each one overrides.
+  </Card>
+  <Card title="Data locations" icon="folder-tree" href="/cli/data-locations">
+    Where sessions, configuration, cache and credentials live on each operating system.
+  </Card>
+  <Card title="Permission policy" icon="file-shield" href="/cli/policy">
+    Allow and deny rules for tools and commands, and the managed policy an organization can set.
+  </Card>
+</CardGroup>
+
+## Extend
+
+<CardGroup cols={2}>
+  <Card title="MCP servers" icon="server" href="/cli/mcp">
+    Add a server, the supported transports, authentication, tool naming, and the connection panel.
+  </Card>
+  <Card title="Skills" icon="graduation-cap" href="/cli/skills">
+    Skill files, where the CLI looks for them, how the agent picks one, and writing your own.
+  </Card>
+  <Card title="Agents and subagents" icon="sitemap" href="/cli/agents">
+    Custom agents, their tool access, and when the CLI delegates part of a turn.
+  </Card>
+  <Card title="Hooks" icon="link" href="/cli/hooks">
+    The hooks block in a plugin manifest, which events actually fire, and why a hook can refuse but never approve.
+  </Card>
+  <Card title="Plugins" icon="puzzle-piece" href="/cli/plugins">
+    Installing and enabling plugins, the sandbox they run in, and the development workflow.
+  </Card>
+  <Card title="Themes" icon="palette" href="/cli/themes">
+    The built-in themes, switching them, and the related display settings.
+  </Card>
+</CardGroup>
+
+## Reference
+
+<CardGroup cols={2}>
+  <Card title="Command reference" icon="book" href="/cli/reference">
+    Every `cortex` subcommand and flag, one table per command group.
+  </Card>
+  <Card title="CLI troubleshooting" icon="life-ring" href="/cli/troubleshooting">
+    The diagnostic commands first, then the messages you might see and what to do about each.
+  </Card>
+</CardGroup>
+
+## How it fits with the other products
+
+Cortex Code is the same product in a browser and on the desktop. The terminal is another front end onto it, not a separate service.
+
+| In Code | In the CLI |
+| --- | --- |
+| A session on a repository | Change into the project directory and run `cortex`; the CLI reuses that workspace's Code session, so turns continue the same session |
+| Ask, Plan and Agent | Press **Shift+Tab** to cycle Agent, Plan and Ask |
+| Stop | Press **Esc**; the timeline shows `Stopped` |
+| The Cloud host | The default for the session view and for `cortex exec` |
+| This PC and SSH | Opt in per session, and only with an already connected Code session |
+| Approvals | A numbered prompt in the composer before anything consequential |
+| Model choice | The model chip at the bottom right of the composer, and the model picker |
+
+| The CLI does | The CLI does not |
+| --- | --- |
+| Drive Code sessions from a terminal | Run a model on your own machine |
+| Work in a project directory | Replace Cortex Chat |
+| Offer This PC and SSH hosts | Put those hosts in the browser |
+| Extend with MCP servers, skills, agents, hooks and plugins | Manage Cortex Bot or Cortex Design |
+
 ## Conventions on these pages
 
-- Commands are written `cortex …`. The installed binary is `Cortex`; the installer adds `cortex` and `agent` symlinks, and both spellings work on case-insensitive filesystems.
-- Everything documented here is backed by the shipped CLI. `cortex --help` and `cortex <command> --help` are generated from the same definitions and are always authoritative.
-- The CLI talks to the Cortex API at `api.cortex.foundation`. Releases are published to `software.cortex.foundation`.
-- Source and issues: [github.com/CortexLM/cli](https://github.com/CortexLM/cli), Apache-2.0.
+- Commands are written as `cortex ...`. The installed binary file is named `Cortex`, and the command you type is `cortex`.
+- The generated help is always authoritative: `cortex --help` and `cortex <command> --help` come from the same definitions as the shipped commands. If this documentation and the help output ever disagree, believe the help.
+- The CLI talks to the Cortex API over HTTPS at `api.cortex.foundation`. Releases are published to `software.cortex.foundation`.
+- Source and issues: [github.com/CortexLM/cli](https://github.com/CortexLM/cli), licensed Apache-2.0.
 
-## Next
+<Note>
+Version numbers move between releases, so no page here pins one. Run `cortex --version` to see what you have, and `cortex upgrade --check` to see what is published on your channel.
+</Note>
 
-1. [Install the CLI](/cli/install) — checksums, version pins, and channels.
-2. [Sign in](/cli/sign-in) — the browser flow, device codes, and CI keys.
-3. [CLI quickstart](/cli/quickstart) — a working Code session in the terminal.
-4. [Modes and permissions](/cli/modes-and-permissions) — decide how much the agent may do.
+## Related
+
+- [Install the CLI](/cli/install)
+- [Sign in](/cli/sign-in)
+- [CLI quickstart](/cli/quickstart)
+- [Cortex Code](/code/index) and [Code in the terminal](/code/cli)
+- [CLI troubleshooting](/cli/troubleshooting)

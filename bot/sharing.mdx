@@ -1,0 +1,112 @@
+---
+title: "Share a bot"
+description: "Invite someone to a bot by email, what the independent copy carries and what it never does, accept a share, and share a routine"
+icon: "share-nodes"
+---
+
+Sharing a bot hands someone the way it is set up, not what it knows. The recipient does not join your bot and does not drive it: they get their own copy, on their own account, which they then connect to their own apps. The panel says it in one line: `The recipient gets an independent copy. They reconnect their own apps. Secrets and a live link are not included.`
+
+This page covers what a share carries and what it withholds, inviting someone by email, accepting a bot someone shared with you, the public link panel and its current state, the check that runs on a description before it can be published, sharing a routine on its own, and the copy features that are not available yet.
+
+## What a share carries
+
+A share is a description of a bot. The panel is explicit about each part of it, and the caption sets the boundary: `A public link shows how this bot is set up. It never shows what the bot knows or holds.`
+
+| Section | On a share |
+| --- | --- |
+| **Name** | shown |
+| **Look and face** | shown |
+| **Role** | shown |
+| **Description** | shown only if you tick **Publish the description on the link** |
+| **Tools** | shown: which tools the bot may use, never their results |
+| **Connectors** | shown by name, as apps the recipient reconnects |
+| **Memory** | withheld |
+| **Secrets** | withheld |
+| **Computer** | withheld |
+
+A section with nothing in it is marked `nothing to show` rather than left blank. The three withheld sections are named rather than dropped, which the product explains as a deliberate choice: `Memory, secrets and the computer are withheld by name rather than dropped silently — an omission you cannot see is a decision you did not make.`
+
+<Warning>
+  Nothing the bot learned travels. Its memory, its vault and its computer stay with your copy, and the recipient starts with an empty version of each. A bot that only works because of something in its memory will not work for them until they teach it the same thing. See [Bot memory](/bot/memory).
+</Warning>
+
+## Invite someone by email
+
+An email invite is the way to share a bot today.
+
+<Steps>
+  <Step title="Open the share panel">
+    From the bot's settings, choose **Share as template**.
+  </Step>
+  <Step title="Decide about the description">
+    Tick **Publish the description on the link** only if the description is meant to be read by someone else. If it holds a credential or a pasted link you have to clear that first.
+  </Step>
+  <Step title="Enter the address">
+    Under **Invite by email**, type the address and choose **Invite**. The hint is a real constraint: `They must already have a Cortex account.`
+  </Step>
+  <Step title="Confirm it went">
+    The panel answers `Invitation sent.` A failure reads `The invite could not be sent.` or `That share could not be updated.`, and nothing is sent in that case.
+  </Step>
+</Steps>
+
+Only the bot's owner can share it: anyone else gets `Only the owner can publish this bot.` Sharing also needs a signed-in Cortex account, because a link that outlives your session is something you have to be able to come back and revoke.
+
+## Accept a bot shared with you
+
+<Steps>
+  <Step title="Open Shared with you">
+    Invitations wait there. With none, it reads `No invitations waiting.`
+  </Step>
+  <Step title="Add it to your account">
+    Choose **Add to my account**, or **Use template** from a share you opened directly. You get an independent copy on your own account.
+  </Step>
+  <Step title="Reconnect your apps">
+    The copy lists **Apps to reconnect**, with the rule stated plainly: `Reconnect your apps after cloning. Secrets are never copied.` Until you do, the bot holds no connections. See [Connected apps and secrets](/bot/plugins).
+  </Step>
+</Steps>
+
+Accepting twice is harmless and says so: `You already added this copy.` A share that has been revoked or has expired reads `This share is no longer available.`, and a failure reads `This invitation could not be accepted.` A copy counts against the 24 bots an account may have, so delete one you no longer use if the copy will not land.
+
+## The public link panel
+
+Beside email invites, the bot's share panel is built for a **Public link**: a link anyone may open to see how the bot is set up and take a copy. The panel shows **Create share link** or **Publish link**, then **Copy link**, with the state above it reading `Not shared`, `Shared` or `Revoked`, alongside `Link is active` or `No active share`. A published link is shown once, which the panel warns about with `The link is shown once. Revoke to mint a new one.`, and **Revoke link** ends it. A clone counter shows how many copies have been taken, as `{count} copies`.
+
+<Note>
+  Minting a public link is not available yet. The panel reads the state it would show, and says so itself: `Cortex cannot mint a link yet, so nothing here writes. The state above is what this surface will read.` Use **Invite by email** in the meantime. Opening and accepting a share someone sends you does work.
+</Note>
+
+## The check on a description
+
+Before a description can be published, Cortex reads it and blocks publishing on two findings.
+
+| Finding | What it says | Why |
+| --- | --- | --- |
+| A credential | `This description carries a credential` | `A public link publishes this text. Remove the value and store it under Secrets instead.` |
+| A link | `This description carries a link` | `A pasted URL is usually a private console, a signed document or an invite. Remove it unless it is meant to be public.` |
+
+Until you clear it, publishing refuses with `Clear the finding above before publishing.` The same rule is enforced on the way out as well: a template carrying key-shaped text is answered with `This template cannot include secrets. Remove the key-shaped text and share again.` Nothing is stripped on your behalf, because a silently edited description is one you no longer recognise.
+
+## Why there is no live share
+
+You cannot give someone a live seat on your bot. A live link is refused by design, and the reason is the one that matters: `A live link would run on the owner's connections. Share an independent copy instead.` Someone driving your bot would be spending your connected apps, your vault and your computer under your name, so the product hands out copies instead.
+
+## Share a routine on its own
+
+A schedule can be shared without the bot. On the bot's **Routines** panel, a routine's **Share** action offers **Share this schedule**, and the recipient sees **Shared schedule** with **Add to my bot**, which attaches the schedule to a bot they already have.
+
+A shared schedule arrives switched off: `Copied schedules start paused.` The recipient reads it, points it at the right bot, and chooses **Resume** when they want it to run. See [Routines](/bot/routines).
+
+## Not available yet
+
+Two other ways to copy a bot are drawn in the interface but are not wired up, and each says so when you use it.
+
+- **Duplicate**, in a bot's row menu under **Bot actions**, would make a copy of a bot's identity and its skills on your own account. Its dialog is honest about the split, listing the name, look, face, description, label and skills as copied, and memory, secrets, the computer, messages, routines, channels, approvals and plugins as not copied. It is not available yet, and may answer `The copy did not come back as a new bot. Nothing was opened.`
+- **Export pack** and **Import pack** would move a bot's identity, skills and routines as a single file, refusing any file that carries secrets, logins, the computer or history. Neither is available yet.
+
+## Related
+
+- [Connected apps and secrets](/bot/plugins) - what the recipient has to reconnect, and why secrets never travel.
+- [Routines](/bot/routines) - creating the schedule you can then share.
+- [Bot memory](/bot/memory) - what stays behind when a bot is copied.
+- [Channels](/bot/rooms) - working with several of your own bots in one thread.
+- [Create a bot](/bot/create-a-bot) - the form a copy lands in, and the 24-bot ceiling.

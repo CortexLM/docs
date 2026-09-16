@@ -1,0 +1,254 @@
+---
+title: "CLI plugins"
+sidebarTitle: "Plugins"
+description: "Install, review, trust and build Cortex CLI plugins: the plugin commands, the manifest, manifest hooks, and the limits a plugin cannot cross."
+icon: "puzzle-piece"
+---
+
+A plugin is a package that adds something to the Cortex CLI: extra slash commands, extra tools the agent can call, configuration of its own, and hooks that observe or block what a session does. Plugins are compiled to WebAssembly and run in a sandbox with a memory cap, an instruction budget and a wall-clock timeout, so a plugin that misbehaves is stopped instead of taking your session with it.
+
+This page covers the plugin lifecycle end to end: where plugins live, how to review a package before you install it, how to enable, run, update and remove one, what the manifest declares, and the security model that decides what a plugin is allowed to do. The catalogue of hook events lives on [Hooks](/cli/hooks).
+
+<Note>
+The plugin surface is young. Installation, enablement, the local development workflow and the manifest format are real and stable enough to build against. The `search`, `browse` and `update` subcommands talk to a plugin registry that is not documented publicly yet, and `publish` runs as a dry run by default, preparing the package locally and reporting what it would ship.
+</Note>
+
+## Where plugins live
+
+Plugins are read from two roots:
+
+| Root | Scope |
+| --- | --- |
+| `~/.cortex/plugins/` | Your own plugins, available in every project |
+| `.cortex/plugins/` | Plugins committed with a repository, available to anyone who checks it out |
+
+A project plugin wins over a personal plugin with the same id. See [Data locations](/cli/data-locations) for the rest of the layout, including where the audit journal is written.
+
+## The plugin commands
+
+`cortex plugin` (alias `cortex plugins`) groups everything. Every subcommand accepts `--help`.
+
+| Command | What it does |
+| --- | --- |
+| `list` (alias `ls`) | List installed plugins. `--json`, `--enabled`, `--disabled` |
+| `install <name>` (alias `add`) | Install a plugin. `--version`, `-f/--force`, `--json`, `--accept-command <SHA256>`, `--trust-code` |
+| `show <name>` (alias `info`) | Show plugin information. `--json` |
+| `enable <name>` | Enable an installed plugin |
+| `disable <name>` | Disable an installed plugin without removing it |
+| `remove <name>` (aliases `rm`, `uninstall`) | Remove a plugin. `-y` |
+| `update <name>` | Update an installed plugin from the registry. `--source`, `--accept-command <SHA256>`, `--json` |
+| `trust <name>` | Explicitly trust native execution for this installed artifact. `--yes` |
+| `run <name>` | Invoke an installed plugin command or tool through the executable runtime |
+| `search <query>` | Search the plugin registry. `--json` |
+| `browse` | Browse plugins in the registry. `--json` |
+| `new <name>` (alias `create`) | Create a new plugin project. `-d`, `-a/--author`, `-o/--output`, `--advanced` |
+| `dev` | Rebuild in development mode (no runtime hot-reload). `-p/--path`, `-w/--watch`, `--debounce-ms` |
+| `build` | Build the plugin artifact. `-p/--path`, `--debug`, `-o/--output` |
+| `validate` (alias `check`) | Validate plugin manifest and structure. `-p/--path`, `--json`, `-v` |
+| `publish` | Prepare plugin for publication (dry-run). `-p/--path`, `-o` |
+
+Inside a session, `/plugins` opens the same list without leaving the timeline: `Enter` toggles the selected plugin, `i` installs, `u` updates and `Esc` closes.
+
+## Install a plugin, after reading what it registers
+
+Installing a plugin is a two-step review. The first step prints what the package would add and a hash of that surface. The second step installs only if the hash still matches.
+
+<Steps>
+<Step title="Print the review">
+```bash
+cortex plugin install my-plugin --json
+```
+
+`--json` prints the review and the hash without installing anything: the plugin id and version, every command with its aliases and arguments, every hook and tool it registers, and a `command_hash` over that surface.
+</Step>
+<Step title="Read the command list">
+Treat the command list as the security boundary. A plugin that registers a hook on tool execution sees every tool call in the session, and a plugin that registers a tool adds something the agent can decide to call on its own. If a name or a scope surprises you, stop here.
+</Step>
+<Step title="Accept the exact hash">
+```bash
+cortex plugin install my-plugin --accept-command 8f4c9d21b7e0a5c3e2d1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9
+```
+
+`--accept-command` takes the exact sha256 the review printed, all 64 characters of it: a shorter value is refused with `Accept-command hash must be a 64-character SHA-256 value from --json.` If the package changed in between, the install fails with `Command hash mismatch. Manifest may have changed. Re-run with --json and accept the new hash.`
+</Step>
+</Steps>
+
+The failure is a clean one: nothing is written to the plugin root, an already-installed copy is left exactly as it was, and no trust decision is renewed. There is no flag that accepts whatever hash happens to be current, so a changed manifest always comes back to you. Accepted hashes are appended to the audit journal with the plugin, the hashes and the scope names, never prompt text or file contents.
+
+<Tip>
+Run the review step in CI too. A pinned hash in a repository script means a plugin that quietly grows a new command fails the build instead of shipping.
+</Tip>
+
+Organisations can require the pinned form and refuse unreviewed installs. See [Permission policy](/cli/policy).
+
+## Packages that execute native code
+
+Most plugins run in the WebAssembly sandbox and need no extra decision. A package that executes native code cannot be sandboxed, so it is refused until you say otherwise, once, in writing:
+
+```bash
+cortex plugin install my-plugin --accept-command 8f4c9d21b7e0a5c3e2d1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9 --trust-code
+cortex plugin trust my-plugin --yes
+```
+
+<Warning>
+`--trust-code` trusts that exact package to execute native code. It is not a sandbox. A trusted package can read and write files, reach the network and start subprocesses with your user's rights, and `cortex plugin trust --yes` is you acknowledging exactly that. There is no signing or content verification of plugin packages today, so trust the source or do not trust the package.
+</Warning>
+
+## Enable, disable, remove
+
+```bash
+cortex plugin list --enabled
+cortex plugin disable my-plugin
+cortex plugin enable my-plugin
+cortex plugin remove my-plugin -y
+```
+
+Disabling is the safe way to isolate a plugin while you debug something: the package stays installed and its hooks stop running. A plugin that is unloaded or disabled is skipped silently when hooks dispatch. A plugin in any other non-active state is an error rather than a silent skip, and the session reports `Plugin is not active`.
+
+## Run a command or a tool directly
+
+`cortex plugin run` invokes a plugin outside a session, which is how you test one:
+
+```bash
+cortex plugin run my-plugin review --json
+cortex plugin run my-plugin --tool summarise --input '{"path":"README.md"}'
+```
+
+A command name and `--tool` are mutually exclusive, and one of the two is required. `--input` takes a JSON object, requires `--tool`, and defaults to `{}`. `--json` prints a machine-readable report of the invocation.
+
+## What the manifest declares
+
+Every plugin has a `plugin.toml` at its root. It declares the capabilities the plugin uses, the permissions it asks for, and the commands, hooks, tools and configuration it registers.
+
+```toml
+capabilities = ["commands", "hooks", "config"]
+permissions = [
+  { read_file = { paths = ["src/**/*"] } },
+  { network = { domains = ["example.com"] } },
+]
+
+[plugin]
+id = "my-plugin"
+name = "My Plugin"
+version = "1.0.0"
+description = "What it does"
+authors = ["Your Name"]
+license = "Apache-2.0"
+min_cortex_version = "0.1.0"
+
+[[commands]]
+name = "review"
+aliases = ["rv"]
+description = "Review the current diff"
+usage = "/review [target]"
+category = "quality"
+
+[[commands.args]]
+name = "target"
+description = "What to review"
+required = false
+default = "HEAD"
+arg_type = "string"
+
+[[hooks]]
+hook_type = "tool_execute_before"
+priority = 100
+pattern = "Edit"
+function = "hook_tool_execute_before"
+
+[config]
+strict = { description = "Fail on any finding", type = "boolean", default = false, required = false }
+
+[wasm]
+memory_pages = 128
+timeout_ms = 5000
+wasi_enabled = true
+wasi_caps = ["stdout", "stderr", "clocks"]
+```
+
+`capabilities` names the broad areas a plugin touches. There are ten: `commands`, `hooks`, `events`, `tools`, `formatters`, `themes`, `config`, `filesystem`, `shell` and `network`. `permissions` is the scoped list: `read_file`, `write_file`, `execute`, `network`, `environment` and `config` each take the paths, commands, domains, variables or keys they apply to, while `clipboard` and `notifications` take no scope and are written as bare strings in the same array. A plugin that asks for `read_file` with `paths = ["**/*"]` is asking for your whole workspace; narrow scopes are easier to accept.
+
+`[[tools]]` blocks add tools the agent can call, each with a JSON input schema. `[config]` keys become settings a user can set, with an optional `[config.<key>.validation]` table. `[wasm]` tunes the sandbox inside the hard ceilings below, and a package that uses the executable runtime declares it in `[runtime]`.
+
+## Hooks in the manifest
+
+Hooks reach a session through the manifest, not through a separate file. Each `[[hooks]]` block has exactly four fields, and an unknown field is a manifest error rather than a warning:
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `hook_type` | Yes | Which event the hook subscribes to, in snake case, for example `session_start` or `tool_execute_before` |
+| `priority` | No, default `100` | Lower runs first |
+| `pattern` | No | Narrows the hook, for example to one tool name |
+| `function` | No | The function in the package to call |
+
+When several plugins subscribe to the same event, they run in a deterministic order: lowest priority number first, and plugins that share a priority keep the order they were registered in, so the same set of plugins always produces the same sequence. [Hooks](/cli/hooks) lists the events you can subscribe to and what each one receives.
+
+## What a hook can and cannot do
+
+A hook can watch, annotate, and refuse. It cannot widen what a session is allowed to do, and that is enforced in two places rather than one.
+
+Every permission question starts at **ask**. A hook that answers "allow" does not get its way: the dispatch fails with `Plugins cannot grant execution privileges`, and a third-party plugin attempting it is refused with `Third-party plugins cannot auto-grant permissions (security restriction)`. The engine re-checks the same rule after the hooks have run, so a plugin cannot slip an approval through by answering late. A hook can deny an action, and the first non-ask decision wins, so one plugin's refusal is enough to stop a call.
+
+Two further edits are rejected outright. A hook cannot change which tool is about to run or drop its arguments (`A hook cannot change tool identity or remove arguments`), and a hook cannot promote the role of a message it touches (`Hooks cannot elevate message roles`). The practical summary: a plugin can make your session stricter, never looser. Approvals stay with you and with your [permission policy](/cli/modes-and-permissions).
+
+## The sandbox ceilings
+
+These limits are the outer bounds, whatever a manifest asks for:
+
+| Limit | Value |
+| --- | --- |
+| Memory | 16 MB, 256 pages of 64 KB |
+| Instruction budget | 10,000,000 fuel operations |
+| Execution timeout | 30 seconds by default |
+| Table elements | 10,000 |
+| Instances per plugin | 10 |
+| Memory regions | 1 |
+| Tables | 10 |
+
+A plugin that loops forever runs out of fuel or hits the timeout and is terminated. Your session keeps going.
+
+## Build your own
+
+<Steps>
+<Step title="Scaffold the project">
+```bash
+cortex plugin new my-plugin -a "Your Name"
+```
+
+Add `--advanced` for a template that includes interface hooks.
+</Step>
+<Step title="Validate the manifest">
+```bash
+cortex plugin validate -p ./my-plugin --json
+```
+
+Validation checks the manifest and the project structure, and is the fastest way to catch a mistyped `hook_type` or an unknown field.
+</Step>
+<Step title="Build and iterate">
+```bash
+cortex plugin build -p ./my-plugin
+cortex plugin dev -p ./my-plugin --watch --debounce-ms 500
+```
+
+`dev --watch` rebuilds on change, with a debounce so a burst of saves is one rebuild. It rebuilds the artifact; it does not hot-reload a running session, so reload the plugin to pick up a new build.
+</Step>
+<Step title="Install it locally">
+```bash
+cortex plugin install ./my-plugin --json
+cortex plugin install ./my-plugin --accept-command <hash>
+```
+
+The review and hash step is the same for a local path as for a registry package.
+</Step>
+</Steps>
+
+`cortex plugin publish` prepares the package and reports what it would ship. Dry-run is the default, as its own help says: `Dry-run mode (default, no actual publishing)`.
+
+## Related
+
+- [Hooks](/cli/hooks)
+- [Tools the agent uses](/cli/tools)
+- [Modes and permissions](/cli/modes-and-permissions)
+- [Permission policy](/cli/policy)
+- [Command reference](/cli/reference)
+- [Data locations](/cli/data-locations)

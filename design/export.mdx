@@ -1,0 +1,70 @@
+---
+title: "Export a design"
+description: "Take a frame, a selection, or a whole canvas out of Cortex Design as a PNG rendered on your machine or as the canvas document in JSON."
+icon: "file-export"
+---
+
+Export turns part of a design canvas into a file you can hand to someone else or commit alongside your code. Today it produces two things: a **PNG** that the Design desktop app renders on your own machine, and the canvas document as **JSON**. Each canvas also keeps a stored thumbnail, which is the small picture other Cortex surfaces show for it.
+
+This page covers what you get today, how to run an export from the editor, what the scope and scale choices do, and which formats are planned but not available yet. Export is a Design desktop app action: the canvases rail in the web app lists a canvas and copies its reference, but does not export it.
+
+## What you can produce today
+
+| Format | Available | What it is |
+| --- | --- | --- |
+| **PNG** | Yes | A raster picture of the scope you chose, rendered locally by the app |
+| **JSON** | Yes | The canvas document itself, frames and notes and all |
+| **SVG** | Not yet, planned for v1.1 | Shown in the sheet and not selectable |
+| **PDF** | Not yet, planned for v1.1 | Shown in the sheet and not selectable |
+
+The export sheet is honest about this itself: it carries a **PARTIAL IN V1** chip, and the SVG and PDF rows are drawn disabled with a `v1.1` marker beside them. Choosing them does nothing until they ship.
+
+Export produces image and document files only. There is no export to a web page, and no export to a slide deck.
+
+## Run an export
+
+<Steps>
+  <Step title="Open Export in the editor header">
+    The sheet opens over the canvas. The keyboard shortcut for the confirm button is `⌘E`.
+  </Step>
+  <Step title="Choose the SCOPE">
+    Three choices: the current **Selection**, which names the frame you have picked; **All frames**, with their count; or **Canvas**, meaning the whole board including anything outside the frames.
+  </Step>
+  <Step title="Choose the FORMAT">
+    **PNG · rendered here** or **JSON**. The two planned formats sit below them, disabled.
+  </Step>
+  <Step title="Choose the SCALE">
+    **1x**, **2x**, or **3x**. This applies to a PNG; it has no meaning for the JSON document.
+  </Step>
+  <Step title="Choose the DESTINATION">
+    Download the file to this computer, which is selected by default and lands in your downloads folder, or copy it to the clipboard.
+  </Step>
+  <Step title="Confirm">
+    The button names the format you picked. Before you press it, the sheet shows an estimate of what you are about to produce: how many frames, the pixel dimensions, and the approximate file size.
+  </Step>
+</Steps>
+
+## What each format is good for
+
+**PNG** is the one to reach for when a person is going to look at the result: a review comment, a message, a document. It is rendered by the app on your machine rather than by the service, which is why the format row says so and why the app has to be open to produce one. Use `2x` or `3x` when the picture will be viewed on a high-density screen or scaled up.
+
+**JSON** is the canvas document: the frames, their positions, the notes, and the references to the images on the board. Reach for it when something other than a person is going to read the result, or when you want a copy of the design in your own repository. It is the whole document rather than a picture of it, so it does not depend on a scale.
+
+The **thumbnail** is not something you pick in the sheet. Each canvas carries one, uploaded as an image on that canvas, and it is what a canvas tile shows in a list. A thumbnail must be a raster image; `SVG is not stored as a Design asset.`
+
+## Limits worth knowing
+
+- An uploaded image, thumbnail, or tile is at most 8 MB. Past that, `A Design asset is at most 8 MB.`
+- SVG is not accepted as an image on a canvas, so convert artwork to PNG before placing it.
+- A canvas document is capped at 8 MiB uncompressed and 8,000 nodes. A canvas that has outgrown those answers `This canvas is too large to save.`, which you will meet while saving rather than while exporting. See [payload_too_large](/problems/payload_too_large).
+
+<Note>
+  Saving an export straight to a cloud drive is marked in the sheet as a next-version connector. Until then, download the file and put it where you want it.
+</Note>
+
+## Related
+
+- [Generate and edit](/design/editor) - the editor header where Export lives.
+- [Versions](/design/versions) - the numbered history every save leaves behind.
+- [Design canvases](/design/canvases) - canvases, thumbnails, and their counts.
+- [Design troubleshooting](/design/troubleshooting) - a refused image or a canvas that will not save.

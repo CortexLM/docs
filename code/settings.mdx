@@ -1,0 +1,72 @@
+---
+title: "Code settings"
+sidebarTitle: "Settings"
+description: "Code settings holds model defaults for your workspace. Everything else about a session is chosen when you start it, not saved here."
+icon: "gear"
+---
+
+**Code settings** is a short page, and knowing why it is short will save you a hunt. It holds the defaults Cortex Code applies to new sessions in your workspace, described on the page as **Defaults for sessions in this workspace.** In practice that means model defaults, plus pointers to the three places where the rest of Code's configuration actually lives.
+
+This page covers the fields you can set, what each one does, and the larger set of things a reader expects to find here and will not. Cortex is explicit about that second group rather than drawing controls that would quietly forget what you set.
+
+## Model defaults
+
+The **MODEL DEFAULTS** section is the only part of the page that saves anything.
+
+| Field | What it does |
+| --- | --- |
+| **Default model** | The model new sessions start on. Leave it on **Server default** to let Cortex choose, which is what a fresh workspace does. |
+| **Fallback models** | **Comma-separated slugs, tried in order when the default is unavailable.** |
+
+Two things are worth being precise about. **Server default** is not a model name, it is the absence of a choice: it leaves the field unset and lets the deployment decide. And fallbacks are tried **in order**, so put the model you would actually want second in second place.
+
+<Note>
+Every field here is a **workspace default**. Nothing on this page is per session, per repository or per runtime. A default changes what a new session starts with; it does not reach into a session that already exists, and a session can always be started on a different model from the composer's model chip.
+</Note>
+
+## What is chosen per session, not here
+
+Two things readers most often come looking for are genuinely not settings.
+
+**The interaction mode is not saved.** **Ask**, **Plan** and **Agent** are chosen in the composer when you start a session, and again on each follow-up. The mode is a lock on the set of tools a turn is built with, not an instruction the model is asked to follow, and because the set is chosen when the turn is built, a change applies to the **next** turn rather than to one already running. A new session defaults to **Agent**. See [Ask, Plan, Agent](/code/interactions).
+
+**The runtime is not saved either.** It is chosen at the moment the session starts. In the browser, sessions run on Cloud, which is what the page's own pointer says. See [Cloud runtimes](/code/runtimes).
+
+## Approvals are per session, in two separate places
+
+There is no workspace policy for what a session may do. Instead a session asks, and it asks in two different places that are easy to conflate.
+
+- **Commands** raise a card above the transcript with **Allow once**, **Always allow** and **Deny**. **Always allow** is a grant for the rest of **that session** only. It is not an account setting, and it does not carry to another session, to Cortex Chat or to the Cortex CLI. See [Permissions and approvals](/code/approvals).
+- **File writes** never appear on that rail. They collect in the session's **Changes** pane as pending files, and a human presses **Approve**, **Approve all** or **Reject**. A session-level **Always allow** never covers a write. See [Changes and diffs](/code/changes).
+
+<Warning>
+There is no setting, here or anywhere, that scopes which commands a session may run or which directories it may touch, and there is no undo, no checkpoint and no revert of a turn's edits. The review point is the approval itself: read the pending diff in **Changes** before you approve it, because approving is what puts it in the tree.
+</Warning>
+
+## Not configurable yet
+
+The page carries its own paragraph about the missing controls, and it is the most useful sentence on the screen:
+
+> **Pull-request behaviour, a branch prefix, a network allowlist and a shell-command policy are all decided per session today: a session asks before it runs a command, and you allow, always-allow or deny it. There is no workspace-level field for any of them, so there is no control here that would forget what you set.**
+
+The same applies to a default repository, a pull-request destination, a base branch and migration approval. None of them is a saved setting today, so do not plan a team convention around one. If you need a branch convention or a pull-request rule enforced, enforce it in the repository or at review time, not from this page. See [Repositories and branches](/code/repositories).
+
+## Where the rest lives
+
+The **ELSEWHERE** section is three pointers, with the page's own descriptions:
+
+- **Integrations and MCP servers**, covered in [Code integrations](/code/integrations).
+- **Cloud runtimes**, with the note **Sessions in the browser run on Cloud.**
+- **Notifications**, described as **What Cortex tells you about, and what it has already told you.**
+
+<Info>
+Where the workspace boundary sits on a team account, and who on a team may change these defaults, is not documented. If you share an account, agree on the defaults before you change them.
+</Info>
+
+## Related
+
+- [Code integrations](/code/integrations)
+- [Ask, Plan, Agent](/code/interactions)
+- [Permissions and approvals](/code/approvals)
+- [Cloud runtimes](/code/runtimes)
+- [Code notifications](/code/notifications)

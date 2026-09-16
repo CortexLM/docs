@@ -1,111 +1,127 @@
 ---
 title: "CLI troubleshooting"
-description: "Start with four commands, then work through the messages — the coding service, hosts that refuse, the agent that will not edit, MCP, quotas, timeouts."
-keywords: ["errors", "problems", "fixes", "not working"]
+description: "Start with six commands, then work through the messages: service unavailable, hosts that refuse, an agent that will not edit, MCP, timeouts and quotas."
+icon: "life-ring"
 ---
 
-## Start here
+Most CLI problems are one of five things: you are not signed in, the coding service is unreachable, a host is not connected, a permission or mode is narrower than you think, or a run hit a limit. This page is ordered by the message or symptom you actually see, so you can jump to the one in front of you.
+
+Start with the diagnostic block below whatever the symptom is. It takes ten seconds and it answers most of the follow-up questions before you have to ask them.
+
+## Start with six commands
 
 ```bash
 cortex --version
 cortex whoami
-cortex debug paths       # where config, sessions, logs, and caches are
+cortex debug paths       # where config, sessions, logs and caches are
 cortex debug config      # the configuration actually in effect
 cortex debug system      # platform and environment details
 cortex logs -n 200       # recent log output
 ```
 
-For a single run, `-v` and `--trace` increase console verbosity and can expose sensitive context. `--debug` instead records bounded, content-free diagnostics under the Cortex home `diagnostics/` directory (or `CORTEX_DIAGNOSTICS_DIR`); it never uploads anything.
+`cortex debug config` is the one people forget. It shows the configuration in effect after your profile, your project file and any `-c` overrides have been merged, which is usually where a surprising behaviour comes from. `cortex debug config --diff` narrows it to where your project file and your profile disagree, and `cortex debug config --env` adds the Cortex environment variables that are influencing the result.
 
-## “The coding service is temporarily unavailable”
+<Note>
+`-v` and `--trace` raise console verbosity for a single run, and that output can include the contents of your prompts and files. `--debug` is the safer switch: it records bounded, content-free diagnostics under the Cortex home `diagnostics/` directory, or the directory named by `CORTEX_DIAGNOSTICS_DIR`. Each entry carries eight fields and nothing else: `schema`, `timestamp`, `version`, `operation`, `trace_id`, `span_id`, `status` and `duration_ms`. There is no prompt text, no file content, no path and no account identifier, because the recording API takes no user-supplied string at all. A journal file stops at 2 MiB, the directory keeps at most 64 of them, entries older than 7 days are pruned, and on Unix-like systems the files are written owner-read-write only. It never overwrites `./debug.txt`, and it never uploads anything.
+</Note>
 
-<Frame caption="The outage state: the error, what to do next, and a composer that retries on Enter — your work so far is saved in this session.">
-  <img src="/images/cli/runtime/120x40/error-unavailable.png" alt="Cortex CLI showing The coding service is temporarily unavailable with a retry composer" />
-</Frame>
+## The service, the host, and signing in
 
-Cortex could not reach the coding API. The message is deliberately the whole story — the CLI does not surface provider, SDK, or transport names.
+### The coding service is temporarily unavailable
 
-1. Can this machine reach `api.cortex.foundation`?
-2. Is a proxy in the way? Corporate TLS interception can break calls even when browsing works.
-3. Is `CORTEX_API_URL` set to something unexpected? `cortex debug config --env` tells you.
-4. Are you signed in? `cortex whoami`.
+This means the CLI could not reach the coding service. The message is deliberately the whole story: the CLI does not name a provider, an SDK or a transport, so there is nothing further hidden behind it. Four checks, in order:
 
-Press **Enter** to retry; the session is saved.
+1. Can you reach `api.cortex.foundation` from this machine?
+2. Is a proxy in the way? `HTTPS_PROXY` and `HTTP_PROXY` are honoured for `cortex scrape`, but corporate TLS interception can still break other calls.
+3. Is `CORTEX_API_URL` set to something unexpected? `cortex debug config --env` will tell you.
+4. Are you signed in? Run `cortex whoami`.
 
-## “This PC and SSH Code execution require an already connected Code session”
+If all four look right, check [status.cortex.foundation](https://status.cortex.foundation) before digging further.
 
-You selected This PC or SSH — through `CORTEX_COMPUTER` or `CORTEX_SSH_HOST` — without a connected Code session. Those hosts are never created on the fly, and the Cloud is not substituted. Either resume a session that already has the host, or unset `CORTEX_COMPUTER` to use the Cloud. See [Code on desktop](/code/desktop).
+### This PC and SSH Code execution require an already connected Code session
 
-## The TUI will not start
+You selected This PC or SSH, with `CORTEX_COMPUTER` or `CORTEX_SSH_HOST`, without a connected Cortex Code session. Those hosts are never created on the fly, and Cloud is not quietly substituted, because running your tools somewhere other than where you asked is worse than refusing. Either resume a session that already has a host, or unset `CORTEX_COMPUTER` to use Cloud. See [Cloud, This PC, and SSH](/cli/hosts).
 
-Cortex needs a terminal on both stdin and stdout. In a pipeline, a CI job, or under a wrapper that redirects either, it refuses and points you at [`cortex run` or `cortex exec`](/cli/headless).
+### Sign-in does not complete
 
-## Sign-in problems
+Device and single sign-on flows, expired credentials, and headless machines with no browser are covered on [Sign in](/cli/sign-in). `cortex login status` reports where you stand, and `cortex whoami` shows the account a run will use.
 
-See [Sign in → Troubleshooting](/cli/sign-in#troubleshooting).
+### The interface will not start
+
+The CLI needs a terminal on both standard input and standard output. In a pipeline, a CI job, or under a wrapper that redirects either one, it refuses to start and points you at `cortex run` or `cortex exec`. That is the fix, not a workaround: see [Headless and scripting](/cli/headless) and [CI and automation](/cli/ci).
 
 ## The agent will not change anything
 
-Check, in order:
+Work down this list in order. One of the six is almost always the answer, and `cortex debug config --diff` shows what differs from the defaults.
 
-1. **Mode.** Plan and Ask are read-only. **Shift+Tab** to **Agent**.
-2. **Sandbox.** `--sandbox read-only` blocks all writes; `workspace-write` confines them to the workspace.
-3. **Approval policy.** With `--ask-for-approval never` and no autonomy the agent may be declining rather than prompting.
-4. **The `permission` table** in `config.toml` can deny `edit` or specific command patterns outright.
-5. **Agent tool access.** An agent with `tools: read-only` cannot write, whatever the session policy says.
-6. **Spec mode.** Mutating tools stay locked until the plan is accepted.
+<Steps>
+<Step title="Check the mode">
+**Plan** mode is read-only by design. Press `Shift+Tab` to cycle to **Agent**. See [Plan and Spec modes](/cli/plan-mode).
+</Step>
+<Step title="Check the sandbox">
+`--sandbox read-only` blocks all writes. `workspace-write` confines them to the workspace instead of forbidding them.
+</Step>
+<Step title="Check the approval policy">
+With `--ask-for-approval never` and no autonomy granted, the agent may be silently declining rather than prompting you.
+</Step>
+<Step title="Check the permission table">
+The `[permission]` table in `config.toml` can deny editing, or specific shell command patterns, outright. A project file can carry it too, and a project file beats your own. See [Permission policy](/cli/policy).
+</Step>
+<Step title="Check the agent">
+An agent defined with read-only tools cannot write, whatever the session policy says. `cortex agent show <name>` prints its definition.
+</Step>
+<Step title="Check for Spec mode">
+In Spec mode the mutating tools stay locked until the submitted plan is accepted.
+</Step>
+</Steps>
 
-`cortex debug config --diff` shows what differs from the defaults.
-
-## A tool is not available
+### A tool is not available
 
 ```bash
 cortex exec --list-tools
 ```
 
-Something narrowed the set: `--enabled-tools` / `--disabled-tools`, the agent's `tools` field, the current mode, or the `permission` table.
-
-## An edit broke the build
-
-After an edit, a **Diagnostics** row lists compiler errors and warnings with file and line, so the agent — and you — can see what to fix next. `/diagnostics [file]` runs the same check on demand.
-
-<Frame caption="An Edit row followed by Diagnostics: one error and one warning, each with its location.">
-  <img src="/images/cli/runtime/120x40/diagnostics.png" alt="Cortex CLI Diagnostics row listing an error and a warning after an edit" />
-</Frame>
+If a tool you expect is missing, something narrowed the set: the agent's own tool list, the current mode, or the `[permission]` table. `--enabled-tools` and `--disabled-tools` are not the cause, because `cortex exec` accepts them only alongside `--list-tools`. [Tools the agent uses](/cli/tools) lists the full set and what each one needs.
 
 ## An MCP server is not connecting
 
 ```bash
-cortex mcp list --all
-cortex mcp debug <name>
+cortex mcp list --all          # is it there, and is it enabled?
+cortex mcp debug <name>        # try the connection
 cortex mcp debug <name> --test-auth --no-cache
 ```
 
-Common causes: the stdio command is not on `PATH` in the environment Cortex launches it from; a missing `--` in `cortex mcp add` made the server's flags Cortex flags; the URL points at localhost or a private range and needs `--allow-local`; the bearer-token environment variable named in the config is not set. In the TUI, a failed server shows a red `×` in `/mcp` with **r** to reconnect.
+Four causes account for most failures:
 
-## Quota exhausted
+- The local command is not on `PATH` in the environment the CLI launches it from.
+- A `--` was missing from `cortex mcp add`, so the server's own flags were parsed as CLI flags.
+- The URL points at localhost or a private range and needs `--allow-local`.
+- The bearer token environment variable named in the configuration is not set in the environment the CLI is running in.
 
-<Frame caption="× Agent quota exhausted: the meter, the reset time, and the two ways to continue now. The composer holds follow-ups until the window resets.">
-  <img src="/images/cli/runtime/120x40/quota-exhausted.png" alt="Cortex CLI quota exhausted state with a held composer" />
-</Frame>
+[MCP servers](/cli/mcp) has the full add-and-authorise flow.
 
-The composer is held — *Add a follow-up — held until quota resets* — and follow-ups queue until the window resets. `/usage` shows the details. Quotas fail closed; see [Plans and quotas](/getting-started/plans).
+## Runs, limits and output
 
-## A run times out
+### A run times out
 
-`cortex exec` defaults to a 600-second timeout and 100 turns.
+`cortex exec` defaults to a 600-second timeout and 100 turns. Raise both for a genuinely large task:
 
 ```bash
 cortex exec --timeout 1800 --max-turns 40 "large task"
 ```
 
-If one shell command is the problem, raise `--command-timeout` or `execution.command_timeout_seconds` instead. Splitting a large task into several runs usually beats raising the ceiling.
+If a single shell command is the problem rather than the whole run, raise `--command-timeout` or `execution.command_timeout_seconds` instead. Breaking a large task into several smaller runs is usually better than raising the ceiling: each run starts with a clean context and you get to check the work in between.
 
-## Output is truncated or mangled
+### Quota exhausted
 
-`--color never` (or `NO_COLOR`) for logs and pipelines. `-o json` or `-o stream-json` when something downstream parses the output; the shape of `text` is not a contract.
+When the quota for your plan runs out, the run stops and the composer is held: `Add a follow-up — held until quota resets`. Follow-ups you type queue until the window resets rather than being lost. `/usage` shows the detail. See [Plans and quotas](/getting-started/plans).
 
-## Disk usage keeps growing
+### Output is truncated or mangled
+
+- Use `--color never` for logs and pipelines, or set `NO_COLOR` in the environment.
+- Use `-o json` or `-o stream-json` when something downstream parses the output. The shape of `text` output is not a contract, and it can change between releases; the JSON envelope is the stable surface.
+
+### Disk usage keeps growing
 
 ```bash
 cortex compact status
@@ -115,21 +131,41 @@ cortex cache clear
 cortex logs --clear --keep-days 7
 ```
 
-Lock the sessions you want to keep first: `cortex lock add <SESSION_ID> -r "keep for the audit"`.
+Lock the sessions you want to keep before you run a cleanup, so it skips them:
 
-## A build from source fails
+```bash
+cortex lock add <SESSION_ID> -r "keep for the audit"
+```
 
-On Linux the optional audio and desktop crates need ALSA headers: `sudo apt-get install -y libasound2-dev pkg-config`. Use the toolchain pinned in `rust-toolchain.toml`.
+[Data locations](/cli/data-locations) explains what lives where, and which directories are safe to delete by hand.
 
-## Reporting a problem
+### A build from source fails
+
+On Linux, the optional audio and desktop components need ALSA headers, so install them and use the toolchain the repository pins:
+
+```bash
+sudo apt-get install -y libasound2-dev pkg-config
+```
+
+The prebuilt binaries on [software.cortex.foundation](https://software.cortex.foundation) are the supported path for everyday use. See [Install the CLI](/cli/install).
+
+## Report a problem
 
 ```bash
 cortex feedback bug "describe what happened" --include-logs
 ```
 
-Or `/bug` in the TUI, or open an issue at [github.com/CortexLM/cli](https://github.com/CortexLM/cli).
+`--include-logs` attaches recent local log output to the report, so read it first if the run involved anything you would not want to share. Submissions queue in the Cortex home `feedback/` directory when you are offline and go out on the next successful call. `cortex feedback history` shows what you have sent.
+
+<Tip>
+Include three lines from the diagnostic block in any report: the `cortex --version` output, whether `cortex whoami` resolves, and the platform line from `cortex debug system`. That trio answers the first round of questions on its own.
+</Tip>
 
 ## Related
 
-- [Configuration](/cli/configuration) · [Sign in](/cli/sign-in) · [Modes and permissions](/cli/modes-and-permissions)
-- [Troubleshooting the web app](/getting-started/troubleshooting)
+- [Install the CLI](/cli/install)
+- [Sign in](/cli/sign-in)
+- [Modes and permissions](/cli/modes-and-permissions)
+- [Cloud, This PC, and SSH](/cli/hosts)
+- [Headless and scripting](/cli/headless)
+- [Command reference](/cli/reference)

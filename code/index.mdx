@@ -1,109 +1,175 @@
 ---
 title: "Cortex Code"
-description: "A coding agent that works inside your repository on an isolated runtime — sessions, Ask / Plan / Agent, GitHub, Cloud guests, and review."
-image: "/images/banners/code.png"
-keywords: ["coding agent", "repository", "developer"]
+description: "Cortex Code is a coding agent that works in one repository inside an isolated Cloud guest, with a timeline you watch and changes you approve."
+icon: "code"
 ---
 
-Cortex Code is a coding agent, not a chat with a different icon. You point it at a repository, describe the change, and it works through the task inside an isolated runtime — reading, editing, running your build and tests — while you watch a timeline of what it did and decide how much it may do on its own.
+Cortex Code is a coding agent, not a chat with a different icon. You point it at one repository, describe the change in plain language, and it works through the task inside an isolated runtime: reading files, editing them, running your build and your tests, while a timeline records what it did. You decide how much a turn may do on its own, and no file lands in the tree until a human approves it.
 
-It is available in the web app, the desktop app, and the CLI, with one account across all three.
-
-<Frame caption="The four commitments on the public Code page: one repository per runtime, reviews that stay failed when they fail, no pasted diff, the same account as Chat.">
-  <img src="/images/product/code-public-features.png" alt="Cortex Code feature grid — One repository per runtime, Reviews that stay failed when they fail, No pasted diff, The same account as Chat" />
-</Frame>
+Code is a mode of your Cortex account rather than a separate product. It runs in your browser, in the Cortex desktop app and in the Cortex CLI. This page says what Code is and is not, links every page in this tab, and marks the line where Code stops and Cortex Security or the CLI begins.
 
 ## What Code is
 
 | Commitment | What it means for you |
 | --- | --- |
-| **One repository per runtime** | Each session gets an isolated guest on the same farm as Cortex Bot, without a desktop. The environment is installed by the agent, not guessed from a filename. |
-| **Reviews stay failed when they fail** | A Cortex Security review is one pass over a diff. A failed review is stored as failed — never rewritten as an approval. |
-| **No pasted diff** | Code writes the change in the repository; Cortex Security reads the pull request in place. Neither asks you to paste a patch into a box. |
-| **The same account as Chat** | Sign in on cortex.foundation. No second identity. |
+| **One repository per runtime** | A session works one repository at a time. A second repository is a second session. |
+| **Reviews stay failed when they fail** | A failing check is not softened into a warning later. |
+| **No pasted diff** | A change arrives as a branch and a pull request, never as a patch to copy out of a box. |
+| **The same account as Chat** | One Cortex account across Chat, Code and the CLI. |
 
 ## Who can open it
 
-Code is a member surface. A guest visiting `/code` sees the public product page, and deep links show **This space is reserved** with **Continue in Chat** or **Sign in**. Once signed in, `/code` opens Code Home: connect GitHub, pick a repository, start a session. See [Accounts](/getting-started/accounts).
+Code is a member surface. A guest who visits the Code area sees the public product page, and a guest on a deep link sees **This space is reserved**, with **Continue in Chat** or **Sign in**.
 
-<Frame caption="cortex.foundation/code — the public product page a guest sees. Sign in to open the working UI.">
-  <img src="/images/product/code-public.png" alt="Cortex Code public page — a coding agent that works inside the repository" />
-</Frame>
+Once you are signed in, Code Home is the composer itself. Its heading reads **What should Cortex build?** and its prompt box reads **Ask Cortex to build, fix, explore.** A guest can type there, but pressing **Start session** opens the sign-in dialog. That is an invitation, not an error.
 
 ## Start here
 
-<CardGroup cols={3}>
-  <Card title="Quickstart" img="/images/banners/code.png" href="/code/quickstart">
-    Sign in, connect GitHub, start a Cloud session, review the timeline.
+<CardGroup cols={2}>
+  <Card title="Code quickstart" icon="rocket" href="/code/quickstart">
+    Sign in, connect GitHub, run a first Cloud session and approve the change it proposes.
   </Card>
-  <Card title="Sessions" icon="list" href="/code/sessions">
-    A timeline of the work — files read, edits, commands, plans.
-  </Card>
-  <Card title="CLI" icon="terminal" href="/cli">
-    The same Code sessions from your terminal, scripts, and CI.
+  <Card title="How Code works" icon="diagram-project" href="/code/how-it-works">
+    The turn loop in user terms: where tools run, what each mode withholds, how a turn ends.
   </Card>
 </CardGroup>
 
-## Where it runs
+## Work in a session
 
-| Surface | Host | Notes |
-| --- | --- | --- |
-| Web app | **Cloud** | Web Code is Cloud-only |
-| Desktop app | Cloud, **This PC**, **SSH** | [Code on desktop](/code/desktop) |
-| CLI | Cloud by default; This PC and SSH by opt-in | [Code in the terminal](/code/cli) |
+<CardGroup cols={2}>
+  <Card title="Code sessions" icon="list-check" href="/code/sessions">
+    The session object, the board, the transcript, follow-ups and what survives a turn.
+  </Card>
+  <Card title="Ask, Plan, Agent" icon="sliders" href="/code/interactions">
+    The three interaction modes, what each may reach, and switching per turn.
+  </Card>
+  <Card title="Permissions and approvals" icon="hand" href="/code/approvals">
+    Allow once, Always allow and Deny for commands, plus the separate gate on file writes.
+  </Card>
+  <Card title="Changes and diffs" icon="code-compare" href="/code/changes">
+    The Changes pane, a proposed diff before a write and a landed diff after it.
+  </Card>
+  <Card title="Tickets" icon="ticket" href="/code/tickets">
+    Tickets as a unit of asynchronous work, and why they have no screen in the app yet.
+  </Card>
+</CardGroup>
+
+## Where code runs
+
+<CardGroup cols={2}>
+  <Card title="Cloud runtimes" icon="cloud" href="/code/runtimes">
+    The isolated Cloud guest a session attaches, how it is prepared, and what happens without capacity.
+  </Card>
+  <Card title="Environments and images" icon="box" href="/code/environments">
+    Running machines and saved images, so the next session on a repository skips the install.
+  </Card>
+  <Card title="Machines" icon="laptop" href="/code/machines">
+    Cloud occupancy and team runners, and why desktop hosts are not offered in the browser.
+  </Card>
+  <Card title="SSH hosts" icon="server" href="/code/ssh-hosts">
+    Register a remote host in the desktop app, then select it for a session from there or from the CLI.
+  </Card>
+  <Card title="Code on desktop" icon="desktop" href="/code/desktop">
+    This PC and SSH exist in the desktop app and the CLI. The browser stays on Cloud.
+  </Card>
+</CardGroup>
+
+## Repositories
+
+<CardGroup cols={2}>
+  <Card title="Connect GitHub" icon="github" href="/code/github">
+    One control, no tokens to paste, and what to do when a connection lapses.
+  </Card>
+  <Card title="Repositories and branches" icon="code-branch" href="/code/repositories">
+    Pick the repository and the base branch, and work in the session's own isolated worktree.
+  </Card>
+</CardGroup>
+
+## Automate and monitor
+
+<CardGroup cols={2}>
+  <Card title="Automations" icon="bolt" href="/code/automations">
+    Saved instructions with a trigger, a repository and a prompt, and what a run does today.
+  </Card>
+  <Card title="Code notifications" icon="bell" href="/code/notifications">
+    The inbox that tells you when a session finished or needs a decision.
+  </Card>
+  <Card title="Usage" icon="chart-simple" href="/code/usage">
+    Recorded cost and billable actions over a 7, 30 or 90 day window.
+  </Card>
+</CardGroup>
+
+## Configure
+
+<CardGroup cols={2}>
+  <Card title="Code settings" icon="gear" href="/code/settings">
+    Default model and fallback models, and the settings that are not configurable yet.
+  </Card>
+  <Card title="Code integrations" icon="puzzle-piece" href="/code/integrations">
+    Connected apps, repositories and tool servers for the workspace.
+  </Card>
+</CardGroup>
+
+## Reference
+
+<CardGroup cols={2}>
+  <Card title="Code in the terminal" icon="terminal" href="/code/cli">
+    The same sessions from a terminal, and how CLI words map onto Code words.
+  </Card>
+  <Card title="Pull-request review" icon="shield-halved" href="/code/security">
+    Where Cortex Security sits under Code, and which tab documents it.
+  </Card>
+  <Card title="Code troubleshooting" icon="life-ring" href="/code/troubleshooting">
+    Gates that will not open, a runtime that is unavailable, and modes that will not edit.
+  </Card>
+</CardGroup>
+
+## Where a session runs
+
+| Surface | Runtimes offered |
+| --- | --- |
+| Browser | **Cloud**, plus a registered team runner when the deployment has one |
+| Desktop app | Cloud, **This PC**, **SSH** |
+| Cortex CLI | Cloud by default; This PC and SSH by opt-in |
+
+Everything a turn does happens inside the runtime it attached. Nothing runs in your browser.
 
 ## Modes in one line
 
-**Ask** reads and explains. **Plan** proposes without changing anything. **Agent** edits files and runs commands. Pick per turn; the session row holds the default. See [Ask, Plan, Agent](/code/interactions).
+**Ask** answers questions and reads files. **Plan** writes a reviewable plan. **Agent** edits files, runs commands and opens a pull request. The choice is a lock on the tools the turn is built with, so a change applies to the next turn, not to the turn already running. The composer's fourth row, **Security**, is not a fourth mode: it leaves for Cortex Security. See [Ask, Plan, Agent](/code/interactions).
 
-## Core guides
+## Two gates, and they are not the same
 
-<CardGroup cols={2}>
-  <Card title="Sessions" icon="list" href="/code/sessions">
-    A session is a timeline of the work — files read, edits, commands, plans — with Stop always one click away.
-  </Card>
-  <Card title="Ask, Plan, Agent" icon="sliders-horizontal" href="/code/interactions">
-    Choose how much a turn may change. Ask reads, Plan proposes, Agent edits and runs.
-  </Card>
-  <Card title="Connect GitHub" icon="github" href="/code/github">
-    Reach repositories through Connect GitHub. No pasted tokens; Reconnect when a grant lapses.
-  </Card>
-  <Card title="Cloud runtimes" icon="cloud" href="/code/cloud">
-    One isolated guest per session on the same farm as Bot, prepared by the agent.
-  </Card>
-</CardGroup>
+A command that needs a decision raises a card above the transcript with **Allow once**, **Always allow** and **Deny**. A file write never uses that card: it waits in the **Changes** pane for a human **Approve**, per file or as **Approve all**, and a session-level **Always allow** never covers a write.
 
-## Desktop and terminal
-
-<CardGroup cols={2}>
-  <Card title="Code on desktop" icon="monitor" href="/code/desktop">
-    This PC and SSH hosts exist on the desktop app and the CLI. The browser stays Cloud-only.
-  </Card>
-  <Card title="Code in the terminal" icon="square-terminal" href="/code/cli">
-    How the CLI maps onto Code sessions, and where the full CLI documentation lives.
-  </Card>
-</CardGroup>
+<Warning>
+There is no undo, no checkpoint and no revert anywhere in Code. The moment to refuse a change is while it is still pending in **Changes**, with **Reject**. See [Permissions and approvals](/code/approvals).
+</Warning>
 
 ## What Code is not
 
-| Not this | Use instead |
-| --- | --- |
-| A Chat transcript | A [session](/code/sessions) is a turn timeline — files read, edits, commands, plans |
-| Chat's Python sandbox | [Cloud runtimes](/code/cloud) — an isolated guest with your repository |
-| A Chat plugin | [Connect GitHub](/code/github) — the repository connection lives in Code |
-| The public `/security` page | [Cortex Security](/code/security) — the signed-in review inbox at `/code/security` |
-| A place to store secrets | There is no Secrets page. Environment for a guest belongs to that guest; `/code/secrets` sends you home. |
+- Not a hosted development environment. There is no screen in a Code runtime.
+- Not a place to store secrets. Code has no Secrets page and never asks you to paste a token.
+- Not a continuous integration system. It runs your commands in a session, on request.
+- Not a chat about your code. It edits the repository and opens pull requests.
 
-## Advanced
+## Not available yet
 
-- [Cortex Security](/code/security) — GitHub App pull-request review that stays failed when it fails.
-- [How Code works](/code/how-it-works) — workspace tools execute inside the attached guest; modes withhold mutating tools.
-- [Code troubleshooting](/code/troubleshooting) — gates, Reconnect, Cloud availability, and what a failed review means.
-- [Security and privacy](/security/overview) — what Cortex stores and where code runs.
+- **Tickets** have no screen in the app; they are an API level concept today.
+- A session's **Desktop** tab is drawn with the badge **Soon**.
+- Automations are saved instructions only: **Schedules and events do not execute yet.**
+- A Code session has no tool servers, connectors or plugins of its own, so do not plan work around attaching one to a session. See [Code integrations](/code/integrations).
 
-## Next
+## How it fits with the other products
 
-1. [Code quickstart](/code/quickstart) — sign in, connect GitHub, start a Cloud session.
-2. [Sessions](/code/sessions) — read the timeline.
-3. [Ask, Plan, Agent](/code/interactions) — decide how much a turn may change.
-4. [Code in the terminal](/code/cli) — the same sessions from the CLI.
+- **Cortex Chat** shares the account and the sidebar. Chat talks about your code; Code changes it. See [Cortex Chat](/chat/index).
+- **The Cortex CLI** drives the same sessions from a terminal, and a session it started is marked **· Started from CLI** on the board. See [Code in the terminal](/code/cli) and [Cortex CLI](/cli/index).
+- **Cortex Security** reads a pull request and posts a review; it lives under Code in the app and is documented in its own tab. See [Pull-request review](/code/security) and [Cortex Security](/security/index).
+
+## Related
+
+- [Code quickstart](/code/quickstart) for a first session end to end.
+- [How Code works](/code/how-it-works) for cause and effect in a turn.
+- [Code sessions](/code/sessions) for the board and the transcript.
+- [Permissions and approvals](/code/approvals) for the two gates in full.
+- [Code troubleshooting](/code/troubleshooting) when something will not start.

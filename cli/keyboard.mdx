@@ -1,114 +1,130 @@
 ---
-title: "Keyboard shortcuts"
-description: "Every key binding in the Cortex CLI, grouped by where it applies. Press Ctrl+X in the TUI for the in-app overlay, or ? for help."
-keywords: ["shortcuts", "keybindings", "hotkeys"]
+title: "CLI keyboard shortcuts"
+sidebarTitle: "Keyboard shortcuts"
+description: "The key bindings in the Cortex CLI, grouped by where they apply: global, the composer, a running turn, the approval prompt, and the dialogs"
+icon: "keyboard"
 ---
 
-Press **Ctrl+X** at any time for the shortcuts overlay, or **?** / **F1** for help. The footer always shows one hint for the current context.
+The terminal app is meant to be driven from the keyboard. A handful of keys cover almost everything: `Shift+Tab` to change what the agent is allowed to do, `Enter` to send or to queue, `Esc` to interrupt or to close, `F2` for settings, and four sigils that open a picker instead of typing text. Everything else is a slash command.
 
-<Frame caption="The Ctrl+X overlay: mode cycling, @ mentions, ! bash, & Cloud hand-off, / commands, the palette, session search, interrupt, settings, scrolling, and history.">
-  <img src="/images/cli/runtime/120x40/shortcuts-overlay.png" alt="Cortex CLI shortcuts overlay listing the key bindings" />
-</Frame>
+This page groups the bindings by where they apply, because the same key does different things depending on what has focus. It also points out the two places where the sources disagree with each other, so you know to trust the footer strip on your own screen rather than a table on a page.
+
+## The shortcuts sheet in the app
+
+Type `/shortcuts` (alias `keys`) to open the sheet. It is a compact overlay listing the current bindings, with a footer line that reads `Docs & guides: cortex.foundation/docs` followed by the version you are running. `Esc` closes it.
+
+<Warning>
+The footer strip draws `Ctrl+x:shortcuts`, but in the current build `Ctrl+x` clears the queued follow-ups instead of opening the sheet. Until that is settled, open the sheet with `/shortcuts`.
+</Warning>
 
 ## Global
 
 | Key | Action |
 | --- | --- |
-| **Shift+Tab** | Cycle the mode — Agent → Plan → Ask |
-| **Ctrl+K** or **Ctrl+P** | Command palette |
-| **Ctrl+X** | Shortcuts overlay |
-| **F2** | Settings |
-| **?** or **F1** | Help |
-| **Esc** | Cancel or close; interrupt a running turn |
-| **Esc**, **Esc** (quickly) | Rewind overlay |
-| **Tab** | Focus the next element |
-| **Ctrl+I** | Focus the composer |
-| **Ctrl+B** | Toggle the sidebar |
-| **Ctrl+N** | New session |
-| **Ctrl+S** or **Ctrl+O** | Sessions |
-| **Ctrl+M** | Model picker |
-| **Ctrl+E** | MCP servers |
-| **Ctrl+T** | Transcript |
-| **Ctrl+Q** | Quit |
-| **Ctrl+C** | Copy the selection; force-quit while a turn runs |
-| **Ctrl+Shift+C** / **Ctrl+Shift+V** | Copy / paste |
+| `Shift+Tab` | Cycle the mode: Agent, then Plan, then Ask |
+| `F2` | Open Settings |
+| `Esc` | Interrupt a running turn, close a panel, or leave Bash mode |
+| `Ctrl+p` | Open the command palette |
+| `Ctrl+r` | Search past sessions |
+| `Ctrl+Shift+C` | Copy |
+| `Ctrl+Shift+V` | Paste |
+| `Ctrl+Q` | Quit, the same as `/quit` |
+
+`Ctrl+c` is described both as stop and as force-quit in the sources, so treat it as the abrupt option: use `Esc` to interrupt a turn and `Ctrl+Q` or `/quit` to leave cleanly.
 
 ## Composer
 
 | Key | Action |
 | --- | --- |
-| **Enter** | Send |
-| **Shift+Enter** or **Alt+Enter** | Insert a newline |
-| **Up** / **Down** | Previous / next prompt in history |
-| **Ctrl+U** or **Ctrl+L** | Clear the composer |
-| **Ctrl+V** | Paste |
-| **Ctrl+A** | Select all |
-| `/` | Slash command list |
-| `@` | File or symbol reference |
-| `!` | Run a shell command |
+| `Enter` | Send the message, or queue it while a turn runs |
+| `Alt+Enter` | Insert a newline |
+| `↑` | Edit your last message, or edit a message already in the queue |
+| `Tab` | Complete a slash command |
+| `/` | Open the command list |
+| `@` | Open the file picker |
+| `!` | Enter Bash mode, where what you type runs in your shell |
+| `&` | Hand the task off to Cortex Cloud |
 
-## Timeline
+The four sigils only open something when they start a line. Inside a sentence they are ordinary characters. In Bash mode the prompt sigil changes from `>` to `!`, and `Esc` leaves it.
 
-Applies when the transcript has focus.
-
-| Key | Action |
-| --- | --- |
-| **j** / **k**, **Down** / **Up** | Scroll |
-| **g** / **Shift+G** | Top / bottom |
-| **Home** / **End** | Top / bottom |
-| **PageUp** / **PageDown** | Page |
-| **Ctrl+U** / **Ctrl+D** | Half page |
-| **e** | Expand or collapse tool details |
-| **y** | Copy the selection |
-| **p** | Paste |
-
-## Pickers and prompts
-
-Approvals, `/mode`, `/permissions`, `/model`, plan confirmation, and questions are numbered pickers. The mouse works on them too: hover a row to highlight it, click to choose.
-
-<Frame caption="An approval prompt with the pointer over a row. The numbered options, the right-hand hint per row, and the footer keys: ↑↓ select · Enter confirm · e edit command · Esc cancel.">
-  <img src="/images/cli/runtime/120x40/permission-prompt-hover.png" alt="Cortex CLI approval prompt with the pointer hovering over an option" />
-</Frame>
+## While a turn is running
 
 | Key | Action |
 | --- | --- |
-| **↑** / **↓** or **k** / **j** | Move the selection |
-| **1** – **9** | Choose an option by number |
-| **Enter** | Confirm |
-| **Tab** | In `/model`, cycle the effort radios |
-| **e** | In an approval, edit the command |
-| **Esc** | Cancel — or clear the search box first |
+| `Esc` | Interrupt the turn. The timeline records `× Stopped` |
+| `Enter` | Queue what you typed as a follow-up instead of sending it now |
+| `↑` | Edit a queued message |
 
-In the theme picker, moving the selection previews the theme live and **Esc** reverts.
+Queueing is the normal way to work: you do not have to wait for the agent to finish before writing the next instruction.
 
-## Sessions panel
+## Approval prompt
 
-| Key | Action |
-| --- | --- |
-| **Enter** | Resume the selected session |
-| **f** | Favourite |
-| **d** or **Delete** | Delete |
-| **r** or **F2** | Rename |
-| **e** | Export |
-
-## Rewind overlay
+When the agent wants to run something that needs your say-so, a numbered prompt appears inline in the timeline and the composer waits for you.
 
 | Key | Action |
 | --- | --- |
-| **←** / **→** | Move between points in the conversation |
-| **Enter** | Roll back to the selected point |
-| **f** | Fork a new session from it |
-| **Esc** | Cancel |
+| `↑` and `↓` | Move the selection |
+| `1` to `9` | Choose an option by its number |
+| `Enter` | Confirm the selected option |
+| `e` | Edit the command before it runs |
+| `Esc` | Cancel |
 
-## Resume picker (startup)
+Its footer strip is drawn exactly like this, and the same four keys apply to any numbered prompt:
+
+```
+ ↑↓:select  |  Enter:confirm  |  e:edit command  |  Esc:cancel
+```
+
+What each numbered option means, including what *always allow* remembers, is on [Modes and permissions](/cli/modes-and-permissions).
+
+## Model and effort lists
 
 | Key | Action |
 | --- | --- |
-| **Enter** | Resume the selected session |
-| **F** | Fork from it |
-| **N** or **Esc** | Start a new session |
+| `Enter` | Choose the highlighted model, or apply the effort |
+| `Tab` | Move from the model list to the reasoning-effort list, and back |
+| `↑` and `↓` | Move the selection |
+| `Esc` | Close the list |
+
+## Settings and other dialogs
+
+Settings and the pickers share one navigation style, and it accepts both arrows and vim-style keys.
+
+| Key | Action |
+| --- | --- |
+| `↑` and `↓`, or `j` and `k` | Move |
+| `g` and `G` | Jump to the top or the bottom |
+| `Space` or `Enter` | Toggle the selected row |
+| `→` | Expand a submenu |
+| `/` | Search inside Settings |
+| `d` | Reset the selected row to its default |
+| `F2` or `Esc` | Close |
+
+`j`, `k`, `g` and `G` are a navigation style inside these panels. There is no vim mode in the CLI and no command that turns one on.
+
+## Sessions, resume and rewind
+
+| Key or command | Action |
+| --- | --- |
+| `Ctrl+r` | Search past sessions |
+| `f` | Toggle the favourite mark on the selected row in the sessions panel |
+| `/resume` | Open the resume picker |
+| `Esc` `Esc` in quick succession | Open the rewind overlay |
+
+<Note>
+The resume picker is the one screen where the sources give two different key maps, one with favourite and delete and one with fork and new session. Read the footer strip on your own screen for that panel rather than trusting a table. Everything the picker does is also available as a slash command: `/resume`, `/fork`, `/favorite`, `/delete`.
+</Note>
+
+## The footer strip is the live answer
+
+The strip along the bottom of the screen changes with what is in focus: idle, text typed, a narrow terminal, a turn running, the queue, the model list, the effort list, an approval prompt, the MCP panel, the plugins panel, the resume picker and Bash mode all have their own. Each strip shows the keys that apply at that moment, in the form `key:label` separated by vertical bars, and hovering a chunk highlights it.
+
+The strips are deliberately short, so a strip is not the complete list of bindings for that screen, and the set of strips is still growing. When a key you expect is missing, check the strip first and the shortcuts sheet second.
 
 ## Related
 
-- [The TUI](/cli/tui) · [Slash commands](/cli/slash-commands)
-- [Web app shortcuts](/getting-started/settings#keyboard-shortcuts)
+- [The TUI](/cli/tui): the regions of the screen these keys act on
+- [Slash commands](/cli/slash-commands): everything reachable by typing `/`
+- [Modes and permissions](/cli/modes-and-permissions): what `Shift+Tab` and the approval prompt decide
+- [CLI sessions](/cli/sessions): resume, fork and rewind in detail
+- [Themes](/cli/themes): the Settings rows behind `F2`

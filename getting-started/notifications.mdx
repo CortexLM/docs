@@ -1,0 +1,93 @@
+---
+title: "Notifications"
+description: "One notification inbox for Chat, Code and Bot: what Cortex tells you about, what the dot on the bell means, and how rows are marked read"
+icon: "bell"
+---
+
+Cortex has one notification inbox for the whole product. The bell sits in the sidebar header next to the Cortex wordmark, and the panel it opens covers Cortex Chat, Cortex Code and Cortex Bot together. There is no separate bell per product, so switching mode does not change what is in the list.
+
+This page covers what Cortex notifies you about, how the panel behaves when you open it, what the badge on the bell does and does not tell you, and where a row takes you when you choose it.
+
+## Open the panel
+
+The bell is labelled **Notifications**. When something is unread, its accessible name becomes `{count} unread notifications`, so a screen reader hears the count even though the badge does not show one.
+
+Choosing the bell opens a dialog titled **Notifications**. Its lede is `Everything Cortex has told you about, newest first.` when nothing is unread, and `{count} unread, newest first.` when something is. Rows are ordered newest first.
+
+Opening the panel refreshes the list without blanking the rows already on screen, so the list does not flicker while it reloads.
+
+## What Cortex notifies you about
+
+One kind of row per thing Cortex has to tell you. The label in the middle column is the word the row carries.
+
+| What happened | Row label | Where it comes from |
+| --- | --- | --- |
+| A scheduled Chat task ran | `scheduled task` | Cortex Chat |
+| Something mentioned you | `mention` | A conversation |
+| A Cortex Code run finished | `code run finished` | Cortex Code |
+| A Cortex Code run is waiting on a decision | `code run needs you` | Cortex Code |
+| A bot parked a step for approval | `bot needs you` | Cortex Bot |
+| A bot's computer failed to wake | `computer could not start` | Cortex Bot |
+| Anything the app does not recognise | `notification` | Fallback label |
+
+That list is the whole surface. Cortex notifies you when a run finishes, when it needs a decision from you, and when an automation ran, which is exactly what the empty state promises.
+
+## Read and clear notifications
+
+<Steps>
+<Step title="Open the bell">
+Choose **Notifications** in the sidebar header. The rows you can see are marked read as the panel opens, so you do not have to click each one.
+</Step>
+<Step title="Clear the rest">
+Choose **Mark all read**. The button is only drawn while something is unread, so its absence means there is nothing left to clear.
+</Step>
+<Step title="Act on a row">
+Choose a row to open what it refers to. A finished or blocked Code run opens its session, a mention opens the conversation, and a bot row opens the bot. A row with no subject to open is a plain button rather than a link.
+</Step>
+</Steps>
+
+If marking read fails, Cortex says so beside the button with `They could not be marked read` and the row simply stays unread. Nothing is silently swallowed.
+
+## What the dot means
+
+The badge is a small dot. It is never a number.
+
+| Panel state | Badge on the bell |
+| --- | --- |
+| Loading | No badge |
+| Failed to load | No badge |
+| Nothing unread | No badge |
+| Something unread | A dot |
+
+Loading and failure both render no badge on purpose: a dot on a list that could not be loaded would be a claim Cortex cannot back. The unread count is exposed only through the bell's accessible label.
+
+## When the panel is empty or will not load
+
+| What you see | What it means |
+| --- | --- |
+| Skeleton rows and no badge | The list is still loading |
+| An error block with **Retry** | The list could not be loaded. Choose **Retry** |
+| `Nothing yet` / `Cortex tells you when a run finishes, when it needs a decision, and when an automation ran.` with **Start a chat** | You have no notifications at all |
+| `They could not be marked read` | The read write failed; the rows stay unread |
+
+<Note>
+A failed list is not an empty list. When the panel shows an error block, assume you may have unread rows and try again rather than reading the absence of a dot as "nothing to see".
+</Note>
+
+## Related surfaces
+
+The inbox is not the only place Cortex reports on itself, and some of what you might expect from a notification lives elsewhere:
+
+- **Approvals** and **Pending approval** in the sidebar collect decisions that are waiting on you, and `bot needs you` and `code run needs you` rows point at the same work.
+- **Activity** records what happened on the account, rather than telling you about it. Review it under **Settings → Data & privacy → Activity**.
+- **Scheduled** lists Chat schedules, the automations behind `scheduled task` rows.
+
+Notification behaviour in the Cortex desktop app is a separate surface from this panel and is covered with the desktop app rather than here. One email notification is described in Settings and is not available yet: **Login alerts** (`Email when a new device or location signs in.`) is drawn but disabled, with `Login alerts are not available on this account yet.`
+
+## Related
+
+- [Code notifications](/code/notifications)
+- [Inbox](/bot/inbox)
+- [Scheduled tasks](/chat/scheduled-tasks)
+- [Data and privacy](/getting-started/data-and-privacy)
+- [Cortex desktop app](/getting-started/desktop)

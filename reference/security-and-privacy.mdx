@@ -1,0 +1,147 @@
+---
+title: "Security and privacy"
+description: "What Cortex stores and never stores, what stays on your device, how consent works across the products, and how export, deletion and retention behave"
+icon: "user-shield"
+keywords: ["privacy", "data", "cookies", "consent", "retention", "export", "delete"]
+---
+
+This page is the reference for **how Cortex handles your data**: what it keeps, what it never keeps, what stays on your own device, which consent each product asks for, and how long anything survives. It is written for someone deciding whether to put real work into Cortex, and for anyone who has to answer that question for a team.
+
+It is not a live availability page, and it is not the Cortex Security product that reviews pull requests. For the click-by-click version of the controls described here, see [Data and privacy](/getting-started/data-and-privacy). For whether something is down right now, see [System status](/reference/status).
+
+## What Cortex stores
+
+| Stored | Detail |
+| --- | --- |
+| **Account details** | Your email address and the account identifiers created when you sign in. If you pay, a customer reference and the plan. |
+| **Conversations and attachments** | While chat history is on. Encrypted before they are stored, under a key that belongs to your account alone. |
+| **Saved memories** | What you explicitly saved. Reviewable and deletable one by one. |
+| **Usage counts** | How many messages, reasoning runs, searches and code runs you used against your plan. Counts, not content. |
+| **Operational logs** | Request identifiers, timings, error codes and coarse client information. Message content is redacted where the log is written, not filtered afterwards. |
+| **Safety records** | That a crisis referral was shown, its category and when. Never the message that triggered it. |
+| **Billing records** | Kept as long as tax and accounting law requires, typically seven years. |
+
+The product states the same list in its own words under **Settings → Data & privacy**, in a card headed **WHAT WE STORE**.
+
+## What Cortex never stores
+
+- **The content of connected apps.** Cortex reads a connected app at question time and discards the data. Nothing from it is kept.
+- **The text that triggered a crisis referral.** What is recorded is that a referral was shown, never what you wrote.
+- **Advertising profiles.** Your content is not used to build one.
+- **Anything sold or shared for advertising.** Cortex does not sell personal information and does not share it for cross-context behavioural advertising. That is why there is no "Do Not Sell" link on this site: there is nothing for it to switch off.
+
+Conversations are not used to train models. There is a control, **Improve the model**, that is off by default and would have to be on before any sample could be reviewed for that purpose. It is not a live setting yet, so treat its copy as a description of a control that is coming: `Off by default — your chats are never used without this setting.`
+
+## What stays on your device
+
+Three things are held in your browser or on your computer rather than on Cortex servers.
+
+| On your device | Detail |
+| --- | --- |
+| **Your cookie choice** | Stored on the device for one year, so the banner does not ask again. |
+| **Trusted contact and date of birth** | `Trusted contact and date of birth are stored in this browser, not on our servers.` They are included in a data export so the export is complete, and they are removed when you erase your account. |
+| **Computer history** | `On the desktop app, record which apps and sites this computer opened — times only, no screenshots or audio. Off by default. Private browsing is never logged.` In a browser the row reads `Recording runs in the Cortex desktop app, not in this browser.` |
+
+## Consent, product by product
+
+Cortex asks before it does something consequential, and each grant is scoped to the product you gave it to.
+
+| Control | Default | What it covers |
+| --- | --- | --- |
+| **Save chat history** | On | Conversations are kept in your account so you can pick them up on any device. |
+| **Improve the model** | Off | Nothing is reviewed for training without it, and it is not a live setting yet. |
+| **Memory** | Reviewable | Standing preferences and facts you share. Recall and writing can be turned off, sensitive topics can be excluded, and a retention window can be set. See [Memory](/chat/memory). |
+| **Optional analytics** | Off | Off until you allow them, and no optional tracker is loaded in this build. |
+| **Two-factor confirmation** | Per action | A signed-in account confirms an export or a deletion with its authenticator app. See [Two-factor authentication](/getting-started/two-factor). |
+
+Connected apps are scoped explicitly: you choose whether a connection is available to **Cortex Chat**, **Cortex Bot**, or both, and Bot never inherits a tool you did not assign to it. You stay signed in with the provider, and Cortex never sees your password for it. See [MCP servers](/chat/mcp-servers) and [Bot tools](/bot/tools).
+
+A guest cannot connect a plugin or an MCP server, hold a repository grant, create a bot, or open Code's working surface. That is fail-closed on purpose: a guest session cannot be returned to later to revoke a grant, so it is never allowed to create one. Signing in is how you get those capabilities, and you do it in the app: see [Accounts and sign-in](/getting-started/accounts).
+
+Temporary chats never read or write memory, and sensitive topics stay out of memory unless you turn them on.
+
+<Note>
+Cortex tells you it is an AI without being asked. A disclosure appears before the first reply, a reminder appears every three hours of continued conversation, and asking outright always gets a straight answer. No instruction you give overrides that. The full text is published at [cortex.foundation/ai-disclosures](https://cortex.foundation/ai-disclosures).
+</Note>
+
+## Where code runs, and what each surface can reach
+
+| Surface | Where it runs | What it can reach |
+| --- | --- | --- |
+| **Cortex Chat** | Cortex's own services | Files you attach, connected apps enabled for Chat, and pages its web tools fetch. Nothing outside your account and its Library. |
+| Chat's Python tool | A small, untrusted snippet sandbox | The snippet only. No workspace, no repository. |
+| **Cortex Code** in the cloud | An isolated cloud guest, headless | The one repository prepared for that session. |
+| Code on your machine or an SSH host | Your computer or your host, from the desktop app or the CLI | The project directory you chose. |
+| **Cortex Bot** | An isolated cloud guest with a desktop and a shell | That guest's desktop, browser and files, plus connected apps enabled for Bot. |
+| **Cortex Security** | Reads the pull request in place | The change under review. It posts a check run and changes nothing. |
+
+The surfaces do not share a working area. Chat's Python tool cannot see a repository, a Code session cannot reach a bot's desktop, and a bot cannot read a Code session's files. Consequential steps ask first: in Bot through [Approvals](/bot/approvals), and in the CLI through its approval policy and sandbox, described in [Modes and permissions](/cli/modes-and-permissions).
+
+User-facing error text names a Cortex surface and never a supplier, so an outage message tells you which part of Cortex is unhappy and nothing else. See [Errors](/reference/errors).
+
+## Export and deletion
+
+**Export my data** builds a JSON file, `cortex-data-export.json`, and downloads it. Read what it is carefully, because "export everything we hold" sounds broader than it is: the file holds your account details, conversation **metadata**, your memories, and Library file **metadata**. It does not contain message bodies and it does not contain file bytes. A signed-in account also gets Code session metadata, the names of bots it owns, Design canvas metadata, project metadata and Cortex Data records, never a token. A guest export has none of those keys.
+
+**Delete all data** deactivates the account at once and schedules a permanent erasure after a 30-day grace period: `Deletion requested — your data will be permanently erased within 30 days. Signing in again during that time cancels it.` Once the erasure has started, signing in is refused.
+
+When the erasure runs, the key held for your account is destroyed first, so every stored copy of your conversations and attachments becomes unreadable at once, wherever it is. Records, files and the search indexes are then cleared. Backups that could still restore the account expire 35 days after the erasure runs, which the privacy policy states rather than implying an instant global wipe. One thing survives on purpose: a record that the deletion happened, holding one-way fingerprints and no content, so a restored backup can have the erasure replayed instead of quietly bringing an account back.
+
+Conversations, Chat library files and Design canvases you still hold are never pruned on a schedule. They stay until you delete them or delete the account.
+
+## How long things are kept
+
+| Record | Kept for |
+| --- | --- |
+| Your content: conversations, files, canvases | No expiry imposed. Until you delete it or close the account |
+| Operational and application logs | 30 days |
+| Routing decisions and code-run records | 30 days |
+| Usage records | 1 year, for billing disputes |
+| Safety records | 2 years |
+| Data-request records | 3 years |
+| Audit log | 90 days queryable, then archived for 15 months |
+| Record that an erasure happened | Indefinitely, fingerprints only, never content |
+| Billing records | As long as tax and accounting law requires, typically seven years |
+
+A data request gets a response within 45 days, with notice beforehand if an extension is needed.
+
+## Cookies and consent signals
+
+Every cookie Cortex sets is necessary to run the product, and none is for advertising.
+
+| Cookie | Purpose | Lifetime |
+| --- | --- | --- |
+| Session | `Holds your signed-in session, and is set only after you sign in.` | Seven days |
+| Guest session | `Names an anonymous session so Chat works before you sign in. It is not an account.` | 180 days, not re-issued |
+| Language | `Remembers the interface language you chose in Settings.` | One year |
+| This choice | `Stores the cookie decision, on your device.` | One year |
+
+On a first visit the banner **Cookies on this site** offers **Necessary only** and **Allow optional**. Optional analytics stay off until you allow them, and this build loads no analytics script at all; the preference is recorded so that a tracker added later could not fire without it. If your browser sends a **Global Privacy Control** signal, the banner instead reads `Global Privacy Control honoured` and optional cookies stay off whatever an earlier choice said.
+
+## What this page does not claim
+
+Cortex claims no certification, and neither does the product. **Settings → Data & privacy** carries a **Compliance** section whose own lede is `What this deployment certifies — and what it does not.`, and it lists statuses rather than seals: `A status is not a certificate.`
+
+| Framework | Status as listed |
+| --- | --- |
+| SOC 2 Type II | `NOT CERTIFIED YET` — `No report on file. We will say so when one exists.` |
+| GDPR readiness | `IN PROGRESS` — `Readiness work is tracked; no certification is claimed.` |
+| HIPAA | `NOT CERTIFIED · BAA PATH` — `Not certified. PHI needs a signed BAA first.` |
+
+No framework is listed as certified, and no certificate is issued from that pane. A BAA can be requested from Settings; requesting one signs nothing. The defaults a covered entity would ask about are already on, listed as **PHI-SAFE DEFAULTS (ON)**: model training opt-out, retention minimized, and logging redacted, with those logs kept for 30 days.
+
+Data residency is pinned. This deployment runs in the US region and org data residency is fixed to it; the other region renders as `NOT OFFERED`, and there is no switch in the app: `Region changes are not available in the app: they require a new deployment and a scheduled migration window.` Where a capability is not offered where you are, requests answer with the [jurisdiction_restricted](/problems/jurisdiction_restricted) code.
+
+<Warning>
+Cortex is not certified under SOC 2, GDPR or HIPAA. Read the statuses literally, and if that changes it will be announced on the [changelog](/changelog) and at [cortex.foundation](https://cortex.foundation) first.
+</Warning>
+
+The legal documents are published outside the docs site: [cortex.foundation/privacy](https://cortex.foundation/privacy), [cortex.foundation/terms](https://cortex.foundation/terms) and [cortex.foundation/ai-disclosures](https://cortex.foundation/ai-disclosures), with the cookie policy alongside them. Where this page and a legal page differ in detail, the legal page is the binding text.
+
+## Related
+
+- [Data and privacy](/getting-started/data-and-privacy) - the same controls, step by step.
+- [Accounts and sign-in](/getting-started/accounts) - what a guest and a signed-in account can each do.
+- [Limits and quotas](/reference/limits) - what is counted against your plan.
+- [Errors](/reference/errors) - why an error names a Cortex surface and nothing else.
+- [System status](/reference/status) - availability, which this page is not about.

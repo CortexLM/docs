@@ -1,55 +1,82 @@
 ---
 title: "Ask, Plan, Agent"
-description: "Choose how much a Code turn may change. Ask reads and explains, Plan proposes, Agent edits and runs. The choice rides on the turn."
-keywords: ["Ask", "Plan", "Agent", "modes", "permissions"]
+description: "Ask reads and explains, Plan proposes, Agent edits and runs. The mode locks the tools a turn is built with and applies to the next turn."
+icon: "sliders"
 ---
 
-Every Code turn runs in one of three modes. Pick it on the turn, or leave the session's default. A follow-up can pick a different mode — tighten to Ask to understand, widen to Agent to ship.
+Every turn in Cortex Code runs in one of three interaction modes. **Ask** answers questions and reads the repository. **Plan** returns a plan you can review. **Agent** edits files, runs commands and opens a pull request. You pick the mode in the composer before you start a session, and again on every follow-up, so a single session can tighten to Ask to understand something and widen to Agent to carry it out.
+
+This page explains what each mode may reach, why the choice is worth trusting, when the change takes effect, and what none of the three modes can do. If you are looking for a first session end to end, start with the [Code quickstart](/code/quickstart).
 
 ## What each mode may do
 
-| Mode | Edit files | Run commands | What it produces |
-| --- | --- | --- | --- |
-| **Ask** | No | No | Explanations, answers, code you can copy |
-| **Plan** | No | No | A plan block — steps, and a mermaid diagram when it helps |
-| **Agent** | Yes | Yes | Changes in the repository, with diffs and command output on the timeline |
+| Mode | Its own description in the app | Edits files | Runs commands | What it produces |
+| --- | --- | --- | --- | --- |
+| **Ask** | **Questions and exploration. Nothing is edited until you switch to Agent.** | No | No | Answers, file reads, searches |
+| **Plan** | **A mermaid plan you can review. No edits until you switch to Agent.** | No | No | A reviewable plan on the **Plan** tab |
+| **Agent** | **Full catalog: read, edit, run, and open a pull request.** | Yes | Yes | Edits, command output, a branch and a pull request |
 
-Ask and Plan **withhold the mutating tools**. That is enforced by the harness, not by asking the model to behave: in those modes the edit and shell tools are not offered at all. Plan writes its proposal through a dedicated plan tool. Agent receives the full workspace catalog inside the guest. See [How Code works](/code/how-it-works).
+All three modes can read a file, list files by pattern, search the repository by regular expression, read the task list and read artifacts. Only **Agent** can write a file, edit a file, run a command, write the task list, or dispatch the background search worker.
 
-## When to use which
+## The lock is on the tools, not on the model
 
-| Situation | Mode |
-| --- | --- |
-| Unfamiliar code, *how does this work?* | **Ask** |
-| Estimating a change, reviewing an approach before anything moves | **Plan** |
-| A change you have already decided on | **Agent** |
-| Something went sideways and you want to understand before continuing | Follow up in **Ask**, then return to **Agent** |
+The three modes are worth trusting because of where the decision is made. In Ask and Plan the mutating tools, writing, editing, running a shell command, writing the task list and dispatching the background worker, are simply **absent** from the catalog the turn is built with. The model is not asked to behave: there is no instruction it could misread or talk itself out of, because the tool is not there to call. If one is called anyway, the call is refused a second time when it is dispatched.
 
-## How to pick
+Plan gets one extra tool the others do not: the plan writer. That is the only thing that fills the **Plan** tab.
 
-1. Choose **Ask**, **Plan**, or **Agent** on the turn. The session row's setting is the default for new turns.
-2. Send the task.
-3. On a follow-up, change mode if you want a tighter or looser loop.
+<Warning>
+Because the catalog is chosen when the turn is built, **a mode change takes effect on the next turn, not on the turn already running.** Switching to Agent while a turn is in flight does not retroactively let that turn edit anything, and switching to Ask does not claw back an edit the running turn has already proposed. If you need a running turn to stop, press **Stop** in the composer's send disc, then send the next turn in the mode you want.
+</Warning>
 
-Web Code has no model picker: the web app is Cloud-only and the runtime chooses the model. In the CLI, `/model` picks the model and the reasoning effort, `/mode` and **Shift+Tab** switch Agent / Plan / Ask, and `/plan` drafts a plan before any code is written — see [CLI modes and permissions](/cli/modes-and-permissions).
+## Choose a mode, and change it per turn
 
-<Frame caption="The CLI's slash palette in a small terminal: /plan drafts a plan before writing, /goal keeps a long-horizon objective.">
-  <img src="/images/cli/runtime/40x12/slash-palette.png" alt="Cortex CLI slash palette showing /plan and /goal in a 40 by 12 terminal" />
-</Frame>
+<Steps>
+  <Step title="Pick the mode for the first turn">
+    On Code Home, the controls row under the prompt carries **Ask**, **Plan** and **Agent**. The mode is stored on the session, and a new session defaults to **Agent**.
+  </Step>
+  <Step title="Send the task">
+    Press **Start session**. The turn is built with the catalog that mode allows, and nothing widens it afterwards.
+  </Step>
+  <Step title="Change it on a follow-up">
+    The follow-up composer inside the session carries the same mode menu, so the mode can change on every turn. Pick a mode and send the follow-up: the new mode applies to that turn. A follow-up that does not pick one keeps the session's current mode.
+  </Step>
+</Steps>
 
-## Plan in practice
+A useful rhythm: **Plan** to agree on the approach, **Agent** to carry it out, **Ask** when something has gone sideways and you want to understand the repository before you let anything else change.
 
-A Plan turn reads the repository and returns a structured plan: the steps it would take, the files it would touch, the risks it sees. Nothing changes until you send an Agent turn. Ask for adjustments in Plan as many times as you like — the cheap moment to redirect is before any file moves. The CLI adds a **Spec** lock on top of Plan that keeps mutating tools blocked until you accept the plan; see [CLI modes](/cli/modes-and-permissions).
+## What a Plan turn gives you
 
-## Modes are a harness lock, not a promise
+A Plan turn reads the repository and returns a structured proposal: titled steps, the files it expects to touch, the risks it sees, and a rendered diagram. The product's own word for the diagram is mermaid, which is why the mode's description mentions it.
 
-The three modes are worth trusting because of where the decision is made. Ask and Plan do not receive the editing and shell tools at all, so there is no instruction the model could follow, misread, or talk itself out of — the tools are simply absent from the request. That is also why a mode change takes effect on the next turn rather than mid-turn: the tool set is chosen when the turn is built.
+The **Plan** tab in the output pane appears **only when the session has a plan**. Nothing changes in the repository while you read it. Ask for adjustments as many times as you like, in Plan, and send an **Agent** turn when the approach is right. The cheap moment to redirect a change is before any file moves.
 
-In Agent, the mode is not a safety net. The agent runs the full workspace catalog inside the guest, which is why the guest is isolated, why approvals exist in the CLI, and why the timeline keeps the diff. Read what it did before your next turn.
+## Ask and Plan in the Changes pane
+
+The **Changes** pane is where file writes wait for a human decision. In Ask or Plan there is nothing there to decide, and the pane says so outright:
+
+> **Ask and Plan do not change files, so there is nothing to review here.**
+
+That is the mode reporting itself, not a failure. See [Changes and diffs](/code/changes).
+
+## Security is not a fourth mode
+
+Under the three modes there is a fourth row labelled **Security**, with the hint **Open Security mode for this repository**. It is a link, not a mode: it leaves the composer for Cortex Security, which reads a pull request and posts a review instead of writing code. A session's interaction stays Ask, Plan or Agent. See [Pull-request review](/code/security).
+
+## What no mode can reach
+
+<Note>
+The mode is chosen **per session and per turn only**. There is no workspace setting that pins a read-only default, and [Code settings](/code/settings) does not offer one. If you want a session to stay in Ask, keep choosing Ask on each turn.
+</Note>
+
+A Code session does not receive the tools a Chat turn has: no web search, no web page extraction, no hosted snippet sandbox, no skills and no clock. When a task needs to run your repository's own Python, an Agent turn runs it as a shell command inside the attached runtime, like any other command.
+
+A Code session is also built with no tool servers, connectors or plugins of its own, so widening the mode to Agent does not open a path to an external service. See [Code integrations](/code/integrations) for what is configured at the workspace level and what a session reports.
 
 ## Related
 
-- [Sessions](/code/sessions) — where the turns live.
-- [Code quickstart](/code/quickstart) — a first Plan, then Agent.
-- [How Code works](/code/how-it-works) — the catalog each mode receives.
-- [Code troubleshooting](/code/troubleshooting) — a mode that will not edit.
+- [Code sessions](/code/sessions) for the transcript, follow-ups and the session board.
+- [How Code works](/code/how-it-works) for the turn loop the mode is built into.
+- [Permissions and approvals](/code/approvals) for the two gates an Agent turn meets.
+- [Changes and diffs](/code/changes) for reading and approving what an Agent turn proposes.
+- [Modes and permissions in the CLI](/cli/modes-and-permissions) for the same choice in a terminal.
+- [Code troubleshooting](/code/troubleshooting) when a turn will not edit anything.

@@ -1,0 +1,114 @@
+---
+title: "Repository scans"
+description: "Run an on-demand or weekly scan of a repository you own, read its findings, dismiss one, hand a patch to Cortex Code, or export the scan"
+icon: "magnifying-glass"
+---
+
+A review answers one question: what did this pull request introduce. A scan answers the other one: what is wrong in this tree, on this branch, as it stands today. Cortex Security can scan a repository your account owns, either now or once a week, and it keeps the results inside the app instead of posting them to GitHub.
+
+This page covers what a scan needs before it will run, how to start one, what each status means, what a finding carries, and the three things you can do with a finding: dismiss it, hand its suggested patch to Cortex Code, or export the whole scan. Scans live on the **Scan** tab, headed **Scans**, which describes itself as *on-demand scans of repositories this account owns. Suggested patches open a Code session. Cortex never applies them.*
+
+## How a scan differs from a review
+
+| | Review | Scan |
+| --- | --- | --- |
+| Question answered | What did this pull request introduce | What is wrong in this tree on this branch |
+| Input | One pull request's change, plus the repository indexed at its head | A whole repository at a branch |
+| What starts it | A GitHub event, a mention, or **Review again** | **Start scan**, or a weekly schedule |
+| Where results appear | On GitHub and in the app | In the app only |
+| Second look at each finding | A real verifier; rejections are recorded as discarded | A stub, recorded as such and never as a pass |
+| Findings filed under | Review criteria such as security or correctness | A weakness family |
+| What you can do with a finding | Reply, add a reaction, resolve the thread | **Dismiss**, open a Code session for the patch, export |
+
+## What a scan needs
+
+Three things, and the app tells you which one is missing.
+
+- **Cortex Security mode** switched on. The hint under the switch is the whole rule: *When this is off, scans do not run. Connect the GitHub App under Install. GitHub.com only.*
+- The Cortex Security GitHub App installed on the repository, and the repository enabled. Turning the mode on does not need the App; starting a scan does.
+- A repository **this account owns** through that installation. See [Installation and repositories](/security/repositories).
+
+<Note>
+GitHub.com only. The app says it plainly: **GitHub Enterprise Server is not available yet.** Security is also unavailable to guest accounts.
+</Note>
+
+Security mode is a per-account switch. An organisation-wide enable is different: it needs an owner or an admin **and** an Enterprise plan, after which members inherit it without a switch of their own, and the admin who enabled it keeps their personal one. See [Plans](/getting-started/plans).
+
+## Start a scan
+
+<Steps>
+  <Step title="Open the Scan tab">
+    From Cortex Code, the home quick action **Run a security audit** opens it, and reads **Security mode is on** once the mode is enabled. The composer's mode menu has a **Security** entry with the hint *Open Security mode for this repository*, which lands in the same place. Inside Cortex Security, it is the **Scan** tab.
+  </Step>
+  <Step title="Switch on Cortex Security mode">
+    The switch is labelled **Cortex Security mode**. With it off, nothing scans, however the rest of the form is filled in.
+  </Step>
+  <Step title="Check the App is connected">
+    When the App is installed the card reads **App connected**. When it is not, it reads *Connect the Cortex Security GitHub App to scan a repository this account owns.* with a **Connect GitHub** button.
+  </Step>
+  <Step title="Choose the repository and branch">
+    **Repository** lists the enabled repositories this account owns. With none, the form says *No enabled repositories. Install the GitHub App and enable a repository you own.* Set **Branch** to the branch you want read.
+  </Step>
+  <Step title="Choose when">
+    **When** offers **Scan now** or **Weekly scan**. A weekly scan runs *Monday 09:00 UTC on the selected owned repository and branch.*
+  </Step>
+  <Step title="Start it">
+    Choose **Start scan**. A scheduled scan confirms with `Scheduled as {cron} (UTC).` Before your first scan the list reads **No scans yet**: *Start a scan of a repository this account owns. Findings stay here until you dismiss them or open a Code session for a patch.*
+  </Step>
+</Steps>
+
+## While it runs
+
+| Status | What it means |
+| --- | --- |
+| **Queued** | Accepted and waiting to start. |
+| **Scanning** | Reading the tree at the branch you chose. |
+| **Validating** | Taking a second look at the findings. |
+| **Completed** | Finished. The findings are listed. |
+| **Failed** | It did not finish, and carries the line **A failed scan is never an approval.** |
+
+<Warning>
+Every completed scan carries the notice **Validation on this scan is a stub. Findings were not independently verified.** The second look is the same shape as a pull-request review's verifier, but it records a stub rather than a pass, so treat a scan finding as a lead to check rather than as a confirmed defect. A pull-request review does have a real second pass; see [How a review works](/security/how-a-review-works).
+</Warning>
+
+## What a finding carries
+
+A scan finding gives you a title and details, the path and line it points at, the impact, how to reproduce it, a suggested patch where there is one, a severity, a status, a weakness family, and the repository and branch it came from. Once you have opened a Code session for its patch, the finding remembers that session.
+
+The families a scan uses are narrower than the review criteria, because a scan is looking for weaknesses rather than judging a change: injection, request forgery, authorization, memory, cryptography, deserialisation and protocol weaknesses. The app may name a family in a shorter form than that. Severities are the same four a review uses, so **Blocking** and **Major** mean the same thing here as they do on a pull request. See [Checks and comments](/security/checks).
+
+Finding bodies are encrypted at rest. Titles, paths, line numbers, severity, family, repository and branch stay readable, because they are what the list has to show you. A completed scan with nothing in it simply says **No findings.**
+
+## Act on a finding
+
+<Steps>
+  <Step title="Dismiss it">
+    Choose **Dismiss** and give a reason under **Why this finding is dismissed**. The field is prefilled with *Dismissed from Security mode*, and a reason is required, so a dismissal is always attributable to something.
+  </Step>
+  <Step title="Take the patch into Cortex Code">
+    Choose **Open in Code**, or **Approve**. Both do the same thing: they open a Cortex Code session with the suggested patch for you to read. Nothing is written, pushed, or opened as a pull request. The page says so: *Cortex does not apply patches. A Code session is opened for you to review.* Carry on from there in [Sessions](/code/sessions).
+  </Step>
+  <Step title="Export the scan">
+    **Export CSV** and **Export Markdown** download the scan as `cortex-security-scan.csv` or `cortex-security-scan.md`, which is the way to get findings into a ticket tracker or a spreadsheet.
+  </Step>
+</Steps>
+
+## Scanning somebody else's repository
+
+You cannot. The **Repository URL** field takes the address of a GitHub repository, and its only effect is to tell you why that is refused: **This repository is not owned by this GitHub App.** The card explains it as *Cortex Security scans repositories the Cortex Security GitHub App is installed on. A pasted URL that this account does not own is refused.*
+
+A pasted URL is never a scan target. A scan of a tree the App has no grant to read would look exactly like a working scan of your own repository, which is the reason the field refuses rather than tries.
+
+## What scans do not do
+
+- **Nothing is posted to GitHub.** A scan leaves no comment, no check run and no review event. Results live on the **Scan** tab.
+- **Nothing is applied.** The patch handoff opens a Code session for a person to read, and that is the only route a scan finding has into your code.
+- **Nothing is approved.** A failed scan is never an approval, and a completed one is not a clean bill of health while its validation is a stub.
+
+## Related
+
+- [Cortex Security](/security) - the hub, and how scans sit next to reviews.
+- [How a review works](/security/how-a-review-works) - the pull-request pass, with a real second look at every finding.
+- [Installation and repositories](/security/repositories) - installing the App and enabling a repository you own.
+- [Checks and comments](/security/checks) - the severities a finding carries.
+- [Security troubleshooting](/security/troubleshooting) - when a scan will not start.

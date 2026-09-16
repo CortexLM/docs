@@ -1,99 +1,130 @@
 ---
 title: "Install the CLI"
-description: "Install Cortex CLI on macOS, Linux, or Windows. The installer verifies a SHA-256 checksum before it writes anything; cortex upgrade keeps it current."
-keywords: ["setup", "download", "upgrade", "update", "checksum"]
+description: "Install Cortex CLI on macOS, Linux or Windows, pin a version or a channel, keep it current with cortex upgrade, and uninstall it cleanly"
+icon: "download"
 ---
 
-The installer downloads the release build for your platform from [software.cortex.foundation](https://software.cortex.foundation), verifies its SHA-256 checksum against the release manifest, and installs the binary. Nothing is written until the checksum matches.
+Cortex CLI installs as a single binary. An install script fetches the release build for your platform from `software.cortex.foundation`, verifies its SHA-256 checksum against the release manifest, and only then writes anything to disk. There is nothing to configure afterwards: sign in and you have a working session view.
 
-<Frame caption="A fresh install: Welcome to Cortex, the coding agent CLI · v0.1.10 · / commands · @ files · ! shell · & cloud, with the empty Agent composer and the token counter at 0 / 500K.">
-  <img src="/images/cli/runtime/120x40/welcome-cortex.png" alt="Cortex CLI welcome splash for v0.1.10 with the empty composer" />
-</Frame>
+This page covers the installers for macOS, Linux and Windows, what the checksum check does and does not prove, how to pin a version or a release channel, keeping the CLI current with `cortex upgrade`, building from source, and uninstalling.
 
-## macOS and Linux
+## Install
 
-```bash
-curl -fsSL https://software.cortex.foundation/install.sh | sh
-```
+<Tabs>
+  <Tab title="macOS and Linux">
+    ```bash
+    curl -fsSL https://software.cortex.foundation/install.sh | sh
+    ```
 
-Installs `Cortex` into `~/.local/bin`, plus `cortex` and `agent` symlinks. Add that directory to your `PATH` if it is not there already. Python 3.8 or later is required by the installer.
+    This installs the binary into `~/.local/bin` and puts a `cortex` command there. Add that directory to your `PATH` yourself if it is not already on it. The install script needs Python 3.8 or later.
+  </Tab>
+  <Tab title="Windows">
+    ```powershell
+    irm https://software.cortex.foundation/install.ps1 | iex
+    ```
 
-Prefer to read the script first:
+    This installs into `%LOCALAPPDATA%\Cortex\bin`. Add that folder to your user `PATH` yourself; the installer does not edit your profile or your `PATH`.
+
+    Windows x64 only. Native ARM64 and 32-bit builds are not published, and the installer does not silently substitute another architecture.
+  </Tab>
+</Tabs>
+
+<Tip>
+If you would rather read the script before you run it, fetch it into a pager first:
 
 ```bash
 curl -fsSL https://software.cortex.foundation/install.sh | less
 ```
+</Tip>
 
-What the installer does and refuses to do:
-
-| Behaviour | Detail |
-| --- | --- |
-| Selects the right asset | GNU or musl Linux for x86_64 and AArch64; macOS for Intel and Apple silicon |
-| Fails closed | Unknown architectures, unknown libc, or a missing platform asset stop the install |
-| Bounded downloads | Redirects are rejected; extraction accepts only the release binary |
-| Protects your `bin` | Refuses to overwrite unrelated commands or binary symlinks |
-| Keeps a recovery copy | An existing binary is kept as `Cortex.old`; a failed post-install check restores it |
-
-### Options
-
-| Variable | Effect |
-| --- | --- |
-| `CORTEX_VERSION=0.1.8` | Pin a version, for example `curl … \| CORTEX_VERSION=0.1.8 sh` |
-| `CORTEX_INSTALL_DIR=…` | Change the prefix; the binary goes in its `bin` |
-| `CORTEX_CHANNEL=stable\|beta\|nightly` | Pick a release channel |
-
-## Windows
-
-```powershell
-irm https://software.cortex.foundation/install.ps1 | iex
-```
-
-Installs into `%LOCALAPPDATA%\Cortex\bin` after the same checksum check. Add that folder to your user `PATH` yourself — the installer does not edit your profile. Windows x64 only; ARM64 and 32-bit builds are not published, and the installer does not silently substitute another architecture. An existing binary is kept as `Cortex.old.exe`.
-
-## Check it worked
+Confirm the result:
 
 ```bash
 cortex --version
 ```
 
-## Update
+## What the installer does, and refuses to do
+
+| Behaviour | Detail |
+| --- | --- |
+| Selects the right build | GNU or musl Linux on x86_64 and AArch64; macOS on Intel and Apple silicon |
+| Fails closed | An unknown architecture, an unknown libc, or a missing platform asset stops the install rather than guessing |
+| Bounded downloads | Redirects are rejected, and archive extraction accepts only the release binary |
+| Protects your bin directory | It refuses to overwrite an unrelated command of the same name, or a binary symlink |
+| Keeps a recovery copy | An existing binary is kept as `Cortex.old`, or `Cortex.old.exe` on Windows |
+
+<Note>
+Minimum operating system, kernel and libc versions are not published. The musl builds have audio disabled and must pass a static-link check, but that does not establish a supported floor for any platform.
+</Note>
+
+## What the checksum check proves
+
+The install script verifies the SHA-256 checksum of the archive against the release manifest before it writes anything, and `cortex upgrade` verifies it again before replacing a binary. The check happens for you; there is no separate command for verifying a download by hand.
+
+<Warning>
+Checksums detect corruption, not publisher identity. The SHA-256 values come from the same distribution origin as the archive, so a match tells you the download arrived intact, not who produced it. **Checksums are not signatures.** There is no release signing, notarization, provenance attestation, or software bill of materials behind these downloads, and nothing here should be read as one.
+</Warning>
+
+## Pin a version, or change the channel
+
+Set these in the environment of the shell that runs the install script.
+
+| Variable | Effect |
+| --- | --- |
+| `CORTEX_VERSION` | Pin a specific release instead of taking the newest one |
+| `CORTEX_INSTALL_DIR` | Change the install prefix; the executable lands in that prefix's `bin` |
+| `CORTEX_CHANNEL` | Pick a release channel: `stable`, `beta` or `nightly` |
 
 ```bash
-cortex upgrade            # latest on your channel
-cortex upgrade --check    # report only
+curl -fsSL https://software.cortex.foundation/install.sh | CORTEX_VERSION=0.1.8 sh
+```
+
+## Keep it current
+
+```bash
+cortex upgrade            # newest release on your channel
+cortex upgrade --check    # report what is available, install nothing
 cortex upgrade 0.1.10     # a specific version
 ```
 
-`cortex upgrade` fetches the release manifest from `software.cortex.foundation`, verifies SHA-256 before replacing the binary, keeps a `.old` recovery copy, and checks the new binary's `--version` before finishing. A lookup failure returns a non-zero exit status — an unavailable release is never reported as already installed. Installations made through a package manager are directed back to that package manager.
+The full flag set is `-c/--check`, `--changelog`, `-f/--force`, `-y/--yes`, `--channel` and `--pre`. Version pins follow SemVer ordering, including prereleases. From inside a session, `/upgrade` does the same thing, and the `check_for_update_on_startup` key in [configuration](/cli/configuration) controls the check at launch.
 
-The TUI also offers `/upgrade`, and `check_for_update_on_startup` in [configuration](/cli/configuration) controls the launch-time check.
+An upgrade verifies SHA-256 before it replaces anything, keeps the previous binary beside the new one as a recovery copy, then runs the new binary's `--version` with a deadline and bounded output. If that check fails, the previous binary is restored. A failed release lookup exits non-zero rather than reporting that you are already up to date.
 
-## Homebrew and WinGet
-
-The release pipeline publishes assets that a Homebrew formula in `CortexLM/homebrew-tap` and a WinGet package `CortexLM.Cortex` reference. Coverage varies by platform; the shell and PowerShell installers above are the supported path.
+<Note>
+If you installed through a package manager, `cortex upgrade` sends you back to that package manager instead of replacing the binary itself. Automatic replacement of a musl installation is also refused: use the install script above for those. Package-manager coverage varies by platform and is not documented here; the shell and PowerShell installers are the supported path.
+</Note>
 
 ## Build from source
 
+This is contributor scope, not the supported way to install the CLI. Use the Rust toolchain version pinned in the repository.
+
 ```bash
-# Linux only: headers for the optional audio/desktop crates
+# Linux only: headers for the optional audio and desktop crates
 sudo apt-get install -y libasound2-dev pkg-config
 
 cargo build -p cortex-cli --release
-# binary: target/release/Cortex
+# the binary lands at target/release/Cortex
 ```
 
-Use the Rust toolchain pinned in the repository's `rust-toolchain.toml`.
+Source and issues live at [github.com/CortexLM/cli](https://github.com/CortexLM/cli), licensed Apache-2.0.
 
 ## Uninstall
 
 ```bash
-cortex uninstall --dry-run     # show what would be removed
-cortex uninstall               # remove the binary and data
-cortex uninstall --keep-config --keep-data
-cortex uninstall --backup      # archive data first
+cortex uninstall --dry-run                      # show what would be removed
+cortex uninstall                                # remove the binary and its data
+cortex uninstall --keep-config --keep-data      # leave your settings and sessions
+cortex uninstall --backup                       # archive the data first
 ```
 
-## Next
+The full flag set is `-c/--keep-config`, `-d/--keep-data`, `--dry-run`, `-f/--force`, `-y/--yes`, `--backup` and `-p/--purge`. To see what would be deleted before you commit to it, check [Data locations](/cli/data-locations).
 
-- [Sign in](/cli/sign-in) — `cortex login`.
-- [Quickstart](/cli/quickstart) — a first session.
+## Related
+
+- [Sign in](/cli/sign-in)
+- [CLI quickstart](/cli/quickstart)
+- [Configuration](/cli/configuration)
+- [Data locations](/cli/data-locations)
+- [CLI troubleshooting](/cli/troubleshooting)
+- [Downloads](/getting-started/downloads)

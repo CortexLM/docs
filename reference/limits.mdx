@@ -1,0 +1,172 @@
+---
+title: "Limits and quotas"
+description: "Every user-facing limit in one place: the message windows per plan, storage, images, exports, projects, file size and timeouts."
+icon: "gauge-high"
+---
+
+A plan in Cortex is a set of ceilings, each one attached to a window. Two of those ceilings are counted on every turn you send, a third is counted when you create something, and the rest are plan attributes the product draws as a meter. Your own numbers, with their reset countdowns, are always in **Settings → Plan & billing**, and that is the place to check before you rely on a figure.
+
+This page collects every limit a user can meet, says which plan it belongs to, and is honest about the ones that depend on the plan or the deployment. Plan names here are the names the product shows: **Guest**, **Free**, **Go**, **Plus** and **Pro**.
+
+<Note>
+Only the two message windows and the project count are enforced on the request path today. The other ceilings below are real plan attributes and the product shows them, but they are not what stops a turn. If you need to know what a specific account allows, read the meters in Settings rather than a table on a documentation site.
+</Note>
+
+## Messages
+
+These are the limits that stop you sending.
+
+| Quota key | Meter label | Window | Guest | Free | Go | Plus | Pro |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `quick_messages_per_day` | Messages today | 1 day | 100 | 500 | 1,000 | Unlimited | Unlimited |
+| `quick_messages_per_month` | Messages this month | 30 days | 500 | 3,000 | 8,000 | Unlimited | Unlimited |
+
+Three things to know about how these two interact.
+
+- **A turn charges both windows**, and the first to exhaust wins. You can be blocked by the monthly window while the daily bar still has room, and the other way round.
+- **Plus and Pro have no message limit at all.** "Unlimited" here means there is no ceiling to hit, not a number too large to print.
+- **The Guest allowance belongs to the signed-out session, not to an account.** It does not carry over when you sign in.
+
+## What is not metered
+
+Reasoning, code runs in the sandbox and web searches are **not metered on any plan**, Guest and Free included. Every plan is limited only by the message windows.
+
+| Quota key | Meter label | Value on every plan |
+| --- | --- | --- |
+| `reasoning_runs_per_day` | Reasoning runs | Unlimited |
+| `sandbox_executions_per_day` | Code runs | Unlimited |
+| `web_searches_per_day` | Web searches | Unlimited |
+
+An unlimited quota draws no bar in Settings, so an absent meter is not a broken one. If you find older copy promising a number of reasoning runs, code runs or web searches a day, that copy is stale: those counters were retired and the open buckets cleared.
+
+## Other plan ceilings
+
+| Ceiling | Quota key | Guest | Free | Go | Plus | Pro |
+| --- | --- | --- | --- | --- | --- | --- |
+| Projects | `projects` | None | 3 | 5 | Unlimited | Unlimited |
+| Images today | `images_per_day` | 2 | 15 | Not published | 100 | Unlimited |
+| Exports today | `exports_per_day` | 2 | 15 | Not published | 100 | Unlimited |
+| Library storage | `storage_bytes` | 200 MB | 500 MB | Not published | 20 GB | Unlimited |
+| Parallel agents | `concurrent_agent_runs` | Not published | 1 | Not published | 10 | 50 |
+
+How to read that table:
+
+- **None** means the capability is not available on that plan, not that it is unlimited. A guest has no projects.
+- **Not published** means the plan carries no value for that ceiling, so this page will not invent one. Check **Settings → Plan & billing** on an account on that plan.
+- **Projects** is a count, not a rate. There is no window and nothing resets: it is how many you may hold at once. This is the one non-message ceiling that is actually checked when you act.
+- **Library storage** is a total across the files you keep, counted in decimal bytes so it matches the number the product shows. It is a different thing from the per-file limit below.
+- **Parallel agents** is a plan attribute that the product displays but does not currently enforce. The matching error code exists regardless, so handle it rather than assuming it can never arrive.
+- **Images and exports** are quotas rather than paywalls. Every plan, Guest included, can generate an image and export a document, in different daily amounts.
+
+## Files and attachments
+
+| Limit | Value | Applies to |
+| --- | --- | --- |
+| Size of one file | 10 MB | Every plan that can attach |
+| Text or Office documents inlined per turn | Up to 4 | Chat turns |
+| Characters inlined per attachment | About 32,000 | Chat turns |
+
+Over the per-file ceiling you get [`payload_too_large`](/problems/payload_too_large), and the product says so in plain words: "Files can be at most 10 MB. Remove or shrink the attachment and try again." A file that is inside that ceiling but over what your own plan allows gives you the plan notice instead, headed "That attachment is over your plan’s size limit".
+
+Three more behaviours are worth knowing before you attach something large:
+
+- A photo is compressed automatically to come in under 8 MiB, and a short clip under 10 MiB, so you do not have to shrink media by hand.
+- A text or Office document is read by inlining part of its text into the turn, which is why the per-attachment character figure above matters more than the file size for a long document.
+- An encrypted or password-protected document **fails closed**. It is not parsed, and nothing from it reaches the model.
+
+See [Attachments and files](/chat/attachments) for what happens to a file after you send it, and [Library](/chat/library) for the storage total.
+
+## Tool rounds in one turn
+
+A turn can call tools, read the results and call again. That loop is bounded.
+
+| Surface | Rounds per turn |
+| --- | --- |
+| Cortex Chat | 8 |
+| Cortex Code | 48 |
+| Cortex Bot | No round counter |
+
+A Chat turn that would need more than eight rounds is better split into several turns. Cortex Code is given far more room because a coding task legitimately reads and edits many files on the way to one answer.
+
+## Timeouts
+
+Most requests are given up to a minute to finish, and are given up on after that. A streamed reply is the exception: it is not cut off at a minute, because an answer that takes longer to write than a minute is normal rather than a fault.
+
+<Note>
+Which error code a timeout produces depends on where it happened, and Cortex does not publish a mapping. Read the `code` in the response rather than inferring it from the wait. [Errors](/reference/errors) explains the codes you may see.
+</Note>
+
+## Rate limits
+
+Cortex does not publish a requests-per-minute figure, and this page will not invent one. Nothing you can do by hand in the app is fast enough to be worth pacing, so treat rate limiting as something to handle in code rather than something to plan around.
+
+[`rate_limited`](/problems/rate_limited) exists in the error contract and can be returned, so a client should handle it and wait for the `retry_after_seconds` the response carries. Do not confuse it with [`quota_exceeded`](/problems/quota_exceeded): one is arriving too fast, the other is a plan window running out.
+
+## Where to see your own numbers
+
+<Steps>
+  <Step title="Open Settings, then Plan & billing">
+    The current plan is shown with a **CURRENT PLAN** badge, above the meters.
+  </Step>
+  <Step title="Read the meters">
+    Each quota shows `{value} used` and, where a window applies, `Resets in {label}`. A quota that is unlimited on your plan has no bar at all.
+  </Step>
+  <Step title="Check storage separately">
+    The **STORAGE** section shows how much of your Library allowance is in use. If it cannot load it says "Storage usage could not be loaded" and offers **Retry**.
+  </Step>
+  <Step title="Check tokens under Usage">
+    Pick a **Usage window** of 7 days, 30 days or 90 days. Cortex Chat, Cortex Code and Cortex Bot are counted separately, anything that could not be attributed shows as **Unattributed**, and there is a **PER MODEL** breakdown. An empty window reads "No recorded tokens in this window." because empty windows stay zeros rather than being filled in with an estimate.
+  </Step>
+</Steps>
+
+The tab carries its own caveat, and it is a good one to take literally: "Quota bars on this tab come from the plan, not a certificate."
+
+## When you reach a limit
+
+A used-up window is not shown as a generic error. You get a **Plan limit reached** notice reading "You have used everything this plan allows in the current window.", with `Resets in {label}`, `Current plan: {plan}` and, when a model is still available to you under the limit, **Continue with** that model. While the reset time is being worked out it says "Working out when this resets…", and once the window has rolled over it says "Your allowance has reset, try again".
+
+The heading names the window you exhausted:
+
+| Quota key | Heading you see |
+| --- | --- |
+| `quick_messages_per_day` | You have used today’s messages |
+| `quick_messages_per_month` | You have used this month’s messages |
+| `reasoning_runs_per_day` | You have used today’s reasoning runs |
+| `web_searches_per_day` | You have used today’s web searches |
+| `sandbox_executions_per_day` | You have used today’s code runs |
+| `images_per_day` | You have used today’s image generations |
+| `exports_per_day` | You have used today’s document exports |
+| `projects` | You have reached your project limit |
+| `attachment_bytes` | That attachment is over your plan’s size limit |
+| `concurrent_agent_runs` | Too many agent runs at once |
+| Anything else | You have reached a plan limit |
+
+Which code you get depends on why you were stopped:
+
+| What happened | Code | What fixes it |
+| --- | --- | --- |
+| A plan window is used up | [`quota_exceeded`](/problems/quota_exceeded) | Wait for the reset, or move to a plan with more room. Retrying does not help. |
+| The plan does not include the capability at all | [`entitlement_required`](/problems/entitlement_required) | A plan that includes it. The notice names the capability. |
+| Requests arrived faster than allowed | [`rate_limited`](/problems/rate_limited) | Waiting. This clears by itself. |
+| Too much running at once | [`concurrency_limit_reached`](/problems/concurrency_limit_reached) | Let a run finish, which frees a slot. |
+| A file is over the size ceiling | [`payload_too_large`](/problems/payload_too_large) | A smaller file. |
+
+<Warning>
+`quota_exceeded` is a 429 but it is **not** retryable. It carries the seconds until the window rolls over, which is not the same as a retry delay. Hammering the same request will fail the same way until the window resets or the plan changes.
+</Warning>
+
+## Spend controls
+
+Usage credits, top-ups and a spend cap are present in the interface but resolve to "Not available on this deployment" or "Not reported". There is nothing to configure there yet, and no way to buy capacity beyond what your plan includes. Plan changes themselves are made from **Settings → Plan & billing → Change plan**, which notes that "Switch anytime — changes take effect at the next billing cycle."
+
+## Limits that live with their feature
+
+Some ceilings belong to one capability rather than to your plan, and they are documented where you meet them: how many servers you may connect and how many tools they may contribute in [MCP servers](/chat/mcp-servers), how far a research run will read in [Deep Research](/chat/deep-research), and what a document export will accept in [Document export](/chat/document-export).
+
+## Related
+
+- [Plans and quotas](/getting-started/plans) for what each plan costs and how to change plan.
+- [Errors](/reference/errors) for the problem document behind every limit message.
+- [`quota_exceeded`](/problems/quota_exceeded) for the code a used-up window returns.
+- [Models](/reference/models) for the context and output ceilings, which are per model rather than per plan.
+- [Library](/chat/library) for what counts towards your storage total.

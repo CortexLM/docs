@@ -1,0 +1,115 @@
+---
+title: "MCP servers"
+description: "Attach a Model Context Protocol server over HTTP, sign in when the server asks, see how its tools appear in a chat, and remove it again"
+icon: "server"
+---
+
+An MCP server is a server you run, or subscribe to, that offers tools over HTTP. Attaching one adds its tools to your chats, so the model can call them in the middle of a turn the same way it calls anything else. Cortex describes the section in those terms: **Attach a Model Context Protocol server over HTTP; its tools join the model in chat.**
+
+This page covers where the add form lives, what Cortex checks before it stores anything, what happens when a server asks you to sign in, how the tools show up in a turn, how to let bots use them, the caps, and what to expect when a server stops answering.
+
+## Where to add a server
+
+Open **Settings** and go to **Integrations**. Two sections sit there:
+
+- **Apps**, described as **Connect an app to act on it from chat. A connected integration adds its tools to your conversations.** These are the catalogue connectors. See [Connectors](/chat/plugins).
+- **MCP servers**, which is the one you want here.
+
+<Note>
+The Connectors page has no MCP form. If you went looking for it there, come back to **Settings** and **Integrations**.
+</Note>
+
+## Add a server
+
+<Steps>
+  <Step title="Name the server">
+    **MCP server name** is a short label of your choosing. It becomes the prefix on the server's tool names, so keep it recognisable.
+  </Step>
+  <Step title="Paste the URL">
+    **MCP server URL** takes the server's address. It is an `https` address ending in the server's MCP path. There is nothing to configure beyond the name and the URL.
+  </Step>
+  <Step title="Add a bearer token, only if your server needs one">
+    **MCP server bearer token** is optional, and it is a password field. Leave it empty unless you already hold a credential for the server.
+  </Step>
+  <Step title="Choose Add">
+    The button reads **Add**, then **Adding…** while it works. Cortex checks the server is reachable and asks it for its tool list before it stores anything.
+  </Step>
+</Steps>
+
+The finished row shows the name, the URL truncated, **authenticated** when a token is held, and a **Remove** button.
+
+## Sign in when the server asks
+
+Some servers require authorisation. When one says so, Cortex takes you to that server's own sign-in page and finishes the connection when you come back. You have a few minutes to complete it.
+
+Nothing is stored until you return. If you cancel, nothing was created.
+
+The return screen reads **Connecting your server** with **Cortex is finishing the connection. This takes a moment.**, then **Finishing the connection…**, then confirms with the server's name and **is connected. Taking you back…**. When it does not work you get one of two honest endings, both of which change nothing:
+
+- **The server was not connected**, with **Nothing was changed. You can start again from Connectors.**
+- **The connection did not finish**, with **Cortex could not finish the connection. Nothing was changed.**
+
+Either way, **Back to Connectors** returns you to the product.
+
+## The bearer token is a different thing
+
+Signing in and pasting a token are not two routes to the same place. The token field is for a server you run yourself, where you already hold a credential and no sign-in dance is needed. It reaches nothing except the endpoint you typed.
+
+## How the tools appear in a turn
+
+Each attached server's card lists the tool names the server advertised. In a chat, those tools are named after your server and the tool, so it is clear where a call went. Their results are treated as third-party content, the same as any other outside source, which means text arriving from a server cannot act as an instruction to the model. See [Built-in tools](/chat/tools) for how Cortex handles any tool result.
+
+<Warning>
+The tool chips are a snapshot taken when the server was attached, not a live read. A server that has gained a tool since then will not show it, and will not offer it, until you attach it again. If the card says **No tools were advertised when this server was attached.**, that server offered nothing at that moment.
+</Warning>
+
+## Let bots use a server
+
+Each card carries a **Cortex Bot** switch, described as **Let your mascots use these tools. Off by default; each call still asks first.** A server you attached to give Chat a tool does not silently become a bot's tool too: you turn it on per server, and each call is still confirmed.
+
+The switch is not available while the server itself is not enabled, or while a change is still being saved.
+
+## Caps
+
+| Limit | Value |
+| --- | --- |
+| Servers per account | 4 |
+| Tools per server | 24 |
+| Transport | Streamable HTTP only |
+| Availability to Cortex Bot | Off by default, per server |
+| Guests | Cannot attach a server |
+
+A guest cannot attach an MCP server, and the refusal happens before Cortex makes any outbound request at all.
+
+## When a server stops answering
+
+If a server's sign-in has expired, Cortex marks it as needing reconnection and skips it for that turn rather than failing the whole answer. A brief network problem is skipped the same way, and nothing about the server is changed. Reconnect it when you next notice the mark.
+
+## Remove a server
+
+**Remove** on the row detaches the server and its tools. There is no separate edit form: to change a URL or a token, or to pick up tools the server has added since, remove it and add it again.
+
+## Who is allowed to change this
+
+A **Roles** block explains which of these controls you can use: **Your role decides which of these controls you can use.** The relevant grant is **Manage connectors**, described as **Connect, configure and disconnect the account's apps and MCP servers.**, and it shows as **Granted** or **Not granted**. Refusals are specific: **Sign in to connect an app.**, **Your role cannot change this connector.**, or the same sentence naming your role.
+
+Where the deployment says nothing about roles, the block says so rather than guessing: **This deployment does not report roles, so nothing here is inferred.** Custom roles, when your organization uses them, are managed by your organization.
+
+## Organization servers
+
+An **Organization** block lists **Servers the organization provisioned. Members cannot add past a lock. Secrets never appear here.** Each entry can carry a policy of **Lock**, **Require** or **Deny**, and the surfaces it names are **Chat**, **Code** and **Bot**. Only an organization admin can change policy.
+
+<Note>
+This block is informational today. Servers listed there do not add tools to your chats, so do not count on one for a turn. Where a deployment has none, it says **No organization servers on this deployment.** A guest sees **Organization servers are available after you sign in.**
+</Note>
+
+Also on the same tab are rows for first-party connectors, which show **Connected**, their tool count, **Disconnect**, or a **Coming soon** badge where the connector is not ready.
+
+## Related
+
+- [Connectors](/chat/plugins)
+- [Built-in tools](/chat/tools)
+- [Page tools](/chat/page-tools)
+- [Skills in Chat](/chat/skills)
+- [Settings](/getting-started/settings)
+- [MCP in Cortex CLI](/cli/mcp)

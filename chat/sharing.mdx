@@ -1,53 +1,94 @@
 ---
 title: "Sharing and teams"
-description: "Cortex Chat is per account. What that means for threads, projects, plans, and files — and where team features live."
-keywords: ["teams", "invite", "collaboration", "privacy"]
+description: "Cortex Chat is per account: what that means for conversations, projects, plans and files, and how to hand a result to someone today."
+icon: "users"
 ---
 
-Cortex Chat is a **per-account** product. Your threads, projects, Library, memory, and plans belong to your signed-in account and follow you across devices. Another account cannot see them, and there is no “invite a teammate to this thread” control.
+Cortex Chat is a per-account product. Your conversations, projects, plans and files belong to the account you signed in with and follow you across devices. There is no team, no workspace membership, and no shared conversation: another account cannot open a thread of yours, and there is no control that invites someone into one.
 
-## What each kind of user has
+This page is the honest version of that. It covers what "per account" means for each thing a chat produces, what the **Share** button in the transcript actually does today, what a link to a single message is and is not, and the three ways you can genuinely pass a Chat result to another person right now.
 
-| | Guest | Member |
-| --- | --- | --- |
-| Threads | This browser session only | Kept on the account, on every device |
-| Projects, Library, memory, plans | No | Yes, private to the account |
-| Connected apps and MCP servers | No | Yes, private to the account |
-| Bots and Code sessions | No | Yes, private to the account |
+## Who can see what
 
-The reasoning: a guest cannot create anything it could not come back to revoke, and a member's work is never visible to another member.
-
-Because a guest's work lives in the browser session, signing in is what makes it survive a closed tab — the allowance, the threads, and the attachments all move onto the account. See [Accounts](/getting-started/accounts).
-
-## What does not exist today
-
-- No teammate invite on a thread or a project.
-- No public link for a Chat conversation.
-- No shared Library between accounts.
-
-Do not expect a sharing control to appear in the thread header — the two actions there are **Start a plan** and **Move to project**.
-
-## Where team features live
-
-| Need | Where |
+| Thing | Who can see it |
 | --- | --- |
-| A team workspace with admin controls, SSO, and audit export | The **Pro** plan lists these — see [Plans](/getting-started/plans) |
-| Sharing a coding session transcript | The CLI can share a session with `/share` or `cortex run --share` — see [CLI sessions](/cli/sessions) |
-| Reviewing a pull request with colleagues | [Cortex Security](/code/security) posts its review as a GitHub check run on the pull request |
+| A conversation | only the account that created it |
+| A project and the chats in it | only the account that created it |
+| A plan | only the account that created it |
+| A file in Library | only the account that created it |
+| A link to one message | anyone with access to that conversation, which is its owner |
+| An exported file | anyone you send the file to, by hand |
 
-The pattern is consistent: the surfaces that involve other people are the ones attached to a repository, a session transcript, or a plan tier — not a conversation. That is deliberate. A thread carries whatever you happened to paste into it, so there is no link that would hand it to someone else.
+The last row is the one that matters in practice. Everything inside Cortex stays with your account; the moment something becomes a file, it is yours to send like any other document.
 
-## What a signed-in account does share
+## The Share button does not produce a link
 
-Nothing between accounts, but a lot between your own devices. Your threads, projects, Library, memory, plans, and Bot routines follow the account, which is why signing in is what makes them persist at all. See [Accounts](/getting-started/accounts).
+The transcript header has a **Share** control, and it always lands on the same state: `Sharing is not on this deployment`. Conversation sharing is not available yet, and Cortex will not invent a link it cannot honour, so you will never be handed a URL that quietly fails for the person you sent it to.
 
-## Export and deletion
+<Note>
+Exporting a whole conversation as a document is not available from the app either. There is no menu item for it anywhere in Chat. To pass on a conversation's contents, export a deck from it or copy the text you need.
+</Note>
 
-Your data is yours to take or remove. **Settings → Data & privacy** offers **Export my data** and **Delete all data**; a signed-in account confirms with an authenticator app. See [Security](/security/overview) and [Accounts](/getting-started/accounts).
+## A link to one message is a bookmark, not access
+
+A message does have a link, and it is worth understanding exactly what it is for.
+
+Open a message's **Message actions** menu and choose **Copy link to message**. The dialog is titled **Link to this message** and tells you what the link does: `Opens the conversation at this message for anyone with access to it.` It adds the consequence: `Anyone without access to this conversation will be asked to sign in.` The field is labelled **Message link**, the link is marked `Expires in 7 days`, and copying it confirms with `Link copied`.
+
+Read that carefully and the limit is clear. The link grants nobody anything. It opens a conversation at a particular message **for someone who could already open that conversation**, and because Chat is per account, that someone is you. Treat it as a deep bookmark into your own thread, which is what makes it useful for a long research conversation you want to come back to at the right spot.
+
+Three more things you may meet in the same menu:
+
+| Message | What it means |
+| --- | --- |
+| `Copy message text` | the other item in the menu: it copies the message body to your clipboard |
+| `Sharing is not available for this message yet.` | a link to this particular message could not be built |
+| `The link could not be copied.` | the clipboard write failed; try again |
+
+## How to share a Chat result today
+
+Three routes work, and all of them end with you sending something yourself.
+
+<Steps>
+  <Step title="Export a file and send it">
+    From an answer, choose **Export** to build a deck from an editable outline; from the transcript header, **Export as deck** does the same for the whole thread. The file is saved to [Library](/chat/library) and can be downloaded. See [Export documents](/chat/document-export).
+  </Step>
+  <Step title="Copy the answer">
+    The answer's action row has **Copy**, which becomes `Copied` on success and `Copy failed` if the clipboard write is refused. This is the fastest way to move a paragraph into an email or a ticket.
+  </Step>
+  <Step title="Download a table">
+    When an answer contains a table, the **Export as spreadsheet** link under it downloads the rows as a comma-separated file immediately, with no dialog and no allowance spent.
+  </Step>
+</Steps>
+
+A note saved from a selection, through **Save to Library**, is worth mentioning here because its own wording invites confusion: `Saved in Chat Artifacts. Available from Chat, Code and Bot.` That means the note is reachable from your other Cortex products, not by other people. It is cross-product, not cross-account.
+
+## Signed out versus signed in
+
+You can use Chat without an account. What changes when you sign in is scope and durability, not who else can see your work.
+
+| | Signed out | Signed in |
+| --- | --- | --- |
+| Conversations | a working chat with a smaller allowance | kept on the account, across devices |
+| File uploads | not available | available, within the attachment limit |
+| Projects | not available | available, private to the account |
+| Web search | not available | available |
+| Exporting a deck | available, with the smallest daily allowance | available, per your plan |
+
+While you are signed out, the sidebar keeps a count of the free messages you have left. Anything that needs an account refuses with an entitlement message and a **Sign in** action rather than failing silently. See [Accounts and sign-in](/getting-started/accounts) and [Plans and quotas](/getting-started/plans).
+
+## Where collaboration does exist
+
+Nothing in a conversation is shared, and that is deliberate: a thread carries whatever you happened to paste into it. The sharing surfaces Cortex does have live outside a conversation, and these are the pages that describe them:
+
+- [Sharing files and connected drives](/chat/library-sharing)
+- [Share a bot](/bot/sharing)
+- [Pull-request review](/code/security)
 
 ## Related
 
-- [Accounts](/getting-started/accounts) — guest versus member.
-- [Projects](/chat/projects) — private to your account, with no invite control.
-- [Plans and quotas](/getting-started/plans) — where team workspace features are listed.
-- [CLI sessions](/cli/sessions) — sharing a session transcript from the terminal.
+- [Accounts and sign-in](/getting-started/accounts) for what signing in changes.
+- [Export documents](/chat/document-export) for the file you actually send.
+- [Conversations](/chat/conversations) for the rest of the transcript header actions.
+- [Data and privacy](/getting-started/data-and-privacy) for what is stored and for how long.
+- [Plans and quotas](/getting-started/plans) for the allowances behind each plan.

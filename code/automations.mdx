@@ -1,0 +1,93 @@
+---
+title: "Automations"
+description: "Automations are saved instructions for Cortex Code: a trigger, a repository and a prompt. Nothing runs unattended yet, and the page says so."
+icon: "bolt"
+---
+
+An automation in Cortex Code is a saved instruction: a trigger, a repository and a prompt, kept so you do not rewrite the same task every week. The **Automations** page lists the ones you have saved, counts how their runs went, and offers a grid of ready-made ones to start from.
+
+Read the page's own description before you plan anything around it: **Saved instructions only. Schedules and events do not execute yet. Prepare a session, then send an interactive turn to start work.** That sentence is the whole truth of the feature today, and the rest of this page is written around it.
+
+<Warning>
+**Nothing runs unattended.** A saved cron schedule does not fire, and neither does a pull request opening or a push. Cortex Code is not wired to your code host as an app that can wake a session: a person presses a control and then sends a turn. If you need work that genuinely runs on a schedule, that is a Cortex Bot feature; see [Routines](/bot/routines).
+</Warning>
+
+## What an automation is made of
+
+Three parts, saved together:
+
+- A **trigger**, which records when you would want this to happen.
+- A **repository**, which is what the prepared session will point at.
+- A **prompt**, which is the task itself, written the way you would write it for a colleague.
+
+The triggers that render are **cron** with a schedule, **on PR opened**, **on PR push**, **on push** and **manual**. Saving any of them records your intent and nothing more: none of them starts a session today.
+
+## Create one
+
+<Steps>
+  <Step title="Open Automations">
+    Press **New automation**, or pick a row from **TEMPLATES** to start from a written prompt instead of a blank one.
+  </Step>
+  <Step title="Give it a trigger, a repository and a prompt">
+    Choose the trigger that describes your intent, the repository the work belongs to, and write the prompt. Treat the trigger as a label for now, not as a switch.
+  </Step>
+  <Step title="Save it, then enable it">
+    The row toggle is what enabling means here, and the hint is exact: **Allows preparing a session manually. This does not enable unattended execution.**
+  </Step>
+  <Step title="Prepare a session">
+    The run control on the row is **Prepare session**, and it is disabled until the automation is enabled. Pressing it creates a queued session from the automation.
+  </Step>
+  <Step title="Send a turn">
+    Open that session and send a turn. Nothing runs until you do. From there it is an ordinary Code session: the same modes, the same transcript, the same two gates.
+  </Step>
+</Steps>
+
+If preparing fails, the page says **The run could not open a session**, or falls back to **That did not work**. Nothing is half-started when it does.
+
+## What the page shows you
+
+| Element | What it reads |
+| --- | --- |
+| Stat | **AUTOMATIONS** with the total, noting how many are enabled |
+| Stat | **SUCCEEDED · 7D**, either `No runs yet` or a percentage of runs |
+| Stat | **FAILED · 7D**, either `Nothing pending` or a count still pending, highlighted once anything is |
+| Sections | **YOUR AUTOMATIONS**, then **TEMPLATES** |
+| Row status | **Never run**, or the run's own status word in a badge |
+| Empty page | **No automations yet**, the same saved-instructions description, and **Create one** |
+
+The two run cards count the last **seven days**. That window is the only number on the page. The second grid is called **TEMPLATES** rather than anything that implies a recommendation, because nothing computes a suggestion for you: they are the same six rows for everybody.
+
+Each automation also has its own view with its runs listed, which is where you look after preparing one. What Cortex tells you about a run, and about the session it produced, lands in the inbox: Cortex says when a session finishes, when it needs a decision, and when an automation ran. See [Code notifications](/code/notifications).
+
+## The six templates
+
+| Template | Trigger it saves | What its prompt asks for |
+| --- | --- | --- |
+| **PR review recipe** | on PR opened | review the diff, report blocking and major findings with file and line, and say plainly when it found nothing |
+| **Dependency maintenance** | a nightly cron | update dependencies to their latest compatible versions, run the test suite, and open a pull request only if everything passes |
+| **Security scan** | on push | audit the dependency tree and the changed files for known vulnerabilities, prioritising injection, authorisation bypass and leaked secrets |
+| **Test coverage** | a weekly cron | find the least-covered modules and write tests that assert real behaviour rather than implementation details, then open a pull request |
+| **Release notes draft** | a weekly cron | summarise the pull requests merged this week, grouped by user-visible change, fix and internal work |
+| **Issue triage** | manual | take the newest untriaged issue, try to reproduce it, and either open a fix or comment with what it found |
+
+Picking a template opens the create form with its prompt already written, and you can rewrite that prompt before you save. A template is a starting point, not a contract.
+
+<Note>
+The **PR review recipe** template is not the same thing as Cortex Security. Security is a review that reads a pull request and posts checks on it, with its own install; an automation is a saved prompt for a Code session that writes code. See [Pull-request review](/code/security).
+</Note>
+
+## Why the honest framing matters
+
+It would be convenient to describe a saved cron schedule as a job that fires. It is worth saying why we do not.
+
+A Code session has no undo, no checkpoint and no revert. There is also no command allowlist and no per-directory allowlist to pre-authorise what a run may touch, so everything a turn is permitted to do is decided before it starts: the mode it runs in, the repository and branch it is pointed at, and the fact that a person is there to answer a command prompt and to approve or reject each file write. A run nobody is watching would have none of that, and nothing to roll back afterwards.
+
+So the useful way to think about an automation today is as a saved brief with a known blast radius: the prompt is written once and reviewed once, and a person still opens the gate each time. See [Permissions and approvals](/code/approvals) and [Changes and diffs](/code/changes).
+
+## Related
+
+- [Code notifications](/code/notifications) for what Cortex tells you after a run.
+- [Routines](/bot/routines) for work that really does run on a schedule.
+- [Code sessions](/code/sessions) for the session a prepared automation becomes.
+- [Permissions and approvals](/code/approvals) for the gates a prepared run still passes.
+- [Pull-request review](/code/security) for reviews that read a pull request.

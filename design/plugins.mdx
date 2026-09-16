@@ -1,0 +1,83 @@
+---
+title: "Design connectors"
+sidebarTitle: "Connectors"
+description: "The Plugins page in the Cortex Design window: browsing the connector catalogue, connecting an app, and reconnecting one whose access expired."
+icon: "plug"
+---
+
+A **connector** hands Cortex access to an app you already use, so it can read your data and act on it. Cortex Design does not keep a catalogue of its own. It shows the same connectors as the rest of Cortex, on the sidebar row named **Plugins**, and the screen that row opens is headed **Connectors**. The row carries a meta line counting how many you have connected.
+
+This page covers where connectors live in the Design window, how to find one, what each card on the page is telling you, how to connect an app, and what to do when a connection stops working. Which connectors exist, and how their tools behave in a conversation, belongs to [Connectors](/chat/plugins) rather than here.
+
+## Where connectors live in the Design window
+
+Open **Plugins** in the sidebar. The page states its own purpose at the top: `Give Cortex access to your tools so it can read your data and act on it. You stay connected at the provider: Cortex never sees your passwords.` A pill beside the heading repeats the connected count.
+
+There is no second place to configure this. The **Integrations** pane in [Design settings](/design/settings) holds a single line saying that connectors live on the Plugins page, and an **Open Plugins** button that takes you there.
+
+## Find a connector
+
+| Control | What it does |
+| --- | --- |
+| **Search connectors** | Filters the catalogue by name. `⌘ K` puts the cursor in the field. |
+| Chips **Discover**, **All**, **Connected** | Switch between a curated view, everything, and only the apps you have already set up. |
+| Category menu | **All categories**, **Email & calendar**, **Files**, **Productivity**, **Communication**, **Developer** and **CRM**. |
+| **Popular** and **New** sections | The default browse view. Each has a **Show all** control and a pager for moving through the rest. |
+
+If a search matches nothing, the page says it has no connector under that name and offers **See all connectors** to clear the filter, or **Request a connector** to tell Cortex what is missing.
+
+## What a card tells you
+
+Each card carries the app's name and a set of markers. Read them before you connect anything:
+
+| On the card | What it means |
+| --- | --- |
+| Surface chips **Chat**, **Code**, **Bot**, **Design** | Where this connector's tools can be used. Design is one of the surfaces a connector can reach, and a connector without a Design chip will not be available on a canvas. |
+| **Verified** badge | Cortex has reviewed this connector. |
+| **Soon** chip | The connector is announced but not connectable yet. Use **Notify me** on the card to be told when it lands. |
+| **Reconnect required** chip, with a **Reconnect** button | The connection exists but its access has lapsed. See below. |
+| **Not on your plan** | The connector is locked for your account and cannot be connected from here. |
+
+<Note>
+  Which connectors your account can use is a property of your plan, not of Cortex Design, and the Design window only reflects the answer. See [Plans](/getting-started/plans) for what is included, and [Connectors](/chat/plugins) for the catalogue itself.
+</Note>
+
+## Connect an app
+
+<Steps>
+  <Step title="Open Plugins and find the app">
+    Search by name, or browse a category. A card that offers a connect control is one your account can use.
+  </Step>
+  <Step title="Choose the connect control on the card">
+    You authorise at the provider, in its own sign-in screen. Cortex never receives your password, and you can withdraw the access at the provider as well as here.
+  </Step>
+  <Step title="Or paste a key, for a connector that uses one">
+    Some apps use a key instead of a sign-in. The Design window asks for it in a small dialog: paste the value into the **API key** field and choose **Continue**. The hint beside the field says the key comes from the provider and is checked before it is saved, so a bad key is refused there and then rather than failing later.
+
+    The same dialog has an **Available in** section listing the surfaces the connector reaches, and the dialog states what happens to the value you paste: `Cortex stores the key sealed and removes it the moment you disconnect.`
+  </Step>
+  <Step title="Check the count">
+    The **Plugins** row in the sidebar and the pill on the page both count what is connected, so a successful connection is visible without reopening the card.
+  </Step>
+</Steps>
+
+## When a connector stops working
+
+Access granted at a provider does not last forever. Two things tell you it has lapsed:
+
+- The card gains a **Reconnect required** chip and a **Reconnect** button. Choosing it takes you back through the same authorisation.
+- A message appears saying that the connector's authorisation expired, with **Reconnect** and **Dismiss**. It also names the work that is paused until you reconnect, so you are not left guessing which job stopped.
+
+Nothing you have already made is affected by a lapsed connection. Your canvases, versions and library are Cortex's own and do not depend on any connector.
+
+## When the page will not load
+
+If the Design window cannot reach Cortex, the page shows `Couldn't load connectors` and `You seem to be offline. Your existing connections stay active.`, with a **Retry** button. That second sentence is the important one: an unreachable catalogue does not disconnect anything. Retry once the connection is back. See [Design troubleshooting](/design/troubleshooting) for the rest of the Design window's offline behaviour.
+
+## Related
+
+- [Connectors](/chat/plugins) - the catalogue itself, and how a connector's tools behave in a conversation.
+- [Connected apps and secrets](/bot/plugins) - assigning a connected app to one bot.
+- [Design settings](/design/settings) - the panes beside Integrations, and what each one changes.
+- [Design troubleshooting](/design/troubleshooting) - what a refusal or a failure in the Design window means.
+- [Plans](/getting-started/plans) - what your account includes.

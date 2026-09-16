@@ -1,0 +1,75 @@
+---
+title: "System status"
+description: "Live availability for Cortex Web, API, Chat, Code and Bot: what the status page reports, what to do during an incident, and how maintenance appears"
+icon: "signal"
+keywords: ["uptime", "outage", "incident", "maintenance", "availability"]
+---
+
+Cortex publishes live component health, incident history and scheduled maintenance on one public page: [status.cortex.foundation](https://status.cortex.foundation). That is the canonical address, it is the only one, and it is worth a bookmark before you need it.
+
+This page explains what that site reports, how to read it during an incident, what a planned maintenance window looks like from inside the app, and why a documentation page is never the place to find out whether something is down right now.
+
+## What the status page reports
+
+Five components, no more. The names stay product-facing, so you can match what you are seeing to a row without knowing anything about how Cortex is built.
+
+| Component | What it covers |
+| --- | --- |
+| **Web** | The Cortex website and signed-in app shell at [cortex.foundation](https://cortex.foundation) |
+| **API** | Product API routes used by Chat, Code, Bot, Design and the CLI |
+| **Chat** | Conversations, tools, Deep Research, images and related Chat services |
+| **Code** | Code Cloud sessions, desktop and CLI coding agent backends, and related Code services |
+| **Bot** | Bot computers, approvals, routines and related Bot services |
+
+An individual incident may mark one or more of these surfaces as affected, so a single event can show against **Chat** and **API** at the same time. There is no separate component for Cortex Design: the routes it depends on are part of **API**, and a canvas hosted from Chat or Code also depends on that product's component.
+
+The status page is the place for fleet-wide notices. Error text inside the product deliberately names a Cortex surface and nothing else, so when something broad is wrong the status page carries the explanation and the error card carries your reference.
+
+## During an incident
+
+<Steps>
+<Step title="Check the banner in the product">
+A live incident is announced where you already are. Read the banner before you start debugging your own network.
+</Step>
+<Step title="Open the status page">
+Go to [status.cortex.foundation](https://status.cortex.foundation) and read the affected component: **Web**, **API**, **Chat**, **Code** or **Bot**. A component that is healthy rules out a whole class of causes.
+</Step>
+<Step title="Subscribe if you want the next update">
+Subscribe on that page for email updates. You are then told when the state changes instead of reloading the page.
+</Step>
+<Step title="Keep your reference">
+Note the `request_id` from any error you saw. The error card shows it on the line beginning **Reference**, and one id identifies one request. It is what makes a report about a single failure answerable afterwards. See [Errors](/reference/errors).
+</Step>
+</Steps>
+
+<Note>
+Email is the only subscription channel documented for the status page. If you need another, check the options the status page itself offers rather than assuming one exists.
+</Note>
+
+## Planned maintenance
+
+A planned window replaces the app with a maintenance screen instead of failing requests one at a time. It is titled `Cortex is taking a short break` and headed `We'll be right back`, it names the time Cortex expects to be back, and it counts down under `Time remaining`. When the window ends the screen reads `Coming back now` and the app returns.
+
+That screen is not an error, and there is nothing to retry while it is up. Announced windows and their times are published on the status page.
+
+## Documentation and status are different things
+
+Documentation describes intended behaviour. The status page describes current behaviour. A docs page cannot tell you whether a service is healthy at this moment, and it will never try to.
+
+| Resource | Use it for |
+| --- | --- |
+| [status.cortex.foundation](https://status.cortex.foundation) | Live uptime, open incidents, maintenance windows |
+| [Troubleshooting](/getting-started/troubleshooting) | What a specific message in the product means and what to do next |
+| [Problem catalog](/problems) | The error code behind a failed request, its HTTP status and whether it is worth retrying |
+| [Security and privacy](/reference/security-and-privacy) | How data is handled, which is not an availability question |
+| [Changelog](/changelog) | What shipped, which is not an outage |
+
+If the product is healthy on the status page and a single action still fails for you, the failure is specific rather than fleet-wide. Start from the code on the error card and the matching page in the [problem catalog](/problems), then from your product's troubleshooting page.
+
+## Related
+
+- [Troubleshooting](/getting-started/troubleshooting) - cross-product symptoms and what they mean.
+- [Errors](/reference/errors) - the problem document behind a failed request, and the reference id to keep.
+- [Problem catalog](/problems) - every error code with its status and retry guidance.
+- [Security and privacy](/reference/security-and-privacy) - data handling, not availability.
+- [Changelog](/changelog) - what shipped and when.

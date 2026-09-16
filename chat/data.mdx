@@ -1,0 +1,80 @@
+---
+title: "Cortex Data"
+description: "Connect a business-metrics source to your account, ask metric questions in a chat, and pin a chart on the thread."
+icon: "chart-line"
+---
+
+**Cortex Data** connects a business-metrics source, the place your revenue, charges and subscriptions already live, to your Cortex account. Once it is connected you can ask metric questions in an ordinary chat and get an answer computed from your own numbers, and you can keep the chart it draws as a block on the thread.
+
+It appears as the **Data** card at the top of the **Connectors** page, described there as `Ask about connected business metrics and pin a chart on the thread.` This page covers connecting it, choosing where it is available, the questions it can answer, the two accuracy rules worth knowing before you quote a figure, and what each connection state means.
+
+## Connect Data
+
+<Steps>
+  <Step title="Open Connectors and find the Data card">
+    Data sits above the connector catalogue. On a deployment where no metrics source is configured there is no **Connect Data** control at all, which is the honest signal that the feature is not set up rather than broken.
+  </Step>
+  <Step title="Choose Connect Data and sign in">
+    Signing in happens with the provider you already use for your billing data, on the provider's own page. The connection is made with your own account. Cortex never sees your password.
+  </Step>
+  <Step title="Choose where Data is available">
+    Under **Where Data is available**, turn it on for **Chat**, for **Code**, or for both. At least one is required: the rule on the card reads `Data has to stay available to Cortex Chat, Cortex Code, or both.` and turning off the last one answers `Choose at least one`.
+  </Step>
+</Steps>
+
+While the sign-in comes back you see a short **Connecting Data** screen and then **Finishing…**. If you close the provider's page instead of approving it, you get `The connection was cancelled` with `Nothing was connected. You can try again from Connectors.` If the sign-in itself did not complete, the message is `The connection did not finish`, again with nothing connected. Both offer **Back to Connectors**.
+
+<Note>
+Connecting Data needs a signed-in account. A guest is refused before anything is created, because a guest session cannot be signed back into to revoke the connection later.
+</Note>
+
+## Where Data can be used
+
+| Surface | Availability |
+| --- | --- |
+| **Cortex Chat** | Yours to choose, shown as a chip with `on` or `off`. |
+| **Cortex Code** | Yours to choose, on the same terms. The planning modes of Code do not receive it. |
+| **Cortex Bot** | Not offered. Data is not a Bot surface. |
+
+Where only one surface is on, the card carries the shorthand badge `Chat only` or `Code only`. Change the surfaces by pressing the chips on the connected card; there is nothing to sign in to again.
+
+## Ask a metric question
+
+With Data on for Chat, ask in plain language: what charges looked like last quarter, what the current annual recurring revenue is, how this month compares with the last one. Three things can happen in a turn.
+
+- **Look up a metric.** Revenue, successful charges or subscriptions over a window.
+- **Investigate a metric.** The same figure plus the period before it, so the answer has something to compare against.
+- **Write a dashboard.** The chart is pinned onto the conversation as a block that stays on the thread, rather than a picture you have to ask for again.
+
+For charges the windows offered are the **last 30 days**, which is the default, **this quarter**, and **this year**. Long result sets are paginated, and past a large number of pages the answer is marked as truncated rather than quietly cut short.
+
+While a chart is being drawn the block reads `Preparing the chart…`. A finished chart labels each point as `{label}: {value}` and carries a `Source` line back to where the figures came from. Where the figures arrived but cannot be plotted you get `No series to plot.`, and where the drawing itself failed, `The chart could not be drawn.` In both cases the numbers in the answer stand; it is the picture that is missing.
+
+## Two rules that keep the numbers honest
+
+<Warning>
+**Annual recurring revenue is computed from active subscriptions**, annualised. It is not a sum of past charges relabelled as recurring revenue, so it will not match a charges total for the same window, and it is not supposed to.
+
+**A book of business in more than one currency is refused, not totalled.** Cortex will not add two currencies together and present the sum as a figure. A zero-amount row in another currency does not trigger this.
+</Warning>
+
+## Connection states
+
+| State | What you see | What to do |
+| --- | --- | --- |
+| Unavailable | No **Connect Data** control | Nothing. Data is not set up on this deployment. |
+| Not connected | The **Connect Data** button | Connect it. |
+| Connected | `Connected`, or `Connected as {label}`, with the surface chips | Nothing. |
+| Needs reconnect | **Reconnect** | Sign in again with the provider. |
+
+**Disconnect** turns Data off everywhere and removes the connection. When an action cannot be completed, the product names which one it was: `Data could not be connected`, `Data could not be updated`, or `Data could not be disconnected`. Nothing is half-applied.
+
+There is no published per-day allowance for metric questions. Where a limit applies on your plan or your deployment, the turn tells you at the point it stops.
+
+## Related
+
+- [Connectors](/chat/plugins) is where the Data card and every connected app live.
+- [Built-in tools](/chat/tools) covers the other tools a Chat turn can call.
+- [Cortex Code](/code/index) is the other surface Data can be turned on for.
+- [Chat canvases](/chat/canvases) covers the other kind of block that stays on a thread.
+- [Chat troubleshooting](/chat/troubleshooting) covers turns that stop without an answer.

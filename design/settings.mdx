@@ -1,0 +1,87 @@
+---
+title: "Design settings"
+sidebarTitle: "Settings"
+description: "The Settings panes inside the Cortex Design window: General, Models, and Data and privacy, and which rows are not switched on yet."
+icon: "gear"
+---
+
+Settings in the Cortex Design window is a dialog, not a screen you navigate to. It opens over whatever you were doing, from the **Settings** control in the sidebar, and closing it puts you back on the same canvas or gallery. A **Search settings** field looks across every pane, which is usually faster than guessing which one holds the row you want.
+
+The panes are listed in two groups. Under **PREFERENCES** you get **General**, **Models**, **Integrations** and **Code**. Under **ACCOUNT** you get **Data & privacy** and **Plan & billing**. This page covers the three that change how Design behaves, says what the other rows point at, and ends with a list of the controls that are drawn but not switched on yet.
+
+## General
+
+| Row | What it is |
+| --- | --- |
+| **Email** | The address you sign in with. It is shown, not editable. |
+| **Display name** | How Cortex refers to you. Type a new one and choose **Save**. |
+| **Theme** | `Light`, `Dark` or `System`. The description says it plainly: this chooses how Cortex looks on this device. The choice is remembered on the machine you set it on rather than carried with your account, and the window opens light until you change it. |
+| **Language** | The interface language. The row notes that model prompts stay in English regardless. |
+| **Answer font** | A choice between a sans and a serif face for long answers. Marked **COMING SOON**. |
+| **Keyboard shortcuts** | Not a setting but a reference list, so you can read the bindings without leaving the window. |
+
+The shortcut list names **New design** on `⌘ N` and **Toggle sidebar** on ``⌘ \``, and says that the bindings match Cortex Chat where the two products overlap. [Design quickstart](/design/quickstart) has the short list worth learning first.
+
+## Models
+
+This pane is about which model draws your frames, and how much thinking it does before it draws.
+
+- A card shows the model Cortex is serving today, marked `PREVIEW`, with a line of what it supports.
+- **Default model** would set the model new work starts with. It is marked **COMING SOON**.
+- **Default thinking level** offers **Low**, **Medium** and **High**, also marked **COMING SOON**.
+- **Show reasoning summaries** is a toggle, also marked **COMING SOON**.
+
+So until those ship, the model and the thinking level are per-canvas choices rather than account defaults. You set them on the chip in the editor's thread rail, which is covered in [Generate and edit](/design/editor).
+
+The pane carries one banner worth reading: `Model availability depends on your plan. During peak hours new chats may fall back to a faster model.` Read it as a statement about what a plan includes rather than as a description of what will happen during your session: the editor's picker marks a model your account does not include with `Not on plan`, and today every published model is available from the Free plan up, so that marker is not one you should expect to meet.
+
+## Data & privacy
+
+This pane is the Design window's view of the same account-wide controls you get elsewhere in Cortex, so the decisions you make here are not Design-only.
+
+| Row | What it is |
+| --- | --- |
+| **Save chat history** | Would let you stop conversations being kept in your account, at the cost of losing them when you close them. Marked **SOON**. |
+| **Improve the model** | Would allow a sample of your conversations to be reviewed to train future models. It is off by default, and the row states that your conversations are never used without it. Marked **SOON**. |
+| **Memory** | The standing facts and preferences Cortex has picked up from you, listed one per row with a **Delete** on each. |
+| **Your data** | `Export everything we hold, or delete it permanently. Deletion takes effect within 30 days.` **Export my data** is marked **SOON** here; **Delete all data** is active. |
+
+<Warning>
+  **Delete all data** is not a Design-only control. It schedules the permanent erasure of your account and everything in it, canvases included. Read [Data and privacy](/getting-started/data-and-privacy) before you use it, including how long you have to change your mind.
+</Warning>
+
+For the two rows marked **SOON**, and for an export you need today, use the same controls in Cortex Settings in the web app. [Memory](/chat/memory) covers what Cortex remembers and how the list behaves.
+
+## Integrations, Code and Plan & billing
+
+Three rows in the dialog are pointers rather than panes of their own:
+
+- **Integrations** holds one line saying that connectors live on the Plugins page, and an **Open Plugins** button. See [Design connectors](/design/plugins).
+- **Code** holds one line and no controls: `Code editor preferences stay in Cortex Code. This window is Design-only`. Editor preferences are set in [Cortex Code](/code/settings), and there is no Chat or Code switcher in the Design window by design.
+- **Plan & billing** shows what your account is on. The account pages own that subject; see [Plans](/getting-started/plans).
+
+## What is not switched on yet
+
+Several rows are drawn with a chip that says they are not ready. Treat every one of them as unavailable rather than as a setting that failed to save:
+
+| Row | Pane | Chip |
+| --- | --- | --- |
+| Answer font | General | **COMING SOON** |
+| Default model | Models | **COMING SOON** |
+| Default thinking level | Models | **COMING SOON** |
+| Show reasoning summaries | Models | **COMING SOON** |
+| Save chat history | Data & privacy | **SOON** |
+| Improve the model | Data & privacy | **SOON** |
+| Export my data | Data & privacy | **SOON** |
+
+<Note>
+  Nothing in Settings changes how many designs you can keep. An account holds up to 200 design canvases, and that is the only cap on the number of designs. It is not a per-plan allowance and it does not reset on a schedule. See [Design canvases](/design/canvases).
+</Note>
+
+## Related
+
+- [Design connectors](/design/plugins) - the page the Integrations row sends you to.
+- [Generate and edit](/design/editor) - where the model and the thinking level are chosen today.
+- [Design canvases](/design/canvases) - the 200-canvas cap and the other limits.
+- [Data and privacy](/getting-started/data-and-privacy) - the account-wide version of the pane above.
+- [Design troubleshooting](/design/troubleshooting) - when a Design surface refuses or fails.

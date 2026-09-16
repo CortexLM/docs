@@ -1,0 +1,135 @@
+---
+title: "Report a bug"
+description: "File a bug from inside Cortex: where the dialog lives, what to write, screenshot limits, what is sent, and where other reports go."
+icon: "bug"
+keywords: ["bug report", "feedback", "send report"]
+---
+
+Cortex takes bug reports in the product. A signed-in account opens a dialog, writes what happened,
+attaches a screenshot or two, and sends it. The report stays inside Cortex; nothing is copied to a
+public issue tracker, and there is no form to fill in somewhere else.
+
+This page covers what to check before you file, the three places the dialog opens from, what to
+write in each field, the screenshot rules, what Cortex sends along with your words, and where a
+documentation problem or a security finding goes instead.
+
+<Note>
+Reporting a bug needs an account. A guest has no **Report a bug** control and the request is
+refused, so sign in first.
+</Note>
+
+## Before you file
+
+Two minutes of checking often saves the round trip.
+
+<Steps>
+  <Step title="Check whether Cortex is down">
+    If everything is failing at once rather than one action, look at
+    [System status](/reference/status) or [status.cortex.foundation](https://status.cortex.foundation)
+    before writing anything. A maintenance window shows its own screen, titled **Cortex is taking a
+    short break**, with a **Time remaining** countdown.
+  </Step>
+  <Step title="Read the message you were given">
+    Most failures carry a short heading and a stable code. **Not included in your plan**, **You have
+    used this plan limit** and **Please sign in again** are expected answers, not bugs.
+    [Troubleshooting](/getting-started/troubleshooting) lists what each message means, and the
+    [problem catalog](/problems) has a page per code.
+  </Step>
+  <Step title="Copy the reference id">
+    When a failure was on Cortex's side, the card shows a reference id and asks you to quote it.
+    Paste it into your report; it is the fastest way for the team to find your request.
+  </Step>
+</Steps>
+
+## Open the dialog
+
+There are three entry points, and they all open the same **Report a bug** dialog:
+
+| Where | How to get there |
+| --- | --- |
+| Sidebar footer | The **Report a bug** control beside **Settings** |
+| Settings | **Settings** and then **General**, at the **Report a bug** row |
+| The **Beta Pro offer** banner | A **Report a bug** button on the banner, while that banner is on screen |
+
+The first two are permanent. The banner is dismissible, and dismissing it does not take the other
+two away.
+
+## Fill in the report
+
+The dialog opens with a single line of intent, "Tell us what went wrong. We read every report",
+and three fields.
+
+<Steps>
+  <Step title="Title">
+    A short summary, up to 200 characters. One sentence naming the thing that broke beats a
+    paragraph.
+  </Step>
+  <Step title="What happened">
+    Up to 8,000 characters for the steps you took, what you expected, and what you saw instead. The
+    field's own prompt asks for exactly those three. Add the reference id here if you have one.
+  </Step>
+  <Step title="Where it happened">
+    Pick a surface: **Not sure**, **Cortex Chat**, **Cortex Code** or **Cortex Bot**. **Not sure**
+    is a real answer, so use it rather than guessing.
+  </Step>
+  <Step title="Send report">
+    Choose **Send report**. On success the dialog shows **Report sent** with "Thank you. We will
+    look at this", and a **Done** button. **Cancel** closes without sending.
+  </Step>
+</Steps>
+
+## Screenshots
+
+Screenshots are optional and usually worth adding. You can drop files onto the dialog, paste them
+from the clipboard, or use **Add screenshots**. Each thumbnail has a remove control if you change
+your mind.
+
+| Rule | Value |
+| --- | --- |
+| Formats | PNG, JPEG or WebP |
+| Count | Up to five per report |
+| Size | 4 MB each |
+
+A file in another format is refused with "Screenshots must be PNG, JPEG or WebP", and an oversized
+one with "Each screenshot can be at most 4 MB". Shrink or re-save the image and try again.
+
+## What is sent
+
+Your report carries the title, the description, the surface you picked if you picked one, your
+screenshots, and the page you were on, which Cortex attaches for you. That is all. Reports stay
+inside Cortex and reach the team, the title and description are encrypted at rest, and nothing is
+forwarded to a public tracker.
+
+Cortex does not publish a mailbox for bug reports. The dialog is the channel, which is also why a
+guest cannot file one: a report needs an account to come back to.
+
+## When a report will not send
+
+| What you see | Meaning | Do this |
+| --- | --- | --- |
+| No **Report a bug** control at all | You are browsing as a guest | Sign in, then try again |
+| **Please sign in again** | The session expired while the dialog was open | Sign in again; you return to where you were |
+| **Too many requests** | You are over the hourly ceiling of five reports or fifteen screenshot uploads | Wait for the window to clear, then send the rest. See [rate_limited](/problems/rate_limited) |
+| "Screenshots must be PNG, JPEG or WebP." | One attachment is not an accepted image | Convert or drop that file |
+| "Each screenshot can be at most 4 MB." | One attachment is too large | Re-save it smaller |
+
+## Reports that belong somewhere else
+
+<CardGroup cols={2}>
+  <Card title="A mistake on this site" icon="book-open" href="https://github.com/CortexLM/docs">
+    Documentation lives in its own public repository. A page that is wrong, stale or missing belongs
+    there rather than in the product dialog.
+  </Card>
+  <Card title="A security weakness" icon="shield" href="/bounty/report">
+    A suspected vulnerability is not a bug report. Cortex Bounty has its own intake and its own
+    scoring.
+  </Card>
+</CardGroup>
+
+## Related
+
+- [Troubleshooting](/getting-started/troubleshooting) for what a message in the product means.
+- [Problem catalog](/problems) for the code on a failure card.
+- [System status](/reference/status) for outages and maintenance windows.
+- [Frequently asked questions](/getting-started/faq) for the short answers.
+- [File a report](/bounty/report) for security findings.

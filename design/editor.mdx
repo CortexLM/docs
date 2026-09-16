@@ -1,0 +1,127 @@
+---
+title: "Generate and edit"
+description: "The Cortex Design editor: generate options as lettered frames, pick one, ask for a change, choose a model, and retry an option that failed."
+icon: "wand-magic-sparkles"
+---
+
+The editor is the screen you spend your time in. It puts three things side by side: the canvas itself, a thread where you ask for what you want, and the controls that save, version and export the result. You get there by opening a design from the **Designs** gallery, or by opening a canvas reference from the **CANVASES** rail in a Chat thread or Code session.
+
+This page covers generating options, choosing between them, editing a frame by asking for a change, the model picker, and what to do when one option does not finish. [Versions](/design/versions) covers the history the editor is writing, and [Export a design](/design/export) covers getting the result out.
+
+## The editor at a glance
+
+| Area | What it is for |
+| --- | --- |
+| Header | A status pill and a meta line describing the canvas right now, plus **Versions** with a count, **Hand to Bot**, **Export**, and **Toggle thread**. |
+| Canvas | The board. A **Library** overlay button, a zoom read-out, and a small toolbar labelled **Canvas tools**. |
+| Thread rail | Where you ask for changes, with an **Attach** control, **Send**, and a chip showing the model and thinking level in use. |
+
+The status pill is the fastest way to know what the canvas is doing:
+
+| Pill | What it means |
+| --- | --- |
+| `Blank · unsaved` | A new canvas with nothing on it. |
+| `Drawing · 1 of 3` | Cortex is drawing, and how far along it is. |
+| `Editing · streaming into B` | A change you asked for is landing in frame B. |
+| `Saved` | Everything on the canvas has finished. |
+| `Saved · v1 · C failed` | Saved, but one option did not finish. |
+| `Viewing v4 · read-only` | You are looking at an earlier version, not the current one. |
+
+The meta line underneath says the same thing in words, for example `Blank canvas · drawing frame A of 3`, or `New design · 2 of 3 frames · option C did not finish`, or for a hosted canvas the host thread and the counts.
+
+<Note>
+  Design does not push live updates to you. While Cortex draws, the canvas carries a drawing state and the app refreshes it, rather than receiving a live stream. A frame that seems to sit still for a moment is normal.
+</Note>
+
+## Generate options
+
+Describe what you want in the thread rail, in the composer marked **Ask for a change on any frame…**, and send with `↵`.
+
+Cortex usually answers one brief with alternatives rather than a single result. Each alternative is a frame carrying a short option letter, so a three-way answer arrives as frames **A**, **B** and **C** for the same brief. In the product's vocabulary those frames *are* the options.
+
+While the work runs:
+
+- The header reads **Drawing** with a count of how many frames are done.
+- Each frame card shows its own state: `Drawing…`, `Queued`, `Streaming` or `Failed`.
+- A finished frame carries its version badge instead.
+
+On a canvas with nothing on it, the board explains itself rather than sitting blank. It reads **Nothing on the canvas yet**, says that Cortex places frames there as it designs, and offers **Open Library** and **Add a note** so you have something to do while you wait.
+
+## Pick a frame and edit it
+
+A frame card is drawn as its option letter and its title, so the second option reads as `B` and its name.
+
+<Steps>
+  <Step title="Select the frame you want">
+    Selecting a frame draws its size as a read-out and an **Edit** control on the card.
+  </Step>
+  <Step title="Ask for the change in the thread">
+    Say what should be different. The header switches to an editing state naming the frame, for example `Editing · streaming into B`, and that frame's card shows `Streaming` while the change is applied. The rest of the canvas is left alone.
+  </Step>
+  <Step title="Keep going, or take another option further">
+    Each round of changes is saved as a new version, so you can compare where two options ended up without losing either. Options you do not want can be removed from the board.
+  </Step>
+</Steps>
+
+The thread rail tells you when a save has landed, with a line such as `Saved as v7` followed by the time and the frame and note counts. The hint under the composer tells you what the rail is doing: whether edits are landing on the canvas as they arrive, or whether a stream is running and can be stopped.
+
+### The canvas toolbar
+
+The board carries a small toolbar labelled **Canvas tools** with five icon-only controls. Their icons read as select, a frame, a note, a grid and text, and none of them carries a written label, so this page does not name them. The reliable moves are the two the app documents for you: select a frame to edit it, and add a note.
+
+The **Library** overlay button opens your [Design library](/design/library) over the board, so a component can be dragged straight onto a frame.
+
+## Choose a model and a thinking level
+
+The chip in the thread rail shows the model that will draw and the thinking level it will use.
+
+<Steps>
+  <Step title="Open the chip">
+    It opens a picker with a **Filter models** field for when the list is long.
+  </Step>
+  <Step title="Pick a model">
+    A model in preview is marked `PREVIEW`. A model your plan does not include is shown with `Not on plan` and cannot be chosen.
+  </Step>
+  <Step title="Set the thinking level">
+    A segmented control offers **Low**, **Medium** and **High**. Higher levels spend more time reasoning before drawing.
+  </Step>
+</Steps>
+
+Which models are offered, and what each is good at, belongs to [Models](/reference/models) rather than to this page. The Design window's own **Settings → Models** pane carries a banner about plan availability, quoted in full on [Design settings](/design/settings). In practice every published model is available from the Free plan up.
+
+## When an option fails
+
+One option failing does not spoil the rest of the board. The frame that could not finish shows **Failed**, and its card says so in plain words along with the reason the attempt stopped.
+
+You get two controls, on the card and again in the thread:
+
+- **Retry option C** (or **Retry C** in the thread) runs that option again, leaving the finished frames alone.
+- **Remove frame** drops it and keeps the rest of the canvas.
+
+<Warning>
+  A canvas reports the worst state it contains. One failed frame makes the whole canvas read **Failed**, even while another frame is still being drawn. Retry or remove the failed frame and the canvas goes back to reporting what the rest of the board is doing.
+</Warning>
+
+## How saving works here
+
+Every save creates a new version, numbered from 1 upwards, and the canvas records which one is current. `v7` in the interface is the seventh save of that canvas. You do not choose when to snapshot: the service keeps history cheap to replay on its own.
+
+Saving is optimistic about two windows at once. If you save a canvas that another window has already moved on from, the save is refused with `This canvas was saved from another tab. Reload and try again.` Reload the canvas and redo the change. See [Conflict](/problems/conflict).
+
+## What Cortex draws, and what you can build by hand
+
+Cortex's own drawing covers **frames, images and notes**, and the top level of a canvas is frames. Asking it for other kinds of shape gets a plain refusal saying it writes frames, images and notes.
+
+The editor itself accepts more than that. A board you build by hand in the Design window can hold groups, rectangles, ellipses, vectors, text, component instances and more, so the app can build richer canvases than Cortex generates for you today.
+
+## Handing a frame to a Bot
+
+The editor header carries **Hand to Bot**, and the sidebar has a **Bot jobs** entry. This is the shape of a capability that is **not available yet**: a Cortex Bot cannot open or change a design canvas today. [Bot jobs](/design/bot-jobs) explains what is planned and what a Bot can do for you in the meantime.
+
+## Related
+
+- [Design canvases](/design/canvases) - the board, its host thread, and where canvases are listed.
+- [Versions](/design/versions) - view or restore an earlier save.
+- [Design library](/design/library) - the components, tokens and pages you drop on a frame.
+- [Export a design](/design/export) - PNG, JSON, scope and scale.
+- [Design troubleshooting](/design/troubleshooting) - a canvas that will not save, and other refusals.

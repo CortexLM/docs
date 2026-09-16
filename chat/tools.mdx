@@ -1,90 +1,103 @@
 ---
-title: "Tools and connectors"
-description: "Built-in Chat tools, connected apps under Customize → Connectors, GitHub in Settings → Integrations, and MCP servers."
-keywords: ["Customize", "Connectors", "integrations", "plugins", "MCP", "connected apps"]
+title: "Built-in tools"
+description: "How a Chat turn reaches past the model: web search and reading, a Python sandbox, memory, stored results, and the tools you add yourself."
+icon: "screwdriver-wrench"
 ---
 
-A Chat turn can call tools. Some are built in — web search, Python snippets, image generation, memory, canvases. Others come from apps you connect, and from MCP servers you attach. This page explains where each lives and how to scope it.
+Tools are how a turn in Cortex Chat reaches past the model: searching the web, reading a page, running a snippet of Python, reading one of your own files, remembering something, drawing a chart from your metrics, or calling an app you connected. Some are built in and always there. Others appear only because of something you set up, and some exist only where the deployment supports them.
 
-<Frame caption="Customize → Connectors. Discover, connect, and choose which product each app reaches. Cortex never sees your passwords.">
-  <img src="/images/product/chat-connectors.png" alt="Connectors — search connectors, Discover / All / Connected, apps grouped by category" />
-</Frame>
+There is no tools page inside the product to switch these on. A tool shows up as a row inside the answer while it works, and disappears into the result when it finishes. This page covers what is built in, why a tool is sometimes simply absent, what happens to a tool's result before the model sees it, the Python sandbox in detail, and where the tools you add yourself come from.
 
-## Built-in tools
+## What is built in
 
-| Task | What Chat uses | Guide |
+| Tool | What it does | More |
 | --- | --- | --- |
-| Find current information | Web search and web extraction | [Deep Research](/chat/deep-research) for a full cited run |
-| Work through a calculation or transform data | A Python snippet sandbox | [How Chat works](/chat/how-it-works) |
-| Create a picture | Cortex-Image-1 | [Image generation](/chat/images) |
-| Check attached media | Origin check | [Origin check](/chat/origin-check) |
-| Remember a preference across chats | Memory | [Memory](/chat/memory) |
-| Draft a document beside the chat | A canvas | [Canvases](/chat/canvases) |
-| Read a large attachment | Artifact read and search tools | [Library](/chat/library) |
+| Web search | Looks things up on the live web | [Deep Research](/chat/deep-research) for a full cited run |
+| Reading a web page | Opens a page and extracts its text | [Deep Research](/chat/deep-research) |
+| Python in a sandbox | Runs a short snippet for arithmetic, data frames, plots or checking code | the section below |
+| Current time | Tells the model what time it is now | |
+| Loading a skill | Pulls in the full text of a skill it decided to use | [Skills in Chat](/chat/skills) |
+| Reading a stored result | Reads a result that was too large for the conversation | the section below |
+| Searching a stored result | Searches inside that stored result instead of re-reading it | the section below |
+| Writing and reading a canvas | Drafts a document beside the conversation | [Chat canvases](/chat/canvases) |
+| Saving a memory | Stores a standing preference or fact, when memory is on and the chat is not temporary | [Memory](/chat/memory) |
+| Forgetting a memory | Removes one | [Memory](/chat/memory) |
+| Reading one of your Library files | Reads a file you own, and only a file you own | [Library](/chat/library) |
+| Generating an image | Draws a picture | [Image generation](/chat/image-generation) |
+| Checking origin | Checks whether an attached photo or clip is authentic | [Origin check](/chat/origin-check) |
+| Business metrics | Queries a metric, investigates it, or writes a dashboard, once a metrics source is connected | [Cortex Data](/chat/data) |
 
-Chat's Python tool runs a small snippet with no workspace. It is not Code's shell inside a Cloud guest and not Bot's computer.
+Searching your past chats exists as a capability behind an explicit consent, but that consent is not exposed anywhere in the product yet, so no chat can use it today.
 
-## Connected apps
+<Note>
+Tools and reasoning are not metered. There is no tool quota and no tool meter on any plan, so a turn that needs six searches and two Python runs costs you nothing extra in allowances.
+</Note>
 
-Open **Customize** in the sidebar (the page is titled **Connectors**). Apps are grouped by category — accounting, ads, CRM, and so on — with **Discover**, **All**, and **Connected** filters and a search box (⌘ K).
+## When a tool is not offered
+
+A tool is only offered when it can actually run. Web search appears only where a search stack is configured. Python appears only where an executor exists. Business metrics appear only once a metrics source is connected.
+
+Where one of those is missing, the tool is not registered at all. You do not get a broken tool or an error row, you simply never see it offered. If you expected a capability and the model says it cannot do it, the honest answer is usually that the tool is not available on your deployment rather than that the model refused.
+
+## What happens to a tool result
+
+Every result is handled the same way, whichever tool produced it, and in this order.
 
 <Steps>
-  <Step title="Sign in">
-    Connecting an app needs an account: a guest session cannot be signed back into to revoke the connection later.
+  <Step title="Anything that looks like a secret is removed">
+    Before the model reads it.
   </Step>
-  <Step title="Connect">
-    Choose the app and follow its own sign-in. You stay signed in with the provider; Cortex never sees your passwords.
+  <Step title="A long result is shortened">
+    It is truncated from the middle, keeping the beginning and the end, at around 24,000 characters.
   </Step>
-  <Step title="Choose where it is available">
-    Each connection can be available to **Cortex Chat**, **Cortex Bot**, or both. A connection enabled only for Bot is not a Chat tool, and Bot never inherits a tool you did not assign to it.
+  <Step title="A very long result is stored instead">
+    Past roughly 64,000 characters the result never enters the conversation. It is stored as an **artifact**, the model is handed a short stub and an id, and it gets two tools for working with it: it can read the artifact and search it. That is how a huge page or a huge query result stays usable without flooding the thread.
+  </Step>
+  <Step title="Everything from outside is wrapped as untrusted content">
+    Text inside a web page or a document cannot act as an instruction to the model.
   </Step>
 </Steps>
 
-Connected apps are read at question time. Their content is never stored by Cortex — see [Security](/security/overview).
+A tool call ends in one of five ways: it succeeded, it errored, it timed out, it was refused, or it was interrupted. A row that produced nothing at all reads **No output.**
 
-## Integrations in Settings
+## The Python sandbox
 
-**Settings → Integrations** lists the apps that add tools directly to your conversations. GitHub is live with four tools — list pull requests, list issues, create issue, and more. Linear, Slack, Notion, and Vercel are shown as coming soon. The GitHub connection is the same one Code uses for repositories; see [Connect GitHub](/code/github) for the walk-through.
+Chat's Python tool is a snippet sandbox, not a build machine. It has **256 MiB** of memory, **no network**, and a few minutes of wall clock. It is the right tool for arithmetic, a data frame, a plot or checking a piece of code, and the wrong one for installing packages or building a project.
 
-## MCP servers
+Two practical rules:
 
-Cortex Chat is a Model Context Protocol client. Under **Settings → Integrations → MCP servers**, attach a server over HTTP: a name, its URL, and an optional bearer token. Its tools join the model in chat alongside built-in tools and connected apps. You must be signed in.
+- **Print what you want to see.** The last value is discarded, so a bare expression on the final line gets you nothing.
+- **Files the run writes to its `outputs/` folder are collected into your Library** when the run finishes. Direct files only, at most 10 files and 10 MiB in total. A run that failed collects nothing.
 
-<Frame caption="Attach an MCP server: name, URL, optional bearer token.">
-  <img src="/images/product/settings-mcp-servers.png" alt="MCP servers — name, https URL, bearer token (optional), Add" />
-</Frame>
+If you need a shell, a repository and a real workspace, that is [Cortex Code](/code/index), not a chat.
 
-| Field | Notes |
-| --- | --- |
-| **Name** | How the server appears in chat, for example `linear` |
-| **URL** | The server's HTTP endpoint, for example `https://mcp-server.example.com/mcp` |
-| **Bearer token** | Optional. Sent with each request to the server; never shown again. |
+## Skills are loaded, not always on
 
-The CLI is also an MCP client, with stdio and HTTP transports and its own configuration — see [Extend the CLI](/cli/extend).
+Skills are recipes the model can pull in. It does not carry them all at once: it sees a one-line index of the skills available to it, and fetches the full body of one only when it decides to use it. That is why a skill can change how an answer is written without you naming it in the prompt. Typing `/` in the composer lists the skills turned on for Chat.
 
-## GitHub repositories belong in Code
+## Tools you add yourself
 
-Connecting GitHub for **Code repositories** is a different control: **Connect GitHub** on Code Home, in the repository picker, or under **Settings → Integrations**. There is no personal-access-token field. If the connection lapses the product shows **Reconnect**; if GitHub is unavailable on your deployment, the control is not shown. See [Connect GitHub](/code/github).
+Everything above is built in. Three more sources of tools are yours to set up, and each has its own page.
 
-Cortex Security's GitHub App — pull-request review — is a third, separate install. See [Cortex Security](/code/security).
-
-## Frequently asked
-
-<AccordionGroup>
-  <Accordion title="Why can I see Connectors but not connect anything?">
-    You are a guest. The banner on the Connectors page explains it: connecting an app needs an account so the connection can be revoked later.
-  </Accordion>
-  <Accordion title="I connected an app for Bot. Why can't Chat use it?">
-    Connections are scoped per product. Open **Customize → Connectors** and enable it for Chat as well.
-  </Accordion>
-  <Accordion title="Does Cortex store the data it reads from my apps?">
-    No. Connected-app content is read at question time and discarded. See [Security](/security/overview).
-  </Accordion>
-</AccordionGroup>
+<CardGroup cols={2}>
+  <Card title="Connectors" icon="plug" href="/chat/plugins">
+    Connect an app and choose whether its tools reach Chat, Bot, or both.
+  </Card>
+  <Card title="MCP servers" icon="server" href="/chat/mcp-servers">
+    Attach a remote server and its tools join the turn alongside the built-in ones.
+  </Card>
+  <Card title="Page tools" icon="window-maximize" href="/chat/page-tools">
+    Tools a web page declares, each one granted or denied by you.
+  </Card>
+  <Card title="Skills in Chat" icon="book-sparkles" href="/chat/skills">
+    The bundled recipes, turning one on, and writing your own.
+  </Card>
+</CardGroup>
 
 ## Related
 
-- [How Chat works](/chat/how-it-works) — how tools enter a turn.
-- [Connect GitHub](/code/github) — the repository connection, which lives in Code.
-- [Cortex Security](/code/security) — the third GitHub install, for pull-request review.
-- [Extend the CLI](/cli/extend) — MCP servers for the terminal agent.
+- [How Chat works](/chat/how-it-works) - how a turn is assembled and how tools enter it.
+- [Library](/chat/library) - where stored results and sandbox outputs end up.
+- [Deep Research](/chat/deep-research) - a research run, which replaces the ordinary tool loop.
+- [Scheduled tasks](/chat/scheduled-tasks) - runs that get no tools at all.
+- [Models and thinking](/chat/models) - the chip where thinking and Deep Research are switched.

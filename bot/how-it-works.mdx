@@ -1,63 +1,105 @@
 ---
 title: "How Bot works"
-description: "You see a few short bubbles, not the inner loop. No round counter; a 15-minute turn deadline; six identical tool calls stop a turn."
-keywords: ["loop", "deadline", "guard", "hibernation"]
+description: "The bot turn in user terms: no round limit, a 15-minute deadline, a stuck guard, approvals, wake cues, and what actually reaches you"
+icon: "diagram-project"
 ---
 
-A bot's turn is a tool loop on a computer. Most of it is invisible by design: the conversation shows only the messages the bot chose to send you, the questions it asked, the notifications it raised, and the credentials it requested. The screen on the Computer rail shows the rest.
+A bot works in turns. A turn starts when something wakes the bot, usually your message, and inside it the model thinks, calls a tool, reads the result, and calls another one, for as long as the job takes. Most of that is invisible on purpose: the conversation carries the few messages the bot chose to send you, and the Computer tab carries everything else.
 
-## What you see
+This page explains the turn as you experience it: how long it can run, what stops it, what appears in the conversation and what never does, why a bot sometimes starts working without you, and how a step gets parked for your decision. It is the background for [Approvals and tool policy](/bot/approvals), [Bot tools](/bot/tools) and [Computer](/bot/computer).
 
-Four tools produce rows in the conversation, and each persists as its own row:
+## A turn has no round limit
 
-| Tool | Row |
-| --- | --- |
-| `send_to_user` | A message from the bot |
-| `ask_user` | A question that waits for you |
-| `notify` | A notification |
-| `secret_request` | A request for a credential, entered by you |
+This is the most distinctive thing about Bot, and the easiest to get wrong if you have used Chat. Chat and Code cap how many tool rounds a turn may take. Bot does not. There is no round budget and no round counter, because a real desktop task legitimately needs many small steps: look, click, wait, look again.
 
-Listing the conversation returns only these user-visible kinds. Plain assistant text outside them is **dropped**, not rewritten into a canned message — so a bot that has nothing to say says nothing.
+Two consequences are worth knowing.
 
-Parked steps show as approval widgets; see [Approvals](/bot/approvals).
+- **A long turn does not get cut off for being long.** Once a turn has accumulated a lot of transcript, roughly 80,000 characters, the bot rewrites its own working context. It keeps the most recent messages, the last open question, anything it is still waiting on, and its memory profile, and then carries on in the same turn. You should never see a turn end because it grew.
+- **A huge result does not flood the turn.** A very long command output or a screenshot is stored and replaced with a short reference, which the bot can read back a piece at a time or search for a phrase. So one enormous result does not crowd out everything the bot had learned before it.
 
 ## When a turn stops
 
-| Stop condition | Detail |
+A turn ends on exactly one of four things.
+
+| Ends because | What you see |
 | --- | --- |
-| The model stops calling tools | The normal end |
-| The process is draining | A deployment restart lets the turn finish cleanly |
-| **15-minute turn deadline** | Long jobs belong in a [routine](/bot/routines) or a background `task` |
-| **Six consecutive identical tool calls** | A loop guard |
+| The model has finished and has nothing left to say | The last bubble, then the bot goes to **Resting** |
+| You cancelled it | The turn stops where it is |
+| The 15-minute deadline expired | `The Bot turn timed out; external effects may have occurred.` |
+| The stuck guard tripped, after six identical calls in a row | `The same tool call repeated without progress. Try a different action.` |
 
-There is **no round counter**. Bot does not inherit Chat's eight-round budget — a computer task legitimately takes many steps.
+<Warning>
+  A timed-out turn is not a turn that did nothing. The message says so in as many words: the bot may already have sent an email, saved a file or submitted a form before the clock ran out. Check what actually happened before you ask again.
+</Warning>
 
-## Background tasks and subagents
+If the model itself cannot be reached you get `I can't reach the assistant right now — your message is saved. Try again in a moment.` and nothing you typed is lost. Work that genuinely needs longer than one turn belongs in a [routine](/bot/routines) or a background [task](/bot/tasks).
 
-`task` runs work in the background and reports `task_started` / `task_progress` / `task_completed` or `task_failed`. Subagents cannot `send_to_user` and cannot nest another `task`; everything flows back through the parent bot, which decides what to tell you. See [Tools](/bot/tools).
+## What you see, and what you never see
 
-## Waking the guest
+Only four kinds of thing are ever added to a bot's conversation.
 
-An active turn on a bot whose Cloud guest has hibernated **resumes the guest before the model is prompted**. The bot always starts a turn with its shell and desktop available; the prompt never tells the model to apologise for missing a computer. See [Computer](/bot/computer).
+| In the conversation | Where it comes from |
+| --- | --- |
+| Your message | you |
+| A bubble from the bot | the bot deciding to say something to you |
+| A question, with the composer blocked until you answer | the bot asking you something it cannot work out |
+| A **Secret** request | the bot needing a credential, which never appears in the thread |
 
-## Computer use, precisely
+Everything else the model produced while working, its own prose and its raw tool results, is dropped. It is not summarised and not rewritten into a friendly placeholder, so a bot with nothing to say says nothing. A turn may send at most 8 bubbles, and each bubble is short by design, which is why a bot reports a conclusion rather than narrating every click.
 
-The planner describes the control it wants — *the Save button in the dialog* — and a second inference call returns framebuffer coordinates for `grounded_click`. The planner never guesses raw pixels. Screenshots feed the next step.
+One more rule follows from this: a nested task cannot talk to you. Child work is stripped of the tools that speak, ask, request a secret or raise a notice, and reports back to its parent instead. The parent bot is the only voice in the thread.
+
+## Why a bot starts working without you
+
+A turn does not have to begin with your message. Seven things can start one, and the turn carries a short cue saying which.
+
+| Cue | Started by |
+| --- | --- |
+| none | your message |
+| `[routine]` | a routine's schedule fired |
+| `[agent]` | another bot you own sent it a message |
+| `[skill]` | you ran a skill directly |
+| `[task:…]` | a nested task |
+| `[approval]` | you settled a parked tool, and the turn resumed |
+| `[task_completed]` or `[task_failed]` | a child task finished after the parent had already returned |
+
+The last one is worth noticing: if a bot dispatches background work and then finishes its turn, the child's completion wakes a fresh turn later, which is how a report can arrive minutes after the bot appeared to be done.
+
+## How a step gets parked
+
+The whole model fits in the line the product itself uses: `Allow runs the parked tool. Deny does not. Always writes a rule.`
+
+Every tool call is checked before it runs, and the check produces one of three outcomes: it runs, it is refused with a readable reason the bot is told, or it is parked and you get **Allow**, **Deny** and **Always**. **Allow** runs that exact call with its real arguments and the turn continues from the real result, so it is not a "carry on" button. **Always** writes a rule for that tool on that bot, which is why the rail beside your rules reminds you that `Allow still asks. Deny never writes a rule.`
+
+Which tools park is a fixed shape, not a guess:
+
+- **11 tools always ask.** Running a command, writing or editing a file, driving a browser, clicking, typing, pressing a key combination, dragging, opening an application, switching windows, and the bounded coding helper.
+- **20 tools never ask.** Reading a file, taking a screenshot, scrolling, waiting, searching or fetching the web, talking to you, asking you a question, requesting a secret, writing memory, reading a skill, scheduling a routine, dispatching a task, messaging another bot, creating a bot or a channel, and reading back a stored result.
+- **Everything else is allowed by default**, unless a rule says otherwise.
+
+Held as a sentence: anything that changes a file, runs a command, or moves the mouse or keyboard asks. Looking, waiting, remembering and talking do not. Connected-app tools are handled separately, and a rule for one has to name that exact tool. Your rules are checked again before each round, so a rule you write while a bot is mid-turn applies to its next call; and a stricter ceiling Cortex sets for a deployment cannot be lifted from your side. [Approvals and tool policy](/bot/approvals) covers all of it.
+
+## The computer inside the turn
+
+If a bot's computer has gone to sleep, a turn that needs it starts it again first, so in the ordinary case a bot has its desktop and its files to hand without you doing anything. A wake can fail, and when it does the bot's activity says `Could not wake the computer` rather than leaving you to guess.
+
+When the bot wants to click something, it describes the control in a full sentence, such as the Save button in the dialog, and a separate step turns that description into a point on screen. It is not allowed to guess pixel coordinates, and the chain of attempts behind one click is bounded. Screenshots it takes are for the bot to look at; the live view on the Computer tab is for you.
+
+A bot's own status is one of three you can set, **Awake**, **Resting** or **Hibernating**. The other words you may see on a row, such as **Starting…**, **Running**, **Hibernated**, **Stopped**, **Archived** and **Error**, report what its computer is doing.
 
 ## Compared with Chat and Code
 
-| | Chat | Code | Bot |
+| | Cortex Chat | Cortex Code | Cortex Bot |
 | --- | --- | --- | --- |
-| Stops on | 8 tool rounds | Model stops or Stop | 15-minute deadline, six identical calls |
-| You see | Streamed reply with tool results | Turn timeline | User-visible bubbles plus the live screen |
-| Guardrail | Round budget | Ask / Plan / Agent | Allow / Deny / Always |
-| Machine | Snippet sandbox | Headless guest | Guest **with** a desktop |
-
-See [How Chat works](/chat/how-it-works) and [How Code works](/code/how-it-works).
+| Turn length | short, capped rounds | longer, capped rounds | no round cap, a 15-minute deadline |
+| You see | the streamed reply and its tool results | the session timeline | a few bubbles, plus the live screen |
+| Guardrail | the round budget | approval on file writes | Allow, Deny, Always |
+| Where tools run | the platform | a workspace you attached | the bot's own computer |
 
 ## Related
 
-- [Tools](/bot/tools) — the catalog behind the loop.
-- [Approvals](/bot/approvals) — what parks, and what does not.
-- [Computer](/bot/computer) — the guest the loop runs on.
-- [Bot troubleshooting](/bot/troubleshooting) — turns that stop, and why.
+- [Approvals and tool policy](/bot/approvals) - the three buttons, your rules, and what always asks.
+- [Bot tools](/bot/tools) - the catalog behind the loop.
+- [Computer](/bot/computer) - the desktop a turn runs on.
+- [Tasks and subagents](/bot/tasks) - background work inside a turn.
+- [Bot troubleshooting](/bot/troubleshooting) - turns that stop early, and what to do.

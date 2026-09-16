@@ -1,14 +1,12 @@
 ---
 title: "Accounts and sign-in"
-description: "Chat works as a guest. Sign in once for projects, files, Code, Bot, and the CLI — the same account everywhere."
-keywords: ["guest", "sign in", "membership", "plan"]
+description: "Cortex Chat works without an account. One sign-in opens Chat, Code, Bot, Security, the desktop apps and the CLI."
+icon: "user"
 ---
 
-You sign in from the product: choose **Sign in to save your work** in the sidebar footer, or the **Sign in** button on any public page at [cortex.foundation](https://cortex.foundation). This site describes what the account unlocks; it does not document the sign-in protocol.
+Cortex is one account on `cortex.foundation`. The same sign-in opens Cortex Chat, Cortex Code, Cortex Bot, Cortex Security, the desktop apps and Cortex CLI. Chat is the only surface that works before you sign in: you can open it, ask a question and read the answer without an account at all.
 
-<Frame caption="The sign-in dialog. Chats, projects, and Bot routines follow a signed-in account across devices.">
-  <img src="/images/product/accounts-sign-in.png" alt="Sign in to keep your sessions — continue with Google, Apple, email, or single sign-on" />
-</Frame>
+This page covers the difference between a guest and a signed-in member, the sign-in methods as they appear on screen, what changes the moment you sign in, how sessions behave across devices, and the two gates that stand in front of Code and Bot during the beta.
 
 ## Guest and member
 
@@ -20,50 +18,98 @@ A **guest** is anyone using Chat before signing in. A **member** is a signed-in 
 | Projects, Library, memory, plans | No | Yes |
 | Connected apps and MCP servers | No | Yes |
 | GitHub connection | No | Yes |
-| Code and Bot working UI | No — the public product page and the **This space is reserved** gate | Yes |
-| Design canvases | No | Yes |
-| CLI and desktop apps | No | Yes |
-| Data export and account deletion | No | Yes, after two-factor confirmation |
+| Cortex Code and Cortex Bot | No, the reserved-space gate appears instead | Yes |
+| Cortex Design canvases | No | Yes |
+| Desktop apps and the CLI | No | Yes |
+| Custom instructions | No | Yes |
+| Report a bug | No | Yes |
+| Two-factor authentication | No | Yes |
+| Data export and account deletion | No | Yes, after a two-factor confirmation |
 
-The rule behind the table: a guest cannot create anything it could not come back to revoke. That is why a guest cannot connect an app, hold a GitHub grant, or own a bot.
+One rule explains every row: a guest cannot create anything it could not come back to revoke. A guest session cannot be signed back into later to withdraw a grant, so Cortex never lets it make one. Where a guest meets a wall, the product says the capability needs an account and offers to sign in rather than hiding the control.
 
 ### The guest allowance
 
-The banner above the composer shows the live number — at the time of writing, **100 messages today** and **500 this month**, with reset timers under **Settings → Plan & billing**. Guest chats live in the browser session; sign in before you close the tab if you want to keep them.
+A banner above the composer counts what is left, in the form `{left} of {limit} free messages left`. The guest ceiling is **100 messages today** and **500 messages this month**. When a window is used up, the banner becomes `Sign in to continue`.
+
+Guest conversations live in the browser session. Sign in before you close the tab if you want to keep them. The guest allowance belongs to that browser session and ends at sign-in: it does not carry over, and the Free plan's own windows start fresh on the account.
 
 ## Ways to sign in
 
-The dialog offers **Continue with Google**, **Continue with Apple**, an email address, and **Single sign-on (SSO)** for organisations. Whatever you choose, it is one account: the web app, the desktop app, the Bot desktop app, and the CLI all recognise it.
+Sign-in happens in a dialog on `cortex.foundation`, and the dialog says so: `Sign-in happens here, on cortex.foundation — never on another domain.` It is titled **Sign in**, and it explains what an account buys you with `Your chats, projects and Bot routines follow you across devices. Nothing is lost when you close the tab.`
 
-The CLI signs in from the terminal with `cortex login`, which opens the browser flow; machines without a browser use a device code. See [CLI sign-in](/cli/sign-in).
+<Steps>
+  <Step title="Open the dialog">
+    Choose **Sign in to save your work** in the sidebar footer, or **Sign in** on any public page.
+  </Step>
+  <Step title="Pick a method">
+    **Continue with Google**, **Continue with Apple**, **Continue with email**, or **Single sign-on (SSO)** for organisations.
+  </Step>
+  <Step title="For email, enter the code">
+    Type your address in `Your email address`. Cortex emails a code and the dialog says `We emailed a code to {email}. It expires quickly.` Enter it under **Code**. `Retry` only ever re-sends on a click, never on a timer, because retrying sends another email.
+  </Step>
+  <Step title="For SSO, enter your work email">
+    Under **Sign in with SSO**, enter your work email and choose `Continue`. You are handed to your organisation's identity provider and returned to Cortex.
+  </Step>
+  <Step title="Let it close itself">
+    The dialog shows `You're signed in.` and `Opening your workspace… This chat is kept.`, then closes on its own after about a second. Press Enter or Esc to close it now.
+  </Step>
+</Steps>
 
-## After you sign in
-
-- **Chat** keeps your conversations, projects, Library, memory, and plans across devices.
-- **Code** opens the working UI at `/code` instead of the guest gate. Connect GitHub from Code Home or **Settings → Integrations**.
-- **Bot** opens the setup form on first visit, then your list of bots in the sidebar.
-- **Settings → Account** switches from “You're browsing as a guest” to your account controls.
-
-## Your data
-
-**Settings → Data & privacy** holds export and deletion. Signed-in members confirm with an authenticator app first. Deletion takes effect within 30 days. What Cortex stores: your account details, conversations and attachments while history is on, saved memories, and billing records. The content of connected apps is read at question time and discarded — it is never stored. See [Security](/security/overview).
+While a sign-in hop is in flight, only the close control works, and closing it cancels the hop. The dialog also links the two documents you agree to: `Privacy policy` and `Terms of service`.
 
 <Note>
-Cortex Chat is per account, not a shared workspace. There is no teammate invite on a thread. See [Sharing and teams](/chat/sharing).
+The sign-in dialog has no second-factor field. If your organisation requires a second factor, it runs during the identity step rather than in this dialog. In Cortex itself, two-factor is a confirmation for export and deletion. See [Two-factor authentication](/getting-started/two-factor).
 </Note>
 
-## Troubleshooting
+The CLI signs in from the terminal with `cortex login`, which opens the same browser dialog. See [CLI sign-in](/cli/sign-in).
 
-| What you see | What it means |
-| --- | --- |
-| **This space is reserved** on `/code` or `/bot` | You are a guest. Sign in, or **Continue in Chat**. |
-| **Sign in to continue** in the composer banner | The guest allowance for today or this month is used up. Sign in to continue on the Free plan. |
-| Two-factor prompt on export or deletion | Expected. A signed-in account confirms destructive actions with an authenticator app. |
-| The CLI asks you to sign in again | The stored session expired or was cleared. Run `cortex login`. |
+## What signing in changes on screen
 
-## Next
+Signing in does not navigate. The transcript you were reading stays exactly where it was. The shell picks up the new account, the sidebar footer switches from `Guest` and `Sign in to save your work` to your account row, and the notification and quota panels restart their reads for the new identity. Signing in as a different account resets those panels to their loading state rather than briefly showing the previous account's rows.
 
-- [Plans and quotas](/getting-started/plans) — what each plan includes and how limits behave.
-- [Settings](/getting-started/settings) — theme, language, models, privacy, billing.
-- [Sharing and teams](/chat/sharing) — what is per account, and where team features live.
-- [CLI sign-in](/cli/sign-in) — the terminal side of the same account.
+Your account details then live in **Settings → General**: **Email** (`The address you sign in with.`, read-only) and **Display name** (`How Cortex refers to you.`, up to 120 characters, saved with `Saving…` then `Saved`). A guest sees `You're browsing as a guest.` and `Sign in to manage your account` in place of those two rows.
+
+## Sessions and devices
+
+A signed-in account follows you across devices: the same chats, projects and Bot routines are there when you open Cortex somewhere else. Nothing has to be transferred by hand.
+
+When a session ends on its own, Cortex says `Please sign in again` with `Your session has expired. Signing in again picks up where you left off.` Signing in returns you to what you were doing.
+
+Settings has no device list and no remote sign-out today. Ending every session at once is drawn as **Lockdown mode** under **Settings → Data & privacy → Account security**, but the row reads `Lockdown is not available on this account yet.` **Login alerts**, on the same row group, are drawn on and disabled with `Login alerts are not available on this account yet.`
+
+<Note>
+Cortex is per account. There are no teams, no shared workspaces and no invitations to send. The role and directory rows you can see under **Settings → Integrations** describe an organisation you cannot create here. See [Sharing](/chat/sharing).
+</Note>
+
+## The beta gates for Code and Bot
+
+Cortex Code and Cortex Bot are member surfaces, and during the beta they are also invitation-only. You meet one of two dialogs, in this order.
+
+| You are | What appears | Buttons |
+| --- | --- | --- |
+| Not signed in, opening Code or Bot | `This space is reserved` with `{product} is a reserved space for signed-in accounts. Chat stays available without an account.` | `Continue in Chat` and `Sign in` |
+| Signed in but not invited | `{product} is in closed beta` with `{product} is available to invited accounts. Chat stays open for everyone.` | `Continue in Chat` only |
+
+Neither dialog can be dismissed: there is no close button, Escape does nothing and clicking outside does nothing. Neither is a redirect either. The address bar keeps the URL and the public product page stays visible behind the dialog. Cortex Chat is never gated.
+
+## When sign-in does not work
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| `The sign-in window could not be opened. Allow pop-ups and try again.` | The browser blocked the sign-in window | Allow pop-ups for `cortex.foundation`, then retry |
+| `That sign-in was not completed. Choose another option.` | The hop was cancelled before it finished | Start again, or pick another method |
+| `This address does not look valid. Check the domain after the @.` | The email address was rejected before anything was sent | Correct the address |
+| `{email} does not have access to this Cortex space (403).` | The account is not in this space | `Ask your administrator for an invitation, or try another account.` |
+| `This sign-in attempt has expired. Start again.` | The emailed code or the attempt aged out | Request a new code |
+| `The server could not be reached. Try again.` | Cortex could not be reached | Choose `Retry`, and check [status.cortex.foundation](https://status.cortex.foundation) if it persists |
+| `Sign in to continue` in the composer banner | The guest allowance for today or this month is used up | Sign in to continue on the Free plan, or wait for the reset |
+
+## Related
+
+- [Two-factor authentication](/getting-started/two-factor) - the confirmation that protects export and deletion.
+- [Plans and quotas](/getting-started/plans) - the guest allowance, and what each plan lifts.
+- [Settings](/getting-started/settings) - every tab, and where your account controls live.
+- [Data and privacy](/getting-started/data-and-privacy) - export, deletion, cookies and memory.
+- [CLI sign-in](/cli/sign-in) - the terminal side of the same account.
+- [Troubleshooting](/getting-started/troubleshooting) - cross-product symptoms and what they mean.

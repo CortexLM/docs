@@ -1,94 +1,122 @@
 ---
-title: "Sign in"
-description: "cortex login opens the browser flow; a device code covers machines without one; API keys cover CI. Credentials live in your OS keyring."
-keywords: ["login", "authentication", "API key", "device code", "token"]
+title: "Sign in to the CLI"
+sidebarTitle: "Sign in"
+description: "Sign in to Cortex CLI from a browser, with a device code, through single sign-on, or with an API key for unattended runs"
+icon: "right-to-bracket"
 ---
 
-The CLI uses the same Cortex account as the web app. Sign in once per machine; the session is stored in your operating system's keyring.
+The CLI signs in with your Cortex account, the same one the web and desktop apps use. You sign in once per machine and the CLI keeps the session in your operating system's credential store, so you do not repeat it for every project.
 
-## Browser sign-in (default)
+This page covers the interactive sign-in, the device-code route for machines without a browser, single sign-on, the unattended options for scripts and pipelines, how to check who you are signed in as, how to sign out, and where credentials are kept. If you have not installed the CLI yet, start with [Install the CLI](/cli/install).
+
+## Sign in from a browser
 
 ```bash
 cortex login
 ```
 
-Cortex prints a verification URL and opens it in your browser. Approve the sign-in there and the CLI picks up the session. From inside the TUI, `/login` does the same without leaving your session; the inline screen offers **Continue with browser** or **Paste an API key**.
+A sign-in page opens in your browser. Approve it there and the CLI continues on its own. Confirm the result with `cortex whoami`.
 
-<Frame caption="The inline sign-in picker: Continue with browser, or Paste an API key. Numbered rows, arrow keys to select, Enter to confirm.">
-  <img src="/images/cli/runtime/120x40/login.png" alt="Welcome to Cortex CLI — How would you like to log in? Continue with browser or Paste an API key" />
-</Frame>
+From inside a session, `/login` does the same thing without leaving the session. The inline sign-in screen offers exactly two rows, **Continue with browser** and **Paste an API key**. There is no guest row and no exit row: pick one of the two, or press **Esc**.
 
-## A machine without a browser
+While the CLI is waiting it shows `Waiting for browser authentication…`. On success it prints `Signed in as ...`. If the attempt expires, is refused, or the credential store rejects the write, it prints `Sign-in didn't complete` and you can run `cortex login` again.
+
+## Sign in on a machine without a browser
+
+For a server, a container, or a remote shell:
 
 ```bash
 cortex login --device-auth
 ```
 
-Cortex prints a short code and a URL. Open the URL on any device that has a browser, enter the code, and the CLI continues when the sign-in is approved. Good for servers, containers, and remote shells.
+The CLI prints a short code, for example `Your code  WXYZ-1234`, along with the address to visit. Open that address on any device that does have a browser, enter the code, and approve the sign-in. The CLI picks the session up as soon as you have approved it.
 
-<Frame caption="Waiting for the browser: the code to enter, and the URL to visit if the browser did not open. Esc cancels.">
-  <img src="/images/cli/runtime/120x40/login-waiting.png" alt="Waiting for browser authentication with a device code shown" />
-</Frame>
-
-## Unattended use: API key or token
-
-For CI and other unattended runs, do not use the browser flow.
+## Single sign-on
 
 ```bash
-# read an API key from stdin — never from the command line
+cortex login --sso
+```
+
+Use this when your organization signs in through single sign-on. The web sign-in dialog offers the same route, labelled **Single sign-on (SSO)**.
+
+## Unattended runs and CI
+
+Do not use the browser flow in a pipeline. There is no browser to open and, on most runners, no credential store to write to, so `cortex login` on its own cannot complete.
+
+Read the secret from standard input so it never reaches your shell history or the process list:
+
+```bash
+# an API key on stdin
 printf '%s' "$CORTEX_API_KEY" | cortex login --with-api-key
 
-# or pass a token your CI secret store populates
+# or a token your secret store populates
 cortex login --token "$CORTEX_AUTH_TOKEN"
 ```
 
-Or skip `cortex login` entirely and set the variable for the job:
+Or skip `cortex login` altogether and set a variable for the job:
 
 | Variable | Purpose |
 | --- | --- |
-| `CORTEX_API_KEY` | API key for headless and CI use |
-| `CORTEX_AUTH_TOKEN` | A session or bearer token |
-| `CORTEX_API_URL` | The API base URL, if your deployment differs from `https://api.cortex.foundation` |
+| `CORTEX_API_KEY` | An API key, for headless and unattended use |
+| `CORTEX_AUTH_TOKEN` | A session or bearer token. Checked before `CORTEX_API_KEY` |
+| `CORTEX_API_URL` | The API base URL, when your deployment differs from the default |
 
-Take the value from your CI secret store. Never write it into a workflow file or commit it.
+The CLI resolves credentials in this order: `CORTEX_AUTH_TOKEN` first, then `CORTEX_API_KEY`, and the credential `cortex login` stored last. An environment variable therefore wins over a stored sign-in, which is what makes a runner predictable, and what to check first when a machine keeps acting as an account you did not expect.
 
-## Enterprise SSO
+<Warning>
+Take the value from your secret store at run time. Never write a key or a token into a workflow file, a configuration file, or a commit.
+</Warning>
 
-`cortex login --sso` is available for organisations that sign in through single sign-on. The web app's sign-in dialog offers the same **Single sign-on (SSO)** route.
-
-## Check and sign out
+## Check the state, and sign out
 
 ```bash
-cortex whoami          # the signed-in account
+cortex whoami          # the account you are signed in as
 cortex login status    # the state of the stored session
-cortex logout          # asks first
-cortex logout --yes
-cortex logout --all    # every stored credential
+cortex logout          # asks for confirmation first
+cortex logout --yes    # no confirmation
+cortex logout --all    # remove every stored credential
 ```
 
-In the TUI: `/account` (aliases `/whoami`, `/me`), `/login`, `/logout`.
+Inside a session the equivalents are `/account` (aliases `/whoami` and `/me`), `/login` and `/logout`.
 
-## Where credentials are stored
+## Where credentials are kept
+
+Sign-in writes to your operating system's credential store, under the service name `cortex-cli` and the account name `auth`.
 
 | Platform | Store |
 | --- | --- |
 | macOS | Keychain |
-| Linux | Secret Service — GNOME Keyring, KWallet, and compatible providers |
+| Linux | Secret Service, such as GNOME Keyring or KWallet |
 | Windows | Credential Manager |
 
-Credentials are deliberately **not** written to a plaintext file in your home directory, and never into the repository. If no keyring is available — a bare container, a headless CI runner — use `CORTEX_API_KEY` or `CORTEX_AUTH_TOKEN` instead of trying to make one work.
+Credentials are deliberately not written to a plaintext file in your home directory, and never into the repository you are working in. The session material the CLI does keep in its own home directory carries no secrets.
 
-## Troubleshooting
+<Note>
+If no credential store is available, a bare container or a headless runner for instance, use `CORTEX_API_KEY` or `CORTEX_AUTH_TOKEN` rather than trying to make a store work.
+</Note>
 
-| Symptom | Cause | Fix |
-| --- | --- | --- |
-| *The coding service is temporarily unavailable* during sign-in | The CLI could not reach `api.cortex.foundation` | Check network access and proxies. The message is deliberately the whole story — Cortex does not surface provider or transport names. |
-| Sign-in succeeds but `cortex whoami` fails | The keyring did not persist the session | On Linux, check that a Secret Service provider is running; otherwise fall back to `CORTEX_API_KEY` |
-| A CI job cannot sign in | It tried the browser flow | Use `--with-api-key`, `--token`, or set `CORTEX_API_KEY` in the job environment |
-| The TUI asks you to sign in again | The stored session expired or was cleared | `cortex login` |
+## When sign-in does not work
+
+<AccordionGroup>
+  <Accordion title="The coding service is temporarily unavailable">
+    The CLI could not reach `api.cortex.foundation`. Check network access and any proxy in front of it, then try again. This message is deliberately the whole story: the CLI does not surface provider, SDK or transport names, so there is no extra detail hiding behind it.
+  </Accordion>
+  <Accordion title="Sign-in appears to succeed, but cortex whoami fails">
+    The credential store did not persist the session. On Linux, check that a Secret Service provider is actually running in your session; over SSH or in a minimal desktop there often is not one. Otherwise fall back to `CORTEX_API_KEY`.
+  </Accordion>
+  <Accordion title="A job in CI cannot sign in">
+    It tried the browser flow. Use `cortex login --with-api-key` or `cortex login --token`, or set `CORTEX_API_KEY` in the job environment and skip `cortex login` entirely.
+  </Accordion>
+  <Accordion title="The CLI asks you to sign in again">
+    The stored session expired or was cleared. Run `cortex login` again. If it keeps happening on the same machine, the credential store is probably not persisting between runs; the two checks above apply.
+  </Accordion>
+</AccordionGroup>
 
 ## Related
 
-- [Install](/cli/install)
-- [Configuration](/cli/configuration) — every environment variable the CLI reads.
-- [Accounts](/getting-started/accounts) — what a signed-in account unlocks everywhere.
+- [Install the CLI](/cli/install)
+- [CLI quickstart](/cli/quickstart)
+- [Environment variables](/cli/environment-variables)
+- [Data locations](/cli/data-locations)
+- [Accounts](/getting-started/accounts)
+- [CLI troubleshooting](/cli/troubleshooting)

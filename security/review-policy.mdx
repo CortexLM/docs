@@ -1,0 +1,166 @@
+---
+title: "Review policy"
+description: "The settings that decide when Cortex Security reviews a pull request, what it reports, how hard a finding lands, and why approval stays with a person"
+icon: "scale-balanced"
+---
+
+The review policy is the one form that decides how Cortex Security behaves on your repositories. It lives on the **Policy** tab inside Security, headed **Review policy**, and describes itself as *what Cortex Security reviews, what it reports, and how hard it lands.* Changes take effect on the next review; choose **Save** and the button reads **Saving…** and then **Saved**.
+
+This page walks the form in the order it is rendered, gives the default for each control, and then covers the two things the form does not put in a field: what a repository can and cannot set in its own files, and how the reviewer learns from the findings a team keeps dismissing. For what the settings here produce on a pull request, see [Checks and comments](/security/checks); for the stages they are consulted at, see [How a review works](/security/how-a-review-works).
+
+<Note>
+The policy is set once and governs the whole installation, meaning every repository the App is installed on. There is no per-repository policy screen. The only per-repository control is the switch that decides whether a repository is reviewed at all, which lives on the **App** tab; see [Installation and repositories](/security/repositories).
+</Note>
+
+## When to review
+
+| Control | Values and default |
+| --- | --- |
+| **Review pull requests** | **Automatically** (the default), **Only when asked**, or **Never**. |
+| **Review drafts** | Off by default. |
+| **Review again on every push** | On by default. Off means the review is of the pull request as opened. |
+| **Skip pull requests larger than** | A number of `files`. Empty reads **No limit**, the default. |
+| **Never review pull requests into** | Base branches to leave alone. Empty means all branches are reviewed. |
+| **Never review pull requests from** | Authors to leave alone. |
+| **Skip pull requests labelled** | Labels that suppress a review. |
+| **Review only pull requests mentioning** | Words that must appear before a review happens. |
+| **Skip pull requests mentioning** | Words that suppress a review. |
+
+The two keyword fields share one hint: *One word or phrase per line. Matched anywhere in the title or description.* They are case-insensitive substrings rather than patterns, because somebody typing `WIP` means those characters, and a pattern dialect would turn `[skip ci]` into a character class. The branch, author and label fields are patterns, and the dialect has no character classes either, so a bot account name with square brackets in it is matched literally, bracket for bracket.
+
+**Only when asked** leaves the reviewer installed and silent: it runs when somebody mentions the App on a pull request, and not otherwise. **Never** switches reviews off while leaving the installation in place, which is different from switching a repository off on the **App** tab, because that also stops the check run being created at all.
+
+A mention overrides the settings whose job is to keep the reviewer quiet, including a draft and **Only when asked**. It does not override the scope filters in the table above: an excluded branch stays excluded, and the reply names the setting that declined. Mentioning the App with anything other than the word `review` asks it a question instead, which never approves, never requests changes and never creates a check run.
+
+## What to look at
+
+| Control | What it does |
+| --- | --- |
+| **Never review these paths** | Paths to leave out. |
+| **Review only these paths** | Paths to restrict the review to. Empty means everything. |
+| **Review only these languages** | Languages to restrict the review to. Empty means all. |
+
+Both path fields share the hint *One pattern per line. Use `**` to cross directories. Leave empty for everything.* Exclusion always wins over inclusion, and an excluded file does not reach a model at all rather than being reviewed and then filtered.
+
+## What to report
+
+Two controls are both labelled **Report**, and a finding has to pass both of them.
+
+The first is the criteria a finding may be filed under: **Security**, **Correctness**, **API contract**, **Tests** and **Performance**. All five are on by default, and an empty set is refused rather than quietly treated as "everything", because the only way to silence Cortex Security should be the setting that says so.
+
+The second is the families a finding may be reported under:
+
+| Family | Covers |
+| --- | --- |
+| **Logic — bugs, security, edge cases** | Bugs, incorrect behaviour, edge cases and security findings. |
+| **Usage — contracts and tests** | Usage that is wrong for the language or the interface: a broken contract, a test that does not test. |
+| **Style — naming and formatting** | Naming, formatting and structure. |
+
+All three families are on by default, but naming and formatting opinions are not reported out of the box, because the criteria a finding can be filed under do not cover them. That is deliberate: a reviewer with opinions about naming is the one people switch off, and switching it off takes the injection finding with it.
+
+Then the two floors, and two numeric fields:
+
+| Control | Values and default |
+| --- | --- |
+| **Report findings at least as serious as** | **Blocking**, **Major**, **Minor** or **Note**. Default **Note**, so everything is posted. |
+| **Report findings at least as certain as** | **Confirmed in the diff**, **Depends on a caller not shown** or **Worth checking**. Default **Worth checking**, so everything is posted. |
+| **Comments per review** | Default **25**, worst first. An owner may set 1 to 100; outside that the save is refused with *Comments per review must be between 1 and 100.* |
+| **Instructions for the reviewer** | Free text, up to 4,000 characters per layer: *Review instructions must be 4000 characters or fewer.* |
+| **Header on every comment** | Free text, up to 600 characters. |
+
+The instructions field takes *anything the reviewer should hold in mind: invariants, words that mean something specific here, the mistake the last three incidents had in common.* The header field is not the same thing, and its hint says so: *Prepended above every finding. Not shown to the reviewer and cannot change what it finds.*
+
+Raising the severity floor cannot silence a security finding from the two layers that run without a model. That exemption, and how the layers differ, is covered in [How a review works](/security/how-a-review-works).
+
+## General code review
+
+Cortex Security can also report ordinary code-review findings rather than only security ones. This is a separate layer with its own switch.
+
+| Control | What it does |
+| --- | --- |
+| **Enable general code review** | *Off by default per installation. Uses the same verifier and fingerprints as security.* |
+| **Post quality findings at or above** | The severity floor for this layer only. |
+| **Quality never fails the check** | *Quality uses its own posting threshold. Security findings keep the security gate.* |
+
+Once it is on, the app labels findings by layer: **Security**, **Quality**, or **Both layers**, and a review's findings line reads posted, discarded and quality counts side by side.
+
+## How it lands
+
+| Control | Values and default |
+| --- | --- |
+| **On a blocking finding** | **Comment only**, **Request changes**, or **Request changes and fail the check** (the default). |
+| **Fail the check run at** | A severity. Default **Major**. |
+| **Never approve changes riskier than** | See the risk table below. |
+| **Edit comments on a new push instead of adding more** | On by default. |
+| **Offer a committable fix where there is one** | On by default. |
+| **Let Cortex Agent run the change in an isolated runtime** | On by default. |
+
+The first two work together and are easy to confuse. **On a blocking finding** decides what the review event says and whether the check run may conclude **Failure** at all: with **Comment only** it never does, so a repository that made the check required is not blocked by it. **Fail the check run at** then decides which severity is serious enough, separately from what gets reported, and its hint spells out why they are separate: *Comment on everything and still only block the merge on the serious.* Whether a failing check blocks a merge is GitHub branch protection rather than a Cortex setting.
+
+The Cortex Agent switch carries its own caveat: *Needs an isolated runtime on this deployment. Without one the run is recorded as unavailable, which is never a pass.* See [Cortex Agent runs](/security/agent).
+
+### Approval stays with a person
+
+<Warning>
+Cortex Security does not approve a pull request. Where you would expect a setting for approving a clean review, the form shows read-only text instead: **Human approval required**, because *Cortex never approves a pull request automatically. Quality findings remain for a person to review.* There is no toggle behind it and no other way to switch it on. A clean review reports a **Success** check run and leaves the approval to you.
+</Warning>
+
+**Never approve changes riskier than** is still rendered, and it bounds the changes an approval could ever happen on:
+
+| Value | Meaning |
+| --- | --- |
+| **Docs, tests and styling** | The narrowest ceiling. |
+| **Ordinary application code** | |
+| **Dependencies and build configuration** | The default. |
+| **Anything (auth, secrets, billing, migrations, infrastructure, CI and public APIs are still never approved)** | The widest ceiling, and still not everything. |
+
+Authentication, secrets and crypto, billing, migrations, infrastructure, CI and public API surfaces are never approved at any ceiling, matched by path **or** by content, so an authorisation check added to a file with an innocuous name counts. One critical file makes the whole pull request critical. Because approvals are not automatic today, this control does not change the outcome of a review; it is the ceiling that would apply if one were ever posted.
+
+## The summary comment and diagrams
+
+**Post a summary comment** is on by default. Its three blocks, **Headline and counts**, **Issues table** and **Confidence score**, can each be **Hidden**, **Shown** or **Folded**. **Post the summary only, with no inline comments** posts the summary and nothing on the lines. **Hide the footer** drops the review number, the commit that was read and the re-trigger line together. **Write the summary into the pull request description** puts the summary in the description instead of a comment.
+
+Under **Diagrams** you choose which kinds a summary may include: **Sequence diagram**, **Entity relation diagram**, **Class diagram** and **Flow diagram**. At most one appears, chosen deterministically, and a small change gets none. [Checks and comments](/security/checks) describes what all of this looks like on the pull request.
+
+## What a repository keeps in its own files
+
+A repository can carry part of its own policy, read from the branch under review. The form says what that can and cannot do: *A repository can keep its own instructions and rules at `.cortex/security.json`, read from the branch under review. It can make a review stricter or better informed. It cannot exclude a path, raise a threshold or switch the review off — those stay here, where the author of a pull request has no say over them.*
+
+| File | What it is |
+| --- | --- |
+| `.cortex/security.json` | The repository's policy layer. Up to 64 KB. |
+| `cortex-security.json` | The same thing under an alternative name, looked at second. |
+| `.cortex/security.md` | Free-text instructions for the reviewer, under the same restrictions. |
+
+| Accepted | Refused |
+| --- | --- |
+| Instructions and rules, which are **added** rather than replacing what the form set. Up to 50 rules per layer. | Path includes and excludes. |
+| A severity floor, but only **downwards**, towards more findings. | The trigger, draft reviews and the file limit. |
+| Criteria, but only as a **union**, never a removal. | The author, branch and label filters. |
+| A confidence floor, again only downwards. | How it lands, the comment ceiling and the summary settings. |
+
+The file nearest a changed file wins, searching up to six directory levels above it, and the repository root is always searched and is always the furthest. A key that is refused is reported back in the review's summary, so a setting quietly dropped and a setting never read do not look identical.
+
+The layers combine in one direction: the shipped defaults, then the installation's policy from this form, then the repository's own file. A setting the file says nothing about is inherited rather than reset to the default, so a repository whose file is silent about a threshold follows the one you set here when you change it. Scalars replace; rules and instructions accumulate.
+
+## What a team keeps dismissing
+
+Put a thumbs-down on one of Cortex Security's review comments, or resolve the thread, and that counts as a dismissal. It is attributed to the **class** of finding, meaning its criterion plus its normalised title without the path, so the same nit on nine files is one preference stated nine times rather than nine patterns that never reach a threshold.
+
+After three dismissals the reviewer stops posting that class in that repository. All three conditions have to hold:
+
+1. it was dismissed at least **three** times;
+2. it was dismissed more often than it was endorsed, where one thumbs-up undoes three thumbs-down, because somebody taking the trouble to say "keep this" is a stronger signal than three people scrolling past;
+3. it was dismissed more often than not, since a class posted thirty times and dismissed three is occasionally irrelevant rather than unwanted.
+
+Three things are never silenced this way, however often they are dismissed: anything **blocking** or **major**, anything carrying a CWE, and anything filed under **security**. Those dismissals are still counted, so an owner can see that a real finding is being ignored; they simply never stop it being posted.
+
+A silenced finding is recorded as filtered out rather than rejected, because the second pass never said it was wrong. Reactions are read from the comment list the next time Cortex publishes a review, and only an increase counts, so putting a thumbs-up back after removing it does not train twice. There is no screen listing what a repository has silenced; the effect is visible as findings that stop appearing, and in a review's filtered-out disclosure.
+
+## Related
+
+- [Checks and comments](/security/checks) - what these settings produce on the pull request.
+- [How a review works](/security/how-a-review-works) - the stages, the second pass, and the verdict arithmetic.
+- [Installation and repositories](/security/repositories) - the per-repository switch, the permissions, and how to stop reviews.
+- [Cortex Agent runs](/security/agent) - what the isolated-runtime switch does when a deployment has one.
+- [Security troubleshooting](/security/troubleshooting) - a green check you expected to be red, or findings that never arrive.

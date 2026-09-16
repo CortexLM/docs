@@ -1,0 +1,93 @@
+---
+title: "Plan and Spec modes"
+description: "Have Cortex work out what it would do before anything changes: Plan mode, Spec mode, and what a structured plan contains"
+icon: "list-check"
+---
+
+Sometimes you want the agent to work out *what* it would do before it does anything at all. The CLI has two read-first modes for that. **Plan** mode is read-only: the agent searches, reads and reasons, and proposes an approach. **Spec** mode goes further: the agent submits a structured plan and the tools that would change your project stay locked until that plan is accepted.
+
+This page covers how to enter each mode, how the read-only lock is enforced, what you do with a plan once it is on screen, what a structured plan contains, and the two related surfaces you will meet while planning: the question form the agent can put on screen, and delegated investigation.
+
+## Plan mode
+
+Cycle with `Shift+Tab` until the mode chip on the composer reads `Plan · no edits`. The placeholder changes to `Describe what you want — Cortex drafts a plan first`, which is the invitation to describe an outcome rather than a change.
+
+In this mode the agent can read files, search the project and reason about it. It cannot write a file and it cannot run a command that changes anything. Use it when you are new to an area of the codebase, when you want an estimate of a change before committing to it, or when you simply do not want anything touched yet.
+
+Plan mode is also a built-in agent, so you can get one planning answer without entering the mode:
+
+```bash
+cortex run --agent plan "how should we restructure the storage layer?"
+```
+
+## The lock is real
+
+Plan mode is not a polite instruction to the model. The mutating tools are withheld by the agent harness, so they are not available to be called. It is a hard stop rather than a promise: it does not depend on the model choosing to behave. The same is true of Ask mode, and Spec mode extends the idea to a plan you have to accept.
+
+That is worth knowing because it changes how you read the transcript. If the agent says it will leave a file alone in Agent mode, that is a statement of intent. In Plan mode it is a statement of fact.
+
+## Accept a plan, or keep going
+
+When a plan is ready the TUI asks what to do with it, with two options:
+
+- `Yes, switch to Agent mode and implement`
+- `No, keep planning`
+
+Accepting switches the session to Agent mode and starts the work, which means the usual approval prompts and sandbox apply from that point on. Declining keeps you in Plan mode with the plan on screen, so you can correct an assumption and have it redrafted. Nothing has changed on disk either way. See [Modes and permissions](/cli/modes-and-permissions) for what happens after the switch.
+
+## Spec mode
+
+Spec mode is a toggle rather than a step in the mode cycle:
+
+```text
+/spec        # enter specification mode
+/spec off    # leave it
+```
+
+In Spec mode the agent calls its planning tool and submits a structured plan for review instead of a wall of prose. The mutating tools stay locked until that plan is accepted; the agent then leaves the mode explicitly, giving a reason as it does, and only at that point can it start editing files and running commands.
+
+Headless runs can start in it too, which is the way to get a plan out of a script:
+
+```bash
+cortex exec --use-spec "add rate limiting to the public API"
+cortex exec --use-spec --spec-model <model-id> "add rate limiting to the public API"
+```
+
+`--spec-model` lets the planning pass use a different model from the one that would carry out the work. See [Headless and one-shot runs](/cli/headless).
+
+## What a structured plan contains
+
+A submitted plan always carries:
+
+| Part | What it is |
+| --- | --- |
+| Title | A short name for the work |
+| Description | What the change is and why |
+| Tasks | The steps it intends to carry out, each with a complexity rating |
+| Agent analyses | The reading of the problem from each agent involved |
+
+It can also carry the architecture it assumes, the technology it intends to use, the use cases it is designing for, the risks it can see, the criteria it would call success, a timeline, and an estimate of the changes involved. Those extras appear when they apply, so a small plan is short.
+
+## Why plan first
+
+<Tip>
+Three reasons the read-first modes earn their keep: you see the shape of the work while it is still cheap to redirect; the plan is a structured artefact rather than a paragraph, so it survives being pasted into an issue or a design review; and the block on mutating tools is enforced rather than promised.
+</Tip>
+
+## When the agent asks you a question
+
+Independently of either mode, the agent can put a short structured form on screen when it needs a decision from you rather than a guess. A question is single choice, multiple choice, free text or a number, and the composer placeholder changes to `Choose an option above` while one is open. Answering the form is usually faster and less ambiguous than a round trip through prose.
+
+## Delegated investigation
+
+Planning often means reading more of the project than one turn can hold, so the agent can delegate. A delegated task runs in one of three roles: `explore` for read-only investigation, `plan` for producing a plan, and `worker` for carrying out a slice of the work.
+
+Two limits are worth knowing. A delegated task cannot delegate further, and it cannot talk to you directly: it reports back through the turn that spawned it, which is why you see its result as a single tile in the timeline. `/tasks` lists what is running in the background. See [Agents and subagents](/cli/agents) and [Tools the agent uses](/cli/tools).
+
+## Related
+
+- [Modes and permissions](/cli/modes-and-permissions) - the mode cycle, approvals and the sandbox
+- [The TUI](/cli/tui) - the mode chip, the placeholder and the timeline
+- [Agents and subagents](/cli/agents) - the built-in planning and exploring agents
+- [Headless and one-shot runs](/cli/headless) - `--agent plan`, `--use-spec` and `--spec-model`
+- [Tools the agent uses](/cli/tools) - which tools a mode withholds

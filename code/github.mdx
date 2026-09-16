@@ -1,61 +1,89 @@
 ---
 title: "Connect GitHub"
-description: "Cortex Code reaches repositories through Connect GitHub — on Code Home, in the repository picker, and under Settings → Integrations."
-keywords: ["repository", "repos", "connection", "Reconnect"]
+description: "One control, one label, and no token to paste: how Cortex Code reaches your repositories, and what every failure message means."
+icon: "github"
 ---
 
-Code needs a repository to work on. You give it one by connecting GitHub from the product; Cortex then lists the repositories the grant covers and starts sessions on them. The same connection adds GitHub tools to Chat.
+Cortex Code needs a repository to work on, and it gets one by connecting your GitHub account from inside the product. The connection is what lets Code list your repositories, prepare a session's runtime from one of them, and open a pull request when the work is done. Without it, the composer has nothing to point a session at.
 
-<Frame caption="Settings → Integrations. Connect GitHub adds four GitHub tools to chat and unlocks repositories for Code.">
-  <img src="/images/product/settings-integrations.png" alt="Settings → Integrations — GitHub with a Connect GitHub button and tools listed; Linear, Slack, Notion, Vercel marked Soon" />
-</Frame>
+There is exactly one control for this, it has one label per state, and **there is no token to paste, anywhere**. No personal access token field exists on any Cortex surface, and there is no fallback to one. This page covers the control, the four places it appears, what the connection is and is not, every message the connection can show you, and how to revoke it.
+
+## What the connection actually wires together
+
+Connecting GitHub gives Code three things: the list of repositories you can choose from, a clone in the runtime a session attaches, and the ability to push a Cortex-owned branch and open a pull request from it. Pushes stay on Cortex-owned branches, so the agent cannot push over your default branch.
+
+<Note>
+It is not a connected app reaching into your session. A Code session is built with no tool servers, no connectors and no plugins of its own, and access you have granted in Chat or in Bot does not carry into Code: a session's own tools list can say as much. GitHub is not an exception dressed up as a connector; it is the repository source and the destination for a pull request. See [Code integrations](/code/integrations).
+</Note>
+
+## The control, state by state
+
+| State | What you see | What it means |
+| --- | --- | --- |
+| Not connected | **Connect GitHub**, with the note **Connect GitHub to list your repositories and open pull requests.** | press it to start |
+| Expired | **Reconnect GitHub** | the connection lapsed; it asks to be reconnected, not connected |
+| Connected | no control and no note | there is nothing to do |
+| Not available on this deployment | no control at all | the control is absent, not greyed out, because this deployment has no GitHub app to connect to |
+
+The same control, with the same label, appears in every place Cortex might reasonably ask you for it: the Code **Integrations** page, **Settings → Integrations**, the repository picker in the composer, and the getting-started row **Connect your GitHub account**. Whichever one you press, it is the same connection.
+
+A guest who presses it goes to sign-in, not to GitHub. Holding a connection requires an account, so the invitation comes first.
 
 ## Connect
 
 <Steps>
-  <Step title="Sign in">
-    A guest cannot hold a GitHub grant — there would be no way to come back and revoke it.
+  <Step title="Sign in with your Cortex account">
+    Then open Code. A guest can browse and type, but cannot hold a connection.
   </Step>
-  <Step title="Choose Connect GitHub">
-    From **Code Home**, the **repository picker**, or **Settings → Integrations**.
+  <Step title="Press Connect GitHub">
+    From the Code **Integrations** page, from **Settings → Integrations**, or straight from the repository picker in the composer, which offers the control instead of an empty list when there is nothing to list.
   </Step>
-  <Step title="Approve on GitHub">
-    Grant access to the repositories you want Code to see. There is no personal-access-token field anywhere in Cortex; the connection is the only route.
+  <Step title="Authorise Cortex on GitHub">
+    GitHub shows you its own consent screen and you decide there which repositories Cortex may see. Nothing in Cortex asks you for a credential, before or after.
+  </Step>
+  <Step title="Land back in Cortex">
+    You return to a page that reads **Connecting GitHub** and **Finishing the connection…**, with **Cortex is finishing the connection with GitHub. This takes a moment.** It then reads **GitHub is connected. Taking you back…** (or `GitHub is connected as {label}. Taking you back…`, with the account it connected) and returns you where you started.
   </Step>
   <Step title="Pick a repository">
-    Back in Code, choose a repository and start a session. See [Sessions](/code/sessions).
+    Back in the composer, the first chip is **Choose a repository** and the second is **Branch**. See [Repositories and branches](/code/repositories).
   </Step>
 </Steps>
 
-## What the connection gives you
+## If the connection does not finish
 
-| Surface | What GitHub adds |
-| --- | --- |
-| **Code** | The repository list; sessions clone and work inside the guest |
-| **Chat** | Four GitHub tools — list pull requests, list issues, create an issue, and more — available in your conversations |
-| **CLI** | `cortex pr <number>` to check out a pull request, and `cortex github install` to scaffold review workflows. See [Headless runs](/cli/headless) |
+Every one of these messages ends the same way: **Nothing was changed.** Connecting is all or nothing, so a failure leaves you exactly where you were and you can simply try again.
 
-## If something is missing
-
-| What you see | What it means | Do this |
+| Message | What happened | What to do |
 | --- | --- | --- |
-| No **Connect** control | GitHub is not available on this deployment | Nothing to configure — the surface is not offered here |
-| **Reconnect** | The grant lapsed or was revoked on GitHub | Choose **Reconnect** and approve again |
-| The public `/code` page instead of Code Home | You are not signed in | Sign in |
-| A repository is not listed | The grant does not cover it | Reconnect and include it, or adjust the installation on GitHub |
+| **GitHub was not connected** + **Nothing was changed. Cortex Code needs a connected GitHub account to list your repositories and open pull requests.** | you pressed **Cancel** on GitHub's consent screen | nothing is wrong; this is a decision, not an error. Press **Connect GitHub** again when you want to |
+| **The connection did not finish** + **Cortex could not finish the connection with GitHub. Nothing was changed.** | the round trip broke off | start again from **Connect GitHub** |
+| **GitHub did not complete the connection** + **Try connecting again. Nothing was changed.** | GitHub answered with a failure | try again |
+| **GitHub took too long** + **The connection was abandoned rather than left hanging. Try connecting again.** | GitHub did not answer in time | try again |
+| **GitHub is not available to connect** + **GitHub isn't available to connect right now.** | GitHub is unreachable for now | wait and try again |
+| **This connection attempt is no longer valid** + **Start again from Connect GitHub. Nothing was changed.** | the attempt went stale or was already used | begin a fresh attempt rather than reloading the old one |
+
+You may also see the flat label **GitHub could not be connected**. The callback page carries **Back to Code**, and on a failure it offers a fresh **Connect GitHub** that returns you to the Code integrations page.
+
+Cortex does not publish how long a connection lasts. You find out the ordinary way: the control reads **Reconnect GitHub**, which you press, approving on GitHub once more.
+
+## Disconnecting
+
+Revoke the connection from GitHub's own settings. Cortex has no disconnect button of its own that we can point you at, and revoking on GitHub always works: afterwards Cortex reports the connection as needing reconnection, or as not connected, and the repository list goes quiet until you connect again.
 
 ## Three different GitHub installs
 
-| Install | Purpose | Where |
-| --- | --- | --- |
-| **Connect GitHub** | Repositories for Code sessions; GitHub tools in Chat | Code Home, repository picker, Settings → Integrations |
-| **Cortex Security GitHub App** | Pull-request review as a check run | `/code/security` in the app — see [Cortex Security](/code/security) |
-| **`cortex github install`** | Workflow files for CI review from the CLI | Your repository — see [Headless runs](/cli/headless) |
+This is the most common confusion in the area, so it is worth stating plainly. Three separate things install against GitHub, and having one does not give you another.
 
-Connect GitHub is not part of Chat's connector catalogue under **Customize**, and Code Cloud is not a plugin surface.
+| Install | What it is for | Where it is documented |
+| --- | --- | --- |
+| **Connect GitHub** | lets Code list your repositories and open pull requests | this page |
+| The **Cortex Security GitHub App** | lets Cortex Security read pull requests and post checks | [Pull-request review](/code/security) and [Cortex Security](/security/index) |
+| The Cortex CLI's own install command | wires the CLI to GitHub | [Cortex CLI](/cli) |
 
 ## Related
 
-- [Code quickstart](/code/quickstart)
-- [Tools and connectors](/chat/tools) — the rest of Chat's connections.
-- [Troubleshooting](/code/troubleshooting)
+- [Repositories and branches](/code/repositories) for choosing what a session works on.
+- [Code integrations](/code/integrations) for connected apps, repositories and tool servers.
+- [Code quickstart](/code/quickstart) for a first session end to end.
+- [Pull-request review](/code/security) for the separate Security install.
+- [Code troubleshooting](/code/troubleshooting) when a repository you expect is not listed.

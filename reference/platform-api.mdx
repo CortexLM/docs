@@ -1,0 +1,72 @@
+---
+title: "Platform API"
+description: "Cortex has no public inference API today: no endpoints, no SDKs, no API keys. What the Platform API is not, and what to use instead"
+icon: "clock"
+keywords: ["inference API", "completions", "API keys", "SDK", "roadmap", "coming soon"]
+---
+
+Cortex does not have a public inference API. There is no endpoint that takes a prompt and returns a completion, no client library in any language, and no API key to request or generate. This page exists so the navigation does not grow a reference for something that is not there, and so you can stop looking.
+
+It is written for the reader who arrived wanting to call Cortex from their own code. That is a reasonable thing to want, and most requests that sound like an API call already have a product answer. This page says plainly what is missing, points you at the surface that does the job today, and says where an announcement would appear if that changes.
+
+## What is not available
+
+<Warning>
+None of the following is in beta, in preview, or available on request. Each is simply absent.
+</Warning>
+
+- **Model inference as a service.** Nothing takes a prompt over the network and returns a completion.
+- **API keys and personal access tokens.** Nothing in the product issues one, so there is nothing to generate in Settings and nothing to paste into a client.
+- **SDKs and client libraries.** None exist, in any language.
+- **A third-party app model.** There is no way to register an application against a Cortex account and act on a user's behalf.
+- **Teams, organisations and role-based access control.** Not available yet, so there is no programmatic surface to administer them.
+- **An exportable audit log on the product API.** The entitlement exists for the **Pro** plan, but the log itself is not available yet.
+- **Usage-based API billing.** There is no metered API to bill for. Your plan covers use of the products, and is described in [Limits and quotas](/reference/limits).
+
+## What to use instead
+
+Every row here is a product surface with its own sign-in, not an API key.
+
+| The API-shaped ask | What exists today |
+| --- | --- |
+| A one-shot prompt from a shell | The CLI: `cortex run`. See [Headless and one-shot runs](/cli/headless) |
+| Scripted or piped invocation, including CI | The CLI: `cortex exec`. See [CI cookbook](/cli/ci) |
+| Working inside a repository | A [Cortex Code](/code) session, or the CLI against a checkout |
+| Recurring automated work | A [Cortex Bot](/bot) routine, described in [Routines](/bot/routines) |
+| Letting Cortex call your own system | An [MCP server](/chat/mcp-servers) you connect |
+| Reacting to a failure your integration sees | Branch on the error `code`. See [Errors](/reference/errors) |
+
+The CLI is the closest thing to an automation surface Cortex has. It runs non-interactively, it exits with a status your script can read, and it signs in as you rather than carrying a key you would have to store somewhere. If you were reaching for an API in order to put Cortex in a pipeline, start at [Headless and one-shot runs](/cli/headless).
+
+## What this site does document
+
+Two public contracts are documented here, and neither is an inference API.
+
+<CardGroup cols={2}>
+<Card title="The error contract" icon="triangle-exclamation" href="/reference/errors">
+Every failure in every Cortex surface is a problem document with a stable `code`, a human title and a `request_id`. A client can branch on the code instead of parsing prose. The full list is the [problem catalog](/problems).
+</Card>
+<Card title="The Bounty transparency log" icon="scale-balanced" href="/bounty/public-api">
+The Cortex Bounty programme publishes a small set of read-only endpoints that need no credential and mint none for the caller. They report adjudicated reports and standings, and nothing else.
+</Card>
+</CardGroup>
+
+The transparency log is the only unauthenticated public surface on this site, and it is narrow on purpose: it exists so the subnet and anyone watching it can verify bounty verdicts. It is not a general-purpose read API for your account, and it never carries chat transcripts.
+
+## Why there is nothing to try
+
+It is worth being exact about this, because a hidden endpoint is a tempting theory. There is no private beta to be added to, no undocumented route that answers for a favoured account, and no key that support can hand out, because nothing in the product issues one. The absence is in the product, not in the documentation. A page or a reseller offering paid Platform API access is not selling something Cortex has.
+
+## When this changes
+
+A Platform API would be announced on the [changelog](/changelog) and at [cortex.foundation](https://cortex.foundation) first. Until an announcement exists, treat any tool or page claiming to sell Platform API access as unofficial.
+
+If your need is genuinely not covered by the CLI, a Code session, a Bot routine or an MCP server, that is a gap in the Platform API rather than a hidden endpoint, and it is worth reporting as one. See [Report a bug](/getting-started/report-a-bug).
+
+## Related
+
+- [Headless and one-shot runs](/cli/headless) - `cortex run` and `cortex exec`, the automation surface that exists.
+- [CI cookbook](/cli/ci) - recipes for running Cortex from a pipeline.
+- [Errors](/reference/errors) - the contract a client should branch on.
+- [Transparency API](/bounty/public-api) - the one public, credential-free surface.
+- [Changelog](/changelog) - where a Platform API launch would appear.

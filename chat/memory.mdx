@@ -1,49 +1,105 @@
 ---
 title: "Memory"
-description: "Cortex remembers preferences and facts you share so answers get more personal over time. Review or delete individual memories under Settings → Data & privacy."
-keywords: ["preferences", "personalisation", "saved facts", "forget"]
+description: "What Cortex remembers, how to review, edit, delete, export and import it, and how to scope memory to a single project."
+icon: "lightbulb"
 ---
 
-Memory is a short list of standing preferences and facts about you that Chat keeps on your account and reads into every conversation. It is how Cortex remembers that you prefer British spelling, work in euros, or want answers to start with the conclusion — without you repeating it.
+**Memory** is a short, readable list of standing facts and preferences you have told Cortex Chat. It is the mechanism that stops you repeating that you work in euros, prefer British spelling, or want the conclusion first. The setting describes itself the same way: Cortex remembers preferences and facts you share so answers get more personal over time, and you can review or delete individual memories.
 
-<Frame caption="Settings → Data & privacy → Memory. Every saved memory is listed and can be deleted on its own.">
-  <img src="/images/product/settings-memory.png" alt="Memory, two-factor authentication, and Your data controls under Settings → Data & privacy" />
-</Frame>
+Memory is on by default, and everything about it is inspectable. This page covers where to manage it, what it stores, how long it is kept, how to review and delete entries, how to narrow memory to one project, how export and import work, and the cases where memory deliberately does nothing.
 
-## What memory is
+## Where to manage memory
 
-| Memory is | Memory is not |
-| --- | --- |
-| Account-wide — it follows you into every chat | A [project](/chat/projects) — project instructions apply to one body of work |
-| Short — preferences and facts, not documents | A file store — that is [Library](/chat/library) |
-| Explicit to forget — deleting a memory is a delete | A hidden profile you cannot see |
+Everything below lives in **Settings → Data & privacy**, under **Memory**. The same panel carries the master switch, the sensitive-topics switch, the retention row, the searchable list of entries, and the export and import controls. The project-scope choice is the one part that lives elsewhere: it is inside each project, under its own **Memory** block. See [Projects](/chat/projects) and [Data and privacy](/getting-started/data-and-privacy).
 
-## How memories are created
+## What memory stores
 
-Chat saves a memory when you tell it something worth keeping — *always answer in French*, *my team ships on Thursdays* — or when it recognises a standing preference from how you work. Memories are read at the start of a turn alongside project instructions.
+Memory holds what you told Chat, not your documents. Entries are grouped for review under **Facts**, **Context**, **Preferences**, **Instructions** and **Other**, and each one carries where it came from, shown as **Saved from Chat**. Files belong in [Library](/chat/library), and a body of work belongs in a project. Your instructions and your memories are stored encrypted.
 
-## Review and forget
+## Turn memory on or off, and narrow what it saves
+
+- **Use memory** is the master switch. When it is off, Cortex neither recalls nor writes new memories, and existing ones stay until you delete them.
+- **Include sensitive topics** is off by default. With it off, Cortex skips health, finances and similar topics when saving memories. It declines at the moment of writing rather than saving something and filtering it later. This switch can only be changed while **Use memory** is on.
+
+Turning memory off stops the live part only. Listing, editing, deleting, importing and exporting all keep working with the switch off. What stops is recall during a turn and the writing of anything new.
+
+## How long memories are kept
+
+The **How long to keep memories** row sets the retention window. It applies to new and existing memories on the account, and project memories follow the same window. The pills offered are **30 days**, **90 days** and **Keep until deleted**.
+
+If no window is shown, that is deliberate. A number here is a promise about deletion, so the product shows the value your plan actually carries rather than inventing a default.
+
+## Review, edit and delete
 
 <Steps>
-  <Step title="Open Settings → Data & privacy">
-    Scroll to **Memory**. Every saved memory is listed.
+  <Step title="Open the Memory panel">
+    Go to **Settings → Data & privacy** and find **Memory**.
   </Step>
-  <Step title="Read what Cortex stored">
-    Each entry is a short sentence in plain language.
+  <Step title="Narrow the list">
+    Use **Search memories**, or read down the topic headings. If nothing matches, the panel says **No memories match that search.**
   </Step>
-  <Step title="Delete what you do not want kept">
-    Deletion is immediate and per memory. There is no buried toggle.
+  <Step title="Edit an entry">
+    Choose **Edit** on a row, change the text, and choose **Save**. Editing re-files the entry: its wording changes, its grouping is recalculated, and it is marked as having been edited by you.
+  </Step>
+  <Step title="Delete an entry">
+    Choose **Delete** on the row. Deletion is per entry and immediate.
+  </Step>
+  <Step title="Go further back">
+    Use **Load more** for older entries.
   </Step>
 </Steps>
 
-Memory needs a signed-in account. Guests see *Nothing saved yet*.
+To clear a whole scope at once, use **Erase account memories** or **Erase project memories**. The fuller panel also offers a **Project** picker, so you can read one project's memories on their own.
 
-## Plans
+If you have never given Chat anything to keep, the panel says so: nothing is saved yet, Cortex stores standing preferences and facts you share, and you can delete any of them here.
 
-Go and Plus list **extended memory and context** among their features. See [Plans](/getting-started/plans).
+## Account memory and project-only memory
+
+Memory is account-wide by default, so it follows you into every chat. A project can be switched to read a narrower set. Inside the project, the **Memory** block offers:
+
+| Choice | What chats in that project read |
+| --- | --- |
+| **Account memory** | Memories saved across your account. |
+| **Project only** | Only memories saved in that project. Account memories stay where they are. |
+
+Switching the scope never deletes anything. It changes what is read on a turn. One consequence worth knowing: an import started from the account panel always writes account memories, whatever a project is set to.
+
+## Export and import
+
+**Export memories** saves a plain-text file called `cortex-memory.txt`, one memory per line. Keep it as a backup, read it to audit what Cortex holds, or edit it and bring it back.
+
+**Import memories** takes those lines back in. Paste them into the import box and choose **Import memories**. The rules are strict on purpose:
+
+- Import only adds. It never overwrites and it never deletes.
+- One memory per non-empty line, and at most 200 lines in a single paste. A longer paste is refused before anything is processed.
+- If any line fails, the whole import is rolled back, so a partial import cannot leave you with half a list.
+
+## Temporary chats
+
+<Note>
+A **Temporary chat** never reads or writes memory. It is also kept out of **Recents** and is deleted after 30 days. The composer says exactly that when you turn one on. Use it for a question you do not want shaping later answers.
+</Note>
+
+## Searching past chats
+
+Recall from memory is not the same thing as reading your old conversations. Searching past chats is a separate capability behind its own explicit consent, and the default is no. When it is granted, the model can find titles and snippets from your conversations, capped at ten results, and it never includes temporary or archived conversations.
+
+<Info>
+There is no control in the product for granting that consent yet, so searching past chats is not something you can switch on from Settings today. Memory itself, on this page, is fully available.
+</Info>
+
+## When memory cannot be read
+
+If the memory setting itself cannot be read, the turn is treated as memory off and the panel tells you: memory could not be loaded, so it stays off, and nothing is listed or saved until the setting can be read. It fails closed on purpose, so an outage never turns into a silent write.
+
+<Warning>
+Memory is stored on your account, so a guest session has none. The panel asks you to sign in to review it or turn it off. See [Accounts](/getting-started/accounts).
+</Warning>
 
 ## Related
 
-- [Projects](/chat/projects) — instructions scoped to one body of work.
-- [Security](/security/overview) — what Cortex stores and how to export or delete everything.
-- [How Chat works](/chat/how-it-works) — where memory enters the prompt.
+- [Projects](/chat/projects) - standing instructions, and project-only memory
+- [Data and privacy](/getting-started/data-and-privacy) - the settings tab memory lives on
+- [Conversations](/chat/conversations) - temporary chats, pinning and recents
+- [How Chat works](/chat/how-it-works) - where memory enters a turn
+- [Built-in tools](/chat/tools) - the tools a turn can reach for

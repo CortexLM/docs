@@ -1,48 +1,94 @@
 ---
-title: "Streaming"
-description: "Answers appear as they are written — tokens, then tools, then the finished reply. If the connection drops, the thread reconnects; you do not resend."
-keywords: ["tokens", "live reply", "reconnect"]
+title: "Streaming and reconnects"
+description: "Answers arrive in pieces as they are written, you can stop or steer them, and a dropped connection resumes instead of starting over"
+icon: "bolt"
 ---
 
-Chat streams. You see the answer being written rather than a block of text after the turn ends, and you can stop it at any point.
+An answer in Cortex Chat is not one response that appears when it is finished. It is a live sequence of small pieces: words, thinking, tool rows, citations, files and, at the end, a reason the turn stopped. You can read along, interrupt, and pick up where the answer left off.
 
-<Frame caption="A turn in flight: the composer reads “Cortex is responding…” and the send button has become a stop control.">
-  <img src="/images/product/chat-streaming.png" alt="A Chat thread while a reply is in flight — Cortex is responding" />
-</Frame>
+This page covers what appears while an answer is being written, how to stop and resume one, what happens when your connection drops or you go offline, and why an error can turn up part way through an answer that started normally.
 
-## What streams, in order
+## What you see while an answer is written
 
-| Phase | What you see |
+| On screen | What it means |
 | --- | --- |
-| Thinking | A blinking caret while the model reasons; longer at higher [thinking levels](/chat/models) |
-| Tokens | The reply appearing word by word, markdown rendering as it lands |
-| Tools | Tool results entering the thread when the model uses one |
-| Finished | **Copy**, **Listen**, and feedback controls under the reply |
+| Words appearing a few at a time | The answer is being written right now |
+| A **Thinking** block filling, then collapsing to a duration | The model reasoned first. See [Models and thinking](/chat/models) |
+| A short row such as *Searched the web* | A tool ran. The row then shows how it ended |
+| A numbered citation with its source | The claim above it came from there |
+| A file card | Cortex produced a file, and it is in [Library](/chat/library) |
+| An image, a chart or a data dashboard | Cortex generated that block inside the answer |
+| A provenance verdict | An origin check finished, see [Check origin](/chat/origin-check) |
+| A short notice on the answer | Cortex added a safety or disclosure note |
+| A marker saying earlier messages were summarised | The conversation was compacted to make room |
+| The document rail refreshing on its own | Cortex is writing into a [canvas](/chat/canvases) |
+| A permission prompt | Something needs your approval before it runs |
 
-A turn can pass through the tool phase more than once. The model asks for a tool, Chat runs it, the result enters the thread, and the model keeps writing — until it stops or reaches Chat's round budget. That is the loop described in [How Chat works](/chat/how-it-works), and it is why a turn that uses a tool takes longer to look finished than one that does not.
+While this is happening the composer reads **Cortex is responding…** and the send button becomes **Stop responding**.
 
-A [Deep Research](/chat/deep-research) run streams differently: each planned question is a background child, so the thread fills from several sources at once rather than one reply growing word by word.
+A tool row's label is deliberately short and human. A long tool result is shortened for display, and the row says how much was cut. The compaction marker tells you how many earlier messages were summarised but does not show the summary itself: your original messages stay in the transcript, and the summary is what the model reads in their place. [How Chat works](/chat/how-it-works) explains when that happens.
 
-## Stop a response
+## Stop an answer and pick it back up
 
-Press **Esc**, or the stop control where the send button was. The partial reply stays in the thread. See [Keyboard shortcuts](/getting-started/settings#keyboard-shortcuts).
+| Action | What happens |
+| --- | --- |
+| **Stop responding**, or `Esc` | The turn ends immediately and whatever was written stays. The card is marked **Stopped** |
+| **Continue** | Picks that same answer back up in place, with the hint **Pick up the answer where it stopped.** Offered only on a stopped answer |
+| **Regenerate** | Asks for the answer again. The previous one is kept as a version and a pager appears |
+
+Nothing is destroyed by stopping or regenerating. Only one live answer can exist in a conversation at a time, which is why regenerating or editing during a live turn is refused with **Wait until the current answer finishes.** Attempting a second answer anyway raises [Concurrency limit reached](/problems/concurrency_limit_reached).
+
+**Continue** is only ever offered on an answer that stopped. On anything else it answers **That answer cannot be continued.**, and regenerating is the right move instead. [Conversations](/chat/conversations) covers versions and branches in full.
+
+## Steer or queue while it writes
+
+You do not have to wait in silence for a long answer.
+
+- **Steer this reply** sends a correction into the answer that is being written. The placeholder says what it is for: **Steer while Cortex is still writing…**
+- **Queue a follow-up…** parks your next message instead. It shows as a **Queued follow-up** chip and is sent when the current answer finishes.
+
+A queued follow-up can be taken back with **Return queued follow-up to the composer**. Only the owner of the conversation can do that, and anyone else gets **Only the owner can return this follow-up.**
 
 ## When the connection drops
 
-Run state lives in the thread, not in the transport. If your connection drops mid-reply, the product reconnects and the reply that already started continues. **Do not resend** the same message to recover it — you would start a second turn.
+The answer is produced on Cortex's side and buffered as it is created, before any of it reaches your browser. Your browser keeps track of how much it has received. If the connection drops it reconnects, says where it stopped, and the rest is replayed to it.
 
-## Queueing
+What you see is **Reconnecting**, gaining an attempt number from the second try onwards, together with **The answer picks up where it stopped.** Then the words carry on from where they were, rather than starting over.
 
-Sending while a reply is still streaming is not the intended path in the web app; wait for the reply or stop it first. The CLI queues follow-ups explicitly — see [The TUI](/cli/tui).
+<Tip>
+Reloading the page during an answer does not lose it. The work continues on Cortex's side, so a reload shows the answer still being written, or finished. Do not resend the same message to recover an answer in progress, because that starts a second turn.
+</Tip>
 
-## Where the answer is written
+The resumable window is generous but not endless. Once a turn's buffer is gone, Chat says **This stream is no longer resumable. Reload the conversation.** Reloading then shows the finished answer if the turn completed on its own. That state is reported as [Gone](/problems/gone).
 
-Streaming is the transport, not the record. The thread holds the run state, which is why a dropped connection can resume the reply it already started and why a partial reply survives a stop. The same thread is what the [Library](/chat/library) fetch and the **Copy**, **Listen**, and feedback controls attach to when the reply finishes.
+## When you are offline
 
-Long threads are compacted on the request path so they keep fitting the model. Compaction keeps the last ask, an active research plan, and open artifact ids — it does not keep every word you ever typed. See [How Chat works](/chat/how-it-works).
+Losing the network before you send is handled separately from losing it during an answer. The composer switches to **You are offline — your message will wait here** and holds your text. A toast confirms **Sending when back online**, and the message goes out when the connection returns.
+
+One thing to watch: the wait is tied to the chat you are in. If you navigate away with a message still waiting, it is dropped, and you are told rather than left to wonder: **A waiting message was discarded because you left this chat.**
+
+## Tool rows and the round budget
+
+A turn can pass through the tool phase more than once. The model asks for a tool, Cortex runs it, the result enters the transcript, and the model keeps writing. That loop is bounded, which is why a turn that uses tools looks unfinished for longer than one that does not.
+
+| Bound | Value |
+| --- | --- |
+| Tool rounds in one Chat turn | 8 |
+| Tool calls in one turn, hard ceiling | 50 |
+| Identical calls tolerated before the loop breaks | 6 |
+
+None of these ends the turn silently. When the round budget runs out the model is asked to answer with what it already has, or to say how it would like to proceed. When the same call repeats without getting anywhere, the loop is broken with **The same tool call repeated without progress. Try a different action.**, and rephrasing the request is usually the fix.
+
+## Why an error can appear inside a good answer
+
+By the time something fails, the response has usually already started. The failure therefore arrives as part of the answer rather than as a refusal before it, which is why an answer can begin normally and then show an error card part way down. The card carries a code, and every code has a page under [Problems](/problems).
+
+If a turn fails after your allowance was charged, the allowance comes back and you see **Generation failed. Your allowance for this message has been returned.** A turn that was cut short instead reports **The action was interrupted.**, and **Continue** or **Regenerate** takes it from there.
 
 ## Related
 
-- [How Chat works](/chat/how-it-works) — the loop behind the stream.
-- [Voice](/chat/voice) — **Listen** appears once the reply is finished.
-- [Chat troubleshooting](/chat/troubleshooting) — a reply cut short, and what not to do about it.
+- [How Chat works](/chat/how-it-works) - the turn loop behind the stream.
+- [Conversations](/chat/conversations) - versions, branches and editing a sent message.
+- [Models and thinking](/chat/models) - what decides how long the thinking phase lasts.
+- [Voice](/chat/voice) - **Listen** appears on an answer once it is finished.
+- [Chat troubleshooting](/chat/troubleshooting) - the messages a broken turn leaves behind.

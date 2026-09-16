@@ -1,0 +1,94 @@
+---
+title: "Design quickstart"
+description: "Open the Cortex Design app, create your first canvas, generate options, pick one, save a version and export it."
+icon: "rocket"
+---
+
+This page takes you from an empty gallery to a saved version and a file on your machine. You need a Cortex account, and the editing itself happens in the **Cortex Design** window rather than in a browser tab. That window is not published yet, so read the steps below as what the editor does once you are in it. The last section starts a canvas from a conversation instead, which is the part the web app gives you today.
+
+Plan for under ten minutes. The slowest part is Cortex drawing your first frames, and you can watch that happen on the canvas.
+
+<Steps>
+  <Step title="Know where the editor lives">
+    The editor is a separate application, not a page in the browser, and there is nothing to download for it yet: [Ways to run Cortex](/getting-started/downloads) records that the Design window has no installer, and no browser editor stands in for it. What the web app gives you is the **CANVASES** rail, which asks for a design, then creates and lists canvases. [Design desktop app](/design/desktop) describes the window itself.
+
+    The window is titled **Cortex Design**, and its sidebar shows **Designs**, **Library**, **Plugins** and **Bot jobs**, with no Chat or Code switcher.
+  </Step>
+
+  <Step title="Design needs an account">
+    Design canvases belong to an account, and every Design surface refuses a signed-out visitor rather than drawing a locked panel. In the window that refusal is a full-window message saying that Cortex Design is part of your Cortex account, offering **Sign in** and **Create an account**; on the web the canvases rail simply does not render. The window's own sign-in is not finished either, which is the other half of why there is nothing to install yet. See [Accounts](/getting-started/accounts).
+  </Step>
+
+  <Step title="Create a design">
+    Open **Designs** and choose **New design** (`⌘N`). The sheet asks for four things:
+
+    - **NAME** — up to 48 characters, with a counter beside the field.
+    - **START FROM** — **Blank canvas**, **From a Chat or Code thread**, or **From a Library template**.
+    - **BRIEF** — what you want. It becomes the first message in this design's thread, so write it as a request, not a title.
+    - **MODEL** — the model that will draw. Leave it alone for your first run.
+
+    Choose **Create design** (`⌘↵`). The canvas is saved with its own reference and you can rename or move it later.
+  </Step>
+
+  <Step title="Watch the options arrive">
+    Cortex usually answers a brief with alternatives rather than one answer. Each alternative is a frame carrying a short option letter, so you get frame **A**, frame **B**, frame **C** for the same brief.
+
+    While it works, the editor header reads **Drawing** with a count, and each frame card shows **Drawing…** or **Queued**. The canvas state is refreshed as work lands rather than pushed to you live, so give a slow frame a moment.
+  </Step>
+
+  <Step title="Pick one and ask for a change">
+    Select the frame you want. The selection draws its size and an **Edit** control.
+
+    Now use the thread rail on the right. Type into **Ask for a change on any frame…** and send (`↵`). The header switches to an editing state naming the frame the change is landing in, and the frame card shows its own progress while the change is applied. Repeat until the frame is what you wanted.
+  </Step>
+
+  <Step title="Note the version you just made">
+    Every save of a canvas is a new version, numbered from 1 upwards. The thread rail confirms with a line like `Saved as v7`, plus the time and the frame and note counts.
+
+    Open **Versions** in the editor header to see them, newest first and grouped by day, with the current one marked **CURRENT**. [Versions](/design/versions) covers viewing and restoring an older one.
+  </Step>
+
+  <Step title="Export the result">
+    Choose **Export** in the editor header, then:
+
+    1. **SCOPE** — your selection, all frames, or the whole canvas.
+    2. **FORMAT** — **PNG**, rendered on your own machine, or **JSON**, the canvas document itself. SVG and PDF are shown but not selectable yet.
+    3. **SCALE** — `1x`, `2x` or `3x` for a PNG.
+    4. **DESTINATION** — download to this machine, or copy to the clipboard.
+
+    The sheet shows an estimate of what you are about to produce, then confirm with **Export** (`⌘E`). See [Export a design](/design/export).
+  </Step>
+</Steps>
+
+## Start from a Chat thread instead
+
+If the design belongs to a conversation you are already having, start it there and the canvas stays linked to that thread.
+
+1. Open the Chat conversation, or the Code session, that the design belongs to.
+2. Ask Cortex for the design in the thread. When it draws, it creates a canvas bound to that thread. You can also create an empty one with **New canvas** in the rail.
+3. The canvas appears in the **CANVASES** rail beside the thread, titled **Untitled canvas** until you rename it, with its counts such as `3 frames` and `5 notes`.
+4. Choose **Open in Design** to hand it to the app, or **Copy reference** to copy the canvas id and paste it into the Design window.
+
+<Note>
+  From a Code session, a mode that only answers or only plans cannot create or change a canvas. Switch to a mode that can act. See [Ask, Plan, Agent](/code/interactions).
+</Note>
+
+## Shortcuts worth learning now
+
+| Shortcut | What it does |
+| --- | --- |
+| `⌘N` | New design |
+| `⌘K` | Focus the search field |
+| `⌘↵` | Confirm the sheet you are in |
+| `⌘E` | Export |
+| `↵` | Send the message in the editor thread |
+
+These are the bindings the app shows beside its own controls, and they match Cortex Chat where the two overlap. The full list is in **Settings → General**.
+
+## Related
+
+- [Design canvases](/design/canvases) - what a canvas holds, and how the gallery and the rail work.
+- [Generate and edit](/design/editor) - the editor in full, including a failed option.
+- [Versions](/design/versions) - view or restore an earlier save.
+- [Export a design](/design/export) - formats, scopes and what is planned.
+- [Design troubleshooting](/design/troubleshooting) - when something refuses.

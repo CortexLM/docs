@@ -1,0 +1,79 @@
+---
+title: "Interface language"
+description: "The eight languages Cortex is translated into, how to switch, what stays in English, and how the language prefix in the address bar works"
+icon: "language"
+---
+
+The Cortex interface is translated into eight languages. Switching language changes the labels, buttons, menus and messages you see; it does not change how you talk to the models, and it does not change the product names. English is the source of truth for every string, so every other language is a translation of it.
+
+This page lists the eight languages and their URL prefixes, shows how to switch, explains how Cortex chooses a language on your first visit, and says exactly what stays in English.
+
+## The eight languages
+
+| Language | Shown in the picker | URL prefix |
+| --- | --- | --- |
+| English | `English` | none, the URL stays unprefixed |
+| French | `Français` | `/fr` |
+| Spanish | `Español` | `/es` |
+| German | `Deutsch` | `/de` |
+| Japanese | `日本語` | `/ja` |
+| Simplified Chinese | `简体中文` | `/zh-Hans` |
+| Brazilian Portuguese | `Português (Brasil)` | `/pt-BR` |
+| Korean | `한국어` | `/ko` |
+
+`zh-Hans` and `pt-BR` are single prefixes. They are never shortened to `zh` or `pt`.
+
+## Change your language
+
+<Steps>
+<Step title="Open Settings">
+Choose **Settings** in the sidebar footer. Settings opens as an overlay over Chat, Code or Bot, so you keep your place.
+</Step>
+<Step title="Stay on General">
+**General** is the first tab and the one Settings opens on.
+</Step>
+<Step title="Pick a language">
+Under **Language** (`Interface language. Model prompts stay in English.`) choose one of the eight entries.
+</Step>
+<Step title="Check the address bar">
+The interface reloads in that language and the address bar gains the matching prefix, for example `/fr/code`. English has no prefix, so choosing English removes it.
+</Step>
+</Steps>
+
+Choosing a language here records the choice and Cortex remembers it for a year. Picking a language is a deliberate act, so from then on it outranks whatever your browser asks for.
+
+## How Cortex picks a language the first time
+
+On your first visit Cortex reads your browser's language once. If it is not English, you are moved to the matching prefix and that choice is remembered. After that first read, your remembered choice wins and the browser header is not consulted again.
+
+Opening a prefixed URL directly, for example a link someone sent you at `/es/bot`, shows that language for the visit without changing your saved preference. So a Spanish link does not switch you to Spanish for good, and returning to Cortex on your own gives you your own language back.
+
+The prefix is preserved as you move around: navigation inside the app, a reload and a new tab all stay in the language you are reading. Search engines are never redirected by language. A crawler sees the URL it asked for.
+
+<Note>
+English is unprefixed on purpose. `/en` and `/en/...` redirect to the URL without the prefix, so `/en/code` becomes `/code`. Do not bookmark an `/en` URL, bookmark the plain one.
+</Note>
+
+## What stays in English
+
+Three things do not follow the interface language.
+
+**Model prompts.** The instructions Cortex sends to a model stay in English, which is what the **Language** row means by `Model prompts stay in English.` The setting governs the interface, not the conversation.
+
+**Product names.** **Cortex**, **Cortex Chat**, **Cortex Code**, **Cortex Bot** and **Cortex Security** are never translated. A French interface still says Cortex Chat.
+
+**These documentation pages.** `docs.cortex.foundation` is written in English. The eight languages apply to the application at `cortex.foundation`.
+
+## If you cannot find the setting
+
+The **Language** row is on **General**, between **Theme** and **Answer font**. If you land on another tab, use **Search settings** at the top of the left rail. It searches rows across every tab, not just the one you are on, and jumps to the row when you pick a result. A search with no match answers `No settings match "{query}"` with the hint `Try a shorter word, or clear the search to browse all tabs.`
+
+You can also open Settings straight on the tab you want: `cortex.foundation/settings` opens it over Chat, and an unknown tab in the address falls back to **General**, which is where **Language** lives anyway.
+
+## Related
+
+- [Settings](/getting-started/settings)
+- [Accounts and sign-in](/getting-started/accounts)
+- [What is Cortex](/getting-started/what-is-cortex)
+- [Keyboard shortcuts](/getting-started/keyboard-shortcuts)
+- [Troubleshooting](/getting-started/troubleshooting)

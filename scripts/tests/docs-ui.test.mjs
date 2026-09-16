@@ -1,45 +1,65 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 
 const root = new URL('../../', import.meta.url);
 const config = JSON.parse(readFileSync(new URL('docs.json', root), 'utf8'));
-assert.equal(config.theme, 'willow');
-assert.deepEqual(config.navbar.links, [
-  { label: 'Home', href: '/' },
-  { label: 'Documentation', href: '/getting-started/quickstart' },
-]);
-assert.equal(config.navbar.primary, undefined);
+
+// The site starts from the Mintlify starter kit: the `mint` theme, a favicon,
+// a light and a dark logo, a navbar with links and one primary button, and
+// contextual options. Icons come from Font Awesome (the starter default), so
+// `icons.library` stays unset.
+assert.equal(config.theme, 'mint');
+assert.ok(typeof config.favicon === 'string' && existsSync(new URL(config.favicon.replace(/^\//, ''), root)));
 for (const mode of ['light', 'dark']) {
   const file = new URL(config.logo[mode].replace(/^\//, ''), root);
-  assert.equal(readFileSync(file).subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+  assert.ok(existsSync(file), `logo.${mode} must exist`);
+  assert.ok(readFileSync(file, 'utf8').startsWith('<svg'), `logo.${mode} must be an SVG`);
 }
-assert.equal(config.icons.library, 'lucide');
+assert.equal(config.icons, undefined, 'icons come from Font Awesome, the starter default');
+assert.ok(Array.isArray(config.navbar.links) && config.navbar.links.length > 0);
+assert.equal(config.navbar.primary?.type, 'button');
+assert.equal(config.navbar.primary?.label, 'Open Cortex');
+assert.ok(Array.isArray(config.contextual?.options) && config.contextual.options.includes('copy'));
 
-// The sidebar is one flat list of top-level groups. `tabs`, `dropdowns` and
-// `products` each render a second-level switcher in the navbar — the app
-// dropdown this site deliberately dropped — so a group-only navigation is the
-// contract, not a preference.
-assert.equal(config.navigation.tabs, undefined);
+// Navigation is one tab per application in the navbar, the way a reader picks
+// a product on any large documentation site. Every tab and every group has an
+// icon; every product tab opens on its hub page.
+assert.ok(Array.isArray(config.navigation.tabs), 'navigation must be tabs');
+assert.equal(config.navigation.groups, undefined);
 assert.equal(config.navigation.dropdowns, undefined);
 assert.equal(config.navigation.products, undefined);
-assert.ok(Array.isArray(config.navigation.groups));
-assert.ok(
-  config.navigation.groups.every(group => typeof group.group === 'string' && group.icon),
-  'every top-level group needs a label and an icon',
-);
-// One hub per product: the group that opens a product starts at its hub page,
-// so the sidebar title and the entry point are the same page.
-for (const hub of [
+const tabs = config.navigation.tabs.map((tab) => tab.tab);
+assert.deepEqual(tabs, ['Get started', 'Chat', 'Code', 'Bot', 'CLI', 'Design', 'Security', 'Reference']);
+for (const tab of config.navigation.tabs) {
+  assert.ok(tab.icon, `tab "${tab.tab}" needs an icon`);
+  assert.ok(Array.isArray(tab.groups) && tab.groups.length > 0, `tab "${tab.tab}" needs groups`);
+  for (const group of tab.groups) {
+    assert.ok(typeof group.group === 'string' && group.icon, `group "${group.group}" needs a label and an icon`);
+    assert.ok(Array.isArray(group.pages) && group.pages.length > 0, `group "${group.group}" needs pages`);
+  }
+}
+for (const [label, hub] of [
   ['Chat', 'chat/index'],
   ['Code', 'code/index'],
   ['Bot', 'bot/index'],
   ['CLI', 'cli/index'],
   ['Design', 'design/index'],
+  ['Security', 'security/index'],
 ]) {
-  const [label, root] = hub;
-  const group = config.navigation.groups.find(candidate => candidate.group === label);
-  assert.ok(group, `navigation must carry a top-level "${label}" group`);
-  assert.equal(group.root, root, `"${label}" must open ${root}`);
+  const tab = config.navigation.tabs.find((candidate) => candidate.tab === label);
+  assert.equal(tab.groups[0].pages[0], hub, `"${label}" must open on ${hub}`);
 }
-assert.deepEqual(config.footer.links.map(group => group.header), ['Products', 'Resources', 'Cortex']);
-console.log('docs-ui: native theme, flat hub sidebar, logos, icons and footer passed');
+assert.equal(config.navigation.tabs[0].groups[0].pages[0], 'index', 'Get started opens on the home page');
+
+// Global anchors and the footer keep the reader one click from the changelog,
+// the status page, and the product.
+const anchors = config.navigation.global.anchors.map((anchor) => anchor.href);
+assert.ok(anchors.includes('/changelog'));
+assert.ok(anchors.includes('https://status.cortex.foundation'));
+assert.deepEqual(config.footer.links.map((group) => group.header), ['Products', 'Resources', 'Cortex']);
+
+// No page ships an image: the site is icons only.
+assert.ok(!existsSync(new URL('images', root)), 'the images/ directory must not exist');
+assert.ok(!existsSync(new URL('custom.css', root)), 'custom.css is gone with the old ink CTAs');
+
+console.log('docs-ui: starter theme, product tabs, icons, anchors and footer passed');

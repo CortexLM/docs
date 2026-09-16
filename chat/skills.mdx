@@ -1,0 +1,88 @@
+---
+title: "Skills in Chat"
+sidebarTitle: "Skills"
+description: "A skill is a short recipe the model loads when it applies. Some ship with Cortex; the ones you write are scanned before they can be enabled."
+icon: "graduation-cap"
+---
+
+A **skill** is a recipe: a short Markdown document that tells the model how to do one kind of job well. The catalogue says it in one line, `Import SKILL.md or browse the catalogue. Skills are recipes, not connectors.` That distinction matters. A skill carries knowledge and method; it grants access to nothing. Connecting an app is a different action with different consequences, covered in [Connectors](/chat/plugins).
+
+This page covers how a skill reaches the model during a turn, the skills that ship with Cortex, turning on a skill of your own, the scan every authored skill goes through, writing or importing one, and using one in a chat.
+
+## How the model loads a skill
+
+The conversation does not start with every skill's text loaded. Cortex puts a one-line index of the available skills in front of the model. When the model decides that one of them applies to what you asked, it fetches that skill's body, reads it, and then answers. This is why having many skills turned on does not make a turn slower.
+
+The index is also filtered by what the turn can actually do. A skill that declares it needs a tool which is not available in this turn is left out of the index entirely, so the model is never shown a recipe it could not follow.
+
+## Skills that ship with Cortex
+
+Some skills are first-party: they ship with the product, they are always available, they are always enabled, and they have no switches to find. They are much of what makes Chat behave well without being asked: citing sources properly, writing a good picture prompt, running an origin check, laying out a readable table, working with your connected business metrics, using the Python sandbox sensibly, reviewing code, researching on the web, and writing clean Markdown.
+
+On the **Skills** catalogue these carry the badge **First-party**. Use the filters to move between **Discover**, which is the default view, **All**, and **Installed**; anything you have added shows the **Installed** badge.
+
+<Note>
+A few skills exist for other runtimes and never appear in a chat, because they need tools only that runtime registers. If a skill is not in the `/` list, the reason is usually that, or that it is not turned on for Chat.
+</Note>
+
+## Turn on a skill of your own
+
+Your own skills, whether you wrote them or imported them, are managed from the **Skills** panel on the **Connectors** page. Its own description is `Recipes you write and turn on for Chat or for a bot. Each one is scanned before it can be enabled.`
+
+Each authored skill has **two switches, one per surface**: one for **Cortex Chat** and one for **Cortex Bot**. They are separate on purpose, because those are different runtimes with different reach. Turning a skill on for Chat says nothing about whether a bot may use it.
+
+When a skill has been scanned cleanly, the row says `No findings. The static check ran and the review agreed.` and the switches behave normally. Where the scan flagged something, or did not run at all, the row offers `Review for {surface}` and, once you have read the findings, `Enable for {surface} anyway`. The acknowledgement travels with the enable: you are choosing, on the record, to run a recipe that was not cleared.
+
+## What the scan looks for
+
+Every authored skill is scanned before it can be enabled. The scan looks for a specific, short list of problems rather than judging style.
+
+| Finding | What it means | Severity |
+| --- | --- | --- |
+| Prompt injection | Text written to steer the model against your instructions. | Critical |
+| Data exfiltration | Instructions to send your data somewhere. | Critical |
+| Secret in the body | A credential pasted into the document. | Warning |
+| Remote execution | Instructions to run code fetched from elsewhere. | Warning |
+| Privilege escalation | An attempt to widen what the turn is allowed to do. | Warning |
+| Work outside the workspace | Reaching outside the files and folders in scope. | Warning |
+| Obfuscated payload | Content hidden so a reader cannot see what it does. | Warning |
+
+<Warning>
+A clean scan is not a grant, and an unscanned skill is not a safe one. Where the review did not run, the panel says so: `The review did not run, so this recipe has not been cleared. Enabling anyway is your call.` Read the findings before you accept them.
+</Warning>
+
+## Write a skill
+
+Choose **New skill** in the Skills panel and write a Markdown document. The frontmatter is deliberately narrow: you may declare only **name**, **description**, **version** and **tags**. Any other key is refused outright, and the refusal names the key it rejected rather than quietly dropping it.
+
+Two other things are refused before the document is ever sent: a URL that is not `https`, and a missing required field. Content in the body is treated differently. A body with something questionable in it does reach the server, is scanned, and the findings are shown to you, because the choice of whether to enable it is the owner's to make.
+
+## Import a skill
+
+<Steps>
+  <Step title="Open the Skills catalogue">
+    Choose **Import SKILL.md**.
+  </Step>
+  <Step title="Pick the file">
+    Cortex reads the file's text and shows you a confirm step before it sends anything, so you can see exactly what you are about to install.
+  </Step>
+  <Step title="Confirm">
+    The server parses and validates the frontmatter before storing it. Nothing guesses a name for you and nothing repairs an invalid document.
+  </Step>
+</Steps>
+
+Then enable it per surface, the same as a skill you wrote yourself.
+
+## Use one in a chat
+
+Type `/` in the composer to list the skills you have turned on for Chat, pick one, and write your message as usual. The picker notes that only skills turned on for Chat appear there, and its hint tells you to turn one on `under Customize` - the page it means is [Connectors](/chat/plugins), which is that surface's own title. The footer explains what happens next: `The message is sent with the skill named, and the agent loads it before it answers.`
+
+Skills need a signed-in account. For a guest the list is not fetched at all, and the panel shows a sign-in prompt instead of an empty catalogue.
+
+## Related
+
+- [Connectors](/chat/plugins) holds the Skills panel and the connected-app catalogue.
+- [Built-in tools](/chat/tools) covers the tools a skill can call during a turn.
+- [Bot skills](/bot/skills) covers the same recipes on the other surface.
+- [Skills in the CLI](/cli/skills) covers skills in the terminal.
+- [Chat troubleshooting](/chat/troubleshooting) covers a skill that is not offered in a turn.

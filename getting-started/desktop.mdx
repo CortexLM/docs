@@ -1,69 +1,152 @@
 ---
-title: "Desktop app (Chat + Code)"
-description: "The Cortex desktop app carries Chat and Code, and adds This PC and SSH hosts for Code sessions. The browser stays Cloud-only."
-keywords: ["app", "This PC", "SSH", "local"]
+title: "Cortex desktop app"
+description: "Install and sign in to the Chat and Code desktop app, run Code on This PC, and let it keep itself up to date."
+icon: "desktop"
 ---
 
-The Cortex desktop app is the same Chat and Code you know from the browser, with one addition that only a native app can offer: Code sessions can run on **This PC** or over **SSH** as well as in the Cloud. Download it from [releases.cortex.foundation](https://releases.cortex.foundation) and sign in when the app asks — same account as the web.
+The Cortex desktop app carries **Cortex Chat** and **Cortex Code** in a single window. It draws its
+own title bar with a switcher between **Chat** and **Code** and its own window controls, and it is
+the only client that can run a Code session on your own machine.
 
-## Install and sign in
+This page covers what the installer does on each platform, the first launch and signing in, what
+the app adds over a browser tab, how to start a Code session on **This PC**, notifications, and how
+the app updates itself.
+
+<Note>
+Cortex does not publish a public download page yet, so there is no installer link here. See
+[Ways to run Cortex](/getting-started/downloads) for the full picture.
+</Note>
+
+## Install
+
+<Tabs>
+  <Tab title="macOS">
+    Open the downloaded disk image and drag **Cortex** to your Applications folder, then open it.
+    The build is notarised, so you do not have to override any security warning.
+  </Tab>
+  <Tab title="Windows">
+    The installer shows its steps rather than installing in one click, and it lets you change the
+    installation directory. It installs for your user only, so administrator rights are not
+    required. It creates a desktop shortcut and a Start-menu shortcut, both named **Cortex**. A
+    portable build for 64-bit Windows is also published for people who would rather not run an
+    installer.
+  </Tab>
+  <Tab title="Linux">
+    Either download the portable application image and make it executable, or install the Debian
+    package with your package manager. The launcher entry is named **Cortex** and described as
+    `Cortex Chat + Code`. Installing also lets a completed sign-in hand you back to the app.
+  </Tab>
+</Tabs>
+
+## First launch
 
 <Steps>
-  <Step title="Download">
-    Open [releases.cortex.foundation](https://releases.cortex.foundation) and pick the build for your platform.
+  <Step title="Read the welcome screen">
+    The first launch shows a welcome screen, once. It names your platform (**Cortex for Mac**,
+    **Cortex for Windows** or **Cortex for Linux**) above the line **Chat and Code — on this
+    machine.** and the body `Sign in for Cortex models and cloud runtimes, or continue on This PC
+    with your own provider keys.`
   </Step>
-  <Step title="Open and sign in">
-    Launch the app. It asks you to sign in with your Cortex account; guests cannot use Code, so the desktop app expects a member.
+  <Step title="Choose Get started or Continue without an account">
+    **Get started** takes you to the sign-in screen. **Continue without an account** skips sign-in
+    and lets you work on This PC with your own provider keys.
   </Step>
-  <Step title="Choose a host for Code">
-    Start a Code session and pick **Cloud**, **This PC**, or **SSH**. Chat needs no host — it works exactly as it does in the browser.
+  <Step title="Sign in">
+    On the **Sign in** screen, under **Continue to Cortex**, pick **Continue with Google**,
+    **Continue with GitHub**, **Continue with Apple** or **Continue with SSO**, or type an **Email
+    address** and **Password**. The email and password form stays inside the app window.
+  </Step>
+  <Step title="Finish in your browser, if you chose a button">
+    Each of the four buttons opens your system browser. When you are done there, a Cortex page says
+    **Finish signing in in the Cortex app** and hands you back. If the app does not come forward by
+    itself, select **Open Cortex**, then close the browser window.
   </Step>
 </Steps>
 
-## What desktop adds
+To work without a Cortex account, open **Settings → Providers** and either point the app at a model
+server running on this machine or paste a provider key. On the desktop app that key is kept in your
+operating system's own credential store, not in the app.
 
-| Surface | In the browser | On desktop |
-| --- | --- | --- |
-| Chat | Yes | Yes — same account, same projects |
-| Code Cloud | Yes | Yes |
-| Code on **This PC** | No | Yes |
-| Code over **SSH** | No | Yes — shell only, no desktop |
-| Bot Cloud | Yes | Use the web app or the [Bot desktop app](/bot/desktop) |
-| Design working UI | No | Separate [Design desktop app](/design/desktop) |
+## What the desktop app adds over the browser
 
-Web Code stays Cloud-only. That is host placement — the code runs where the host is — not a missing catalog entry.
-
-## Hosts for Code
-
-| Host | Where the workspace tools run | Good for |
-| --- | --- | --- |
-| **Cloud** | An isolated Cloud guest prepared for your repository | Anything you would do in the browser |
-| **This PC** | Your machine, in the project directory you choose | Local toolchains, private networks, hardware |
-| **SSH** | A host you register, over its shell | Servers and build boxes you already have |
-
-This PC and SSH need an already connected Code session; Cortex never silently substitutes the Cloud for a host you selected. The CLI exposes the same hosts through `CORTEX_COMPUTER` — see [Code on desktop](/code/desktop) and [CLI configuration](/cli/configuration).
-
-## Two desktop apps
-
-The Cortex desktop app has a **Chat and Code** sidebar. Bots live in their own desktop app with an **agents, routines, and channels** sidebar and no Chat or Code — see [Bot desktop](/bot/desktop). Design's working UI is a third app — see [Design desktop](/design/desktop).
-
-## Which app do I want?
-
-| You want | Install |
+| On the desktop app | In a browser tab instead |
 | --- | --- |
-| Chat, and Code on This PC or SSH | **This app** — [Downloads](/getting-started/downloads) |
-| Bots on This PC, plus agents, routines, and channels in one window | [Bot desktop](/bot/desktop) |
-| Edit Design canvases | [Design desktop](/design/desktop) |
-| Code from a terminal, a script, or CI | [CLI](/cli/install) |
+| **This PC** as a Code runtime: agents act on a folder you pick on this machine | Cloud, a paired machine, or SSH, never the local machine |
+| A local terminal and local Git for Code runs | Nothing local runs in a tab |
+| Your provider keys kept in the operating system's own credential store | Keys never reach the tab, and the service answers with a mask |
+| Its own window chrome, with the product switcher and window controls | Normal browser chrome |
+| Notifications raised by your operating system | Browser notifications, once you allow them |
+| Opening a local folder through the system's folder picker | No local folder access |
+| Conversations and sessions kept on this machine | Everything comes from the service |
+| Automatic updates | The tab is always current |
+| A double-tap capture chord: **⌘ ⌘** on Mac, **Alt Alt** on Windows | `This chord lives on the desktop app. The web has no global hotkey.` |
+| Recording which apps and sites this computer opened, times only, off by default | `The web app does not store desktop history.` |
 
-The browser covers Chat and Code in the Cloud. Install an app when you need a host, an editor, or a terminal the browser cannot provide.
+The theme, the notification inbox, an optional remote-host address and whether you have seen the
+welcome screen are preferences of this device, not account settings, so they do not follow you to
+another machine.
 
-## Updating
+## Run a Code session on This PC
 
-Desktop builds update from the feed on [releases.cortex.foundation](https://releases.cortex.foundation); the web app is always current. See [Downloads](/getting-started/downloads).
+<Steps>
+  <Step title="Switch to Code and start a session">
+    Use the switcher in the title bar, then start a new session and choose **This PC**.
+  </Step>
+  <Step title="Pick a folder">
+    The system's folder picker opens. There is no workspace-name field: the folder's name identifies
+    the repository. If you cancel the picker, no session is created.
+  </Step>
+  <Step title="Work">
+    Once the session has some history, the composer shows chips for the runtime, **This PC**, the
+    repository, the branch and the worktree. Each action asks for **Allow**, **Always** or
+    **Deny**, and the session runs in **Ask**, **Plan** or **Agent** mode, with **Agent** as the
+    default.
+  </Step>
+</Steps>
 
-## Next
+If nothing on this machine is attached yet, the session says so: `This session runs on This PC, and
+no host is connected. Pair one from the Host pane and the composer comes back.` Cortex never
+silently moves a This PC session into the cloud. If the place you chose is unavailable, the session
+tells you instead of relocating.
 
-- [Code on desktop](/code/desktop) — choosing and using This PC and SSH.
-- [Install the CLI](/cli/install) — the same hosts from a terminal.
-- [Downloads](/getting-started/downloads) — every way to run Cortex.
+To use a machine you reach over the network, go to **Code → Connect a server** and follow the
+connection form. To attach to a machine that is already running Cortex Code, open **Code →
+Settings** and enter that host's address; only the address is needed. The host status is shown as
+one of **Cloud only**, **Connecting**, **Connected**, **Disconnected**, **Cloud session running**,
+**Permission blocked** or **Failed wake**.
+
+To let Code see your repositories, open **Code → Settings → Integrations** and select **Connect
+GitHub**. The installation page opens in your system browser. There is no personal-access-token
+field to fill in.
+
+## Notifications
+
+Chat and Code share one notification inbox, and the desktop app also raises your operating system's
+own notifications when the window is not focused. You are notified when a scheduled task produces
+something, when you are mentioned, when a Code run finishes, when a Code run is waiting on a
+permission, when a bot needs an answer, and when a computer fails to wake.
+
+Open the in-app centre from the command palette (**Notifications**), where the empty state reads
+**Nothing new.** The **Notifications** page under Code shows the same items, with the empty state
+**Nothing needs you** and `Runs that finish or fail while you are elsewhere will land here.`
+Mark-as-read is offered only while something is unread.
+
+## Updates
+
+The app checks for an update when it starts and then every four hours, and downloads it quietly in
+the background. While it downloads you may see `Downloading Cortex…` with a percentage. When a build
+is ready a toast says `Cortex {version} is ready to install.` with **Restart now** and **Later**.
+Choosing **Later** installs the update the next time you quit.
+
+The app never moves you to an older version, and it keeps checking the channel the build you
+installed came from, so there is no channel picker inside the app. Mac builds are notarised and
+Windows builds are code-signed, and Windows verifies the signature of an update before installing
+it. In a browser tab the update banner never appears, because there is nothing there to install.
+
+## Related
+
+- [Ways to run Cortex](/getting-started/downloads) for every application and how each updates.
+- [Code on desktop](/code/desktop) for working on This PC in detail.
+- [SSH hosts](/code/ssh-hosts) and [Machines](/code/machines) for servers and paired computers.
+- [Notifications](/getting-started/notifications) for what Cortex tells you about.
+- [Bot desktop app](/bot/desktop) for the separate window that runs your agents.

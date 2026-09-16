@@ -1,0 +1,88 @@
+---
+title: "Verdicts and scoring"
+description: "The four Cortex Bounty statuses, the gates a verdict has to clear before it is published, and what can never become a valid row"
+icon: "scale-balanced"
+---
+
+Every Cortex Bounty report ends in one of four verdicts, and only one of them is a reward. This page explains what the four statuses mean, what a verdict has to carry before it can be published at all, and the list of reasons a report you consider valid never turns into a valid row on the public log.
+
+It is worth being precise about who decides what. The gates below are mechanical: a verdict that does not satisfy them is refused, and no adjudicator can wave it through. The verdict itself is a judgement about your finding, made by an adjudicator working for the programme. Cortex does not compute a score here, and the reward is not decided on this site.
+
+## The four statuses
+
+| Status | Public? | Effect |
+| --- | --- | --- |
+| pending, no status yet | No. Its id answers 404 | None. The report has not been judged |
+| `valid` | Yes | Reward |
+| `duplicate` | Yes | Not a valid row. May name a related report |
+| `already_fixed_not_prod` | Yes | No penalty |
+| `invalid_malicious` | Yes | Penalty |
+
+Read in outcome terms, that is three possibilities and nothing in between.
+
+| What you filed | What happens |
+| --- | --- |
+| A valid, unique bug | Reward |
+| Something already fixed and not in production | No penalty |
+| Something malicious, or a problem that does not exist | Penalty |
+
+<Note>
+This documentation does not state what a reward is worth or when it arrives, because no amount and no schedule is published here. Those come from the programme terms you accepted at pairing, and they can depend on the case. Treat "reward", "no penalty" and "penalty" as the direction of the outcome, not as a figure.
+</Note>
+
+## What a verdict has to carry
+
+A verdict is refused unless it carries both of these, and each has to be at least 16 characters long:
+
+- **problem found**, a statement of what the defect actually was.
+- **justification**, the reasoning behind the status that was chosen.
+
+The adjudicator recorded on the row is an agent or service identifier. It is never an email address, so a public row never names a person. Once a verdict satisfies these conditions the row becomes public, and the verdict is written to the audit chain as well.
+
+Both of those fields are published. They are the only description of your report that anyone else can read, since the report body itself stays sealed.
+
+## What can never become a valid row
+
+Use this as a checklist when a report has not appeared where you expected it.
+
+<AccordionGroup>
+  <Accordion title="The report is still pending">
+    A pending report is not public at all. Its id answers 404 until a verdict exists, and it is counted nowhere. Check the status endpoint before concluding anything: a backlog is not a verdict. See [Transparency API](/bounty/public-api).
+  </Accordion>
+  <Accordion title="The body is too short">
+    A `valid` row cannot be published unless the report body holds at least **24 characters** of plaintext finding. The body stays sealed and is never published; the length is only a publication gate. A one-line note fails it.
+  </Accordion>
+  <Accordion title="The verdict text is too short">
+    The problem found and the justification each need at least **16 characters**. A verdict that does not meet that is refused rather than published, so the row stays pending.
+  </Accordion>
+  <Accordion title="The report was filed too long ago">
+    The oldest reports, filed before the sealed field that gate reads existed, cannot be credited.
+  </Accordion>
+  <Accordion title="It was judged a duplicate">
+    A `duplicate` never counts as `valid`, however good the finding is. When a duplicate names a related report, that related report must already be public, so you can go and read the one that got there first.
+  </Accordion>
+  <Accordion title="The hotkey belongs to another account">
+    One hotkey belongs to one account. A second account cannot claim a hotkey that is already paired, so a report filed from the wrong account is not credited to that hotkey. See [Pair a hotkey](/bounty/pair-a-hotkey).
+  </Accordion>
+</AccordionGroup>
+
+## An unrecognised verdict is withheld
+
+If a row carries a status this version of the public log does not recognise, the row is withheld rather than shown. It is specifically **not** rendered as `invalid_malicious`.
+
+That matters for anyone reading the log with a script. A future status will simply not appear, rather than turning up mislabelled as a penalty. A row you cannot see is never proof of a penalty, and a count that comes up short is a reason to check `has_more` on your walk, not evidence of a lost report.
+
+## How weights follow valid rows
+
+Cortex adjudicates and publishes. It does not set weights.
+
+The subnet reads the public endpoints and sets weights from the valid rows it finds there. There is no separate score inside Cortex, no ranking that is not derived from the public log, and nothing hidden behind sign-in that changes the outcome. That is the whole point of publishing the log: the input to the weighting is the same document you can read.
+
+For the same reason, the subnet's own pipeline is outside this documentation. What happens to a valid row after the subnet reads it, including anything about epochs, is not a Cortex feature and is not described on this site. There is no attestation surface here and there is no teacher host.
+
+## Related
+
+- [Cortex Bounty](/bounty/index)
+- [File a report](/bounty/report)
+- [Transparency API](/bounty/public-api)
+- [Pair a hotkey](/bounty/pair-a-hotkey)

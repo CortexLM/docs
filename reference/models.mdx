@@ -1,0 +1,109 @@
+---
+title: "Models"
+description: "The models Cortex publishes today, what Preview means, the context and output budgets, and which model a conversation runs on."
+icon: "microchip"
+---
+
+Cortex publishes a small catalogue of models, and everything in the product reads from that one list: the model chip in Cortex Chat, the card behind a generated image, the per-model breakdown in your usage, and the **Models** tab in Settings. The list is fetched from Cortex rather than built into the app, so what you see is what your account can actually use right now.
+
+This page is the reference for that catalogue. It covers the models published today, what the **Preview** badge means, how to read a context window and an output ceiling, how a model gets attached to a conversation, and what happens when the list cannot be loaded or a model cannot be reached. It also names the models that are no longer published, so you can recognise a stale reference when you find one.
+
+## The models published today
+
+Three rows, and every one of them is a preview.
+
+| Model | Identifier | Kind | Description in the product | Context | Maximum output |
+| --- | --- | --- | --- | --- | --- |
+| **Cortex 1 Mini** | `cortex-1-mini` | Chat | Preview — the model Cortex is serving today. | 262,144 | 32,768 |
+| **Cortex Teutonic-1** | `cortex-teutonic-1` | Chat | Preview (under active training). | 32,768 | 16,384 |
+| **Cortex-Image-1** | `cortex-image-1` | Image | Image generation for Cortex Chat. | 4,096 | 1,024 |
+
+Both chat models support reasoning and tool use. Neither advertises image understanding, which is worth knowing before you attach a picture and expect the model to read it.
+
+**Cortex 1 Mini** is the model a new conversation starts on. **Cortex Teutonic-1** is a second preview with a much smaller context window, still under active training.
+
+<Note>
+Do not plan a long single generation around Cortex Teutonic-1. Its output ceiling is 16,384, and because it is still training there is no larger generation budget to rely on. Split long work across turns instead.
+</Note>
+
+## What Preview means
+
+Every published model carries the **Preview** badge, so the badge is not a way of telling models apart today. It is a maturity signal about the model itself: new, and liable to change. It does not mean the model runs on a different or experimental path, and there is nothing to opt into or out of.
+
+Because all three rows are previews, treat output quality, speed and availability as things that can move. The [changelog](/changelog) is where a change to the catalogue is announced.
+
+## Context and output, in user terms
+
+Two numbers describe each chat model, and they answer different questions.
+
+- **Context** is how much the model can have in front of it for one turn. Everything in the turn counts: the conversation so far, your new message, the text pulled in from attachments, and the results of any tool the model called on the way to answering. When a long conversation starts to feel like it is forgetting the beginning, this is the ceiling you are meeting.
+- **Maximum output** is the longest single answer the model can produce. It is a per-answer ceiling, not a daily budget, and it is not affected by your plan.
+
+Both are counted in tokens, the units a model reads and writes, which do not line up exactly with words or characters. The practical consequence of the difference between the two chat models is large: Cortex 1 Mini has room for a long document and a long conversation around it, while Cortex Teutonic-1 has roughly an eighth of that room.
+
+## The image model
+
+**Cortex-Image-1** is the model behind image generation in Chat. It is a different kind of row from the chat models, and the Chat model picker only lists chat models, so you will never find it there. You reach it by asking Chat for a picture, and the image card names it, on its own or followed by the time the generation took.
+
+See [Image generation](/chat/image-generation) for how to ask for a picture and what you can do with the result, and [Limits and quotas](/reference/limits) for how many images a day each plan allows. Image generation is metered as a quota rather than sold as a paid-plan feature.
+
+## Which model answers
+
+The model belongs to the conversation, not to your account and not to your plan.
+
+- A new conversation in Chat starts on **Cortex 1 Mini**.
+- A conversation keeps the model it was created with for its whole life. When Cortex Teutonic-1 was added, existing conversations stayed where they were rather than being moved onto it.
+- The model picker in Chat lists chat models only. See [Models and thinking](/chat/models) for the picker, the per-message override and the thinking levels.
+- Usage is recorded per product and per model. **Settings → Plan & billing → Usage** splits it across Cortex Chat, Cortex Code and Cortex Bot, with a **PER MODEL** view inside the window you choose.
+
+<Note>
+Which model each of the other products picks for a given piece of work is not published, and it is not something you set from this catalogue. Cortex Chat is the surface where the choice is yours.
+</Note>
+
+## No plan gates, and no silent substitution
+
+Two facts about the catalogue matter more than any number in it.
+
+**No published model is behind a paid plan.** Every live row is available from the Free plan up, so you will not meet a locked row, and no plan buys you access to a model that another plan cannot reach. What a plan changes is how many messages you may send, which is covered in [Limits and quotas](/reference/limits).
+
+**No model has a configured fallback.** Cortex does not quietly answer with a different model from the one you chose. One consequence is that the two chat models fail independently: one preview can be unavailable while the other works normally. Another is that a failure reaches you instead of being absorbed, because a turn makes one attempt rather than looping through hidden retries. When that happens you get an upstream or a capacity code rather than a worse answer from somewhere else.
+
+| What you see | What it means |
+| --- | --- |
+| [`no_capacity`](/problems/no_capacity) | Every backend that can serve this model is saturated. A moment usually clears it, or pick the other model. |
+| [`upstream_failure`](/problems/upstream_failure) | The request reached the assistant and came back an error. Retrying often works. |
+| [`upstream_timeout`](/problems/upstream_timeout) | The request was abandoned rather than left hanging. A shorter prompt usually gets through. |
+
+Where a problem document offers a `fallback_model`, it is offered to you as a button, not applied for you.
+
+## When the model list will not load
+
+The composer depends on the list, so it tells you plainly rather than sending into the dark.
+
+| State | What the product says |
+| --- | --- |
+| Still loading | Loading the available models. |
+| Could not be fetched | A reason, then "Sending is unavailable until the model list loads." |
+| Loaded, but empty | No models are available on your account. |
+
+An empty list is not the same as a failed one. If you see "No models are available on your account.", check that you are signed in to the account you expect, then check [System status](/reference/status).
+
+## Models that are no longer published
+
+Three models were unpublished and are not available. You may still find them named in an old article, an old screenshot or an old conversation.
+
+| Model | State |
+| --- | --- |
+| Cortex 2 | Unpublished. Not selectable, and not served. |
+| Cortex 2 Mini | Unpublished. Not selectable, and not served. |
+| Cortex 1 Pro | Unpublished. Not selectable, and not served. |
+
+Conversations that had been running on them were moved to Cortex 1 Mini when they were withdrawn, so no conversation is stranded on a model that no longer exists. If a page or a post tells you one of these three is available, it is out of date.
+
+## Related
+
+- [Models and thinking](/chat/models) for the Chat model picker, the per-message override and thinking effort.
+- [Image generation](/chat/image-generation) for what Cortex-Image-1 is used for.
+- [Limits and quotas](/reference/limits) for the plan windows, which are the real ceiling on your use.
+- [Errors](/reference/errors) for the codes a model failure returns, and what retrying fixes.
+- [How Chat works](/chat/how-it-works) for what goes into a turn and how the context window is spent.
