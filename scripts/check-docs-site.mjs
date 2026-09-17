@@ -13,8 +13,8 @@
  *
  * The site is end-user documentation. Public MDX must not document sign-in
  * wire protocols (`/auth/`, `/oauth/`, refresh tokens, identity vendors, or the
- * session cookie), and it carries no images: every page and card uses an
- * icon. Navigation is `navigation.tabs`, one tab per application, so a reader
+ * session cookie). Product screenshots are accessible local files; pages and
+ * cards retain their icons. Navigation is `navigation.tabs`, one tab per application, so a reader
  * picks the product from the navbar the way they would on any large docs site.
  * Every navigation entry, group root, navbar link, and internal href must
  * resolve to an MDX page — Mintlify would otherwise publish a link that 404s
@@ -24,6 +24,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { checkProductImages } from './docs-images.mjs';
 
 const ROOT = resolve(process.env.CORTEX_CHECK_ROOT ?? fileURLToPath(new URL('..', import.meta.url)));
 const BACKEND = process.argv[2] === undefined ? null : resolve(process.argv[2]);
@@ -216,21 +217,9 @@ function assertNoAuthInternals(rel, text) {
   }
 }
 
-const IMAGES = [
-  { pattern: /<img\b/i, label: '<img>' },
-  { pattern: /<Frame\b/, label: '<Frame>' },
-  { pattern: /!\[[^\]]*\]\(/, label: 'a markdown image' },
-  { pattern: /^image:/m, label: '`image:` frontmatter' },
-  { pattern: /\/images\//, label: 'an /images/ path' },
-];
-
-function assertNoImages(rel, text) {
+function assertImages(rel, text) {
   if (!rel.endsWith('.mdx')) return;
-  for (const { pattern, label } of IMAGES) {
-    if (pattern.test(text)) {
-      fail(`${rel} uses ${label}; this site carries no images, use icons`);
-    }
-  }
+  for (const error of checkProductImages(text, ROOT)) fail(`${rel}: ${error}`);
 }
 
 function frontmatter(text) {
@@ -254,7 +243,7 @@ function assertFrontmatter(rel, text, titles) {
   if (!fm.title) fail(`${rel} has no title`);
   if (!fm.description) fail(`${rel} has no description`);
   else if (fm.description.length > 160) fail(`${rel} description is ${fm.description.length} characters (max 160)`);
-  if (!rel.startsWith('problems/') && !fm.icon) fail(`${rel} has no icon (this site uses icons, not images)`);
+  if (!rel.startsWith('problems/') && !fm.icon) fail(`${rel} has no icon`);
   if (fm.title) {
     const other = titles.get(fm.title);
     if (other !== undefined) fail(`${rel} repeats the title "${fm.title}" of ${other}`);
@@ -396,7 +385,7 @@ for (const file of docsFiles) {
     fail(`${rel} names docs.cortex.sh (problem URIs belong on docs.cortex.foundation)`);
   }
   assertNoAuthInternals(rel, text);
-  assertNoImages(rel, text);
+  assertImages(rel, text);
   assertFrontmatter(rel, text, titles);
   if (rel.endsWith('.mdx')) {
     for (const slug of internalHrefs(text)) {

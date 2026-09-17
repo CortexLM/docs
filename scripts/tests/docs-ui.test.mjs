@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { checkProductImages } from '../docs-images.mjs';
 
 const root = new URL('../../', import.meta.url);
 const config = JSON.parse(readFileSync(new URL('docs.json', root), 'utf8'));
@@ -58,8 +60,19 @@ assert.ok(anchors.includes('/changelog'));
 assert.ok(anchors.includes('https://status.cortex.foundation'));
 assert.deepEqual(config.footer.links.map((group) => group.header), ['Products', 'Resources', 'Cortex']);
 
-// No page ships an image: the site is icons only.
-assert.ok(!existsSync(new URL('images', root)), 'the images/ directory must not exist');
+// Screenshots are optional, local and accessible; there is no manifest dependency.
+function checkImages(directory) {
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    if (entry.name.startsWith('.') || ['node_modules', 'scripts'].includes(entry.name)) continue;
+    const file = new URL(entry.name + (entry.isDirectory() ? '/' : ''), directory);
+    if (entry.isDirectory()) checkImages(file);
+    else if (entry.name.endsWith('.mdx')) {
+      assert.deepEqual(checkProductImages(readFileSync(file, 'utf8'), fileURLToPath(root)), [],
+        `invalid product screenshot in ${fileURLToPath(file)}`);
+    }
+  }
+}
+checkImages(root);
 assert.ok(!existsSync(new URL('custom.css', root)), 'custom.css is gone with the old ink CTAs');
 
-console.log('docs-ui: starter theme, product tabs, icons, anchors and footer passed');
+console.log('docs-ui: starter theme, product tabs, icons, local screenshots, anchors and footer passed');

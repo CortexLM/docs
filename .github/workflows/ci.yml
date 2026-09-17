@@ -24,5 +24,6 @@ jobs:
       - run: bash scripts/tests/check-docs-site.test.sh
       - run: bash scripts/tests/check-docs-content.test.sh
       - run: node scripts/tests/docs-ui.test.mjs
+      - run: node scripts/tests/docs-images.test.mjs
       - name: Validate the Mintlify build
         run: npm exec --yes --package=mint@4.2.876 -- mint validate
