@@ -5,11 +5,171 @@ icon: "clock-rotate-left"
 keywords: ["release notes", "updates", "what is new"]
 ---
 
-Dated notes on what the products ship. Each entry names a change the app or the CLI already carries and links the surface it touched. Announcements from the Foundation are on [cortex.foundation/news](https://cortex.foundation/news).
+Dated updates to Cortex: new features, improvements, and fixes, with links to the guides that help you use them. Announcements from the Foundation are on [cortex.foundation/news](https://cortex.foundation/news).
 
-<Update label="8 September 2026" description="Cortex CLI 0.1.10 · /goal on main">
-- **`/goal`** — persisted long-horizon objectives with `goal.json` on the session, an 8-turn budget, evidence-based completion, and a composer chip — merged to the CLI main branch in [CortexLM/cli #54](https://github.com/CortexLM/cli/pull/54). It ships with the next tagged release; `cortex upgrade` will pick it up. See [Goals](/cli/goal).
-- **One approval path** — the permission prompt is the locked inline numbered picker (run once · always allow in this project · edit command · decline), merged in [#53](https://github.com/CortexLM/cli/pull/53). See [Modes and permissions](/cli/modes-and-permissions).
+<Update label="17 September 2026" description="A more connected workspace for Chat, Code, and Bot">
+
+The September 8-17 update brings a refreshed workspace, better ways to organize conversations and files, more control over research and coding sessions, and an inbox built around your bots' work. It also improves sharing, permissions, account settings, and support.
+
+<Note>
+Feature availability depends on your plan, connected services, and workspace permissions. Preview features and current limitations are listed separately below.
+</Note>
+
+### One workspace for Chat, Code, and Bot
+
+- **A refreshed application interface.** Shared navigation, menus, dialogs, composers, settings, and workspace views now follow the same design across Chat, Code, and Bot, in light and dark themes.
+- **A product menu in the sidebar.** Switch between Cortex Chat, Cortex Code, and Cortex Bot from the product name. Security remains inside Code; research, projects, files, and document export remain part of Chat.
+- **Code and Bot for signed-in members.** You no longer need a closed-beta invitation to open Code or Bot. Access restrictions may still apply in managed workspaces.
+- **Notifications across products.** The shared notification bell brings together scheduled-task results, mentions, completed Code runs, and bots waiting for a decision. Read an item, mark all as read, or open its associated conversation, session, or bot.
+- **Faster navigation.** Product-specific command palettes, a shortcuts sheet, and direct Settings access make common destinations easier to reach. Examples remain available without an onboarding tour.
+
+Read [Choosing a product](/getting-started/choose-a-product), [Notifications](/getting-started/notifications), and [Keyboard shortcuts](/getting-started/keyboard-shortcuts).
+
+### Cortex Chat: conversations that are easier to manage
+
+- **Pin, archive, rename, and restore.** Conversation row actions and archive views make long-running work easier to organize. Chats and projects share a combined limit of 20 pinned items.
+- **Edit, regenerate, and branch.** Edit a previous prompt into another version, navigate answer versions, or branch the active conversation up to a chosen message into a new chat without changing the original.
+- **Continue an interrupted answer.** Resume an existing stream when possible, or continue an eligible stopped answer in the same assistant message. Continuing, regenerating, and reconnecting are separate actions.
+- **A model for one turn.** Use a one-off model without replacing the conversation's saved model.
+- **Search across your work.** Unified search brings together chats, projects, files, Code sessions, and bots within your access. Searching message bodies and recalling past chats require separate consent; title-only search remains the fallback.
+- **Composer and reading improvements.** Per-conversation draft restoration, a jump-to-latest control during streaming, follow-up suggestions, answer feedback, selection quoting, and message links make it easier to move through a long thread. A message link does not grant access to its conversation.
+- **Richer answers.** Added footnotes, rendered task lists, diagrams, supported mathematical notation, and inline charts with a **Show data** table. Unsupported diagram or formula input keeps its original text instead of displaying a broken rendering.
+- **Temporary chats.** Choose **Temporary** in the new-chat composer for a conversation that stays out of Recents, Memory, projects, pins, and your account export. Its transcript is scheduled for deletion 30 days after creation.
+- **Share a conversation snapshot.** Create a read-only snapshot and revoke it whenever you choose. Readers can use **Continue** to start their own copy without changing your original conversation.
+
+Read [Conversations](/chat/conversations), [Streaming and reconnects](/chat/streaming), and [Data and privacy](/getting-started/data-and-privacy).
+
+### Projects, Memory, and writing
+
+- **Projects now carry working context.** A project combines instructions, conversations, and sources the model can read, rather than acting only as a folder. Source types include files, links, saved messages, text, connected-source references, and repositories.
+- **More reliable project sources.** Chat uses your project sources to find relevant context, including passages from larger collections. Unreadable sources are clearly identified, and removing a file removes its access from the project.
+- **Project handoffs.** Start a Bot handoff from a project summary, or open work in Code when the project has a repository. Handoffs do not silently transfer raw attachments or grant additional access.
+- **Editable Memory.** Search and review remembered claims, edit or forget an entry, and follow its source conversation. Editing refreshes how the entry is categorized and recalled.
+- **Memory scope and retention.** Choose account or project scope, set a retention period, erase one scope, and import or export entries. Sensitive topics remain off by default, and Temporary chats never read or write Memory.
+- **Safer canvas editing.** Highlight a passage to request a targeted change, browse document history, and restore a revision. Pending edits must save before closing or opening history; conflicting edits reload instead of overwriting newer work.
+- **Save useful prose.** Turn a selected answer into a Library note or seed a writing canvas. Notes, Chat canvases, and Design canvases remain distinct kinds of work.
+
+Read [Projects](/chat/projects), [Memory](/chat/memory), and [Chat canvases](/chat/canvases).
+
+### Deep Research
+
+- **Review the plan before starting.** Rename, add, remove, and reorder research questions. The edited plan is saved before the run begins.
+- **Choose trusted sources.** Narrow research to selected domains, connected sources, and project files. Citations outside the selected scope are excluded.
+- **Follow parallel research.** A question-by-question view shows progress and partial results as research runs.
+- **Read the complete report.** The expanded reader includes an outline, cited sections, and grouped sources. Library now loads the full list of research reports.
+- **Stop, follow up, and export.** Stop an active research turn or keep additional questions for follow-up work. Export reports with cited sources as Markdown; PDF, Word, and Deck report exports are not yet available.
+
+Read [Deep Research](/chat/deep-research).
+
+### Library, attachments, and document export
+
+- **A home for more artifact types.** Library now distinguishes uploads, images, decks, documents, spreadsheets, PDFs, HTML files, and research reports, with matching filters and file cards.
+- **Generated files stay with the work.** Successful analysis outputs appear as individual files in both the transcript and Library. Multiple files from the same run remain visible, and **Open** can return to the original message even in an older part of a conversation.
+- **Reuse files without uploading duplicates.** Attach from Library, recent files, or the file mention picker. Shared files remain subject to their current access grant.
+- **Better paste and document handling.** Paste images through the attachment flow, convert long pasted text into a recoverable text attachment, and extract supported word-processing and spreadsheet content for Chat. Attachment-count, file-size, and context limits are checked before work is accepted.
+- **Versions and sharing.** Restore a file version, invite a Viewer or Editor, revoke a grant, and choose whether a share follows the latest version or stays pinned. **Shared with me** collects granted files. Editor access currently permits renaming, not editing file contents.
+- **Read-only connected drives.** Browse configured drives, search for a file, and attach it with its source link. These connections do not enable writing back to the drive.
+- **Clearer storage usage.** Library and Plan & billing show matching storage usage and plan limits, with warnings as you approach your allowance. Uploads, notes, generated files, document exports, and restored versions count toward the same limit.
+- **Review-first deck export.** Draft and edit an outline, choose Cortex or Plain styling, and create a deck in Library. Re-export uses the stored outline instead of asking the model to create a different document. Drafting an outline does not spend an export; failed file creation refunds it.
+
+Read [Library](/chat/library), [Attachments](/chat/attachments), [File sharing and connected drives](/chat/library-sharing), and [Export documents](/chat/document-export).
+
+### Connectors, skills, and Cortex Data
+
+- **Connections with explicit scope.** Choose where a connected app is available and how often it asks before acting. A Bot connection also needs the individual bot's grant; connecting an account is not permission for every bot to use it.
+- **Reconnect without losing your choices.** Reconnecting preserves saved product scopes and approval preferences. Failed or incomplete reads now offer recovery controls instead of replacing existing choices with defaults.
+- **Connect MCP servers.** Authorize compatible MCP servers and choose explicitly whether bots can use them. Their actions follow the same approval preferences as other connected tools.
+- **User-authored skills in Chat and Bot.** Import or write a `SKILL.md` recipe, review its scan, and enable it independently for Chat and Bot. Flagged or unreviewed skills require an explicit acknowledgement; editing a skill clears its prior enables so the new version must be reviewed.
+- **Tools from the page you're using.** Discover tools offered by a page in the Computer rail and review their permissions before they run.
+- **Cortex Data.** Ask questions about connected business metrics and view chart answers on supported accounts. Recurring revenue uses active subscriptions, and amounts in different currencies stay separate.
+
+Read [Connectors](/chat/plugins), [MCP servers](/chat/mcp-servers), [Chat skills](/chat/skills), [Page tools](/chat/page-tools), and [Cortex Data](/chat/data).
+
+### Cortex Code
+
+- **Clearer session status.** See which sessions are running, waiting for permission, stopped, or finished, with accurate change totals and status filters.
+- **More reliable stopping.** Stopping a Cloud session consistently cancels its active work. If stopping fails, Code shows an error so you can retry.
+- **A chronological worklog.** Thinking appears before tool activity and the final reply, for both live and restored turns. Related worklog rows, image attachments, and result details are presented more consistently.
+- **Review before writing.** Proposed file changes wait in **Changes** for human approval or rejection. The live working-tree **Diff** is a separate view. Pending diff-review actions remain available after the Agent turn finishes, and Ask and Plan stay read-only.
+- **Follow up on a specific change.** Select a diff line to draft a file-and-line follow-up without losing your existing draft.
+- **Stay in control of publishing.** Code asks for confirmation before opening a pull request.
+- **Scoped session permissions.** Added time-limited, revocable execution grants for eligible actions. A grant is not permission for every command, and it does not bypass file-review, Ask/Plan restrictions, or stricter approval policy.
+- **More reliable Cloud setup.** Sessions prepare your repository before running setup, and keep commands and repository access within the permitted workspace and branch.
+- **Session and runtime controls.** Attach or detach from a session, fork work into an isolated worktree, and continue eligible stopped sessions. Detaching leaves the task running. Saved plans and runtime controls remain accessible from the session.
+- **Clearer usage and settings.** Review session spend and token usage, and adjust workflow concurrency within your limit. Incomplete usage breakdowns are labelled, and missing measurements no longer appear as zero.
+- **Repository review in one place.** Repository review and security findings now live in Cortex Security inside Code. The previous pasted-diff review page has been removed.
+
+Read [Code sessions](/code/sessions), [Changes and diffs](/code/changes), [Permissions and approvals](/code/approvals), [Cloud runtimes](/code/runtimes), and [Usage](/code/usage).
+
+### Cortex Bot
+
+- **An inbox-first home.** See working bots, pending decisions, inbox items, and your full bot roster in separate views. Pending approvals remain visible even when the inbox is busy.
+- **One approvals inbox for all your bots.** Review actions waiting for your decision without opening every conversation. Failed decisions stay visible so you can retry them.
+- **Clearer action approvals.** See why an action is allowed, blocked, or waiting for approval. Updated permission rules take effect even while a bot is working.
+- **More reliable bot computers.** New Cloud bots start their computer automatically, opening a bot retries startup when needed, and disconnected desktops reconnect automatically. Startup failures and capacity limits have clearer messages.
+- **Conversation and file controls.** Search a bot conversation, reply to a specific message, delete bot messages, browse its workspace, upload through Library, and download permitted files. Completed file deliverables appear in Library.
+- **Routines and schedules.** Added the routines week view, next-run and last-outcome information, run history, pause/resume controls, and entry points for turning repeatable work into a routine. Chat scheduled tasks remain a separate surface.
+- **Copies that keep private state private.** Duplicate a bot's identity and skill choices without copying its memory, secrets, computer, conversations, or permissions. Shared templates and scheduled tasks become independent copies rather than remote control of the original.
+- **Teach a bot.** Use the Computer rail to teach a workflow, save a draft, and turn supported workflows into routines. Take over the computer or respond to a request for login help when your bot needs you.
+- **Bot-scoped navigation.** Channels, bot actions, files, and approvals are reachable through Bot navigation and its command palette, without mixing in Chat conversations or Code sessions.
+
+Read [Bot inbox](/bot/inbox), [Approvals](/bot/approvals), [Computer](/bot/computer), [Routines](/bot/routines), [Sharing](/bot/sharing), and [Teach a bot](/bot/teach).
+
+### Cortex Security
+
+- **Repository scans inside Code.** Set up and schedule scans for repositories connected to your account. Scans respect the repository connection's current access.
+- **A findings workflow.** Review severity, location, impact, reproduction details, and proposed patches; dismiss a finding or export findings as CSV or Markdown.
+- **Review a fix in Code.** Open a finding in Code to work on its proposed fix. You stay in control of applying and publishing changes.
+- **Separate Security and Quality reviews.** Turn on quality reviews independently and choose their posting threshold. Failed or incomplete reviews are clearly distinguished from passed checks.
+
+Read [Cortex Security](/security), [Repository scans](/security/scans), and [Review policy](/security/review-policy).
+
+### Permissions, privacy, and account controls
+
+- **Cross-product approval preferences.** Choose approval rules by action and product, and export your preferences. **Always ask** requires a fresh decision even when an existing permission would otherwise allow the action.
+- **Code Cloud spending controls.** Approve a runtime charge once or within a budget, manage standing budgets, and review receipts.
+- **Device access.** Register and revoke account devices within your plan's device limit.
+- **Clearer account and billing screens.** Improved sign-in, two-factor authentication, checkout, billing management, plan details, and usage displays, including clearer unavailable states.
+- **Privacy information that's easier to read.** Updated data and retention information and a consistent reading layout for Privacy, Terms, Cookies, and AI disclosures.
+- **Language and accessibility.** Expanded the eight language catalogs and improved keyboard focus, dialog behavior, labels, narrow-screen table containment, and long follow-up wrapping.
+
+Read [Settings](/getting-started/settings), [Two-factor authentication](/getting-started/two-factor), [Plans and quotas](/getting-started/plans), and [Data and privacy](/getting-started/data-and-privacy).
+
+### Bug reports, email support, and Cortex Bounty
+
+- **Track your bug reports.** Every filed report receives a ticket reference and an email acknowledgement, making it easier to follow up.
+- **Support stays in one email thread.** Martin helps with documentation-backed answers and escalation by email. Your ticket still receives a team response even when an automated answer is available.
+- **Cortex Bounty submissions.** Add an eligible bug report to an active Challenge Bounty program. Your report stays filed if the program is paused or participation is unavailable. Rewards remain subject to the program's rules.
+
+Read [Report a bug](/getting-started/report-a-bug) and [Cortex Bounty](/bounty).
+
+### Previews and current limitations
+
+Some screens include previews of features that are not yet generally available:
+
+- **Voice.** Live voice and follow-along remain previews. Dictation and reading an answer aloud are separate features.
+- **Images and Design canvases.** Image editing, reference attachments, seed reuse, and template workflows are available only with the required service and permissions. Supported edits create a new result and preserve the original image.
+- **Cortex Science and Office.** Scientific research and compute workflows, notebook and figure tools, and Office document editing remain previews.
+- **Advanced agent workflows.** Goal trees, multi-agent controls, bot packs, shared rooms, assistant migration, and work packs are not yet generally available.
+- **Organization controls.** Managed MCP, directory synchronization, organization policy controls, and audit exports remain limited previews. Login-alert and lockdown previews do not provide active protection.
+- **Platform and publishing.** The inference Platform API, browser companion, and publishing workflows are not yet generally available.
+- **Export and notifications.** Saving exports directly to a connected drive is not yet available. Deep Research exports require cited sources and support Markdown only. External Security notification delivery remains unavailable where the destination is not enabled.
+
+### Reliability and fixes across the update
+
+- Fixed missing files and reports in long Library lists, generated files hiding other outputs from the same run, and links that failed to open older source messages.
+- Fixed outdated Code session status, Cloud sessions that did not stop reliably, repository setup failures, and bot desktops that stopped reconnecting.
+- Fixed shared conversations failing to display their messages and connection preferences being reset after reconnecting.
+- Restored access to pending change reviews, saved plans, and runtime controls after Code turns finish.
+- Corrected Desktop links and improved translations, keyboard navigation, and narrow-screen layouts.
+
+For outages and maintenance, see [System status](/reference/status). CLI updates are listed separately below.
+
+</Update>
+
+<Update label="8 September 2026" description="Cortex CLI 0.1.10 and upcoming goals">
+- **Coming next: `/goal`.** Set a long-running objective with saved progress, an 8-turn budget, and a composer chip. Goals arrive with the next tagged CLI release; update with `cortex upgrade` when it is available. See [Goals](/cli/goal).
+- **One approval prompt.** Choose whether to run an action once, always allow it in the project, edit the command, or decline it from one numbered picker. See [Modes and permissions](/cli/modes-and-permissions).
 - The Designer runtime pack — headless renders of every TUI state at 120×40 — is what the [CLI pages](/cli) now show. The README demo on a green macOS desktop is regenerated from the same chrome.
 - Release: [v0.1.10 on GitHub](https://github.com/CortexLM/cli/releases/tag/v0.1.10). Update with `cortex upgrade`.
 </Update>
@@ -41,9 +201,9 @@ Dated notes on what the products ship. Each entry names a change the app or the 
 - Announcement: [cortex.foundation/news/cortex-chat-code-bot](https://cortex.foundation/news/cortex-chat-code-bot).
 </Update>
 
-## How this page is kept
+## Feature availability
 
-An entry names a change the product already ships, with a date, and links the surface. Product previews stay labelled as previews. The inference Platform API is not announced here until that product exists — see [Coming soon](/reference/platform-api).
+Each entry links to the relevant product guides, including plan requirements and current limitations. Features marked as previews may not yet be available in your workspace.
 
 ## Related
 
