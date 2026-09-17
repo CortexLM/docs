@@ -4,7 +4,7 @@
 # script claims to enforce actually fires: frontmatter, the description ceiling,
 # duplicate titles, forbidden vocabulary, emoji, API paths off the API pages, dead
 # links, unallowed external links, the closing section, page length, unbalanced
-# components, iconless cards and a hub with no card grid.
+# components, iconless cards, unsafe screenshots and a hub with no card grid.
 #
 # It also pins the two deliberate exemptions, which are the ones a future edit is most
 # likely to break by accident: the card-suit block is not emoji, and problem pages are
@@ -194,10 +194,6 @@ d="$(fresh auth-internal)"
 printf '\nThe `refresh_token` is rotated.\n' >> "$d/site/guide/thing.mdx"
 must_fail "$d" "refresh_token"
 
-d="$(fresh image)"
-printf '\n![A picture](/images/thing.png)\n' >> "$d/site/guide/thing.mdx"
-must_fail "$d" "markdown image"
-
 d="$(fresh emoji)"
 printf '\nShip it '"$(printf '\xf0\x9f\x9a\x80')"'\n' >> "$d/site/guide/thing.mdx"
 must_fail "$d" "emoji"
@@ -208,6 +204,64 @@ d="$(fresh card-suit)"
 printf '\nThe status line reads `'"$(printf '\xe2\x99\xa6')"' Thought for 4s`.\n' \
   >> "$d/site/guide/thing.mdx"
 out="$(run "$d")" || fail "a card suit is not emoji, got: $out"
+
+# --- local product screenshots ---------------------------------------------------
+d="$(fresh images)"
+mkdir -p "$d/site/images/product"
+for file in shot-light.webp shot-dark.webp shot.png shot.jpg; do
+  printf 'screenshot fixture' > "$d/site/images/product/$file"
+done
+cat >> "$d/site/guide/thing.mdx" <<'MDX'
+
+<Frame caption="Interface preview">
+  <img src="/images/product/shot-light.webp" alt="Cortex home" width="3360" height="2240" loading="lazy" className="block dark:hidden" />
+  <img src="/images/product/shot-dark.webp" alt="Cortex home in dark mode" width="3360" height="2240" className="hidden dark:block" />
+</Frame>
+<img
+  alt='Changes > proposed files'
+  src='/images/product/shot.png'
+/>
+<img src="/images/product/shot.jpg" alt="The library" />
+
+`<img src="https://cortex.foundation/example.png" />`
+```mdx
+<img src="https://cortex.foundation/example.png" />
+```
+MDX
+out="$(run "$d")" || fail "accessible local screenshots should pass, got: $out"
+
+image_failure() {
+  local dir markup="$2" needle="$3"
+  dir="$(fresh "image-$1")"
+  mkdir -p "$dir/site/images/product"
+  printf 'screenshot fixture' > "$dir/site/images/product/shot.webp"
+  printf '\n%s\n' "$markup" >> "$dir/site/guide/thing.mdx"
+  must_fail "$dir" "$needle"
+}
+
+image_failure no-alt '<img src="/images/product/shot.webp" />' 'alt text must be nonempty'
+image_failure empty-alt '<img src="/images/product/shot.webp" alt="&#32;&nbsp;" />' 'alt text must be nonempty'
+image_failure missing '<img src="/images/product/absent.webp" alt="Cortex home" />' 'missing or unreadable'
+image_failure remote '<img src="https://cortex.foundation/track.png" alt="Cortex home" />' 'safe local'
+image_failure protocol-relative '<img src="//cortex.foundation/track.png" alt="Cortex home" />' 'safe local'
+image_failure data '<img src="data:image/png;base64,AAAA" alt="Cortex home" />' 'safe local'
+image_failure traversal '<img src="/images/product/../shot.webp" alt="Cortex home" />' 'safe local'
+image_failure encoded '<img src="/images/product/%2e%2e/shot.webp" alt="Cortex home" />' 'safe local'
+image_failure svg '<img src="/images/product/shot.svg" alt="Cortex home" />' 'safe local'
+image_failure srcset '<img src="/images/product/shot.webp" alt="Cortex home" srcSet="//cortex.foundation/track.png 2x" />' 'unsupported image attribute'
+image_failure expression '<img src="/images/product/shot.webp" alt={description} />' 'literal quoted'
+image_failure spread '<img src="/images/product/shot.webp" alt="Cortex home" {...props} />' 'literal quoted'
+image_failure media '<video src="https://cortex.foundation/track.mp4" />' 'unsupported media'
+image_failure markdown '![Cortex home](/images/product/shot.webp)' 'markdown images are unsupported'
+image_failure markdown-reference '![Cortex home][shot]' 'markdown images are unsupported'
+
+d="$(fresh image-frontmatter)"
+sed -i 's|^description: "What the thing is and how to use it."|description: "What the thing is and how to use it."\nimage: "/images/product/shot.webp"|' "$d/site/guide/thing.mdx"
+must_fail "$d" "image frontmatter is unsupported"
+
+d="$(fresh unbalanced-frame)"
+printf '\n<Frame caption="Interface preview">\n' >> "$d/site/guide/thing.mdx"
+must_fail "$d" "unbalanced <Frame>"
 
 # --- API paths -------------------------------------------------------------------
 # Allowed on the problem pages, as the happy path already proved. Not elsewhere.

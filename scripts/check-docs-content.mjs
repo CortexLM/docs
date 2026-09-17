@@ -3,13 +3,14 @@
  * Content checks for the documentation tree.
  *
  * `check-docs-site.mjs` checks the site's shape: that `docs.json` and the MDX tree agree
- * both ways, that the problem pages match the backend's error enum, that no image or
- * sign-in internal has crept in, and that every page has frontmatter. This script checks
+ * both ways, that the problem pages match the backend's error enum, that screenshots
+ * are safe local files, and that no sign-in internal has crept in. This script checks
  * what is inside a page:
  *
  *   - frontmatter completeness, the 160-character description ceiling Mintlify renders
  *     into meta tags, and titles that are unique across the site
- *   - the forbidden-vocabulary list: sign-in wire internals, image paths, third-party
+ *   - accessible local product screenshots, with no remote media or unsafe paths
+ *   - the forbidden-vocabulary list: sign-in wire internals, third-party
  *     vendor and competitor names, and emoji
  *   - `/v1/` API paths, which belong only on the pages that document the API
  *   - internal links resolving to a real page, and external links staying inside the
@@ -28,6 +29,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { checkProductImages } from './docs-images.mjs';
 
 const ROOT = resolve(process.env.CORTEX_CHECK_ROOT ?? fileURLToPath(new URL('..', import.meta.url)));
 
@@ -41,12 +43,6 @@ const FORBIDDEN = [
   [/\bWorkOS\b/, 'WorkOS'],
   [/client_secret/i, 'client_secret'],
   [/docs\.cortex\.sh/, 'docs.cortex.sh'],
-  // No images anywhere in this site, by design.
-  [/\/images\//, 'image path'],
-  [/<img\b/i, '<img>'],
-  [/<Frame\b/, '<Frame>'],
-  [/!\[[^\]]*\]\(/, 'markdown image'],
-  [/^image:/m, 'image frontmatter'],
   // Competitors and third-party vendors. Cortex documentation describes Cortex.
   [/\bChatGPT\b/, 'competitor: ChatGPT'],
   [/\bOpenAI\b/, 'competitor: OpenAI'],
@@ -94,7 +90,7 @@ const FORBIDDEN = [
 
 const COMPONENTS = [
   'Steps', 'Step', 'Tabs', 'Tab', 'AccordionGroup', 'Accordion', 'CardGroup', 'Card',
-  'Note', 'Tip', 'Warning', 'Info', 'Check', 'Update',
+  'Note', 'Tip', 'Warning', 'Info', 'Check', 'Update', 'Frame',
 ];
 
 const EXTERNAL_ALLOWED = [
@@ -193,6 +189,7 @@ function checkPage(slug, ctx) {
     out.push(`frontmatter: description is ${fm.description.length} chars (max 160)`);
   }
   if (!isProblem && !fm.icon) out.push('frontmatter: missing icon');
+  out.push(...checkProductImages(text, ROOT));
 
   for (const [re, label] of FORBIDDEN) {
     const m = re.exec(text);
@@ -241,7 +238,7 @@ function checkPage(slug, ctx) {
     if (opens !== closes) out.push(`unbalanced <${tag}>: ${opens} open, ${closes} close`);
   }
 
-  // Every card carries an icon, because this site has no images to carry instead.
+  // Screenshots in articles do not replace navigation card icons.
   for (const m of body.matchAll(/<Card\b[^>]*>/g)) {
     if (!/icon=/.test(m[0])) out.push(`<Card> without icon: ${m[0].slice(0, 80)}`);
   }

@@ -2,7 +2,7 @@
 # Holds scripts/check-docs-site.mjs. No Mintlify CLI: a throwaway tree with a
 # fake ErrorCode, a fake router, and a couple of MDX files is enough to prove
 # a matching site passes and that a wrong domain, a missing page, a dead
-# navigation entry, an image, a leaked auth internal, or an invented /v1 path
+# navigation entry, an unsafe image, a leaked auth internal, or an invented /v1 path
 # fails.
 set -euo pipefail
 
@@ -228,26 +228,118 @@ seed "$authnav"
 write_docs_json "$authnav" '"pages": ["problems/not_found", "problems/internal", "api/authentication", "api/oauth"]'
 must_fail "$authnav" "api/authentication"
 
-# Images are not allowed: the site uses icons.
-img="$tmp/img"
-seed "$img"
-printf '\n<img src="/logo/light.svg" alt="logo" />\n' >> "$img/site/problems/not_found.mdx"
-must_fail "$img" "no images"
+# Local screenshots, Frame captions, both themes and all supported formats pass.
+# These fixtures exercise references, not raster decoding.
+images="$tmp/images"
+seed "$images"
+mkdir -p "$images/site/images/product"
+for file in shot-light.webp shot-dark.webp shot.png shot.jpg shot.jpeg; do
+  printf 'screenshot fixture' > "$images/site/images/product/$file"
+done
+cat >> "$images/site/problems/not_found.mdx" <<'MDX'
 
-frame="$tmp/frame"
-seed "$frame"
-printf '\n<Frame><p>x</p></Frame>\n' >> "$frame/site/problems/not_found.mdx"
-must_fail "$frame" "no images"
+<Frame caption="Interface preview">
+  <img src="/images/product/shot-light.webp" alt="Cortex home" width="3360" height="2240" loading="lazy" className="block dark:hidden" />
+  <img src="/images/product/shot-dark.webp" alt="Cortex home in dark mode" width="3360" height="2240" className="hidden dark:block" />
+</Frame>
+<img
+  alt='Changes > proposed files'
+  height='2240' src='/images/product/shot.png' width='3360'
+  decoding='async'
+/>
+<img src="/images/product/shot.jpg" alt="A project" />
+<img src="/images/product/shot.jpeg" alt="The library" />
+
+`<img src="https://cortex.foundation/example.png" />`
+```mdx
+<img src="https://cortex.foundation/example.png" />
+```
+<!-- <img src="https://cortex.foundation/example.png" /> -->
+{/* <img src="https://cortex.foundation/example.png" /> */}
+MDX
+out="$(CORTEX_CHECK_ROOT="$images/site" node "$script" "$images" 2>&1)" ||
+  fail "accessible local screenshots should pass, got: $out"
+
+image_failure() {
+  local dir="$tmp/image-$1" markup="$2" needle="$3"
+  seed "$dir"
+  mkdir -p "$dir/site/images/product"
+  printf 'screenshot fixture' > "$dir/site/images/product/shot.webp"
+  printf '\n%s\n' "$markup" >> "$dir/site/problems/not_found.mdx"
+  must_fail "$dir" "$needle"
+}
+
+image_failure no-alt '<img src="/images/product/shot.webp" />' 'alt text must be nonempty'
+image_failure empty-alt '<img src="/images/product/shot.webp" alt=" " />' 'alt text must be nonempty'
+image_failure entity-alt '<img src="/images/product/shot.webp" alt="&#32;&nbsp;&#x200b;" />' 'alt text must be nonempty'
+image_failure no-src '<img alt="Cortex home" />' 'safe local'
+image_failure missing '<img src="/images/product/absent.webp" alt="Cortex home" />' 'missing or unreadable'
+image_failure remote '<img src="https://cortex.foundation/track.png" alt="Cortex home" />' 'safe local'
+image_failure protocol-relative '<img src="//cortex.foundation/track.png" alt="Cortex home" />' 'safe local'
+image_failure data '<img src="data:image/png;base64,AAAA" alt="Cortex home" />' 'safe local'
+image_failure relative '<img src="images/product/shot.webp" alt="Cortex home" />' 'safe local'
+image_failure wrong-root '<img src="/logo/shot.png" alt="Cortex home" />' 'safe local'
+image_failure svg '<img src="/images/product/shot.svg" alt="Cortex home" />' 'safe local'
+image_failure gif '<img src="/images/product/shot.gif" alt="Cortex home" />' 'safe local'
+image_failure traversal '<img src="/images/product/../shot.webp" alt="Cortex home" />' 'safe local'
+image_failure dot '<img src="/images/product/./shot.webp" alt="Cortex home" />' 'safe local'
+image_failure backslash '<img src="/images/product/sub\..\shot.webp" alt="Cortex home" />' 'safe local'
+image_failure encoded '<img src="/images/product/%2e%2e/shot.webp" alt="Cortex home" />' 'safe local'
+image_failure entity-path '<img src="&#47;images/product/shot.webp" alt="Cortex home" />' 'safe local'
+image_failure query '<img src="/images/product/shot.webp?track=1" alt="Cortex home" />' 'safe local'
+image_failure fragment '<img src="/images/product/shot.webp#track" alt="Cortex home" />' 'safe local'
+image_failure srcset '<img src="/images/product/shot.webp" srcSet="https://cortex.foundation/track.png 2x" alt="Cortex home" />' 'unsupported image attribute'
+image_failure handler '<img src="/images/product/shot.webp" alt="Cortex home" onLoad="track()" />' 'unsupported image attribute'
+image_failure style '<img src="/images/product/shot.webp" alt="Cortex home" style="background:url(https://cortex.foundation/track.png)" />' 'unsupported image attribute'
+image_failure class-url '<img src="/images/product/shot.webp" alt="Cortex home" className="bg-[url(https://cortex.foundation/track.png)]" />' 'plain class names'
+image_failure duplicate '<img src="/images/product/shot.webp" src="/images/product/shot.webp" alt="Cortex home" />' 'duplicate image attribute'
+image_failure expression '<img src={"/images/product/shot.webp"} alt="Cortex home" />' 'literal quoted'
+image_failure spread '<img src="/images/product/shot.webp" alt="Cortex home" {...props} />' 'literal quoted'
+image_failure unquoted '<img src=/images/product/shot.webp alt="Cortex home" />' 'literal quoted'
+image_failure unclosed '<img src="/images/product/shot.webp" alt="Cortex home">' 'self-closing'
+image_failure truncated '<img src="/images/product/shot.webp" alt="Cortex home"' 'self-closing'
+image_failure dimension '<img src="/images/product/shot.webp" alt="Cortex home" width="0" />' 'positive integer'
+image_failure embed '<iframe src="https://cortex.foundation/track"></iframe>' 'unsupported media'
+image_failure video '<video src="https://cortex.foundation/track.mp4" />' 'unsupported media'
+image_failure frame-source '<Frame src="https://cortex.foundation/track.png" />' 'unsupported media'
+
+directory="$tmp/image-directory"
+seed "$directory"
+mkdir -p "$directory/site/images/product/directory.webp"
+printf '\n<img src="/images/product/directory.webp" alt="Cortex home" />\n' >> "$directory/site/problems/not_found.mdx"
+must_fail "$directory" "must name a nonempty file"
+
+empty="$tmp/image-empty"
+seed "$empty"
+mkdir -p "$empty/site/images/product"
+touch "$empty/site/images/product/empty.webp"
+printf '\n<img src="/images/product/empty.webp" alt="Cortex home" />\n' >> "$empty/site/problems/not_found.mdx"
+must_fail "$empty" "must name a nonempty file"
+
+# A directory junction on Windows, or symlink on Unix, must not bypass containment.
+escape="$tmp/image-symlink"
+seed "$escape"
+mkdir -p "$escape/site/images/product" "$escape/outside"
+printf 'screenshot fixture' > "$escape/outside/shot.webp"
+node --input-type=module - "$escape" <<'JS'
+import { symlinkSync } from 'node:fs';
+import { resolve } from 'node:path';
+const root = process.argv[2];
+symlinkSync(resolve(root, 'outside'), resolve(root, 'site/images/product/escape'),
+  process.platform === 'win32' ? 'junction' : 'dir');
+JS
+printf '\n<img src="/images/product/escape/shot.webp" alt="Cortex home" />\n' >> "$escape/site/problems/not_found.mdx"
+must_fail "$escape" "unsafe image path"
 
 mdimg="$tmp/md-img"
 seed "$mdimg"
-printf '\n![alt](/logo/light.svg)\n' >> "$mdimg/site/problems/not_found.mdx"
-must_fail "$mdimg" "no images"
+printf '\n![alt](/images/product/shot.webp)\n' >> "$mdimg/site/problems/not_found.mdx"
+must_fail "$mdimg" "markdown images are unsupported"
 
 imgfm="$tmp/img-frontmatter"
 seed "$imgfm"
 sed -i 's|^description: "A problem page."|description: "A problem page."\nimage: "/logo/light.svg"|' "$imgfm/site/problems/not_found.mdx"
-must_fail "$imgfm" "no images"
+must_fail "$imgfm" "image frontmatter is unsupported"
 
 # Frontmatter: description length and unique titles.
 longdesc="$tmp/long-desc"

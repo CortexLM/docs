@@ -11,10 +11,20 @@ repository root. Preview and validation commands are in `README.md`.
   session or token internals, credentials, private API routes, infrastructure
   details, vendor names, or backend operator runbooks. Competitor product
   names never appear in copy, titles, or `docs.json`.
-- The site carries **no images**. Every page has an `icon` in its frontmatter
-  and every `<Card>` has an `icon`; icons are Font Awesome names (the Mintlify
-  starter default, so `icons.library` stays unset). Do not add `<img>`,
-  `<Frame>`, markdown images, or an `image:` field.
+- Product screenshots are welcome: use actual Cortex interface captures from
+  Paper, composed with Higgsfield wallpaper, not generated or invented UI.
+  Keep readable controls, honest feature states, and no private data.
+  Store exported WebP, PNG or JPG files locally in `images/product/`.
+  Use self-closing `<img src="/images/product/slug-light.webp" alt="..." />`
+  with descriptive, nonempty English alt text and intrinsic width and height.
+  `<Frame>` wrappers are allowed. Put `className="block dark:hidden"` and
+  `className="hidden dark:block"` on enclosing `div` elements, only for actual
+  matching light/dark captures, so hidden zoom controls are not focusable.
+  Follow `design/docs-images.json`; never publish a `galleryOnly` preview.
+  No remote media, tracking pixels, data URLs, unsafe paths, dynamic image
+  attributes, markdown images or `image:` frontmatter. See README for examples.
+  Every page still has a frontmatter `icon` and every `<Card>` an `icon`;
+  icons are Font Awesome names (the starter default; `icons.library` stays unset).
 - Navigation is `navigation.tabs`: one tab per application (Get started, Chat,
   Code, Bot, CLI, Design, Security, Reference), each tab a list of groups, each
   tab and group with an icon. Every product tab opens on its hub page
@@ -28,8 +38,11 @@ repository root. Preview and validation commands are in `README.md`.
 - Only document API paths on `reference/errors`, `bounty/public-api`, and the
   problem pages, and only paths the backend router registers.
 - Run `node scripts/check-docs-site.mjs`,
+  `node scripts/check-docs-content.mjs`,
   `bash scripts/tests/check-docs-site.test.sh`,
-  `node scripts/tests/docs-ui.test.mjs`, then
+  `bash scripts/tests/check-docs-content.test.sh`,
+  `node scripts/tests/docs-ui.test.mjs`,
+  `node scripts/tests/docs-images.test.mjs`, then
   `npm exec --yes --package=mint@4.2.876 -- mint validate` before committing.
 - For error-code or endpoint changes, also run the checker with a backend
   checkout as its first argument. Coordinate the two PRs; the backend owns the

@@ -21,6 +21,10 @@ A session binds one runtime, once per turn. There is no fallback. If the runtime
 
 Everything the agent does happens inside that runtime. Reads, searches, edits and shell commands all execute there. **Nothing runs in your browser**, and the browser never receives SSH keys or host keys. The browser offers Cloud, plus a registered team runner when the deployment has one; This PC and SSH belong to the desktop app and the CLI. See [Cloud runtimes](/code/runtimes) and [Code on desktop](/code/desktop).
 
+<Frame caption="Interface preview">
+  <img src="/images/product/code-terminal-light.webp" alt="A Code session showing the agent's execution trace beside live terminal test output from its Cloud guest." width="3360" height="2240" loading="lazy" />
+</Frame>
+
 ## The turn loop, step by step
 
 <Steps>

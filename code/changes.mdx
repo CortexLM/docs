@@ -8,6 +8,15 @@ When an Agent turn touches a file, the file does not quietly change. It appears 
 
 This page covers the **Changes** tab and its per-file controls, the difference between the diff you read before a write and the diff you read after it, the live **Diff** tab, commenting on a line, and where the branch and the pull request show up. The command side of permissions lives on [Permissions and approvals](/code/approvals).
 
+<Frame caption="Interface preview">
+  <div className="block dark:hidden">
+    <img src="/images/product/code-session-light.webp" alt="A Cortex Code session on macOS with an execution timeline beside a proposed code diff and approval controls." width="3360" height="2240" loading="lazy" />
+  </div>
+  <div className="hidden dark:block">
+    <img src="/images/product/code-session-dark.webp" alt="A Cortex Code session on macOS with an execution timeline beside a proposed code diff and approval controls." width="3360" height="2240" loading="lazy" />
+  </div>
+</Frame>
+
 ## The Changes tab
 
 The output pane on the right of a session carries the tabs **Changes**, **Diff**, **Git**, **Terminal** and, when there is one, **Plan**. **Changes** opens on the files this turn has touched, with a header count that reads **1 file changed** or **3 files changed** as the turn goes on. While the pane is reading the runtime it says **Loading changes…**
