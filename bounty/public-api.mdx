@@ -1,12 +1,12 @@
 ---
 title: "Transparency API"
-description: "Four unauthenticated endpoints that publish every adjudicated Cortex Bounty report, with windows, paging, and how to read a zero"
+description: "Read Cortex Bounty verdicts, severity and report counts through the public API, using immutable revisions for consistent pagination"
 icon: "globe"
 ---
 
-The transparency API is how a Cortex Bounty verdict becomes checkable by anyone. It is four read-only endpoints that need no account, no credential and no cookie, and none is minted for the caller. A participant can verify their own row with it, and a third party can verify somebody else's claim without asking either side for access.
+The transparency API publishes Cortex Bounty verdicts for anyone to check. Its four read-only endpoints need no account or credential. The [public leaderboard](https://api.cortex.foundation/v1/bounty/public/leaderboard) is a JSON response, not a dedicated Bounty application page.
 
-The endpoints publish adjudicated reports only. Nothing pending appears, no conversation appears, and no account is identified. This page lists the four paths, then covers the three things that trip people up: time windows, paging, and what a zero actually means. Each path below is given relative, so prefix it with the Cortex API host for the deployment you are checking.
+Only adjudicated reports appear. Pending reports, conversations and account identities stay private. Prefix the paths below with `https://api.cortex.foundation`.
 
 ## The four endpoints
 
@@ -15,27 +15,33 @@ All four are `GET`, and all four are unauthenticated.
 | Path | Query parameters | What it answers |
 | --- | --- | --- |
 | `/v1/bounty/public/status` | none | Is this backend adjudicating at all? Counts, backlog, and whether an operator exists |
-| `/v1/bounty/public/leaderboard` | `since`, `until` | Hotkeys ranked by valid-report count, plus counts by status. No account ids |
-| `/v1/bounty/public/reports` | `hotkey`, `status`, `since`, `until`, `limit`, `cursor` | Adjudicated reports, completely enumerable |
-| `/v1/bounty/public/reports/{id}` | none | One adjudicated report, or 404 if it is pending or unknown |
+| `/v1/bounty/public/leaderboard` | `since`, `until`, `revision` | Hotkeys ranked by valid-report count, plus counts by status. No account ids |
+| `/v1/bounty/public/reports` | `hotkey`, `status`, `since`, `until`, `limit`, `cursor`, `revision` | Published scoring reports, completely enumerable at one revision |
+| `/v1/bounty/public/reports/{id}` | none | Latest adjudicated version and its publication revision, or 404 if pending or unknown |
 
-Every response from all four carries `api_version`, which is `1` today, and `generated_at`, the moment the response was built. Every response is sent with `cache-control: no-store`, so what you read is what the log says now rather than something a cache kept.
+Every response carries `api_version: 1`, `generated_at` and a decimal-string `revision`, with `cache-control: no-store`. The status, leaderboard and report list identify a publication snapshot. A report detail instead identifies the revision that published its latest version; it does not accept a historical revision filter.
+
+Leaderboard entries contain `hotkey`, `valid`, `valid_count`, `duplicate`, `already_fixed_not_prod`, `invalid_malicious` and `total`. `valid` and `valid_count` are equal. These are **report counts, not scores or payments**. See [Verdicts and scoring](/bounty/scoring).
 
 ## What a public row contains
 
 | Field | Meaning |
 | --- | --- |
 | `id` | The report id. A time-ordered id assigned when the report was filed |
-| `hotkey` | The SS58 address the report was credited to. Never an account id |
+| `hotkey` | The hotkey in canonical SS58 format 42. Never an account id |
 | `status` | One of the four verdicts. See [Verdicts and scoring](/bounty/scoring) |
+| `severity` | `trivial`, `minor`, `major` or `critical` for a scoreable `valid` report; `null` for other verdicts |
 | `problem_found` | What the defect was, as recorded by the adjudicator |
 | `justification` | The reasoning behind the status |
 | `adjudicator` | An agent or service identifier. Never a person, never an email address |
 | `adjudicated_at` | When the verdict was recorded |
 | `created_at` | When the report was filed |
-| `related_report_id` | Present on duplicates only, and the report it names is already public |
+| `related_report_id` | Required on duplicates only; its public reference chain must end at a non-duplicate report |
+| `summary` | Optional public-safe paragraph approved for publication; not the raw finding |
 
 Chat transcripts stay private. They are never on the public routes, and neither is the report body, your email address, your display name, a conversation id, a pairing code or a token of any kind. The full list is on [File a report](/bounty/report).
+
+Legacy `valid` reports without severity are excluded from report lists and leaderboard counts until repriced. Their detail can still show `severity: null`; that historical verdict is not scoreable. Duplicate chains rooted in an unpriced report are also withheld from the scoring list.
 
 ## Windows
 
@@ -46,63 +52,69 @@ Chat transcripts stay private. They are never on the public routes, and neither 
 - `until <= since` is **refused**. It is not answered with an empty page, and the reason is worth understanding: an empty page reads exactly like "this hotkey earned nothing".
 - An `adjudicated_at` value taken from a response is reusable as a bound byte for byte. It is truncated to microseconds. A `+00:00` offset needs percent-encoding in a query string, though the un-encoded form is accepted too.
 
-## Paging the reports listing
+## Revisions and pagination
 
-The reports endpoint is the one that enumerates completely, and it is cursor-paged.
+Read status first. Pass its `revision` to the leaderboard and the first report page so both read the same immutable publication snapshot. Without a revision, a first-page request reads the latest publication.
 
 ```text
-/v1/bounty/public/reports?hotkey=HOTKEY&since=FROM&until=TO&limit=100
+/v1/bounty/public/reports?hotkey=HOTKEY&since=FROM&until=TO&limit=100&revision=REVISION
 ```
 
-- `limit` is clamped to **100**. Asking for more gets you 100.
-- The response reports `has_more`. While it is true, send `next_cursor` back verbatim as `cursor` and read the next page.
-- The cursor is opaque, and it is keyed on `adjudicated_at` and then `id`. Do not build one yourself and do not try to decode it.
+- `limit` is clamped to **1 through 100**.
+- While `has_more` is true, send `next_cursor` back verbatim as `cursor`, preserving the same filters.
+- The opaque cursor binds the revision, filters and position. A conflicting revision or changed filters is refused; restart from page one to change the query.
+- The ordering is newest `adjudicated_at` first, then `id`. New verdicts or corrections appear only in later revisions and cannot move page two of an existing walk.
 - `id` is assigned at filing time, not at verdict time, so ids are not in verdict order. That is exactly why the cursor exists: you cannot page this log by sorting ids.
 
 The leaderboard is **not** paged. It aggregates up to **1000** hotkeys and sets `has_more` when there are more than that. If you need a complete enumeration, walk the reports endpoint instead. The leaderboard is a summary, and the reports listing is the record.
 
 ## Reading zero correctly
 
-This is the part to get right before you conclude anything from an empty result. A zero on the leaderboard has three different meanings, and the status endpoint is what tells them apart.
+A missing leaderboard row is not proof of a zero payout. Check the status response before interpreting an empty publication.
 
 | What the status endpoint says | What it means | Is it a real zero? |
 | --- | --- | --- |
-| `adjudication_available` is false | No operator is adjudicating | No. Nothing is being judged at all |
+| `adjudication_available` is false | No operator is available to adjudicate | No. The scoring input is unavailable |
 | `awaiting_adjudication` above zero, nothing published | A queue exists but has not been worked | No. The verdicts have not happened yet |
-| `adjudication_available` true and `awaiting_adjudication` zero | Everything filed has been judged | Yes. This is a real zero |
+| `unpriced_valid` above zero | Legacy valid findings still need severity | No. The scorer refuses an unpriced publication |
+| Adjudication available, no backlog or unpriced verdicts, consistent empty publication | No scoreable reports are published | A report-count zero, not evidence of an on-chain payment |
 
-Two further facts make the reading safe. A backend that cannot answer at all fails the request; it never answers an empty list, so an empty list is always a real answer from a working backend. And `last_adjudicated_at` on the status response tells you how stale the log is, which is the difference between "nothing has happened" and "nothing has happened lately".
+A failed request is not an empty publication. Never substitute an empty list for a transport, server or validation error. `last_adjudicated_at` gives the time of the latest published adjudication; it does not prove the scoring or payment pipeline is running.
 
 | Status field | Meaning |
 | --- | --- |
-| `adjudication_available` | Whether an operator is adjudicating at all |
+| `adjudication_available` | Whether an operator can adjudicate; not proof that the queue is being worked |
+| `published`, verdict counts, `hotkeys` | Totals for the entire publication, not a time-filtered leaderboard |
 | `awaiting_adjudication` | How large the backlog is |
-| `last_adjudicated_at` | How stale the log is |
+| `unpriced_valid` | Repriceable legacy valid reports missing severity |
+| `summarised` | Published records with a stored summary; individual summaries can still be withheld by safety checks |
+| `last_adjudicated_at` | Latest published adjudication time, omitted when none exists |
+| `revision` | Publication snapshot to use for subsequent reads |
 | `api_version` | The response contract version, `1` today |
 | `generated_at` | When this response was built |
 
-## Verify one bounty end to end
+## Verify a public report count
 
 <Steps>
-  <Step title="Check that the log is being kept">
-    Read `/v1/bounty/public/status`. Confirm that an operator exists and that the backlog is zero. If it is not, stop here: anything you count next is incomplete by definition.
+  <Step title="Pin the publication">
+    Read `/v1/bounty/public/status` and retain its `revision`. Check the availability, backlog and unpriced counters before interpreting the result.
   </Step>
   <Step title="Read the leaderboard for the window">
-    Call `/v1/bounty/public/leaderboard` with the `since` and `until` bounds of the window you care about. Note the valid-report count for the hotkey you are checking.
+    Call `/v1/bounty/public/leaderboard` with that `revision` and the `since` and `until` bounds you need. Note the hotkey's `valid_count`. If `has_more` is true, absence from the board is inconclusive.
   </Step>
   <Step title="Walk the reports listing over the same window">
-    Call `/v1/bounty/public/reports` with the same `hotkey`, `since` and `until`, and follow `next_cursor` until `has_more` is false. Count the valid rows as you go.
+    Call `/v1/bounty/public/reports` with the same `revision`, `hotkey`, `since` and `until`. Follow `next_cursor` until `has_more` is false, keeping filters unchanged. Count the valid rows.
   </Step>
-  <Step title="Fetch one row on its own">
-    Take an id from the walk and read `/v1/bounty/public/reports/{id}`. You get the same row, which is the one you can quote to somebody else.
+  <Step title="Compare the counts">
+    The board count and complete walk must agree at the same revision and window. Check pagination and filters on a mismatch; if it persists, treat the data as inconsistent, not as a score.
   </Step>
-  <Step title="Compare the two counts">
-    The count from the leaderboard and the rows you walked must agree. A disagreement means the walk was truncated, so check `has_more` and page again. It does not mean the log is wrong.
+  <Step title="Inspect a finding">
+    Read `/v1/bounty/public/reports/{id}` for its latest explanation. A later correction may differ from your pinned walk; use the page you retained when auditing the older snapshot.
   </Step>
 </Steps>
 
 <Note>
-There is no public API for anything else in Cortex. These four endpoints exist because the bounty log has to be verifiable by outsiders; they are not a general platform API, and there is no inference endpoint, no API key and no client library. See [Platform API](/reference/platform-api).
+This verifies published evidence and counts, not a payment. These endpoints are not a general platform API. See [Platform API](/reference/platform-api).
 </Note>
 
 ## Related

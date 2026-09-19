@@ -1,34 +1,44 @@
 ---
 title: "Verdicts and scoring"
-description: "The four Cortex Bounty statuses, the gates a verdict has to clear before it is published, and what can never become a valid row"
+description: "Understand Cortex Bounty verdicts, severity, champion eligibility and why a valid finding does not guarantee a reward"
 icon: "scale-balanced"
 ---
 
-Every Cortex Bounty report ends in one of four verdicts, and only one of them is a reward. This page explains what the four statuses mean, what a verdict has to carry before it can be published at all, and the list of reasons a report you consider valid never turns into a valid row on the public log.
+An adjudicated Cortex Bounty report receives one of four verdicts. A `valid` finding contributes evidence toward a score; it is **not a guaranteed reward**. The public leaderboard counts reports, while the subnet applies eligibility, precision and severity rules to choose at most one champion per scoring snapshot.
 
-It is worth being precise about who decides what. The gates below are mechanical: a verdict that does not satisfy them is refused, and no adjudicator can wave it through. The verdict itself is a judgement about your finding, made by an adjudicator working for the programme. Cortex does not compute a score here, and the reward is not decided on this site.
+The adjudicator decides the finding's verdict and severity. The published evidence is the input to subnet scoring. Publishing a verdict does not establish that weights have been submitted or a payment has occurred.
 
 ## The four statuses
 
 | Status | Public? | Effect |
 | --- | --- | --- |
 | pending, no status yet | No. Its id answers 404 | None. The report has not been judged |
-| `valid` | Yes | Reward |
-| `duplicate` | Yes | Not a valid row. May name a related report |
-| `already_fixed_not_prod` | Yes | No penalty |
-| `invalid_malicious` | Yes | Penalty |
+| `valid` | Yes, with severity required for scoring | Adds severity-weighted credit and counts toward precision |
+| `duplicate` | Yes, with a rooted public reference | No valid credit; counts as triage noise |
+| `already_fixed_not_prod` | Yes | No malicious-report deduction; counts as triage noise |
+| `invalid_malicious` | Yes | Reduces net credit and precision |
 
-Read in outcome terms, that is three possibilities and nothing in between.
+## Severity and eligibility
 
-| What you filed | What happens |
+Every newly published valid finding requires a severity:
+
+| Severity | Scoring weight |
 | --- | --- |
-| A valid, unique bug | Reward |
-| Something already fixed and not in production | No penalty |
-| Something malicious, or a problem that does not exist | Penalty |
+| `trivial` | 6.25% |
+| `minor` | 25% |
+| `major` | 50% |
+| `critical` | 100% |
 
-<Note>
-This documentation does not state what a reward is worth or when it arrives, because no amount and no schedule is published here. Those come from the programme terms you accepted at pairing, and they can depend on the case. Treat "reward", "no penalty" and "penalty" as the direction of the outcome, not as a figure.
-</Note>
+Among participating hotkeys, a contender must satisfy all of these gates:
+
+- At least **three decided reports**: valid plus malicious verdicts.
+- **Nonnegative net credit**: each valid report adds 6, 25, 50 or 100 points by severity; each malicious report subtracts 100.
+- **No valid report missing severity**.
+- **At least 60% precision**: valid reports divided by valid plus malicious reports.
+- **At most 50% triage noise**: duplicate plus already-fixed reports divided by all adjudicated reports.
+- **Strictly better precision than the current candidate champion** during snapshot selection. A tie does not displace that candidate.
+
+Candidates are considered by descending valid count, with hotkey ordering breaking count ties. The eligible champion's score combines precision with average severity weight. Other participants receive no positive score for that snapshot, even when they have valid findings. These percentages describe scoring inputs, not a payout rate.
 
 ## What a verdict has to carry
 
@@ -37,48 +47,46 @@ A verdict is refused unless it carries both of these, and each has to be at leas
 - **problem found**, a statement of what the defect actually was.
 - **justification**, the reasoning behind the status that was chosen.
 
-The adjudicator recorded on the row is an agent or service identifier. It is never an email address, so a public row never names a person. Once a verdict satisfies these conditions the row becomes public, and the verdict is written to the audit chain as well.
+The adjudicator recorded on the row is an agent or service identifier, not an email address. A valid verdict also needs severity. A duplicate needs a public related report, with a reference chain ending at a non-duplicate verdict; missing targets, self-links and cycles are refused.
 
-Both of those fields are published. They are the only description of your report that anyone else can read, since the report body itself stays sealed.
+The problem statement and justification are public. An optional public-safe summary may also be published after review. The raw report body and chat transcripts remain private.
 
-## What can never become a valid row
+## Why a report is not credited
 
 Use this as a checklist when a report has not appeared where you expected it.
 
 <AccordionGroup>
   <Accordion title="The report is still pending">
-    A pending report is not public at all. Its id answers 404 until a verdict exists, and it is counted nowhere. Check the status endpoint before concluding anything: a backlog is not a verdict. See [Transparency API](/bounty/public-api).
+    A pending report has no public detail or leaderboard credit. It contributes only to the aggregate backlog. A backlog is not a verdict. See [Transparency API](/bounty/public-api).
   </Accordion>
   <Accordion title="The body is too short">
-    A `valid` row cannot be published unless the report body holds at least **24 characters** of plaintext finding. The body stays sealed and is never published; the length is only a publication gate. A one-line note fails it.
+    A new `valid` verdict requires at least **24 characters** of plaintext finding. The body stays private; length is only a publication gate, not proof that a finding is substantive.
   </Accordion>
   <Accordion title="The verdict text is too short">
     The problem found and the justification each need at least **16 characters**. A verdict that does not meet that is refused rather than published, so the row stays pending.
   </Accordion>
-  <Accordion title="The report was filed too long ago">
-    The oldest reports, filed before the sealed field that gate reads existed, cannot be credited.
+  <Accordion title="The valid finding has no severity">
+    Historical valid findings without severity are withheld from scoring lists and counts until reviewed again. A retained source permits repricing; the historical verdict alone does not establish scoreable credit.
   </Accordion>
   <Accordion title="It was judged a duplicate">
-    A `duplicate` never counts as `valid`, however good the finding is. When a duplicate names a related report, that related report must already be public, so you can go and read the one that got there first.
+    A `duplicate` never counts as `valid`, however good the finding is. Its related report must already be public. The full reference chain must reach a non-duplicate verdict; a chain rooted in an unpriced finding is withheld from scoring lists.
   </Accordion>
   <Accordion title="The hotkey belongs to another account">
     One hotkey belongs to one account. A second account cannot claim a hotkey that is already paired, so a report filed from the wrong account is not credited to that hotkey. See [Pair a hotkey](/bounty/pair-a-hotkey).
   </Accordion>
 </AccordionGroup>
 
-## An unrecognised verdict is withheld
+## Unavailable evidence is not a zero
 
-If a row carries a status this version of the public log does not recognise, the row is withheld rather than shown. It is specifically **not** rendered as `invalid_malicious`.
+The scorer requires one consistent publication revision, complete report pagination, matching aggregate counts and priced valid findings. Missing adjudication, unpriced findings or an initial unworked backlog make the scoring input unavailable. An unsupported stored verdict or severity fails the public read instead of being relabelled as a penalty.
 
-That matters for anyone reading the log with a script. A future status will simply not appear, rather than turning up mislabelled as a penalty. A row you cannot see is never proof of a penalty, and a count that comes up short is a reason to check `has_more` on your walk, not evidence of a lost report.
+An unavailable feed produces no positive Bounty score for that snapshot; it is not evidence that an individual miner performed badly. Check the [Transparency API](/bounty/public-api) before interpreting an empty leaderboard.
 
 ## How weights follow valid rows
 
-Cortex adjudicates and publishes. It does not set weights.
+Cortex Bounty accounts for **20% of subnet emission**. This is the challenge's allocation, not a promised amount per report. The account product publishes the evidence; the subnet calculates scores and validators independently verify the allocation before chain submission.
 
-The subnet reads the public endpoints and sets weights from the valid rows it finds there. There is no separate score inside Cortex, no ranking that is not derived from the public log, and nothing hidden behind sign-in that changes the outcome. That is the whole point of publishing the log: the input to the weighting is the same document you can read.
-
-For the same reason, the subnet's own pipeline is outside this documentation. What happens to a valid row after the subnet reads it, including anything about epochs, is not a Cortex feature and is not described on this site. There is no attestation surface here and there is no teacher host.
+A report, leaderboard entry or successful publication does not prove that this full path completed. No fixed payment amount or arrival time is guaranteed by this page.
 
 ## Related
 
