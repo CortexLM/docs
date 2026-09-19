@@ -1,6 +1,6 @@
 ---
 title: "Pair a hotkey"
-description: "Link your mining hotkey in Cortex Chat with /link, sign the card with your wallet, and understand the current terms prerequisite."
+description: "Review and accept the Bounty research terms in Chat, then link your mining hotkey by signing the /link card with your wallet."
 icon: "key"
 ---
 
@@ -10,25 +10,28 @@ Pairing links your mining hotkey to your Cortex account so published findings ca
 
 - Use a **dedicated mining account**. Its conversations and logs may be used for research, fixing bugs and assessing rewards. Do not link a private personal account.
 - Have your hotkey's SS58 address and a wallet tool that can sign a message with that hotkey.
-- The account must already have accepted the current Bounty research terms.
+- Read the current research terms before deciding whether to participate.
 
 <Warning>
-The current Chat interface does not provide a Bounty terms-acceptance screen. If Chat asks you to accept the terms, pairing cannot continue through this interface yet. Sending `/link` does not count as consent. You can still [report a bug](/getting-started/report-a-bug) without joining Bounty.
+Sending `/link` does not count as consent. You must explicitly accept the displayed research terms before requesting a signature. If you do not agree, cancel; you can still [report a bug](/getting-started/report-a-bug) without joining Bounty.
 </Warning>
 
 ## Link in Chat
 
-For an account whose terms acceptance is already recorded:
-
 <Steps>
-  <Step title="Request a signing card">
+  <Step title="Start linking in Chat">
     Sign in to your mining account and send this as a Chat message, replacing the placeholder with your public hotkey address:
 
     ```text
     /link <ss58>
     ```
 
-    Chat displays the hotkey and the exact message to sign. Requesting a card does not link the key by itself.
+    If the current terms are already accepted, Chat displays the signing card. Otherwise it first offers the research terms.
+  </Step>
+  <Step title="Review the research terms">
+    Read the displayed title, version and full terms. To participate, select **I have read and accept these terms**, then **Accept terms**. The checkbox starts unchecked. Choose **Cancel** to leave without accepting.
+
+    After the accepted confirmation, send the same `/link` message again to request the signing card. Accepting terms does not link your key or sign anything for you.
   </Step>
   <Step title="Sign locally with your hotkey">
     Check the address on the card. Use your wallet tool to sign the complete displayed message, without editing it, using that hotkey rather than your coldkey.
@@ -47,12 +50,15 @@ Never paste a seed phrase, mnemonic, private key or wallet file into Chat or the
 | What you see | What to do |
 | --- | --- |
 | Sign-in required | Sign in to the dedicated mining account first. |
-| Research terms required | Pairing is blocked until an acceptance flow is available; the signing card cannot accept terms. |
+| Research terms required | Read the terms card and explicitly accept if you agree, then send `/link` again. |
+| Terms changed or acceptance failed | Read the error and reload the current terms. A changed version needs a fresh decision; do not assume acceptance succeeded. |
 | Invalid hotkey | Check that you supplied the public SS58 address of the intended hotkey. |
 | Hotkey already linked elsewhere | Use the account that owns the link, or another hotkey. Repeating `/link` does not transfer ownership. |
 | Invalid, expired or already-used signature request | Send `/link` again and sign the new card's exact message with the matching hotkey. |
 
-One account can link multiple hotkeys; each hotkey belongs to only one account. Repeat the Chat flow for each key. Linking does not itself activate a miner conversation, submit a report or guarantee a reward. Continue with [File a report](/bounty/report).
+One account can link multiple hotkeys; each hotkey belongs to only one account. Repeat the Chat flow for each key. Linking does not register a miner on the subnet, submit a chain transaction, activate a miner conversation or guarantee a reward. Continue with [File a report](/bounty/report).
+
+If your app shows only a terms-required message without an acceptance control, that deployment cannot complete this onboarding flow yet. Do not bypass the consent check or provide a wallet secret to resolve it.
 
 ## Related
 
