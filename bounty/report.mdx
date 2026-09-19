@@ -1,94 +1,53 @@
 ---
 title: "File a report"
-description: "Mark a Chat conversation as a bounty-miner session, file a report with the Chat report tool, and see what the report carries"
+description: "File a reproducible Cortex finding, add an eligible bug report to Bounty, and understand which report details stay private."
 icon: "flag"
 ---
 
-A Cortex Bounty report is filed from [Cortex Chat](/chat/index), out of the conversation in which you found the problem. The conversation itself is the evidence: you describe the defect in it, then file the report from inside it, and the report is tied to that conversation, to the hotkey you are mining with, and to the account that filed it.
+File a report from your dedicated mining account after [linking a hotkey](/bounty/pair-a-hotkey). A submission is evidence for review, not a verdict or a promise of payment. If you cannot join Bounty, you can still file an ordinary [bug report](/getting-started/report-a-bug).
 
-Two things have to be true before the report tool appears. A hotkey must be paired to the account, which is covered on [Pair a hotkey](/bounty/pair-a-hotkey), and the conversation must be marked as a bounty-miner session. This page covers the marking, the filing, what the report carries, and what stays private while a verdict is pending.
-
-## Mark a conversation as a miner session
-
-Marking is what turns an ordinary conversation into a miner session. It also injects miner context, so the assistant knows which hotkey it is working for.
+## Add a bug report to Bounty
 
 <Steps>
-  <Step title="Open a new conversation on the mining account">
-    Sign in with the dedicated mining account and start a fresh conversation in Chat.
+  <Step title="Describe a reproducible finding">
+    Open the account menu, then **Settings > General > Report a bug**. Give it a specific title, explain the expected and actual behaviour, and include the steps needed to reproduce it. Remove passwords, private keys and unrelated personal information from text and screenshots.
   </Step>
-  <Step title="Send the command the CLI printed">
-    Pairing printed a command to send in Chat. Send it in the composer as an ordinary message. You can send it on its own, or follow it with the one-time session code, or with the SS58 address of any hotkey already linked to the account.
+  <Step title="Submit the report">
+    Send the report and keep the ticket reference on the receipt. Follow-up questions and the team's response arrive by email; reply in that thread with any missing evidence.
   </Step>
-  <Step title="Check that the conversation is marked">
-    The conversation is now a bounty-miner session and miner context has been injected. The report tool is available in it.
-  </Step>
-  <Step title="Switch hotkeys when you need to">
-    If the account holds several hotkeys, send the command again with the SS58 address of the one you want. The conversation follows the hotkey you name last.
+  <Step title="Add the eligible report">
+    On the receipt, choose **Add to the Challenge Bounty** if it appears. The programme must be active and your account must have a linked hotkey. Wait for confirmation that the report was added.
   </Step>
 </Steps>
 
-<Warning>
-The command is a secret. It is set by an operator, the CLI prints it only to you, and anyone holding it can mark a conversation. Do not paste it into an issue, a screenshot, a support thread or a public repository. `/miner` is not that command and is not a command at all.
-</Warning>
+The button is conditional: filing a bug report does not automatically enter it into Bounty. If the programme is paused, participation is unavailable or adding it fails, the original bug report stays filed. A report can be added only once; retrying does not create a second Bounty finding.
 
-## File the report
+If you have several linked hotkeys, this route uses the first linked hotkey; the receipt does not offer a hotkey picker. Do not assume the key from a different Chat conversation will receive the credit.
 
-Work the problem in the conversation first. Reproduce it, narrow it down, and write out what you found in plain language, because that text is what an adjudicator will read and what the publication gates are measured against.
+## Reporting from an existing miner conversation
 
-When the finding is written up, file it with the `bounty_report` tool. It is a Chat tool and it is only offered in a conversation that has been marked as a miner session, so it will not show up in a normal thread. You can add hints alongside the body when there is something an adjudicator should know to reproduce it.
+An already-enabled Bounty miner conversation can offer the `bounty_report` Chat tool. Describe the finding in that conversation and ask for it to be filed. The resulting report uses that conversation's active linked hotkey.
 
 <Note>
-Write the finding out properly rather than filing a one-line note. A report whose body carries less than 24 characters of plaintext finding can never be published as a valid row, whatever an adjudicator thinks of it. See [Verdicts and scoring](/bounty/scoring).
+The `/link` card only links a hotkey. It does not enable a miner conversation, and its success message does not provide a conversation-activation control. Do not expect the report tool to appear in an ordinary Chat thread after linking. Use the bug-report route when eligible; `/miner` is not an activation command.
 </Note>
 
-## What a report carries
+## Follow the review
 
-| In the report | Where it comes from |
-| --- | --- |
-| The hotkey | The linked SS58 the session is mining for |
-| The account id | The Cortex account that filed it |
-| The session id | The conversation the report was filed from |
-| A creation timestamp | Set when you file |
-| The body | What you wrote up in the conversation |
-| Optional hints | Anything you added for the adjudicator |
+Pending reports are not listed on the public leaderboard or report log. An empty public log does not mean your submission was lost. Keep your bug-report receipt and distinguish a submission acknowledgement from an adjudicated verdict.
 
-Reports are delivered to the challenge backend, which is what adjudicates them and what publishes the verdicts. Nothing you file goes to the subnet directly.
+Once staff records a verdict, check the [Transparency API](/bounty/public-api). A `valid` verdict needs severity before it can contribute to scoring. Eligibility and the final allocation depend on the [scoring rules](/bounty/scoring), not just on how many reports you submitted. There is no guaranteed review deadline or payment date.
 
-## While it is pending, it is private
+## What stays private
 
-A filed report has no status yet. Until a verdict exists:
+The original report body, Chat transcripts, account identity and email address are not part of the public transparency log. Public rows contain the hotkey, report identifier, verdict, severity when applicable, problem statement, justification and timestamps. Duplicates identify a related report. A summary is optional and requires staff approval before publication.
 
-- It does not appear on any of the public endpoints. It is not counted on the leaderboard, and it is not in the reports listing.
-- Fetching it by its id answers 404, exactly as an id that never existed would. That is deliberate. The public log holds adjudicated rows and nothing else.
-- You can still see it yourself. A signed-in participant can list their own reports, pending ones included, and that is the only way to see a pending report.
-
-So an empty public log is not evidence that your report was lost. It is the expected state of a report that has not been judged yet. The [Transparency API](/bounty/public-api) explains how to tell a backlog apart from a real zero.
-
-## What is never published
-
-The conversation is the one thing that never becomes public. **Chat transcripts stay private. They are never on the public routes.** The report body is sealed too: its length is checked as a publication gate, but the text itself is never published.
-
-| A public row carries | A public row never carries |
-| --- | --- |
-| The report id | Your Cortex account id |
-| The hotkey, as an SS58 address | Your email address |
-| The status | Your display name |
-| The finding recorded by the adjudicator | Chat transcripts |
-| The justification for the verdict | Conversation or session ids |
-| An adjudicator identifier | Pairing codes, or the Chat command |
-| The verdict timestamp and the filing timestamp | IP addresses |
-| A related report id, on duplicates only | Tokens of any kind, and the raw report body |
-
-What an adjudicator writes about your report does become public, in two fields: a statement of the problem found, and the justification for the verdict. Nothing you wrote is republished verbatim.
-
-## What this page cannot tell you
-
-There is no published turnaround time for a verdict, and no queue position you can read for your own report. The status endpoint tells you whether anyone is adjudicating at all and how large the backlog is, which is the closest thing to a progress signal that exists. Rewards, eligibility and timing are set by the programme terms you accepted at pairing rather than by this documentation, and they can depend on the case.
+Do not publish raw findings in a public issue merely because the verdict has become public. A public verdict does not authorize disclosure of credentials, private conversations or unpatched reproduction details.
 
 ## Related
 
 - [Cortex Bounty](/bounty/index)
 - [Pair a hotkey](/bounty/pair-a-hotkey)
+- [Report a bug](/getting-started/report-a-bug)
 - [Verdicts and scoring](/bounty/scoring)
 - [Transparency API](/bounty/public-api)
-- [Built-in tools](/chat/tools)
