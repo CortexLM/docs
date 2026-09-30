@@ -134,9 +134,9 @@ merge the docs page first, then update the backend's checkout pin in the PR
 that adds the code. The full check fails when:
 
 - `PROBLEM_TYPE_BASE` is not `https://docs.cortex.foundation/problems`
-- an `ErrorCode` is missing its `/problems/{code}` page, or a page documents a code the API does not emit
+- a code in `ERROR_CODES` (`server/src/core/error.ts`) is missing its `/problems/{code}` page, or a page documents a code the API does not emit
 - a `docs.json` navigation slug, group root, navbar or footer href, redirect destination, or internal link has no matching MDX page
-- a documented `/v1/…` path is not registered in `crates/cortex-api/src/router.rs`
+- a documented `/v1/…` path is not registered by a route module under `server/src/api`
 - a screenshot lacks alt text, references a missing or unsafe local file, uses an unsupported format or embeds remote media
 - a page lacks a title, description, or icon, repeats another page's title, or has a description over 160 characters
 - navigation is not `navigation.tabs` with a tab for each of Chat, Code, Bot, CLI, Design, and Security, each tab and group carrying an icon
