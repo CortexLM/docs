@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Holds scripts/check-docs-site.mjs. No Mintlify CLI: a throwaway tree with a
-# fake ErrorCode, a fake router, and a couple of MDX files is enough to prove
+# fake ERROR_CODES, fake route modules, and a couple of MDX files is enough to prove
 # a matching site passes and that a wrong domain, a missing page, a dead
 # navigation entry, an unsafe image, a leaked auth internal, or an invented /v1 path
 # fails.
@@ -18,31 +18,36 @@ trap cleanup EXIT
 seed() {
   local dest="$1"
   mkdir -p \
-    "$dest/crates/cortex-core/src" \
-    "$dest/crates/cortex-api/src" \
+    "$dest/server/src/core" \
+    "$dest/server/src/api" \
     "$dest/packages/api-types/src" \
     "$dest/site/problems" \
     "$dest/site/logo"
-  cat > "$dest/crates/cortex-core/src/error.rs" <<'RS'
-pub const PROBLEM_TYPE_BASE: &str = "https://docs.cortex.foundation/problems";
+  cat > "$dest/server/src/core/error.ts" <<'TS'
+export const PROBLEM_TYPE_BASE = "https://docs.cortex.foundation/problems";
 
-impl ErrorCode {
-    pub const fn as_str(self) -> &'static str {
-        match self {
-            Self::NotFound => "not_found",
-            Self::Internal => "internal",
-        }
-    }
-}
-RS
+export const ERROR_CODES = {
+  not_found: [404, "Not found"],
+  internal: [500, "Something went wrong on our side"],
+} as const satisfies Record<string, readonly [number, string]>;
+TS
   cat > "$dest/packages/api-types/src/errors.ts" <<'TS'
 export const PROBLEM_TYPE_BASE = 'https://docs.cortex.foundation/problems' as const;
 TS
-  cat > "$dest/crates/cortex-api/src/router.rs" <<'RS'
-        .route("/healthz", get(health::liveness))
-        .route("/conversations", get(list))
-        .route("/conversations/{id}", get(get).patch(patch))
-RS
+  cat > "$dest/server/src/api/index.ts" <<'TS'
+    publicRouter.get("/healthz", liveness).get("/readyz", readiness).get("/startupz", startup);
+TS
+  cat > "$dest/server/src/api/conversations.ts" <<'TS'
+export function routes(r: Router<Ctx>): void {
+  r.get("/conversations", list);
+  r.get("/conversations/{id}", get).patch("/conversations/{id}", patch);
+}
+TS
+  cat > "$dest/server/src/api/admin-insights.ts" <<'TS'
+export function adminRoutes(r: Router<Ctx>): void {
+  r.get("/v1/admin/insights/overview", overview);
+}
+TS
   printf '<svg xmlns="http://www.w3.org/2000/svg"></svg>' > "$dest/site/favicon.svg"
   printf '<svg xmlns="http://www.w3.org/2000/svg"></svg>' > "$dest/site/logo/light.svg"
   printf '<svg xmlns="http://www.w3.org/2000/svg"></svg>' > "$dest/site/logo/dark.svg"
@@ -124,13 +129,28 @@ out="$(cd "$tmp" && CORTEX_CHECK_ROOT="$happy/site" node "$script" 2>&1)" ||
 if CORTEX_CHECK_ROOT="$happy/site" node "$script" "$tmp/absent-backend" >/dev/null 2>&1; then
   fail "an explicitly requested missing backend must fail"
 fi
+if CORTEX_CHECK_ROOT="$tmp/absent-docs" node "$script" "$happy" >/dev/null 2>&1; then
+  fail "a missing docs checkout must fail"
+fi
 
-# Wrong domain on the Rust constant.
+# Wrong domain on the server constant.
 wrong="$tmp/wrong-base"
 seed "$wrong"
 sed -i 's|https://docs.cortex.foundation/problems|https://docs.cortex.sh/problems|' \
-  "$wrong/crates/cortex-core/src/error.rs"
+  "$wrong/server/src/core/error.ts"
 must_fail "$wrong" "docs.cortex.foundation"
+
+# A documented code the server no longer serves.
+dropped="$tmp/dropped-code"
+seed "$dropped"
+sed -i '/^  internal:/d' "$dropped/server/src/core/error.ts"
+must_fail "$dropped" "problems/internal.mdx documents a code that is not in ERROR_CODES"
+
+# Admin-listener routes are not public API.
+adminpath="$tmp/admin-path"
+seed "$adminpath"
+printf '\n`GET` `/v1/admin/insights/overview`\n' >> "$adminpath/site/problems/not_found.mdx"
+must_fail "$adminpath" "admin/insights/overview"
 
 # Missing problem page.
 missing="$tmp/missing-page"

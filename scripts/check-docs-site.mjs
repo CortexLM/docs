@@ -7,7 +7,7 @@
  *
  * `PROBLEM_TYPE_BASE` is wire contract: every error the API returns carries a
  * `type` URL under `https://docs.cortex.foundation/problems`, so each
- * `ErrorCode` needs a page there, and no page may document a code the API does
+ * error code in `ERROR_CODES` needs a page there, and no page may document a code the API does
  * not emit. Documenting a `/v1/…` path the router does not register is the
  * same class of silent decay.
  *
@@ -59,19 +59,17 @@ function walk(dir) {
   return out;
 }
 
-function rustErrorCodes(source) {
-  const block = /pub const fn as_str\(self\)[\s\S]*?match self \{([\s\S]*?)\n        \}/.exec(
-    source,
-  );
+function serverErrorCodes(source) {
+  const block = /export const ERROR_CODES = \{([\s\S]*?)\n\}/.exec(source);
   if (block === null) {
-    fail('could not find `ErrorCode::as_str` in crates/cortex-core/src/error.rs');
+    fail('could not find `ERROR_CODES` in server/src/core/error.ts');
     return [];
   }
-  return [...block[1].matchAll(/=> "([a-z_]+)"/g)].map((m) => m[1]);
+  return [...block[1].matchAll(/^\s+([a-z_]+):/gm)].map((m) => m[1]);
 }
 
-function rustProblemBase(source) {
-  return /pub const PROBLEM_TYPE_BASE: &str = "([^"]+)";/.exec(source)?.[1] ?? null;
+function serverProblemBase(source) {
+  return /export const PROBLEM_TYPE_BASE = "([^"]+)";/.exec(source)?.[1] ?? null;
 }
 
 function tsProblemBase(source) {
@@ -262,12 +260,20 @@ function internalHrefs(text) {
   return out;
 }
 
-function routerPaths(source) {
+/**
+ * `routes(r)` in server/src/api registers under `/v1`; `operationalRoutes`
+ * (health probes, `/internal/…`) stay bare. Literals already starting with
+ * `/v1` are `adminRoutes` on the private listener and are not public API.
+ */
+function routerPaths(sources) {
   const registered = new Set();
-  for (const m of source.matchAll(/\.route\(\s*"([^"]+)"/g)) {
-    const path = m[1];
-    if (OPERATIONAL.has(path)) registered.add(path);
-    else registered.add(`/v1${path}`);
+  for (const source of sources) {
+    for (const m of source.matchAll(/\.(?:get|post|put|patch|delete)\(\s*"(\/[^"]*)"/g)) {
+      const path = m[1];
+      if (path === '/v1' || path.startsWith('/v1/')) continue;
+      if (OPERATIONAL.has(path) || path.startsWith('/internal/')) registered.add(path);
+      else registered.add(`/v1${path}`);
+    }
   }
   return registered;
 }
@@ -295,26 +301,33 @@ function documentedV1Paths(text) {
   return found;
 }
 
-const errorRs = BACKEND === null ? '' : read('crates/cortex-core/src/error.rs', BACKEND);
+const errorSrc = BACKEND === null ? '' : read('server/src/core/error.ts', BACKEND);
 const errorsTs = BACKEND === null ? '' : read('packages/api-types/src/errors.ts', BACKEND);
-const routerRs = BACKEND === null ? '' : read('crates/cortex-api/src/router.rs', BACKEND);
+const API_DIR = 'server/src/api';
+if (BACKEND !== null && !existsSync(join(BACKEND, API_DIR))) fail(`missing ${API_DIR}`);
+const routerSources =
+  BACKEND === null
+    ? []
+    : walk(join(BACKEND, API_DIR))
+        .filter((path) => path.endsWith('.ts'))
+        .map((path) => readFileSync(path, 'utf8'));
 const docsRoot = ROOT;
 
 if (BACKEND !== null) {
-  const rustBase = rustProblemBase(errorRs);
+  const serverBase = serverProblemBase(errorSrc);
   const tsBase = tsProblemBase(errorsTs);
-  if (rustBase === null) {
-    fail('could not find `PROBLEM_TYPE_BASE` in crates/cortex-core/src/error.rs');
-  } else if (rustBase !== EXPECTED_BASE) {
+  if (serverBase === null) {
+    fail('could not find `PROBLEM_TYPE_BASE` in server/src/core/error.ts');
+  } else if (serverBase !== EXPECTED_BASE) {
     fail(
-      `PROBLEM_TYPE_BASE in error.rs is ${rustBase}; user-facing problem URIs must be ${EXPECTED_BASE}`,
+      `PROBLEM_TYPE_BASE in server/src/core/error.ts is ${serverBase}; user-facing problem URIs must be ${EXPECTED_BASE}`,
     );
   }
   if (tsBase === null) {
     fail('could not find `PROBLEM_TYPE_BASE` in packages/api-types/src/errors.ts');
-  } else if (tsBase !== rustBase && rustBase !== null) {
+  } else if (tsBase !== serverBase && serverBase !== null) {
     fail(
-      `PROBLEM_TYPE_BASE: error.rs serves ${rustBase} and api-types claims ${tsBase}`,
+      `PROBLEM_TYPE_BASE: server/src/core/error.ts serves ${serverBase} and api-types claims ${tsBase}`,
     );
   } else if (tsBase !== EXPECTED_BASE) {
     fail(
@@ -328,13 +341,13 @@ const problemPages = existsSync(problemDir)
   ? readdirSync(problemDir).filter((name) => name.endsWith('.mdx') && name !== 'index.mdx')
   : [];
 const pageCodes = new Set(problemPages.map((name) => name.replace(/\.mdx$/, '')));
-const codes = BACKEND === null ? [...pageCodes] : rustErrorCodes(errorRs);
+const codes = BACKEND === null ? [...pageCodes] : serverErrorCodes(errorSrc);
 if (codes.length === 0) fail('no problem codes found');
 
 for (const code of codes) {
   const rel = `problems/${code}.mdx`;
   if (!pageCodes.has(code)) {
-    fail(`ErrorCode \`${code}\` has no Mintlify page at ${rel}`);
+    fail(`ERROR_CODES \`${code}\` has no Mintlify page at ${rel}`);
     continue;
   }
   const page = read(rel);
@@ -346,7 +359,7 @@ for (const code of codes) {
 for (const extra of pageCodes) {
   if (!codes.includes(extra)) {
     fail(
-      `problems/${extra}.mdx documents a code that is not in ErrorCode::as_str`,
+      `problems/${extra}.mdx documents a code that is not in ERROR_CODES (server/src/core/error.ts)`,
     );
   }
 }
@@ -372,7 +385,7 @@ for (const rel of FORBIDDEN_AUTH_PAGES) {
   }
 }
 
-const registered = routerPaths(routerRs);
+const registered = routerPaths(routerSources);
 const registeredNorm = new Set([...registered].map(normalizePath));
 const docsFiles = walk(docsRoot).filter((path) => /\.(mdx|md|json)$/.test(path));
 const titles = new Map();
@@ -397,7 +410,7 @@ for (const file of docsFiles) {
     const norm = normalizePath(path);
     if (!registeredNorm.has(norm)) {
       fail(
-        `${rel} documents \`${path}\`, which is not registered in crates/cortex-api/src/router.rs`,
+        `${rel} documents \`${path}\`, which is not registered in server/src/api`,
       );
     }
   }
